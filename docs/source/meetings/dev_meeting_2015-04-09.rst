@@ -59,10 +59,10 @@ Evan drew some stuff on the whitebord.
     * user: ~some auth backend~ username (str) perhaps SSH keys, oauth
     * activity: slig (str/null)
     * notes: notes (str)
-    * issue_ur: uri (str)
+    * issue_uri: uri (str)
     * date_worked: iso standard date (str)
 * project list
-* activity lst
+* activity list
 * Create/modify Project:
     * name (str)
     * owner/admin (str), modifiable
@@ -100,7 +100,7 @@ Action Items
     * javascript? (nodejs + express)
     * **Radical Idea** pair off and quickly write/demo an something. 1week till
       check-in, decide by 3weeks. 50% time working on this.
-4. Explore JS implementation (Dean + Lucy + Eli + Ian)
+4. Explore JS implementation (Dean + Lucy + Eli + Ian + Evan)
 5. Explore GO implementation (Jack + Ian)
 6. Explore Python implementation (Dean + Lucy + Eli + Megan)
 
