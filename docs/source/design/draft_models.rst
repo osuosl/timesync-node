@@ -10,6 +10,7 @@ Create/Modify Projecs:
 
 .. code-block:: python
 
+    id              (int)       (immutable)
     name            (str)
     owner/admin     (str)       (modifiable)
     uri             (str)
@@ -20,6 +21,7 @@ Create/Modify Activity:
 
 .. code-block:: python
 
+    id      (int)   (immutable)
     name    (str)
     slug    (str)
 
@@ -28,13 +30,14 @@ Submit Time:
 
 .. code-block:: python
 
-    project_name:   slug/fuzzy      (str)
-    duration:       minutes         (int)
-    user:           username        (str)
-    activity:       slug            (str/null)
-    notes:          notes           (str)
-    issue_uri:      uri             (str)
-    date:           iso date        (str)
+    id              auto increment    (int)
+    project_name:   slug/fuzzy        (str)
+    duration:       minutes           (int)
+    user:           username          (str)
+    activity:       slug              (str/null)
+    notes:          notes             (str)
+    issue_uri:      uri               (str)
+    date:           iso date          (str)
 
 User:
 -----
@@ -42,3 +45,4 @@ User:
 .. code-block:: python
 
     # This is currently unplanned. We will address this in a future meeting.
+    id  auto-increment  (int)
