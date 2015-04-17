@@ -5,8 +5,8 @@ Draft Data Models
 
 Below are the database models to be used in TimeSync's api.
 
-Create/Modify Projecs:
-----------------------
+Create/Modify Projects:
+-----------------------
 
 .. code-block:: python
 
