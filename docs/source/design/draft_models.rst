@@ -14,19 +14,35 @@ Projects:
     name            (str)
     owner/admin     (int)       (foreign key to users)
     uri             (str/null)
-    slug            (str)
 
-Create/Modify Activity:
------------------------
+ProjectSlugs:
+--------------
+
+.. code-block:: python
+
+    id           (int)       (pk)
+    activity     (int)       (foreign key to users)
+    slug         (str)
+
+Activities:
+---------
 
 .. code-block:: python
 
     id      (int)       (pk)
     name    (str)
-    slug    (str)
 
-Submit Time:
-------------
+ActivitySlugs:
+--------------
+
+.. code-block:: python
+
+    id           (int)       (pk)
+    activity     (int)       (foreign key to users)
+    slug         (str)
+
+Checkins:
+--------
 
 .. code-block:: python
 
