@@ -25,7 +25,7 @@ Errors will be returned only when an error has occurred. They will consist
 of an errno, an error category, and an error text. The existence of the 'error'
 key indicates an error.
 
-The following error codes are suggested:
+The following error codes will exist:
 
 1. Object not found
 
@@ -88,10 +88,6 @@ a string passed to `duration`, or an invalid datetime passed to `date_worked`.
         'errno': 5,
         'text': error
     }
-
-Possible errors can include objects not found, invalid foreign keys, and
-invalid names, etc.
-
 
 
 GET Endpoints
