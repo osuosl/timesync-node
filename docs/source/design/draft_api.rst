@@ -104,7 +104,7 @@ GET Endpoints
       {
          "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
          "name":"Ganeti Web Manager",
-         "slug":"gwm",
+         "slugs":["gwm", "ganeti-webmgr"],
          "owner": 2,
          "id": 1
       },
@@ -119,7 +119,7 @@ GET Endpoints
     {
        "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
        "name":"Ganeti Web Manager",
-       "slug":"gwm",
+       "slugs":["gwm", "ganeti-webmgr"],
        "owner": 2,
        "id": 1
     }
@@ -130,7 +130,7 @@ GET Endpoints
     [
         {
            "name":"Documentation",
-           "slug":"doc",
+           "slugs":["doc"],
            "id": 1
         },
         {...}
@@ -142,7 +142,7 @@ GET Endpoints
 
     {
        "name":"Documentation",
-       "slug":"doc",
+       "slugs":["doc"],
        "id": 1
     }
 
@@ -196,7 +196,7 @@ To add a new object, POST to */<object name>/add* with a JSON body.
     {
        "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
        "name":"Ganeti Web Manager",
-       "slug":"gwm",
+       "slugs":["gwm", "ganeti-webmgr"],
        "owner": 2,
        "id": 1
     }
@@ -207,7 +207,7 @@ To add a new object, POST to */<object name>/add* with a JSON body.
 
     {
        "name":"Documentation",
-       "slug":"doc",
+       "slugs":["doc"],
        "id": 1
     }
 
@@ -238,7 +238,7 @@ The body only needs to contain the part that is being updated.
 
     {
        "name":"Ganeti Webmgr",
-       "slug":"ganeti-webmgr",
+       "slugs":["ganeti-webmgr"],
     }
 
 */activities/1*
@@ -246,7 +246,7 @@ The body only needs to contain the part that is being updated.
 .. code:: json
 
     {
-       "slug":"docu"
+       "slugs":["doc", docu"]
     }
 
 */time/1*
