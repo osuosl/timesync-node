@@ -25,7 +25,22 @@ Errors will be returned only when an error has occurred. They will consist
 of an errno, an error category, and an error text. The existence of the 'error'
 key indicates an error.
 
-ex:
+The following error codes are suggested:
+
+1. Object not found
+
+.. code:: json
+    {
+        'error': "Object not found",
+        'errno': 1,
+        'text': "Invalid " + object
+    }
+
+2. Database save failure
+
+A generic catch-all for when the database fails to load. The exact error text
+will depend on exactly what framework is used, and what error it receieves when
+attempting to save.
 
 .. code:: json
 
@@ -35,8 +50,48 @@ ex:
         'text': sql_error
     }
 
+3. Invalid foreign key
+
+This error would be returned whenever a request attempts to refer to an object
+by a foreign key that does not exist.
+
+.. code:: json
+
+    {
+        'error': "Invalid foreign key",
+        'errno': 3,
+        'text': "Invalid project"
+    }
+
+4. No Name provided
+
+This error would be returned when a Name is not passed in to an /add endpoint
+that requires a name.
+
+.. code:: json
+
+    {
+        'error': "No Name provided",
+        'errno': 4,
+        'text': error
+    }
+
+5. Invalid value
+
+This error would be returned when a given value wasn't valid -- for instance,
+a string passed to `duration`, or an invalid datetime passed to `date_worked`.
+
+.. code:: json
+
+    {
+        'error': "The provided value wasn't valid",
+        'errno': 5,
+        'text': error
+    }
+
 Possible errors can include objects not found, invalid foreign keys, and
 invalid names, etc.
+
 
 
 GET Endpoints
@@ -103,8 +158,8 @@ GET Endpoints
         "activity": 2,
         "notes":"",
         "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
-        "date_worked":null,
-        "created_at":null,
+        "date_worked": 2014-04-17,
+        "created_at": 2014-04-17,
         "updated_at":null,
         "id": 1
       },
@@ -123,8 +178,8 @@ GET Endpoints
       "notes":"",
       "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
       "date_worked":null,
-      "created_at":null,
-      "updated_at":null,
+      "created_at":2014-04-17,
+      "updated_at":2014-04-17,
       "id": 1
     }
 
@@ -173,7 +228,7 @@ To add a new object, POST to */<object name>/add* with a JSON body.
       "id": 1
     }
 
-To update an existing object, POST to */<object name>/update* with a JSON body.
+To update an existing object, POST to */<object name>/<id>* with a JSON body.
 The body only needs to contain the part that is being updated.
 
 
@@ -217,7 +272,7 @@ object.
 
 The response body upon success will be empty.
 
-Upon an error, it will return a 404, with an Object Not Found error.
+Upon an error, it will return an Object Not Found error with a 404 status code.
 
 .. code:: json
 
