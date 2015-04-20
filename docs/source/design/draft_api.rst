@@ -8,7 +8,7 @@ Below is the api specs for the Time Sync project.
 Format
 ------
 Responses will be returned in standard JSON format. An attempt will be made to
-keep the structure simple. Https will be used for all endpoints. Null values
+keep the structure simple. HTTPS will be used for all endpoints. Null values
 will be sent with the JSON null value.
 
 
@@ -39,7 +39,7 @@ The following error codes will exist:
 2. Database save failure
 
 A generic catch-all for when the database fails to load. The exact error text
-will depend on exactly what framework is used, and what error it receieves when
+will depend on exactly what framework is used, and what error it receives when
 attempting to save.
 
 .. code:: json
