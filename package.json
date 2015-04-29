@@ -33,9 +33,11 @@
   },
   "dependencies": {
     "body-parser": "^1.12.3",
+    "expect.js": "^0.3.1",
     "express": "^4.12.3",
     "knex": "^0.7.6",
     "mocha": "^2.2.4",
+    "request": "^2.55.0",
     "sqlite3": "^3.0.5"
   },
   "devDependencies": {
