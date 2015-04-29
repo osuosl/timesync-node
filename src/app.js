@@ -16,12 +16,12 @@ app.set('knex', knex);
 //var routes = require('./routes')(app);
 
 app.get('/', function (req, res) {
-  res.send('hello typescript');
+  res.send('hello javascript');
 });
 
 app.post('/', function (req, res) {
   console.log(req.body.test);
-  res.send('hello typescript');
+  res.send('hello javascript');
 });
 
 app.post('/users/add', function (req, res) {
