@@ -4,7 +4,7 @@
   "description": "TimeSync time tracker implemented in js",
   "main": "app.js",
   "directories": {
-    "doc": "docs"
+    "doc": "docs",
     "start": "node ./src/app.js",
     "migrate": "knex migrate:latest",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
@@ -36,7 +36,7 @@
     "express": "^4.12.3",
     "knex": "^0.7.6",
     "mocha": "^2.2.4",
-    "sqlite3": "^3.0.5",
+    "sqlite3": "^3.0.5"
   },
   "devDependencies": {
     "jshint": "^2.6.3",
