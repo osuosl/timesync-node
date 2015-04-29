@@ -5,13 +5,18 @@
   "main": "app.js",
   "directories": {
     "doc": "docs"
-  },
-  "scripts": {
-    "start": "node --harmony ./src/app.js",
+    "start": "node ./src/app.js",
     "migrate": "knex migrate:latest",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "lint": "jshint ./src ./tests",
-    "test": "./node_modules/.bin/mocha --harmony tests/"
+    "test": "./node_modules/.bin/mocha tests/"
+  },
+  "scripts": {
+    "start": "node ./src/app.js",
+    "migrate": "knex migrate:latest",
+    "recreate": "rm dev.sqlite3 && knex migrate:latest",
+    "lint": "jshint ./src ./tests",
+    "test": "./node_modules/.bin/mocha tests/"
   },
   "repository": {
     "type": "git",
