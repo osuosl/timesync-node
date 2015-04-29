@@ -1,0 +1,42 @@
+{
+  "name": "timesync",
+  "version": "0.0.0",
+  "description": "TimeSync time tracker implemented in js",
+  "main": "app.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node --harmony ./src/app.js",
+    "migrate": "knex migrate:latest",
+    "recreate": "rm dev.sqlite3 && knex migrate:latest",
+    "lint": "jshint ./src ./tests",
+    "test": "./node_modules/.bin/mocha --harmony tests/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tschuy/timesync.git"
+  },
+  "keywords": [
+    "time",
+    "tracker"
+  ],
+  "author": "OSU Open Source Lab <support@osuosl.org>",
+  "license": "Apache 2",
+  "bugs": {
+    "url": "https://github.com/tschuy/timesync/issues"
+  },
+  "dependencies": {
+    "body-parser": "^1.12.3",
+    "express": "^4.12.3",
+    "knex": "^0.7.6",
+    "mocha": "^2.2.4",
+    "sqlite3": "^3.0.5",
+  },
+  "devDependencies": {
+    "jshint": "^2.6.3",
+    "mocha": "^2.2.4",
+    "supertest": "^0.15.0",
+    "sql-fixtures": "^0.9.0"
+  }
+}
