@@ -13,22 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('knex', knex);
 
-//var routes = require('./routes')(app);
-
-app.get('/', function (req, res) {
-  res.send('hello javascript');
-});
-
-app.post('/', function (req, res) {
-  console.log(req.body.test);
-  res.send('hello javascript');
-});
-
-app.post('/users/add', function (req, res) {
-  var user = this.knex('users').insert( {username: req.body.username});
-  console.log(user);
-});
-
+var routes = require('./routes')(app);
 
 app.listen(process.env.PORT || 8000, function () {
   console.log('App now listening on %s', process.env.Port || 8000);
