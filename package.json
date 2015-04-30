@@ -4,18 +4,13 @@
   "description": "TimeSync time tracker implemented in js",
   "main": "app.js",
   "directories": {
-    "doc": "docs",
-    "start": "node ./src/app.js",
-    "migrate": "knex migrate:latest",
-    "recreate": "rm dev.sqlite3 && knex migrate:latest",
-    "lint": "jshint ./src ./tests",
-    "test": "./node_modules/.bin/mocha tests/"
+    "doc": "docs"
   },
   "scripts": {
     "start": "node ./src/app.js",
-    "migrate": "knex migrate:latest",
+    "migrations": "knex migrate:latest",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
-    "lint": "jshint ./src ./tests",
+    "linter": "jshint ./src ./tests",
     "test": "./node_modules/.bin/mocha tests/"
   },
   "repository": {
