@@ -21,6 +21,36 @@ describe('GET /', function() {
   });
 });
 
+describe('GET /checkins', function() {
+  it ('should return all checkins in the database', function(done) {
+    request.get(base_url + 'checkins', function(err,
+        res, body) {
+      var bodyAsString = String.fromCharCode.apply(null, res.body);
+      var expected_results = [
+        {
+          "duration": 12,
+          "user": 2,
+          "project": 3,
+          "activity": 2,
+          "notes": "",
+          "issue_uri": "https://github.com/osu-cass/whats-fresh-api/issues/56",
+          "date_worked": null,
+          "created_at": null,
+          "updated_at": null,
+          "id": 1
+        }
+      ];
+      expect(err == null);
+      expect(res.statusCode).to.be(200);
+      expect(JSON.parse(bodyAsString)).to.eql(expected_results);
+      done();
+    });
+  });
+});
+
+
+
+
 describe('GET /users', function() {
   it ('should return all users in the database', function(done) {
     request.get(base_url + 'users', function(err,
@@ -34,6 +64,73 @@ describe('GET /users', function() {
         {
           "id": 2,
           "username": "tschuy"
+        }
+      ];
+      expect(err == null);
+      expect(res.statusCode).to.be(200);
+      expect(JSON.parse(bodyAsString)).to.eql(expected_results);
+      done();
+    });
+  });
+});
+
+describe('GET /activities', function() {
+  it ('should return all activities in the database', function(done) {
+    request.get(base_url + 'activities', function(err,
+        res, body) {
+      var bodyAsString = String.fromCharCode.apply(null, res.body);
+      var expected_results = [
+        {
+          "name": "Documentation",
+          "slug": "doc",
+          "id": 1
+        },
+        {
+          "name": "Development",
+          "slug": "dev",
+          "id": 2
+        },
+        {
+          "name": "Systems",
+          "slug": "sys",
+          "id": 3
+        }
+      ];
+      expect(err == null);
+      expect(res.statusCode).to.be(200);
+      expect(JSON.parse(bodyAsString)).to.eql(expected_results);
+      done();
+    });
+  });
+});
+
+
+describe('GET /projects', function() {
+  it ('should return all projects in the database', function(done) {
+    request.get(base_url + 'projects', function(err,
+        res, body) {
+      var bodyAsString = String.fromCharCode.apply(null, res.body);
+      var expected_results = [
+        {
+          "uri": "https://code.osuosl.org/projects/ganeti-webmgr",
+          "name": "Ganeti Web Manager",
+          "slug": "gwm",
+          "owner": 2,
+          "id": 1
+        },
+        {
+          "uri": "https://code.osuosl.org/projects/pgd",
+          "name": "Protein Geometry Database",
+          "slug": "pgd",
+          "owner": 1,
+          "id": 2
+        },
+        {
+          "uri": "https://github.com/osu-cass/whats-fresh-api",
+          "name": "Whats Fresh",
+          "slug": "wf",
+          "owner": 2,
+          "id": 3
         }
       ];
       expect(err == null);
