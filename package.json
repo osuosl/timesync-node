@@ -11,6 +11,7 @@
     "migrations": "knex migrate:latest",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "linter": "jshint ./src ./tests",
+    "fixtures": "node ./scripts/load_fixtures.js",
     "test": "./node_modules/.bin/mocha tests/"
   },
   "repository": {
