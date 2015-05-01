@@ -82,17 +82,17 @@ describe('GET /activities', function() {
       var expected_results = [
         {
           "name": "Documentation",
-          "slug": "doc",
+          "alias": "doc",
           "id": 1
         },
         {
           "name": "Development",
-          "slug": "dev",
+          "alias": "dev",
           "id": 2
         },
         {
           "name": "Systems",
-          "slug": "sys",
+          "alias": "sys",
           "id": 3
         }
       ];
@@ -114,21 +114,21 @@ describe('GET /projects', function() {
         {
           "uri": "https://code.osuosl.org/projects/ganeti-webmgr",
           "name": "Ganeti Web Manager",
-          "slug": "gwm",
+          "alias": "gwm",
           "owner": 2,
           "id": 1
         },
         {
           "uri": "https://code.osuosl.org/projects/pgd",
           "name": "Protein Geometry Database",
-          "slug": "pgd",
+          "alias": "pgd",
           "owner": 1,
           "id": 2
         },
         {
           "uri": "https://github.com/osu-cass/whats-fresh-api",
           "name": "Whats Fresh",
-          "slug": "wf",
+          "alias": "wf",
           "owner": 2,
           "id": 3
         }
