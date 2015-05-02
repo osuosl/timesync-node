@@ -10,7 +10,7 @@ var knexfile = require('../knexfile');
 var knex = require('knex')(knexfile.development);;
 
 var port = process.env.PORT || 8000;
-var base_url = 'http://localhost:' + port + '/';
+var base_url = 'http://localhost:' + port + '/v1/';
 
 describe('Endpoints', function (){
 

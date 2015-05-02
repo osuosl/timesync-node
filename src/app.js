@@ -13,6 +13,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('knex', knex);
 
+// Set API version prefix
+app.set('version', '/v1');
+
 var routes = require('./routes')(app);
 var users = require('./users')(app);
 var projects = require('./projects')(app);

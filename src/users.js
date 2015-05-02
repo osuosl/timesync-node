@@ -1,7 +1,6 @@
 module.exports = function(app) {
   var knex = app.get('knex');
-
-  app.get('/users', function (req, res) {
+  app.get(app.get('version') + '/users', function (req, res) {
     knex('users').then(function (users) {
       return res.send(users);
     });
