@@ -14,9 +14,10 @@ will be sent with the JSON null value.
 
 Versions
 --------
-The API will be versioned with simple integers, 1, 2, 3, ...
+The API will be versioned with the letter 'v' followed by monotonically
+increasing integers ('v1', 'v2', 'v3', etc.)
 
-ex: https://timesync.osuosl.org/1/projects
+For example: https://timesync.osuosl.org/v1/projects
 
 
 Errors
