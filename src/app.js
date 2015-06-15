@@ -23,5 +23,5 @@ var activities = require('./activities')(app);
 var checkins = require('./checkins')(app);
 
 app.listen(process.env.PORT || 8000, function () {
-  console.log('App now listening on %s', process.env.Port || 8000);
+  console.log('App now listening on %s', process.env.PORT || 8000);
 });
