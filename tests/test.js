@@ -31,8 +31,10 @@ describe('Endpoints', function (){
       knex('activities').del().then(function() {
         knex('users').del().then(function() {
           knex('checkins').del().then(function() {
-            sqlFixtures.destroy().then(function() {
-              done();
+            knex('slugs').del().then(function() {
+              sqlFixtures.destroy().then(function() {
+                done();
+              });
             });
           });
         });

@@ -7,17 +7,17 @@ module.exports = function(expect, request, base_url) {
         var expected_results = [
           {
             "name": "Documentation",
-            "slug": "doc",
+            "slugs": ["doc"],
             "id": 1
           },
           {
             "name": "Development",
-            "slug": "dev",
+            "slug": ["dev"],
             "id": 2
           },
           {
             "name": "Systems",
-            "slug": "sys",
+            "slug": ["sysadmin", "sys"],
             "id": 3
           }
         ];

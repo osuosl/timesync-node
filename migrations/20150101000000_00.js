@@ -4,7 +4,6 @@ exports.up = function(knex, Promise) {
    return knex.schema.createTable('projects', function (table) {
     table.increments('id').primary();
     table.string('name').notNullable();
-    table.string('slug').unique().notNullable();
     table.string('uri');
     table.integer('owner').references('id').inTable('users').notNullable();
   }).createTable('checkins', function (table) {
@@ -20,10 +19,14 @@ exports.up = function(knex, Promise) {
   }).createTable('activities', function (table) {
     table.increments('id').primary();
     table.string('name').notNullable();
-    table.string('slug').unique().notNullable();
   }).createTable('users', function (table) {
     table.increments('id').primary();
     table.string('username').unique().notNullable();
+  }).createTable('slugs', function (table) {
+    table.increments('id').primary();
+    table.string('slug').unique().notNullable();
+    table.integer('activity').references('id').inTable('activities');
+    table.integer('project').references('id').inTable('projects');
   });
 };
 

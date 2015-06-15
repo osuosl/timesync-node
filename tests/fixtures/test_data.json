@@ -2,17 +2,14 @@
    "activities":[
       {
          "name":"Documentation",
-         "slug":"doc",
          "id": 1
       },
       {
          "name":"Development",
-         "slug":"dev",
          "id": 2
       },
       {
          "name":"Systems",
-         "slug":"sys",
          "id": 3
       }
    ],
@@ -30,21 +27,18 @@
       {
          "uri":"https:://code.osuosl.org/projects/ganeti-webmgr",
          "name":"Ganeti Web Manager",
-         "slug":"gwm",
          "owner":"users:1",
          "id": 1
       },
       {
          "uri":"https:://code.osuosl.org/projects/pgd",
          "name":"Protein Geometry Database",
-         "slug":"pgd",
          "owner":"users:0",
          "id": 2
       },
       {
          "uri":"https:://github.com/osu-cass/whats-fresh-api",
          "name":"Whats Fresh",
-         "slug":"wf",
          "owner":"users:1",
          "id": 3
       }
@@ -61,6 +55,56 @@
       "created_at":null,
       "updated_at":null,
       "id": 1
+     }
+   ],
+   "slugs":[
+     {
+        "slug": "gwm",
+        "id": 1,
+        "project": 1,
+        "activity": null
+     },
+     {
+        "slug": "pgd",
+        "id": 2,
+        "project": 2,
+        "activity": null
+     },
+     {
+        "slug": "wf",
+        "id": 3,
+        "project": 3,
+        "activity": null
+     },
+     {
+        "slug": "doc",
+        "id": 4,
+        "project": null,
+        "activity": 1
+     },
+     {
+        "slug": "dev",
+        "id": 5,
+        "project": null,
+        "activity": 2
+     },
+     {
+        "slug": "sys",
+        "id": 6,
+        "project": null,
+        "activity": 3
+     },
+     {
+        "slug": "sysadmin",
+        "id": 7,
+        "project": null,
+        "activity": 3
+     },
+     {
+        "slug": "ganeti-webmgr",
+        "id": 8,
+        "project": 1,
+        "activity": null
      }
    ]
 }
