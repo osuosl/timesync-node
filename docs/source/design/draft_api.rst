@@ -81,12 +81,26 @@ that requires a name.
 
 This error would be returned when a given value wasn't valid -- for instance,
 a string passed to `duration`, or an invalid datetime passed to `date_worked`.
+This field would allow the backend to inform the user what they did wrong.
 
 .. code:: json
 
     {
         'error': "The provided value wasn't valid",
         'errno': 5,
+        'text': error
+    }
+
+6. Invalid slug
+
+This error would be returned when a slug field is invalid. It would include
+which slug was used in the return text.
+
+.. code:: json
+
+    {
+        'error': "The provided slug wasn't valid",
+        'errno': 6,
         'text': error
     }
 
@@ -101,23 +115,23 @@ GET Endpoints
       {
          "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
          "name":"Ganeti Web Manager",
-         "slugs":["gwm", "ganeti-webmgr"],
-         "owner": 2,
+         "slugs":[<slugs>],
+         "owner": <username>,
          "id": 1
       },
       {...},
       ...
     ]
 
-*/projects/<project_id>*
+*/projects/<slug>*
 
 .. code:: json
 
     {
        "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
        "name":"Ganeti Web Manager",
-       "slugs":["gwm", "ganeti-webmgr"],
-       "owner": 2,
+       "slugs":[<slugs>],
+       "owner": <username>,
        "id": 1
     }
 
@@ -127,32 +141,32 @@ GET Endpoints
     [
         {
            "name":"Documentation",
-           "slugs":["doc"],
+           "slugs":[<slugs>],
            "id": 1
         },
         {...}
     ]
 
-*/activities/id*
+*/activities/<slug>*
 
 .. code:: json
 
     {
        "name":"Documentation",
-       "slugs":["doc"],
+       "slugs":[<slugs>],
        "id": 1
     }
 
-*/time*
+*/times*
 
 .. code:: json
 
     [
       {
         "duration":12,
-        "user": 2,
-        "project": 3,
-        "activity": 2,
+        "user": <username>,
+        "project": [<slugs>],
+        "activity": [<slugs>],
         "notes":"",
         "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
         "date_worked": 2014-04-17,
@@ -163,15 +177,15 @@ GET Endpoints
       {...}
     ]
 
-*/time/id*
+*/times/<time entry id>*
 
 .. code:: json
 
     {
       "duration":12,
-      "user": 2,
-      "project": 3,
-      "activity": 2,
+      "user": <username>,
+      "project": [<slugs>],
+      "activity": [<slugs>],
       "notes":"",
       "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
       "date_worked":null,
@@ -193,9 +207,8 @@ To add a new object, POST to */<object name>/add* with a JSON body.
     {
        "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
        "name":"Ganeti Web Manager",
-       "slugs":["gwm", "ganeti-webmgr"],
-       "owner": 2,
-       "id": 1
+       "slugs":[<slugs>],
+       "owner": <username>
     }
 
 */activities/add*
@@ -204,49 +217,47 @@ To add a new object, POST to */<object name>/add* with a JSON body.
 
     {
        "name":"Documentation",
-       "slugs":["doc"],
-       "id": 1
+       "slugs":[<slugs>]
     }
 
-*/time/add*
+*/times/add*
 
 .. code:: json
 
     {
       "duration":12,
-      "user": 2,
-      "project": 3,
-      "activity": 2,
+      "user": <username>,
+      "project": <slug>,
+      "activity": <slug>,
       "notes":"",
       "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
       "date_worked":null,
       "created_at":null,
-      "updated_at":null,
-      "id": 1
+      "updated_at":null
     }
 
 To update an existing object, POST to */<object name>/<id>* with a JSON body.
 The body only needs to contain the part that is being updated.
 
 
-*/projects/1*
+*/projects/<slug>*
 
 .. code:: json
 
     {
        "name":"Ganeti Webmgr",
-       "slugs":["ganeti-webmgr"],
+       "slugs":[<slugs>],
     }
 
-*/activities/1*
+*/activities/<slug>*
 
 .. code:: json
 
     {
-       "slugs":["doc", docu"]
+       "slugs":[<slugs>]
     }
 
-*/time/1*
+*/times/<id>*
 
 .. code:: json
 
