@@ -43,9 +43,9 @@ module.exports = function(expect, request, base_url) {
     });
   });
 
-  describe('GET /projects/:id', function() {
-    it ('should return projects by id', function(done) {
-      request.get(base_url + 'projects/1', function(err, res, body) {
+  describe('GET /projects/:slug', function() {
+    it ('should return projects by slug', function(done) {
+      request.get(base_url + 'projects/gwm', function(err, res, body) {
         var json_body = JSON.parse(String.fromCharCode.apply(null, res.body));
         var expected_result = {
             "uri": "https://code.osuosl.org/projects/ganeti-webmgr",
