@@ -55,3 +55,10 @@ on how to write tests, or use the tests included in TimeSync as a guide. They
 can be found in ``tests/``.
 
 .. _`its documentation`: http://mochajs.org/
+
+Travis CI
+---------
+
+Every time a commit is pushed to GitHub, Travis CI will automatically run the
+test suite and marks the push as working or not. This is especially helpful
+during code review.
