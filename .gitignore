@@ -2,3 +2,4 @@ node_modules/
 dev.sqlite3
 npm-debug.log
 .*.swp
+docs/build/
