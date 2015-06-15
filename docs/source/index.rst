@@ -12,6 +12,12 @@ Contents:
    :maxdepth: 2
 
 
+Developer Setup:
+
+.. toctree::
+   :maxdepth: 2
+
+   dev/development
 
 Indices and tables
 ==================
