@@ -3,33 +3,41 @@ module.exports = function(expect, request, base_url) {
     it ('should return all projects in the database', function(done) {
       request.get(base_url + 'projects', function(err,
           res, body) {
-        var bodyAsString = String.fromCharCode.apply(null, res.body);
+        var json_body = JSON.parse(String.fromCharCode.apply(null, res.body));
         var expected_results = [
           {
             "uri": "https://code.osuosl.org/projects/ganeti-webmgr",
             "name": "Ganeti Web Manager",
-            "slug": "gwm",
+            "slugs": ["gwm", "ganeti-webmgr"],
             "owner": 2,
             "id": 1
           },
           {
             "uri": "https://code.osuosl.org/projects/pgd",
             "name": "Protein Geometry Database",
-            "slug": "pgd",
+            "slugs": ["pgd"],
             "owner": 1,
             "id": 2
           },
           {
             "uri": "https://github.com/osu-cass/whats-fresh-api",
             "name": "Whats Fresh",
-            "slug": "wf",
+            "slugs": ["wf"],
             "owner": 2,
             "id": 3
           }
         ];
+
+        [expected_results, json_body].forEach(function(list) {
+          list.forEach(function(result) {
+            result.slugs.sort();
+          });
+        });
+
         expect(err == null);
         expect(res.statusCode).to.be(200);
-        expect(JSON.parse(bodyAsString)).to.eql(expected_results);
+
+        expect(json_body).to.eql(expected_results);
         done();
       });
     });

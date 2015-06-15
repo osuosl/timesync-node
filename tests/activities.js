@@ -3,7 +3,7 @@ module.exports = function(expect, request, base_url) {
     it ('should return all activities in the database', function(done) {
       request.get(base_url + 'activities', function(err,
           res, body) {
-        var bodyAsString = String.fromCharCode.apply(null, res.body);
+        var json_body = JSON.parse(String.fromCharCode.apply(null, res.body));
         var expected_results = [
           {
             "name": "Documentation",
@@ -12,18 +12,25 @@ module.exports = function(expect, request, base_url) {
           },
           {
             "name": "Development",
-            "slug": ["dev"],
+            "slugs": ["dev"],
             "id": 2
           },
           {
             "name": "Systems",
-            "slug": ["sysadmin", "sys"],
+            "slugs": ["sysadmin", "sys"],
             "id": 3
           }
         ];
+
+        [expected_results, json_body].forEach(function(list) {
+          list.forEach(function(result) {
+            result.slugs.sort();
+          });
+        });
+
         expect(err == null);
         expect(res.statusCode).to.be(200);
-        expect(JSON.parse(bodyAsString)).to.eql(expected_results);
+        expect(json_body).to.eql(expected_results);
         done();
       });
     });
