@@ -35,4 +35,25 @@ module.exports = function(expect, request, base_url) {
       });
     });
   });
+
+  describe('GET /activities/:slug', function() {
+    it ('should return activities by slug', function(done) {
+      request.get(base_url + 'activities/sys', function(err, res, body) {
+        var json_body = JSON.parse(String.fromCharCode.apply(null, res.body));
+        var expected_result = {
+            "name": "Systems",
+            "slugs": ["sys", "sysadmin"],
+            "id": 3
+          }
+        expected_result.slugs.sort();
+        json_body.slugs.sort();
+
+        expect(err == null);
+        expect(res.statusCode).to.be(200);
+
+        expect(json_body).to.eql(expected_result);
+        done();
+      });
+    });
+  });
 }
