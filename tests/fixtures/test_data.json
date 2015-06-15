@@ -57,54 +57,56 @@
       "id": 1
      }
    ],
-   "slugs":[
+   "projectslugs":[
      {
-        "slug": "gwm",
+        "name": "gwm",
         "id": 1,
         "project": 1,
         "activity": null
      },
      {
-        "slug": "pgd",
+        "name": "pgd",
         "id": 2,
         "project": 2,
         "activity": null
      },
      {
-        "slug": "wf",
+        "name": "wf",
         "id": 3,
         "project": 3,
         "activity": null
      },
      {
-        "slug": "doc",
-        "id": 4,
-        "project": null,
-        "activity": 1
-     },
-     {
-        "slug": "dev",
-        "id": 5,
-        "project": null,
-        "activity": 2
-     },
-     {
-        "slug": "sys",
-        "id": 6,
-        "project": null,
-        "activity": 3
-     },
-     {
-        "slug": "sysadmin",
-        "id": 7,
-        "project": null,
-        "activity": 3
-     },
-     {
-        "slug": "ganeti-webmgr",
+        "name": "ganeti-webmgr",
         "id": 8,
         "project": 1,
         "activity": null
      }
-   ]
+   ],
+   "activityslugs":[
+     {
+        "name": "doc",
+        "id": 1,
+        "project": null,
+        "activity": 1
+     },
+     {
+        "name": "dev",
+        "id": 2,
+        "project": null,
+        "activity": 2
+     },
+     {
+        "name": "sys",
+        "id": 3,
+        "project": null,
+        "activity": 3
+     },
+     {
+        "name": "sysadmin",
+        "id": 4,
+        "project": null,
+        "activity": 3
+     }
+    ]
 }

@@ -5,10 +5,10 @@ module.exports = function(app) {
     knex('activities').then(function (activities) {
       var count = 0;
       activities.forEach(function(activity) {
-        knex('slugs').where({'activity': activity.id}).select('slug').then(function(slugs) {
+        knex('activityslugs').where({'activity': activity.id}).select('name').then(function(slugs) {
           activity.slugs = [];
           slugs.forEach(function(slug) {
-            activity.slugs.push(slug.slug);
+            activity.slugs.push(slug.name);
           });
           count++;
           if (count == activities.length) {
