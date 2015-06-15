@@ -42,4 +42,27 @@ module.exports = function(expect, request, base_url) {
       });
     });
   });
+
+  describe('GET /projects/:id', function() {
+    it ('should return projects by id', function(done) {
+      request.get(base_url + 'projects/1', function(err, res, body) {
+        var json_body = JSON.parse(String.fromCharCode.apply(null, res.body));
+        var expected_result = {
+            "uri": "https://code.osuosl.org/projects/ganeti-webmgr",
+            "name": "Ganeti Web Manager",
+            "slugs": ["gwm", "ganeti-webmgr"],
+            "owner": 2,
+            "id": 1
+          }
+        expected_result.slugs.sort();
+        json_body.slugs.sort();
+
+        expect(err == null);
+        expect(res.statusCode).to.be(200);
+
+        expect(json_body).to.eql(expected_result);
+        done();
+      });
+    });
+  });
 }
