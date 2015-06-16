@@ -49,19 +49,4 @@ describe('Endpoints', function (){
   require('./activities')(expect, request, base_url);
   require('./projects')(expect, request, base_url);
 
-
-
-  describe('GET /', function() {
-    it ('should say javascript', function(done) {
-      request.get(base_url, function(err,
-          res, body) {
-        var bodyAsString = String.fromCharCode.apply(null, res.body);
-        expect(err == null);
-        expect(res.statusCode).to.be(200);
-        expect(bodyAsString).to.be('hello javascript');
-        done();
-      });
-    });
-  });
-
 });
