@@ -6,7 +6,7 @@ exports.up = function(knex, Promise) {
     table.string('name').notNullable();
     table.string('uri');
     table.integer('owner').references('id').inTable('users').notNullable();
-  }).createTable('checkins', function (table) {
+  }).createTable('times', function (table) {
     table.increments('id').primary();
     table.integer('duration').notNullable();
     table.integer('user').references('id').inTable('users').notNullable();

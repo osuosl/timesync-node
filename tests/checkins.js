@@ -1,15 +1,15 @@
 module.exports = function(expect, request, base_url) {
-  describe('GET /checkins', function() {
-    it ('should return all checkins in the database', function(done) {
-      request.get(base_url + 'checkins', function(err,
+  describe('GET /times', function() {
+    it ('should return all times in the database', function(done) {
+      request.get(base_url + 'times', function(err,
           res, body) {
         var bodyAsString = String.fromCharCode.apply(null, res.body);
         var expected_results = [
           {
             "duration": 12,
-            "user": 2,
-            "project": 3,
-            "activity": 2,
+            "user": "tschuy",
+            "project": ["wf"],
+            "activity": ["dev"],
             "notes": "",
             "issue_uri": "https://github.com/osu-cass/whats-fresh-api/issues/56",
             "date_worked": null,
