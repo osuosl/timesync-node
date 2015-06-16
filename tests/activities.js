@@ -55,5 +55,21 @@ module.exports = function(expect, request, base_url) {
         done();
       });
     });
+
+    it ('should fail with invalid slug error', function(done) {
+      request.get(base_url + 'activities/404', function(err, res, body) {
+        var json_body = JSON.parse(String.fromCharCode.apply(null, res.body));
+        var expected_result = {
+          "error": "The provided slug wasn't valid",
+          "errno": 6,
+          "text": "404 is not a valid activity slug."
+        }
+
+        expect(json_body).to.eql(expected_result);
+        expect(res.statusCode).to.equal(404);
+
+        done();
+      });
+    });
   });
 }
