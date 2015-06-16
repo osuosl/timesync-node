@@ -5,6 +5,9 @@ module.exports = function(app) {
   app.get(app.get('version') + '/projects', function (req, res) {
     knex('projects').then(function (projects) {
       var count = 0;
+      if (projects.length == 0) {
+        return res.send([]);
+      };
       projects.forEach(function(project) {
         knex('projectslugs').where({'project': project.id}).select('name').then(function(slugs) {
           project.slugs = [];
