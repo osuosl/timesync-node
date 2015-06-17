@@ -14,10 +14,13 @@ module.exports = function(app) {
           slugs.forEach(function(slug) {
             project.slugs.push(slug.name);
           });
-          count++;
-          if (count == projects.length) {
-            return res.send(projects);
-          }
+          knex('users').where({'id': project.owner}).select('username').then(function(user) {
+            project.owner = user[0].username;
+            count++;
+            if (count == projects.length) {
+              return res.send(projects);
+            }
+          });
         });
       });
     });
@@ -33,7 +36,10 @@ module.exports = function(app) {
             slugs.forEach(function(slug) {
               project.slugs.push(slug.name);
             });
-            return res.send(project);
+            knex('users').where({'id': project.owner}).select('username').then(function(user) {
+              project.owner = user[0].username;
+              return res.send(project);
+            });
           });
         });
       } else {
