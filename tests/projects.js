@@ -9,21 +9,21 @@ module.exports = function(expect, request, base_url) {
             "uri": "https://code.osuosl.org/projects/ganeti-webmgr",
             "name": "Ganeti Web Manager",
             "slugs": ["gwm", "ganeti-webmgr"],
-            "owner": 2,
+            "owner": "tschuy",
             "id": 1
           },
           {
             "uri": "https://code.osuosl.org/projects/pgd",
             "name": "Protein Geometry Database",
             "slugs": ["pgd"],
-            "owner": 1,
+            "owner": "deanj",
             "id": 2
           },
           {
             "uri": "https://github.com/osu-cass/whats-fresh-api",
             "name": "Whats Fresh",
             "slugs": ["wf"],
-            "owner": 2,
+            "owner": "tschuy",
             "id": 3
           }
         ];
@@ -51,7 +51,7 @@ module.exports = function(expect, request, base_url) {
             "uri": "https://code.osuosl.org/projects/ganeti-webmgr",
             "name": "Ganeti Web Manager",
             "slugs": ["gwm", "ganeti-webmgr"],
-            "owner": 2,
+            "owner": "tschuy",
             "id": 1
           };
         expected_result.slugs.sort();
