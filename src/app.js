@@ -1,11 +1,10 @@
 var express = require('express');
 var bodyParser = require('body-parser')
 var knexBuilder = require('knex');
+var knexfile = require('../knexfile');
+var db = process.env.DATABASE || 'development';
 
-var knex = knexBuilder({
-  client: process.env.CLIENT || 'sqlite3',
-  connection: process.env.DATABASE_URL || { filename: 'dev.sqlite3' }
-});
+var knex = require('knex')(knexfile[db]);
 
 var app = express();
 app.use(express.static(__dirname + '/static'));

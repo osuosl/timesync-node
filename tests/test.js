@@ -7,7 +7,7 @@ var app = require('../src/app');
 var request = request_builder.defaults({encoding: null});
 var test_data = require('./fixtures/test_data');
 var knexfile = require('../knexfile');
-var knex = require('knex')(knexfile.development);
+var knex = require('knex')(knexfile.mocha);
 
 var port = process.env.PORT || 8000;
 var base_url = 'http://localhost:' + port + '/v1/';
@@ -18,7 +18,7 @@ describe('Endpoints', function (){
     this.timeout(5000);
     // Clear SQLite indexes
     knex.raw('delete from sqlite_sequence').then(function(resp) {
-      sqlFixtures.create(knexfile.development, test_data).then(function() {
+      sqlFixtures.create(knexfile.mocha, test_data).then(function() {
         done();
       });
     });

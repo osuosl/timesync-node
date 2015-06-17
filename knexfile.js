@@ -4,5 +4,12 @@ module.exports = {
     connection: {
       filename: './dev.sqlite3'
     }
+  },
+
+  mocha: {
+    client: 'sqlite3',
+    connection: {
+      filename: './test.sqlite3'
+    }
   }
 };
