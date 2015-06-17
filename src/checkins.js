@@ -2,9 +2,9 @@ module.exports = function(app) {
   var knex = app.get('knex');
   app.get(app.get('version') + '/times', function (req, res) {
     knex('times').then(function (times) {
-    if (times.length == 0) {
+    if (times.length === 0) {
       return res.send([]);
-    };
+    }
     var activity_count = 0, project_count = 0, count = 0;
     times.forEach(function(time) {
       knex('users').where({'id': time.user}).select('username').then(function(user) {
@@ -33,4 +33,4 @@ module.exports = function(app) {
     });
     });
   });
-}
+};

@@ -18,11 +18,11 @@ module.exports = function(expect, request, base_url) {
             "id": 1
           }
         ];
-        expect(err == null);
+        expect(err === null);
         expect(res.statusCode).to.be(200);
         expect(JSON.parse(bodyAsString)).to.eql(expected_results);
         done();
       });
     });
   });
-}
+};

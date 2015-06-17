@@ -1,5 +1,5 @@
 var express = require('express');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 var knexBuilder = require('knex');
 var knexfile = require('../knexfile');
 var db = process.env.DATABASE || 'development';

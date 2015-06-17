@@ -5,9 +5,9 @@ module.exports = function(app) {
   app.get(app.get('version') + '/projects', function (req, res) {
     knex('projects').then(function (projects) {
       var count = 0;
-      if (projects.length == 0) {
+      if (projects.length === 0) {
         return res.send([]);
-      };
+      }
       projects.forEach(function(project) {
         knex('projectslugs').where({'project': project.id}).select('name').then(function(slugs) {
           project.slugs = [];
@@ -25,7 +25,7 @@ module.exports = function(app) {
 
   app.get(app.get('version') + '/projects/:slug', function (req, res) {
     knex('projectslugs').where({'name': req.params.slug}).then(function(project_slug) {
-      if(project_slug.length != 0) {
+      if(project_slug.length !== 0) {
         knex('projects').where({'id': project_slug[0].project}).then(function (project_list) {
           knex('projectslugs').where({'project': project_slug[0].project}).select('name').then(function(slugs) {
             project = project_list[0];
@@ -42,4 +42,4 @@ module.exports = function(app) {
       }
     });
   });
-}
+};

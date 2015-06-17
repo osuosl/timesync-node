@@ -28,7 +28,7 @@ module.exports = function(expect, request, base_url) {
           });
         });
 
-        expect(err == null);
+        expect(err === null);
         expect(res.statusCode).to.be(200);
         expect(json_body).to.eql(expected_results);
         done();
@@ -44,11 +44,11 @@ module.exports = function(expect, request, base_url) {
             "name": "Systems",
             "slugs": ["sys", "sysadmin"],
             "id": 3
-          }
+          };
         expected_result.slugs.sort();
         json_body.slugs.sort();
 
-        expect(err == null);
+        expect(err === null);
         expect(res.statusCode).to.be(200);
 
         expect(json_body).to.eql(expected_result);
@@ -63,7 +63,7 @@ module.exports = function(expect, request, base_url) {
           "error": "The provided slug wasn't valid",
           "errno": 6,
           "text": "404 is not a valid activity slug."
-        }
+        };
 
         expect(json_body).to.eql(expected_result);
         expect(res.statusCode).to.equal(404);
@@ -72,4 +72,4 @@ module.exports = function(expect, request, base_url) {
       });
     });
   });
-}
+};

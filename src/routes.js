@@ -8,4 +8,4 @@ module.exports = function(app) {
   app.post(app.get('version') + '/', function (req, res) {
     res.send('hello javascript');
   });
-}
+};

@@ -34,7 +34,7 @@ module.exports = function(expect, request, base_url) {
           });
         });
 
-        expect(err == null);
+        expect(err === null);
         expect(res.statusCode).to.be(200);
 
         expect(json_body).to.eql(expected_results);
@@ -53,11 +53,11 @@ module.exports = function(expect, request, base_url) {
             "slugs": ["gwm", "ganeti-webmgr"],
             "owner": 2,
             "id": 1
-          }
+          };
         expected_result.slugs.sort();
         json_body.slugs.sort();
 
-        expect(err == null);
+        expect(err === null);
         expect(res.statusCode).to.be(200);
 
         expect(json_body).to.eql(expected_result);
@@ -72,7 +72,7 @@ module.exports = function(expect, request, base_url) {
           "error": "The provided slug wasn't valid",
           "errno": 6,
           "text": "404 is not a valid project slug."
-        }
+        };
 
         expect(json_body).to.eql(expected_result);
         expect(res.statusCode).to.equal(404);
@@ -81,4 +81,4 @@ module.exports = function(expect, request, base_url) {
       });
     });
   });
-}
+};
