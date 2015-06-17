@@ -11,7 +11,7 @@ module.exports = {
       return {
           'error': "Object not found",
           'errno': 1,
-          'text': "Invalid " + object
+          'text': "Invalid " + object + " id"
       };
   },
 
@@ -27,7 +27,7 @@ module.exports = {
       return {
           'error': "Invalid foreign key",
           'errno': 3,
-          'text': "Invalid " + object
+          'text': "Invalid " + object + " id"
       };
   },
 
