@@ -12,7 +12,7 @@
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "linter": "jshint ./src ./tests",
     "fixtures": "node ./scripts/load_fixtures.js",
-    "test": "export DATABASE=mocha && rm test.sqlite3 && knex --env mocha migrate:latest && mocha tests/"
+    "test": "export DATABASE=mocha && rm -f test.sqlite3 && knex --env mocha migrate:latest && mocha tests/"
   },
   "repository": {
     "type": "git",
