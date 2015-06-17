@@ -33,8 +33,8 @@ And run the server::
 
     npm start
 
-You can now access TimeSync on ``http://localhost:8000``, or the port specified
-in console output if appropriate.
+TimeSync can now be accessed on ``http://localhost:8000``, or the port
+specified in console output if appropriate.
 
 Some other commands have been made available through TimeSync's
 ``package.json`` for convenience:
@@ -56,9 +56,27 @@ can be found in ``tests/``.
 
 .. _`its documentation`: http://mochajs.org/
 
+Code standards
+--------------
+
+The TimeSync source code is linted using `JSHint`_. This helps keep the code
+base cleaner and more readable. For the most part, if an error occurs, it is
+straightforward to fix it. For reference, a full list of messages is available
+in the `JSHint source code`_.
+
+To run the linter, just run::
+
+    npm run linter
+
+.. _`JSHint`: https://github.com/jshint/jshint
+.. _`JSHint source code`: https://github.com/jshint/jshint/blob/master/src/messages.js
+
+
 Travis CI
 ---------
 
 Every time a commit is pushed to GitHub, Travis CI will automatically run the
 test suite and marks the push as working or not. This is especially helpful
 during code review.
+
+Travis runs the test suite and the linter as described above.
