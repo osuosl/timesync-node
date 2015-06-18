@@ -53,6 +53,14 @@ module.exports = {
           'errno': 6,
           'text': error
       };
+  },
+
+  'errorExistingSlug': function(error) {
+      return {
+          'error': "The provided slug already exists",
+          'errno': 7,
+          'text': error
+      };
   }
 
 };
