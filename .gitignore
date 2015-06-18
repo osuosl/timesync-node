@@ -1,1 +1,5 @@
-build/
+node_modules/
+*.sqlite3
+npm-debug.log
+.*.swp
+docs/build/

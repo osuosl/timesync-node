@@ -1,0 +1,112 @@
+{
+   "activities":[
+      {
+         "name":"Documentation",
+         "id": 1
+      },
+      {
+         "name":"Development",
+         "id": 2
+      },
+      {
+         "name":"Systems",
+         "id": 3
+      }
+   ],
+   "users":[
+      {
+         "username":"deanj",
+         "id": 1
+      },
+      {
+         "username":"tschuy",
+         "id": 2
+      }
+   ],
+   "projects":[
+      {
+         "uri":"https:://code.osuosl.org/projects/ganeti-webmgr",
+         "name":"Ganeti Web Manager",
+         "owner":"users:1",
+         "id": 1
+      },
+      {
+         "uri":"https:://code.osuosl.org/projects/pgd",
+         "name":"Protein Geometry Database",
+         "owner":"users:0",
+         "id": 2
+      },
+      {
+         "uri":"https:://github.com/osu-cass/whats-fresh-api",
+         "name":"Whats Fresh",
+         "owner":"users:1",
+         "id": 3
+      }
+   ],
+   "times":[
+     {
+      "duration":12,
+      "user":"users:1",
+      "project":"projects:2",
+      "activity":"activities:1",
+      "notes":"",
+      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "date_worked":null,
+      "created_at":null,
+      "updated_at":null,
+      "id": 1
+     }
+   ],
+   "projectslugs":[
+     {
+        "name": "gwm",
+        "id": 1,
+        "project": 1,
+        "activity": null
+     },
+     {
+        "name": "pgd",
+        "id": 2,
+        "project": 2,
+        "activity": null
+     },
+     {
+        "name": "wf",
+        "id": 3,
+        "project": 3,
+        "activity": null
+     },
+     {
+        "name": "ganeti-webmgr",
+        "id": 8,
+        "project": 1,
+        "activity": null
+     }
+   ],
+   "activityslugs":[
+     {
+        "name": "doc",
+        "id": 1,
+        "project": null,
+        "activity": 1
+     },
+     {
+        "name": "dev",
+        "id": 2,
+        "project": null,
+        "activity": 2
+     },
+     {
+        "name": "sys",
+        "id": 3,
+        "project": null,
+        "activity": 3
+     },
+     {
+        "name": "sysadmin",
+        "id": 4,
+        "project": null,
+        "activity": 3
+     }
+    ]
+}
