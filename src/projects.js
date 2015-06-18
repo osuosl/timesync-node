@@ -58,7 +58,7 @@ module.exports = function(app) {
     delete project.slugs;
     delete project.owner;
     knex('users').where({'username': req.body.owner}).then(function(userlist) {
-      if(userlist.length === 0 && error == false) {
+      if(userlist.length === 0 && error === false) {
         error = true;
         return res.status(400).send(
           errors.errorInvalidSlug(req.body.owner + " is not a valid username"));
@@ -73,7 +73,7 @@ module.exports = function(app) {
     });
     req.body.slugs.forEach(function(slug) {
       knex('projectslugs').where({'name': slug}).then(function(projectslug) {
-        if(projectslug.length !== 0 && error == false) {
+        if(projectslug.length !== 0 && error === false) {
           error = true;
           return res.status(400).send(
             errors.errorExistingSlug("slug " + slug + " is already in use"));
@@ -102,7 +102,7 @@ module.exports = function(app) {
       });
     });
     return promise;
-  }
+  };
 };
 
 

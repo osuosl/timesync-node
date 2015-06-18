@@ -96,7 +96,7 @@ module.exports = function(expect, request, base_url) {
         "name": "Python Webapp",
         "slugs": ["python-webapp", "python-webapp-cookbook"],
         "owner": "tschuy"
-      }
+      };
       request(options, function(err, res, body) {
         var expected_result = {
           "uri": "https://github.com/osuosl-cookbooks/python-webapp",
