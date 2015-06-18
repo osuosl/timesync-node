@@ -25,11 +25,11 @@ exports.up = function(knex, Promise) {
   }).createTable('projectslugs', function (table) {
     table.increments('id').primary();
     table.string('name').unique().notNullable();
-    table.integer('project').references('id').inTable('projects');
+    table.integer('project').references('id').inTable('projects').notNullable();
   }).createTable('activityslugs', function (table) {
     table.increments('id').primary();
     table.string('name').unique().notNullable();
-    table.integer('activity').references('id').inTable('activities');
+    table.integer('activity').references('id').inTable('activities').notNullable();
   });
 };
 
