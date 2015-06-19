@@ -37,10 +37,6 @@ module.exports = function(app) {
                     return res.send(times);
             });
 
-
-            /*
-             * Then get activities. (Nesting promises ensures that they all occur.)
-             */
             knex('activities').then(function(activities) {
                 if (activities.length === 0) {
                     return res.send([]);
@@ -65,11 +61,6 @@ module.exports = function(app) {
                         return res.send(times);
                 });
             });
-
-            /*
-             * Then finally projects, in the same way.
-             * (Maybe consider making this some sort of function?)
-             */
             knex('projects').then(function(projects) {
                 if (projects.length === 0) {
                     return res.send([]);
@@ -85,9 +76,6 @@ module.exports = function(app) {
                         id_project_map[slugs[i].project].slugs.push(slugs[i].name);
                     }
 
-                    /*
-                     * Now merge the times, project slugs, and activity slugs.
-                     */
                     for (i = 0, len = times.length; i < len; i++) {
                         times[i].project = id_project_map[times[i].project].slugs;
                     }
