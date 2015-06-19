@@ -93,7 +93,6 @@ module.exports = function(app) {
             if(time_list.length === 1) {
                 time = time_list[0];
 
-                var count = 0;
                 knex('users').where({'id': time.user}).select('username')
                 .then(function(user) {
                     time.user = user[0].username;
