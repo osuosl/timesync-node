@@ -5,19 +5,19 @@ module.exports = function(app) {
     app.get(app.get('version') + '/activities', function (req, res) {
 
         knex('activities').then(function(activities) {
-            knex('activityslugs').then(function(activityslugs) {
-                if (activities.length === 0) {
-                    return res.send([]);
-                }
+            if (activities.length === 0) {
+                return res.send([]);
+            }
+            knex('activityslugs').then(function(slugs) {
 
                 var id_activity_map = {};
-                activities.forEach(function(activity) {
-                    activity.slugs = [];
-                    id_activity_map[activity.id] = activity;
-                });
-                activityslugs.forEach(function(slug) {
-                    id_activity_map[slug.activity].slugs.push(slug.name);
-                });
+                for (var i = 0, len = activities.length; i < len; i++) {
+                    activities[i].slugs = [];
+                    id_activity_map[activities[i].id] = activities[i];
+                }
+                for (i = 0, len = slugs.length; i < len; i++) {
+                    id_activity_map[slugs[i].activity].slugs.push(slugs[i].name);
+                }
 
                 return res.send(activities);
             });
@@ -34,7 +34,7 @@ module.exports = function(app) {
         * Resulting table will look like this:
         *
         * +----+-------------+-------------+
-        * | id |     name    |     name    |
+        * | id |     name    |     slug    |
         * +----+-------------+-------------+
         * |  4 | development |     dev     |
         * |  4 | development | development |
@@ -55,13 +55,14 @@ module.exports = function(app) {
             if(results.length !== 0) {
                 activity = {id: results[0].id, name: results[0].name, slugs: []};
 
-                results.forEach(function(row) {
-                    activity.slugs.push(row.slug);
-                })
+                for (var i = 0, len = results.length; i < len; i++) {
+                    activity.slugs.push(results[i].slug);
+                }
                 res.send(activity);
             } else {
                 return res.status(404).send(
-                    errors.errorInvalidSlug(req.params.slug + " is not a valid activity slug."));
+                    errors.errorInvalidSlug(req.params.slug +
+                        " is not a valid activity slug."));
             }
 
         });
