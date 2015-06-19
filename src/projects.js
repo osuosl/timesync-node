@@ -7,18 +7,27 @@ module.exports = function(app) {
             if (projects.length === 0) {
                 return res.send([]);
             }
-            knex('projectslugs').then(function(slugs) {
-
-                var id_project_map = {};
-                for (var i = 0, len = projects.length; i < len; i++) {
-                    projects[i].slugs = [];
-                    id_project_map[projects[i].id] = projects[i];
-                }
-                for (i = 0, len = slugs.length; i < len; i++) {
-                    id_project_map[slugs[i].project].slugs.push(slugs[i].name);
+            knex('users').then(function(users) {
+                var id_user_map = {};
+                for (var i = 0, len = users.length; i < len; i++) {
+                    id_user_map[users[i].id] = users[i].username;
                 }
 
-                return res.send(projects);
+                knex('projectslugs').then(function(slugs) {
+
+                    var id_project_map = {};
+                    for (var i = 0, len = projects.length; i < len; i++) {
+                        projects[i].owner = id_user_map[projects[i].owner];
+
+                        projects[i].slugs = [];
+                        id_project_map[projects[i].id] = projects[i];
+                    }
+                    for (i = 0, len = slugs.length; i < len; i++) {
+                        id_project_map[slugs[i].project].slugs.push(slugs[i].name);
+                    }
+
+                    return res.send(projects);
+                });
             });
         });
     });
@@ -46,14 +55,15 @@ module.exports = function(app) {
 
         knex('projectslugs')
         .select('projects.id as id', 'projects.name as name',
-        'projects.uri as uri', 'projects.owner as owner', 'projectslugs.name as slug')
+        'projects.uri as uri', 'users.username as owner', 'projectslugs.name as slug')
         .where('project', '=', slugsSubquery)
         .innerJoin('projects', 'projectslugs.project', 'projects.id')
+        .innerJoin('users', 'users.id', 'projects.owner')
         .then(function(results) {
 
             if(results.length !== 0) {
                 project = {id: results[0].id, name: results[0].name,
-                    owner: results[0].owner, uri: results[0].uri, slugs: []};
+                           owner: results[0].owner, uri: results[0].uri, slugs: []};
 
                     for (var i = 0, len = results.length; i < len; i++) {
                         project.slugs.push(results[i].slug);
