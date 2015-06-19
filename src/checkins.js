@@ -20,14 +20,11 @@ module.exports = function(app) {
               * Start with users.
               */
              knex('users').select('id', 'username').then(function(users) {
-                 console.log(users);
 
                  var id_user_map = {};
                  for (var i = 0, len = users.length; i < len; i++) {
                      id_user_map[users[i].id] = users[i].username;
                  }
-
-                 console.log(id_user_map);
 
                  /*
                   * Then get activities. (Nesting promises ensures that they all occur.)
@@ -70,9 +67,7 @@ module.exports = function(app) {
                                   * Now merge the times, project slugs, and activity slugs.
                                   */
                                  for (i = 0, len = times.length; i < len; i++) {
-                                     console.log(times[i].user);
                                      times[i].user = id_user_map[times[i].user];
-                                     console.log(times[i].user);
                                      times[i].activity = id_activity_map[times[i].activity].slugs;
                                      times[i].project = id_project_map[times[i].project].slugs;
                                  }
