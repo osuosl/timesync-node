@@ -9,7 +9,6 @@ var db = process.env.DATABASE || 'development';
 var knex = require('knex')(knexfile[db]);
 
 var app = express();
-//app.use(express.static(__dirname + '/static'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('knex', knex);

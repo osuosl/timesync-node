@@ -55,7 +55,7 @@ module.exports = function(app) {
         *              projectslugs.name AS slug FROM projectslugs
         *       INNER JOIN projects ON projectslugs.project = projects.id
         *       INNER JOIN users ON users.id = projects.owner
-        *       WHERE project =
+        *       WHERE projectslugs.project =
         *               (SELECT id FROM projects WHERE id =
         *                   (SELECT project FROM projectslugs WHERE name = $slug)
         *               )
@@ -67,7 +67,7 @@ module.exports = function(app) {
         knex('projectslugs')
         .select('projects.id as id', 'projects.name as name',
         'projects.uri as uri', 'users.username as owner', 'projectslugs.name as slug')
-        .where('project', '=', slugsSubquery)
+        .where('projectslugs.project', '=', slugsSubquery)
         .innerJoin('projects', 'projectslugs.project', 'projects.id')
         .innerJoin('users', 'users.id', 'projects.owner')
         .then(function(results) {

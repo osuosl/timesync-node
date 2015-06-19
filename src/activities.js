@@ -46,7 +46,7 @@ module.exports = function(app) {
         *       SELECT activities.id AS id, activities.name AS name, activityslugs.name AS slug
         *       FROM activityslugs
         *       INNER JOIN activities ON activityslugs.activity = activities.id
-        *       WHERE activity =
+        *       WHERE activityslugs.activity =
         *               (SELECT id FROM activities WHERE id =
         *                   (SELECT activity FROM activityslugs WHERE name = $slug)
         *               )
@@ -57,7 +57,7 @@ module.exports = function(app) {
 
         knex('activityslugs')
         .select('activities.id as id', 'activities.name as name', 'activityslugs.name as slug')
-        .where('activity', '=', slugsSubquery)
+        .where('activityslugs.activity', '=', slugsSubquery)
         .innerJoin('activities', 'activityslugs.activity', 'activities.id')
         .then(function(results) {
 
