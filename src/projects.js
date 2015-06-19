@@ -7,27 +7,37 @@ module.exports = function(app) {
             if (projects.length === 0) {
                 return res.send([]);
             }
+
+            var users_done = false,
+                slugs_done = false;
+
             knex('users').then(function(users) {
                 var id_user_map = {};
                 for (var i = 0, len = users.length; i < len; i++) {
                     id_user_map[users[i].id] = users[i].username;
                 }
 
-                knex('projectslugs').then(function(slugs) {
-
-                    var id_project_map = {};
-                    for (var i = 0, len = projects.length; i < len; i++) {
-                        projects[i].owner = id_user_map[projects[i].owner];
-
-                        projects[i].slugs = [];
-                        id_project_map[projects[i].id] = projects[i];
-                    }
-                    for (i = 0, len = slugs.length; i < len; i++) {
-                        id_project_map[slugs[i].project].slugs.push(slugs[i].name);
-                    }
-
+                users_done = true;
+                if (slugs_done)
                     return res.send(projects);
-                });
+            });
+
+            knex('projectslugs').then(function(slugs) {
+
+                var id_project_map = {};
+                for (var i = 0, len = projects.length; i < len; i++) {
+                    projects[i].owner = id_user_map[projects[i].owner];
+
+                    projects[i].slugs = [];
+                    id_project_map[projects[i].id] = projects[i];
+                }
+                for (i = 0, len = slugs.length; i < len; i++) {
+                    id_project_map[slugs[i].project].slugs.push(slugs[i].name);
+                }
+
+                slugs_done = true;
+                if (users_done)
+                    return res.send(projects);
             });
         });
     });
@@ -60,9 +70,9 @@ module.exports = function(app) {
         *                   (SELECT project FROM projectslugs WHERE name = $slug)
         *               )
         */
-        projectSubquery = knex('projectslugs').select('project')
+        var projectSubquery = knex('projectslugs').select('project')
         .where('name', req.params.slug);
-        slugsSubquery = knex('projects').select('id').where('id', '=', projectSubquery);
+        var slugsSubquery = knex('projects').select('id').where('id', '=', projectSubquery);
 
         knex('projectslugs')
         .select('projects.id as id', 'projects.name as name',
