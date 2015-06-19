@@ -17,17 +17,20 @@ module.exports = function(app) {
                     id_user_map[users[i].id] = users[i].username;
                 }
 
+                for (i = 0, len = projects.length; i < len; i++) {
+                    projects[i].owner = id_user_map[projects[i].owner];
+                }
+
                 users_done = true;
-                if (slugs_done)
+                if (slugs_done) {
                     return res.send(projects);
+                }
             });
 
             knex('projectslugs').then(function(slugs) {
 
                 var id_project_map = {};
                 for (var i = 0, len = projects.length; i < len; i++) {
-                    projects[i].owner = id_user_map[projects[i].owner];
-
                     projects[i].slugs = [];
                     id_project_map[projects[i].id] = projects[i];
                 }
@@ -36,8 +39,9 @@ module.exports = function(app) {
                 }
 
                 slugs_done = true;
-                if (users_done)
+                if (users_done) {
                     return res.send(projects);
+                }
             });
         });
     });
