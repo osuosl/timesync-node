@@ -48,6 +48,17 @@ module.exports = function(app) {
         * |  4 | Example | http://example.com/3 |    sample   |
         * |  4 | Example | http://example.com/4 |   Beispiel  |
         * +----+---------+----------------------+-------------+
+        *
+        * Equivalent SQL:
+        *       SELECT projects.id AS id, projects.name AS name,
+        *              projects.uri AS uri, users.username AS owner,
+        *              projectslugs.name AS slug FROM projectslugs
+        *       INNER JOIN projects ON projectslugs.project = projects.id
+        *       INNER JOIN users ON users.id = projects.owner
+        *       WHERE project =
+        *               (SELECT id FROM projects WHERE id =
+        *                   (SELECT project FROM projectslugs WHERE name = $slug)
+        *               )
         */
         projectSubquery = knex('projectslugs').select('project')
         .where('name', req.params.slug);

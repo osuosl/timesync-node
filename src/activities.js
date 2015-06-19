@@ -41,6 +41,15 @@ module.exports = function(app) {
         * |  4 | development |    coding   |
         * |  4 | development | programming |
         * +----+-------------+-------------+
+        *
+        * Equivalent SQL:
+        *       SELECT activities.id AS id, activities.name AS name, activityslugs.name AS slug
+        *       FROM activityslugs
+        *       INNER JOIN activities ON activityslugs.activity = activities.id
+        *       WHERE activity =
+        *               (SELECT id FROM activities WHERE id =
+        *                   (SELECT activity FROM activityslugs WHERE name = $slug)
+        *               )
         */
         activitySubquery = knex('activityslugs').select('activity')
             .where('name', req.params.slug);
