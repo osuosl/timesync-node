@@ -33,8 +33,9 @@ module.exports = function(app) {
                 }
 
                 users_done = true;
-                if (activities_done && projects_done)
+                if (activities_done && projects_done) {
                     return res.send(times);
+                }
             });
 
             knex('activities').then(function(activities) {
@@ -57,8 +58,9 @@ module.exports = function(app) {
                     }
 
                     activities_done = true;
-                    if (users_done && projects_done)
+                    if (users_done && projects_done) {
                         return res.send(times);
+                    }
                 });
             });
             knex('projects').then(function(projects) {
@@ -81,8 +83,9 @@ module.exports = function(app) {
                     }
 
                     projects_done = true;
-                    if (activities_done && users_done)
+                    if (activities_done && users_done) {
                         res.send(times);
+                    }
                 });
             });
         });
