@@ -1,6 +1,6 @@
 Errors
 ======
-Revised proposal for error types and levels from the Timesync API.
+Error types and levels from the Timesync API.
 
 Errors will consist of an error number which matches the HTTP status code to be returned,
 an error name, and a further informational text. The existence of the 'error'
@@ -56,12 +56,20 @@ value for a key (e.g. a time with a string in the duration field.)
 
 .. code:: json
 
-    {
+    unknown_field_error = {
         'status': 400
         'error': "Bad object",
-        'text': object_type + " does not have a " + field_name + " field" ||
-                "The " + object_type + " is missing a " + field_name ||
-                "Field " + field_name + " of " + object_type + " should be " +
+        'text': object_type + " does not have a " + field_name + " field"
+    }
+    missing_field_error = {
+        'status': 400
+        'error': "Bad object",
+        'text': "The " + object_type + " is missing a " + field_name
+    }
+    invalid_field_error = {
+        'status': 400
+        'error': "Bad object",
+        'text': "Field " + field_name + " of " + object_type + " should be " +
                     expected_type + " but was sent as " + received_type
     }
 
