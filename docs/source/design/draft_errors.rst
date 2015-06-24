@@ -17,7 +17,7 @@ The following error codes will exist:
 To be returned if the server receives a valid key (e.g. Time ID or Activity Slug) which
 does not match an object in the database.
 
-.. code:: json
+.. code:: javascript
     {
         'status': 404,
         'error': "Object not found",
@@ -30,12 +30,12 @@ A generic catch-all for when there is a server error outside of the client's con
 This may be the result of an uncaught exception, a database error, or any other condition
 which renders the server unable to process a valid request.
 
-.. code:: json
+.. code:: javascript
 
     {
         'status': 500,
         'error': "Server error",
-        'text': server_error (e.g. exception text or sql error)
+        'text': server_error #(e.g. exception text or sql error)
     }
 
 3. Invalid foreign key
@@ -44,7 +44,7 @@ A client attempts to make a POST request to create or update an object, but the 
 sent by the client contains a foreign key parameter which does not point to a valid object
 in the database. (E.g. the client sends a new time which does not have a valid project.)
 
-.. code:: json
+.. code:: javascript
 
     {
         'status': 409
@@ -58,7 +58,7 @@ A client attempts to make a POST request to create or update an object, but the 
 sent by the client contains a non-existent key, lacks a necessary key, or contains an invalid
 value for a key (e.g. a time with a string in the duration field.)
 
-.. code:: json
+.. code:: javascript
 
     unknown_field_error = {
         'status': 400
@@ -86,7 +86,7 @@ no object matching the identifier could be found; an identifier is considered in
 it does not match the expected format (e.g. a slug with special characters or a non-numeric
 ID field).
 
-.. code:: json
+.. code:: javascript
 
     {
         'status': 400
