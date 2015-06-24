@@ -3,7 +3,7 @@ Errors
 Error types and levels from the Timesync API.
 
 Errors will consist of an error number which matches the HTTP status code to be returned,
-an error name, and a further informational text. The existence of the 'error'
+an error name, and a further informational text. The existence of the "error"
 key indicates an error.
 
 In the docs following, string literals are indicated by double quotes (as in JSON standard),
@@ -19,9 +19,9 @@ does not match an object in the database.
 
 .. code:: javascript
     {
-        'status': 404,
-        'error': "Object not found",
-        'text': "Nonexistent " + object
+        "status": 404,
+        "error": "Object not found",
+        "text": "Nonexistent " + object
     }
 
 2. Server error
@@ -33,9 +33,9 @@ which renders the server unable to process a valid request.
 .. code:: javascript
 
     {
-        'status': 500,
-        'error': "Server error",
-        'text': server_error //(e.g. exception text or sql error)
+        "status": 500,
+        "error": "Server error",
+        "text": server_error //(e.g. exception text or sql error)
     }
 
 3. Invalid foreign key
@@ -47,9 +47,9 @@ in the database. (E.g. the client sends a new time which does not have a valid p
 .. code:: javascript
 
     {
-        'status': 409
-        'error': "Invalid foreign key",
-        'text': "The " + object_type + " does not contain a valid " + foreign_key + " reference"
+        "status": 409
+        "error": "Invalid foreign key",
+        "text": "The " + object_type + " does not contain a valid " + foreign_key + " reference"
     }
 
 4. Bad object
@@ -61,19 +61,19 @@ value for a key (e.g. a time with a string in the duration field.)
 .. code:: javascript
 
     unknown_field_error = {
-        'status': 400
-        'error': "Bad object",
-        'text': object_type + " does not have a " + field_name + " field"
+        "status": 400
+        "error": "Bad object",
+        "text": object_type + " does not have a " + field_name + " field"
     }
     missing_field_error = {
-        'status': 400
-        'error': "Bad object",
-        'text': "The " + object_type + " is missing a " + field_name
+        "status": 400
+        "error": "Bad object",
+        "text": "The " + object_type + " is missing a " + field_name
     }
     invalid_field_error = {
-        'status': 400
-        'error': "Bad object",
-        'text': "Field " + field_name + " of " + object_type + " should be " +
+        "status": 400
+        "error": "Bad object",
+        "text": "Field " + field_name + " of " + object_type + " should be " +
                     expected_type + " but was sent as " + received_type
     }
 
@@ -89,7 +89,7 @@ ID field).
 .. code:: javascript
 
     {
-        'status': 400
-        'error': "The provided identifier was invalid",
-        'text': "Expected " + (slug|id) + " but received " + received_identifier
+        "status": 400
+        "error": "The provided identifier was invalid",
+        "text": "Expected " + (slug|id) + " but received " + received_identifier
     }
