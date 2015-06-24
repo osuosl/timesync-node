@@ -6,6 +6,10 @@ Errors will consist of an error number which matches the HTTP status code to be 
 an error name, and a further informational text. The existence of the 'error'
 key indicates an error.
 
+In the docs following, string literals are indicated by double quotes (as in JSON standard),
+variables/tokens are indicated by lowercase_with_underscore, and plus signs indicate
+concatenation for building strings using tokens from the context.
+
 The following error codes will exist:
 
 1. Object not found
