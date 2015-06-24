@@ -18,6 +18,7 @@ To be returned if the server receives a valid key (e.g. Time ID or Activity Slug
 does not match an object in the database.
 
 .. code:: javascript
+
     {
         "status": 404,
         "error": "Object not found",
