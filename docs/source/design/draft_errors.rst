@@ -35,7 +35,7 @@ which renders the server unable to process a valid request.
     {
         'status': 500,
         'error': "Server error",
-        'text': server_error #(e.g. exception text or sql error)
+        'text': server_error //(e.g. exception text or sql error)
     }
 
 3. Invalid foreign key
