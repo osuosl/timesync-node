@@ -1,0 +1,45 @@
+{
+  "name": "timesync",
+  "version": "0.0.0",
+  "description": "TimeSync time tracker implemented in js",
+  "main": "app.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node ./src/app.js",
+    "migrations": "knex migrate:latest",
+    "recreate": "rm dev.sqlite3 && knex migrate:latest",
+    "linter": "jshint ./src ./tests",
+    "fixtures": "node ./scripts/load_fixtures.js",
+    "test": "export DATABASE=mocha export PORT=8851 && rm -f test.sqlite3 && knex --env mocha migrate:latest && mocha tests/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tschuy/timesync.git"
+  },
+  "keywords": [
+    "time",
+    "tracker"
+  ],
+  "author": "OSU Open Source Lab <support@osuosl.org>",
+  "license": "Apache 2",
+  "bugs": {
+    "url": "https://github.com/tschuy/timesync/issues"
+  },
+  "dependencies": {
+    "body-parser": "^1.12.3",
+    "expect.js": "^0.3.1",
+    "express": "^4.12.3",
+    "knex": "^0.7.6",
+    "mocha": "^2.2.4",
+    "request": "^2.55.0",
+    "sqlite3": "^3.0.8"
+  },
+  "devDependencies": {
+    "jshint": "^2.6.3",
+    "mocha": "^2.2.4",
+    "supertest": "^0.15.0",
+    "sql-fixtures": "^0.9.0"
+  }
+}
