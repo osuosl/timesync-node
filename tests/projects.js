@@ -2,8 +2,8 @@ module.exports = function(expect, request, base_url) {
     describe('GET /projects', function() {
         it('should return all projects in the database', function(done) {
             request.get(base_url + 'projects', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(null,
-                    res.body));
+                var json_body = JSON.parse(String.fromCharCode
+                    .apply(null, res.body));
                 var expected_results = [
                     {
                         uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
@@ -46,8 +46,8 @@ module.exports = function(expect, request, base_url) {
     describe('GET /projects/:slug', function() {
         it('should return projects by slug', function(done) {
             request.get(base_url + 'projects/gwm', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(
-                    null, res.body));
+                var json_body = JSON.parse(String.fromCharCode
+                    .apply(null, res.body));
                 var expected_result = {
                     uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
                     name: 'Ganeti Web Manager',
@@ -67,17 +67,34 @@ module.exports = function(expect, request, base_url) {
         });
 
         it('should fail with invalid slug error', function(done) {
-            request.get(base_url + 'projects/404', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(
-                    null, res.body));
+            request.get(base_url + 'projects/test-404', function(err, res) {
+                var json_body = JSON.parse(String.fromCharCode
+                    .apply(null, res.body));
                 var expected_result = {
-                    error: "The provided slug wasn't valid",
-                    errno: 6,
-                    text: '404 is not a valid project slug.'
+                    status: 404,
+                    error: 'Object not found',
+                    text: 'Nonexistent project'
                 };
 
                 expect(json_body).to.eql(expected_result);
                 expect(res.statusCode).to.equal(404);
+
+                done();
+            });
+        });
+
+        it('should fail with Invalid Slug error', function(done) {
+            request.get(base_url + 'projects/test-!*@', function(err, res) {
+                var json_body = JSON.parse(String.fromCharCode
+                    .apply(null, res.body));
+                var expected_result = {
+                    status: 400,
+                    error: 'The provided identifier was invalid',
+                    text: 'Expected slug but received test-!*@'
+                };
+
+                expect(json_body).to.eql(expected_result);
+                expect(res.statusCode).to.equal(400);
 
                 done();
             });

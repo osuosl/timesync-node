@@ -23,11 +23,24 @@ module.exports = function(app) {
                 }
 
                 return res.send(activities);
+
+            }).error(function(error) {
+                var err = errorServerError(error);
+                return res.status(err.status).send(err);
             });
+
+        }).error(function(error) {
+            var err = errorServerError(error);
+            return res.status(err.status).send(err);
         });
     });
 
     app.get(app.get('version') + '/activities/:slug', function(req, res) {
+
+        if (!errors.checkValidSlug(req.params.slug)) {
+            var err = errors.errorInvalidIdentifier('slug', req.params.slug);
+            return res.status(err.status).send(err);
+        }
 
         /*
         * Gets an activity and list of slugs from a slug.
@@ -81,11 +94,13 @@ module.exports = function(app) {
 
                 res.send(activity);
             } else {
-                return res.status(404).send(
-                    errors.errorInvalidSlug(req.params.slug +
-                        ' is not a valid activity slug.'));
+                var err = errors.errorObjectNotFound('activity');
+                return res.status(err.status).send(err);
             }
 
+        }).error(function(error) {
+            var err = errorServerError(error);
+            return res.status(err.status).send(err);
         });
     });
 };

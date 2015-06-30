@@ -36,6 +36,9 @@ module.exports = function(app) {
                 if (activities_done && projects_done) {
                     return res.send(times);
                 }
+            }).error(function(error) {
+                var err = errors.errorServerError(error);
+                return res.status(err.status).send(err);
             });
 
             knex('activities').then(function(activities) {
@@ -65,7 +68,14 @@ module.exports = function(app) {
                     if (users_done && projects_done) {
                         return res.send(times);
                     }
+                }).error(function(error) {
+                    var err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
                 });
+
+            }).error(function(error) {
+                var err = errors.errorServerError(error);
+                return res.status(err.status).send(err);
             });
 
             knex('projects').then(function(projects) {
@@ -95,12 +105,29 @@ module.exports = function(app) {
                     if (activities_done && users_done) {
                         res.send(times);
                     }
+                }).error(function(error) {
+                    var err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
                 });
+
+            }).error(function(error) {
+                var err = errors.errorServerError(error);
+                return res.status(err.status).send(err);
             });
+
+        }).error(function(error) {
+            var err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
         });
     });
 
     app.get(app.get('version') + '/times/:id', function(req, res) {
+
+        if (isNaN(req.params.id)) { //isNaN can check if a string is a number
+            var err = errors.errorInvalidIdentifier('ID', req.params.slug);
+            return res.status(err.status).send(err);
+        }
+
         knex('times').where({id: req.params.id}).then(function(time_list) {
             if (time_list.length === 1) {
                 time = time_list[0];
@@ -124,12 +151,30 @@ module.exports = function(app) {
                             }
 
                             return res.send(time);
+
+                        }).error(function(error) {
+                            var err = errors.errorServerError(error);
+                            return res.status(err.status).send(err);
                         });
+
+                    }).error(function(error) {
+                        var err = errors.errorServerError(error);
+                        return res.status(err.status).send(err);
                     });
+
+                }).error(function(error) {
+                    var err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
                 });
+
             } else {
-                return res.status(404).send(errors.errorObjectNotFound('time'));
+                var err = errors.errorObjectNotFound('time');
+                return res.status(err.status).send(err);
             }
+
+        }).error(function(error) {
+            var err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
         });
     });
 };

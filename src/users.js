@@ -4,6 +4,9 @@ module.exports = function(app) {
     app.get(app.get('version') + '/users', function(req, res) {
         knex('users').then(function(users) {
             return res.send(users);
+        }).error(function(error) {
+            var err = errors.errorServerError(error);
+            res.status(err.status).send(err);
         });
     });
 
@@ -12,6 +15,9 @@ module.exports = function(app) {
                 function(users) {
             console.log(users);
             return res.redirect(303, app.get('version') + '/users');
+        }).error(function(error) {
+            var err = errors.errorServerError(error);
+            res.status(err.status).send(err);
         });
     });
 };

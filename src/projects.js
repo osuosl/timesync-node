@@ -25,6 +25,10 @@ module.exports = function(app) {
                 if (slugs_done) {
                     return res.send(projects);
                 }
+
+            }).error(function(error) {
+                var err = errors.errorServerError(error);
+                return res.status(err.status).send(err);
             });
 
             knex('projectslugs').then(function(slugs) {
@@ -43,11 +47,25 @@ module.exports = function(app) {
                 if (users_done) {
                     return res.send(projects);
                 }
+
+            }).error(function(error) {
+                var err = errors.errorServerError(error);
+                return res.status(err.status).send(err);
             });
+
+        }).error(function(error) {
+            var err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
         });
     });
 
     app.get(app.get('version') + '/projects/:slug', function(req, res) {
+
+        if (!errors.checkValidSlug(req.params.slug)) {
+            var err = errors.errorInvalidIdentifier('slug', req.params.slug);
+            return res.status(err.status).send(err);
+        }
+
         /*
         * Gets an project and list of slugs from a slug.
         *
@@ -101,10 +119,13 @@ module.exports = function(app) {
 
                 res.send(project);
             } else {
-                return res.status(404).send(
-                    errors.errorInvalidSlug(req.params.slug +
-                        ' is not a valid project slug.'));
+                var err = errors.errorObjectNotFound('project');
+                return res.status(err.status).send(err);
             }
+
+        }).error(function(error) {
+            var err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
         });
     });
 };
