@@ -66,7 +66,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('should fail with invalid slug error', function(done) {
+        it('should fail with Object Not Found error', function(done) {
             request.get(baseUrl + 'projects/404', function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {

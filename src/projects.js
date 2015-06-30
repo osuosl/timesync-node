@@ -31,7 +31,6 @@ module.exports = function(app) {
                 if (slugsDone) {
                     return res.send(projects);
                 }
-
             }).catch(function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
