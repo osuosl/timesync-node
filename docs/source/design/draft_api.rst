@@ -5,19 +5,26 @@ Draft API
 Below is the api specs for the Time Sync project.
 
 
+Connection
+----------
+All requests will be made via HTTPS. Available methods are GET, POST, PUT, PATCH and DELETE.
+
+
 Format
 ------
-Responses will be returned in standard JSON format. An attempt will be made to
-keep the structure simple. HTTPS will be used for all endpoints. Null values
-will be sent with the JSON null value.
+Responses will be returned in standard JSON format. Multiple results will be sent as a
+list of JSON objects. Single results will be a single JSON object. Objects with null fields
+will contain the standard JSON null value.
 
 
 Versions
 --------
-The API will be versioned with the letter 'v' followed by monotonically
-increasing integers ('v1', 'v2', 'v3', etc.)
+The API will be versioned with the letter 'v' followed by increasing integers
 
 For example: https://timesync.osuosl.org/v1/projects
+
+Versions will be updated any time there is a significant change to the public API (not to
+the implementation).
 
 GET Endpoints
 -------------
@@ -29,8 +36,8 @@ GET Endpoints
       {
          "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
          "name":"Ganeti Web Manager",
-         "slugs":[<slugs>],
-         "owner": <username>,
+         "slugs":"gwm",
+         "owner": "example-user",
          "id": 1
       },
       {...},
@@ -44,18 +51,19 @@ GET Endpoints
     {
        "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
        "name":"Ganeti Web Manager",
-       "slugs":[<slugs>],
-       "owner": <username>,
+       "slugs":"ganeti",
+       "owner": "example-user",
        "id": 1
     }
 
 */activities*
 
 .. code:: json
+
     [
         {
            "name":"Documentation",
-           "slugs":[<slugs>],
+           "slugs":"docs",
            "id": 1
         },
         {...}
@@ -67,7 +75,7 @@ GET Endpoints
 
     {
        "name":"Documentation",
-       "slugs":[<slugs>],
+       "slugs":"doc",
        "id": 1
     }
 
@@ -78,14 +86,12 @@ GET Endpoints
     [
       {
         "duration":12,
-        "user": <username>,
-        "project": [<slugs>],
-        "activity": [<slugs>],
-        "notes":"",
-        "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
-        "date_worked": 2014-04-17,
-        "created_at": 2014-04-17,
-        "updated_at":null,
+        "user": "example-user",
+        "project": "ganeti",
+        "activity": "docs",
+        "notes":"Worked on documentation toward settings configuration.",
+        "issue_uri":"https://github.com/osuosl/ganeti_webmgr/issues/40",
+        "date_worked":2014-04-17,
         "id": 1
       },
       {...}
@@ -97,14 +103,12 @@ GET Endpoints
 
     {
       "duration":12,
-      "user": <username>,
-      "project": [<slugs>],
-      "activity": [<slugs>],
-      "notes":"",
-      "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
-      "date_worked":null,
-      "created_at":2014-04-17,
-      "updated_at":2014-04-17,
+      "user": "example-user",
+      "project": "gwm",
+      "activity": "doc",
+      "notes":"Worked on documentation toward settings configuration.",
+      "issue_uri":"https://github.com/osuosl/ganeti_webmgr/issues/40",
+      "date_worked":2014-04-17,
       "id": 1
     }
 
@@ -119,10 +123,10 @@ To add a new object, POST to */<object name>/add* with a JSON body.
 .. code:: json
 
     {
-       "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
-       "name":"Ganeti Web Manager",
-       "slugs":[<slugs>],
-       "owner": <username>
+       "uri":"https://code.osuosl.org/projects/timesync",
+       "name":"Timesync API",
+       "slugs":["timesync", "time"],
+       "owner": "example-2"
     }
 
 */activities/add*
@@ -130,8 +134,8 @@ To add a new object, POST to */<object name>/add* with a JSON body.
 .. code:: json
 
     {
-       "name":"Documentation",
-       "slugs":[<slugs>]
+       "name":"Quality Assurance/Testing",
+       "slugs":["qa", "test"]
     }
 
 */times/add*
@@ -140,18 +144,17 @@ To add a new object, POST to */<object name>/add* with a JSON body.
 
     {
       "duration":12,
-      "user": <username>,
-      "project": <slug>,
-      "activity": <slug>,
+      "user": "example-2",
+      "project": "",
+      "activity": "gwm",
       "notes":"",
       "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
-      "date_worked":null,
-      "created_at":null,
-      "updated_at":null
+      "date_worked":null
     }
 
-To update an existing object, POST to */<object name>/<id>* with a JSON body.
-The body only needs to contain the part that is being updated.
+To update an existing object, PUT to */<object name>/<id>* with a JSON body.
+
+If you are sending a partial object to */<object name>/<id>*, send via PATCH request.
 
 
 */projects/<slug>*
@@ -160,7 +163,7 @@ The body only needs to contain the part that is being updated.
 
     {
        "name":"Ganeti Webmgr",
-       "slugs":[<slugs>],
+       "slugs":["webmgr"],
     }
 
 */activities/<slug>*
@@ -168,7 +171,7 @@ The body only needs to contain the part that is being updated.
 .. code:: json
 
     {
-       "slugs":[<slugs>]
+       "slugs":["testing"]
     }
 
 */times/<id>*
@@ -180,26 +183,24 @@ The body only needs to contain the part that is being updated.
       "date_worked":"2015-04-17"
     }
 
-The error bodies for update and add endpoints will respond with an error
-message that shows an invalid field. Once the endpoint encounters a single
-bad field, it will stop attempting to validate and return immediately.
+In the case of a foreign key (such as project on a time) that does not point to a valid
+object or a malformed object sent in the request, an error will be returned, validation
+will return immediately, and the object will not be saved.
 
 
 DELETE Endpoints
 ----------------
 
-A DELETE request sent to any object's endpoint will result in a DELETE of the
-object. For instance, DELETE-ing /activities/1 will return a 200 and delete the
-object.
+A DELETE request sent to any object's endpoint (e.g. */projects/<slug>) will result in the
+deletion of the object from the records. It is up to the implementation to decide whether
+to use hard or soft deletes. What is important is that the object will not be included in
+requests to retrieve lists of objects, and attempts to access the object will fail.
+Future attempts to POST an object with that ID/slug should succeed, and completely overwrite
+the deleted object, if it still exists in the database. To an end user, it should appear
+as though the object truly does not exist.
 
-The response body upon success will be empty.
+If the object exists, the API will return a 200 OK status with an empty response body.
 
-Upon an error, it will return an Object Not Found error with a 404 status code.
+If the object does not exist, the API will return an Object Not Found error (see error docs).
 
-.. code:: json
-
-    {
-        error: "Object not found",
-        errno: 1,
-        text: "Invalid activity"
-    }
+In case of any other error, the API will return a Server Error (see error docs).
