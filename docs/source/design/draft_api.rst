@@ -36,7 +36,7 @@ GET Endpoints
       {
          "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
          "name":"Ganeti Web Manager",
-         "slugs":"gwm",
+         "slugs":["gwm"],
          "owner": "example-user",
          "id": 1
       },
@@ -51,7 +51,7 @@ GET Endpoints
     {
        "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
        "name":"Ganeti Web Manager",
-       "slugs":"ganeti",
+       "slugs":["ganeti"],
        "owner": "example-user",
        "id": 1
     }
@@ -63,7 +63,7 @@ GET Endpoints
     [
         {
            "name":"Documentation",
-           "slugs":"docs",
+           "slugs":["docs"],
            "id": 1
         },
         {...}
@@ -75,7 +75,7 @@ GET Endpoints
 
     {
        "name":"Documentation",
-       "slugs":"doc",
+       "slugs":["doc"],
        "id": 1
     }
 
@@ -92,6 +92,8 @@ GET Endpoints
         "notes":"Worked on documentation toward settings configuration.",
         "issue_uri":"https://github.com/osuosl/ganeti_webmgr/issues/40",
         "date_worked":2014-04-17,
+        "created_at":2014-04-17,
+        "updated_at":null
         "id": 1
       },
       {...}
@@ -108,7 +110,9 @@ GET Endpoints
       "activity": "doc",
       "notes":"Worked on documentation toward settings configuration.",
       "issue_uri":"https://github.com/osuosl/ganeti_webmgr/issues/40",
-      "date_worked":2014-04-17,
+      "date_worked":2014-06-12,
+      "created_at":2014-06-12,
+      "updated_at":2014-06-13,
       "id": 1
     }
 
@@ -149,7 +153,9 @@ To add a new object, POST to */<object name>/add* with a JSON body.
       "activity": "gwm",
       "notes":"",
       "issue_uri":"https://github.com/osu-cass/whats-fresh-api/issues/56",
-      "date_worked":null
+      "date_worked":null,
+      "created_at":2014-09-18,
+      "updated_at":null
     }
 
 To update an existing object, PUT to */<object name>/<id>* with a JSON body.
