@@ -1,6 +1,6 @@
 Errors
 ======
-Error types and levels from the Timesync API.
+Error types from the Timesync API.
 
 Errors will consist of an error number which matches the HTTP status code to be returned,
 an error name, and a further informational text. The existence of the "error"
