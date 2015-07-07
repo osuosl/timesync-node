@@ -7,14 +7,16 @@ Below is the api specs for the Time Sync project.
 
 Connection
 ----------
-All requests will be made via HTTPS. Available methods are GET, POST, PUT, PATCH and DELETE.
+All requests will be made via HTTPS. Available methods are GET to request an object, POST
+to create a new object, PUT to update an object, PATCH to update part of an object and
+DELETE to remove an object.
 
 
 Format
 ------
 Responses will be returned in standard JSON format. Multiple results will be sent as a
-list of JSON objects. Single results will be a single JSON object. Objects with null fields
-will contain the standard JSON null value.
+list of JSON objects. Order of results is not guaranteed. Single results will be a single
+JSON object.
 
 
 Versions
@@ -93,7 +95,7 @@ GET Endpoints
         "issue_uri":"https://github.com/osuosl/ganeti_webmgr/issues/40",
         "date_worked":2014-04-17,
         "created_at":2014-04-17,
-        "updated_at":null
+        "updated_at":null,
         "id": 1
       },
       {...}
@@ -162,6 +164,9 @@ To update an existing object, PUT to */<object name>/<id>* with a JSON body.
 
 If you are sending a partial object to */<object name>/<id>*, send via PATCH request.
 
+If the partial object contains a list of slugs, the field will be overwritten with the
+new list, not merged. If the client intends to add or change a slug, it must send the
+complete list with this change.
 
 */projects/<slug>*
 
@@ -190,14 +195,15 @@ If you are sending a partial object to */<object name>/<id>*, send via PATCH req
     }
 
 In the case of a foreign key (such as project on a time) that does not point to a valid
-object or a malformed object sent in the request, an error will be returned, validation
-will return immediately, and the object will not be saved.
+object or a malformed object sent in the request, an Object Not Found or Malformed Object
+error (respectively) will be returned, validation will return immediately, and the object
+will not be saved.
 
 
 DELETE Endpoints
 ----------------
 
-A DELETE request sent to any object's endpoint (e.g. */projects/<slug>) will result in the
+A DELETE request sent to any object's endpoint (e.g. */projects/<slug>*) will result in the
 deletion of the object from the records. It is up to the implementation to decide whether
 to use hard or soft deletes. What is important is that the object will not be included in
 requests to retrieve lists of objects, and attempts to access the object will fail.
