@@ -4,14 +4,11 @@ TimeSync
 .. image:: https://travis-ci.org/osuosl/timesync.svg?branch=develop
     :target: https://travis-ci.org/osuosl/timesync
 
-.. image:: timesync.png
-    :align: right
-    :height: 200px
-    :alt: timesync.png
-
 TimeSync is the `OSU Open Source Lab's`_ time tracking system. It's designed to
 be simple, have a sane API, and make sense while allowing users to track their
 time spent on various projects and activities.
+
+.. image:: timesync.png
 
 .. _OSU Open Source Lab's: http://osuosl.org/
 
