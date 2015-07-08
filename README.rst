@@ -8,7 +8,7 @@ TimeSync is the `OSU Open Source Lab's`_ time tracking system. It's designed to
 be simple, have a sane API, and make sense while allowing users to track their
 time spent on various projects and activities.
 
-.. image:: timesync.png
+<img align="right" style="padding: 5px;" src="/timesync.png?raw=true" />
 
 .. _OSU Open Source Lab's: http://osuosl.org/
 
