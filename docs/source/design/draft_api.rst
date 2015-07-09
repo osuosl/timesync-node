@@ -38,7 +38,7 @@ GET Endpoints
       {
          "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
          "name":"Ganeti Web Manager",
-         "slugs":["gwm"],
+         "slugs":["gwm", "ganeti"],
          "owner": "example-user",
          "id": 1
       },
@@ -53,7 +53,7 @@ GET Endpoints
     {
        "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
        "name":"Ganeti Web Manager",
-       "slugs":["ganeti"],
+       "slugs":["ganeti", "gwm"],
        "owner": "example-user",
        "id": 1
     }
@@ -65,7 +65,7 @@ GET Endpoints
     [
         {
            "name":"Documentation",
-           "slugs":["docs"],
+           "slugs":["docs", "doc"],
            "id": 1
         },
         {...}
@@ -77,7 +77,7 @@ GET Endpoints
 
     {
        "name":"Documentation",
-       "slugs":["doc"],
+       "slugs":["doc", "docs"],
        "id": 1
     }
 
@@ -174,7 +174,7 @@ complete list with this change.
 
     {
        "name":"Ganeti Webmgr",
-       "slugs":["webmgr"],
+       "slugs":["webmgr", "gwm"],
     }
 
 */activities/<slug>*
@@ -182,7 +182,7 @@ complete list with this change.
 .. code:: json
 
     {
-       "slugs":["testing"]
+       "slugs":["testing", "test"]
     }
 
 */times/<id>*
