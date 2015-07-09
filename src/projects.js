@@ -2,7 +2,7 @@ module.exports = function(app) {
     var knex = app.get('knex');
     var errors = require('./errors');
 
-    app.get(app.get('version') + '/projects', function (req, res) {
+    app.get(app.get('version') + '/projects', function(req, res) {
         knex('projects').then(function(projects) {
             if (projects.length === 0) {
                 return res.send([]);
@@ -34,6 +34,7 @@ module.exports = function(app) {
                     projects[i].slugs = [];
                     id_project_map[projects[i].id] = projects[i];
                 }
+
                 for (i = 0, len = slugs.length; i < len; i++) {
                     id_project_map[slugs[i].project].slugs.push(slugs[i].name);
                 }
@@ -46,7 +47,7 @@ module.exports = function(app) {
         });
     });
 
-    app.get(app.get('version') + '/projects/:slug', function (req, res) {
+    app.get(app.get('version') + '/projects/:slug', function(req, res) {
         /*
         * Gets an project and list of slugs from a slug.
         *
@@ -86,19 +87,19 @@ module.exports = function(app) {
         .innerJoin('users', 'users.id', 'projects.owner')
         .then(function(results) {
 
-            if(results.length !== 0) {
+            if (results.length !== 0) {
                 project = {id: results[0].id, name: results[0].name,
                            owner: results[0].owner, uri: results[0].uri, slugs: []};
 
-                    for (var i = 0, len = results.length; i < len; i++) {
-                        project.slugs.push(results[i].slug);
-                    }
-                    res.send(project);
-                } else {
-                    return res.status(404).send(
-                        errors.errorInvalidSlug(req.params.slug + ' is not a valid project slug.'));
-                    }
+                for (var i = 0, len = results.length; i < len; i++) {
+                    project.slugs.push(results[i].slug);
+                }
 
-                });
-            });
-        };
+                res.send(project);
+            } else {
+                return res.status(404).send(
+                    errors.errorInvalidSlug(req.params.slug + ' is not a valid project slug.'));
+            }
+        });
+    });
+};

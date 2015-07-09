@@ -11,20 +11,11 @@
   // Prohibit use of == and != in favor of === and !==.
   "eqeqeq": true,
 
-  // Enforce tab width of 4 spaces.
-  "indent": 4,
-
   // Prohibit use of a variable before it is defined.
   "latedef": true,
 
-  // Enforce line length to 100 characters
-  "maxlen": 100,
-
   // Warn when variables are defined but never used.
   "unused": true,
-
-  // Enforce use of single quotation marks for strings.
-  "quotmark": "single",
 
   // require curly braces for one-line statements
   "curly": true

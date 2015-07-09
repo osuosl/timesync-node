@@ -2,9 +2,9 @@ module.exports = function(app) {
     var knex = app.get('knex');
     var errors = require('./errors');
 
-    app.get(app.get('version') + '/times', function (req, res) {
+    app.get(app.get('version') + '/times', function(req, res) {
 
-        knex('times').then(function (times) {
+        knex('times').then(function(times) {
 
             if (times.length === 0) {
                 return res.send([]);
@@ -42,6 +42,7 @@ module.exports = function(app) {
                 if (activities.length === 0) {
                     return res.send([]);
                 }
+
                 knex('activityslugs').then(function(slugs) {
 
                     var id_activity_map = {};
@@ -49,6 +50,7 @@ module.exports = function(app) {
                         activities[i].slugs = [];
                         id_activity_map[activities[i].id] = activities[i];
                     }
+
                     for (i = 0, len = slugs.length; i < len; i++) {
                         id_activity_map[slugs[i].activity].slugs.push(slugs[i].name);
                     }
@@ -63,10 +65,12 @@ module.exports = function(app) {
                     }
                 });
             });
+
             knex('projects').then(function(projects) {
                 if (projects.length === 0) {
                     return res.send([]);
                 }
+
                 knex('projectslugs').then(function(slugs) {
 
                     var id_project_map = {};
@@ -74,6 +78,7 @@ module.exports = function(app) {
                         projects[i].slugs = [];
                         id_project_map[projects[i].id] = projects[i];
                     }
+
                     for (i = 0, len = slugs.length; i < len; i++) {
                         id_project_map[slugs[i].project].slugs.push(slugs[i].name);
                     }
@@ -91,23 +96,23 @@ module.exports = function(app) {
         });
     });
 
-    app.get(app.get('version') + '/times/:id', function (req, res) {
-        knex('times').where({'id': req.params.id}).then(function (time_list) {
-            if(time_list.length === 1) {
+    app.get(app.get('version') + '/times/:id', function(req, res) {
+        knex('times').where({id: req.params.id}).then(function(time_list) {
+            if (time_list.length === 1) {
                 time = time_list[0];
 
-                knex('users').where({'id': time.user}).select('username')
+                knex('users').where({id: time.user}).select('username')
                 .then(function(user) {
                     time.user = user[0].username;
 
-                    knex('activityslugs').where({'activity': time.activity})
+                    knex('activityslugs').where({activity: time.activity})
                     .select('name').then(function(slugs) {
                         time.activity = [];
                         for (var i = 0, len = slugs.length; i < len; i++) {
                             time.activity.push(slugs[i].name);
                         }
 
-                        knex('projectslugs').where({'project': time.project})
+                        knex('projectslugs').where({project: time.project})
                         .select('name').then(function(slugs) {
                             time.project = [];
                             for (var i = 0, len = slugs.length; i < len; i++) {
