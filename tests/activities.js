@@ -5,22 +5,22 @@ module.exports = function(expect, request, base_url) {
                 var json_body = JSON.parse(String.fromCharCode.apply(
                     null, res.body));
                 var expected_results = [
-          {
-              name: 'Documentation',
-              slugs: ['doc'],
-              id: 1
-          },
-          {
-              name: 'Development',
-              slugs: ['dev'],
-              id: 2
-          },
-          {
-              name: 'Systems',
-              slugs: ['sysadmin', 'sys'],
-              id: 3
-          }
-        ];
+                    {
+                        name: 'Documentation',
+                        slugs: ['doc'],
+                        id: 1
+                    },
+                    {
+                        name: 'Development',
+                        slugs: ['dev'],
+                        id: 2
+                    },
+                    {
+                        name: 'Systems',
+                        slugs: ['sysadmin', 'sys'],
+                        id: 3
+                    }
+                ];
 
                 [expected_results, json_body].forEach(function(list) {
                     list.forEach(function(result) {
