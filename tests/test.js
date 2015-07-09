@@ -1,8 +1,8 @@
-var mocha = require('mocha');
+require('../src/app');
+
 var request_builder = require('request');
 var expect = require('expect.js');
 var sqlFixtures = require('sql-fixtures');
-var app = require('../src/app');
 
 var request = request_builder.defaults({encoding: null});
 var test_data = require('./fixtures/test_data');
@@ -17,7 +17,7 @@ describe('Endpoints', function (){
   beforeEach(function(done) {
     this.timeout(5000);
     // Clear SQLite indexes
-    knex.raw('delete from sqlite_sequence').then(function(resp) {
+    knex.raw('delete from sqlite_sequence').then(function() {
       sqlFixtures.create(knexfile.mocha, test_data).then(function() {
         done();
       });

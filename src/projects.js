@@ -96,7 +96,7 @@ module.exports = function(app) {
                     res.send(project);
                 } else {
                     return res.status(404).send(
-                        errors.errorInvalidSlug(req.params.slug + " is not a valid project slug."));
+                        errors.errorInvalidSlug(req.params.slug + ' is not a valid project slug.'));
                     }
 
                 });

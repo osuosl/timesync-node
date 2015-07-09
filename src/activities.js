@@ -71,7 +71,7 @@ module.exports = function(app) {
             } else {
                 return res.status(404).send(
                     errors.errorInvalidSlug(req.params.slug +
-                        " is not a valid activity slug."));
+                        ' is not a valid activity slug.'));
             }
 
         });

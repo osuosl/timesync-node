@@ -119,7 +119,7 @@ module.exports = function(app) {
                     });
                 });
             } else {
-                return res.status(404).send(errors.errorObjectNotFound("time"));
+                return res.status(404).send(errors.errorObjectNotFound('time'));
             }
         });
     });

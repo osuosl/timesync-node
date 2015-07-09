@@ -1,7 +1,6 @@
 //Library requirements
 var express = require('express');
 var bodyParser = require('body-parser');
-var knexBuilder = require('knex');
 var knexfile = require('../knexfile');
 var db = process.env.DATABASE || 'development';
 
@@ -17,11 +16,11 @@ app.set('knex', knex);
 app.set('version', '/v1');
 
 //Load local functions
-var routes = require('./routes')(app);
-var users = require('./users')(app);
-var projects = require('./projects')(app);
-var activities = require('./activities')(app);
-var checkins = require('./checkins')(app);
+require('./routes')(app);
+require('./users')(app);
+require('./projects')(app);
+require('./activities')(app);
+require('./checkins')(app);
 
 app.listen(process.env.PORT || 8000, function () {
     console.log('App now listening on %s', process.env.PORT || 8000);
