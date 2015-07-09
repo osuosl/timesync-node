@@ -45,7 +45,7 @@ ActivitySlugs:
     activity, # foreign key to Activity id
     slug # string
 
-Checkins:
+Times:
 ---------
 
 .. code-block:: python
