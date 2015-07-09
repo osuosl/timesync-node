@@ -18,7 +18,8 @@ module.exports = function(app) {
                 }
 
                 for (i = 0, len = slugs.length; i < len; i++) {
-                    id_activity_map[slugs[i].activity].slugs.push(slugs[i].name);
+                    id_activity_map[slugs[i].activity].slugs.push(
+                        slugs[i].name);
                 }
 
                 return res.send(activities);
@@ -45,26 +46,34 @@ module.exports = function(app) {
         * +----+-------------+-------------+
         *
         * Equivalent SQL:
-        *       SELECT activities.id AS id, activities.name AS name, activityslugs.name AS slug
+        *       SELECT activities.id AS id, activities.name AS name,
+        *           activityslugs.name AS slug
         *       FROM activityslugs
         *       INNER JOIN activities ON activityslugs.activity = activities.id
         *       WHERE activityslugs.activity =
         *               (SELECT id FROM activities WHERE id =
-        *                   (SELECT activity FROM activityslugs WHERE name = $slug)
+        *                   (SELECT activity FROM activityslugs
+        *                    WHERE name = $slug)
         *               )
         */
         activitySubquery = knex('activityslugs').select('activity')
             .where('name', req.params.slug);
-        slugsSubquery = knex('activities').select('id').where('id', '=', activitySubquery);
+        slugsSubquery = knex('activities').select('id').where(
+            'id', '=', activitySubquery);
 
         knex('activityslugs')
-        .select('activities.id as id', 'activities.name as name', 'activityslugs.name as slug')
+        .select('activities.id as id', 'activities.name as name',
+            'activityslugs.name as slug')
         .where('activityslugs.activity', '=', slugsSubquery)
         .innerJoin('activities', 'activityslugs.activity', 'activities.id')
         .then(function(results) {
 
             if (results.length !== 0) {
-                activity = {id: results[0].id, name: results[0].name, slugs: []};
+                activity = {
+                    id: results[0].id,
+                    name: results[0].name,
+                    slugs: []
+                };
 
                 for (var i = 0, len = results.length; i < len; i++) {
                     activity.slugs.push(results[i].slug);

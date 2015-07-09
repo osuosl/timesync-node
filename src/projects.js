@@ -72,16 +72,19 @@ module.exports = function(app) {
         *       INNER JOIN users ON users.id = projects.owner
         *       WHERE projectslugs.project =
         *               (SELECT id FROM projects WHERE id =
-        *                   (SELECT project FROM projectslugs WHERE name = $slug)
+        *                   (SELECT project FROM projectslugs
+        *                    WHERE name = $slug)
         *               )
         */
         var projectSubquery = knex('projectslugs').select('project')
         .where('name', req.params.slug);
-        var slugsSubquery = knex('projects').select('id').where('id', '=', projectSubquery);
+        var slugsSubquery = knex('projects').select('id').where(
+            'id', '=', projectSubquery);
 
         knex('projectslugs')
         .select('projects.id as id', 'projects.name as name',
-        'projects.uri as uri', 'users.username as owner', 'projectslugs.name as slug')
+            'projects.uri as uri', 'users.username as owner',
+            'projectslugs.name as slug')
         .where('projectslugs.project', '=', slugsSubquery)
         .innerJoin('projects', 'projectslugs.project', 'projects.id')
         .innerJoin('users', 'users.id', 'projects.owner')
@@ -89,7 +92,8 @@ module.exports = function(app) {
 
             if (results.length !== 0) {
                 project = {id: results[0].id, name: results[0].name,
-                           owner: results[0].owner, uri: results[0].uri, slugs: []};
+                           owner: results[0].owner, uri: results[0].uri,
+                           slugs: []};
 
                 for (var i = 0, len = results.length; i < len; i++) {
                     project.slugs.push(results[i].slug);
@@ -98,7 +102,8 @@ module.exports = function(app) {
                 res.send(project);
             } else {
                 return res.status(404).send(
-                    errors.errorInvalidSlug(req.params.slug + ' is not a valid project slug.'));
+                    errors.errorInvalidSlug(req.params.slug +
+                        ' is not a valid project slug.'));
             }
         });
     });

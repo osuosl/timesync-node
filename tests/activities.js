@@ -2,7 +2,8 @@ module.exports = function(expect, request, base_url) {
     describe('GET /activities', function() {
         it('should return all activities in the database', function(done) {
             request.get(base_url + 'activities', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(null, res.body));
+                var json_body = JSON.parse(String.fromCharCode.apply(
+                    null, res.body));
                 var expected_results = [
           {
               name: 'Documentation',
@@ -38,7 +39,8 @@ module.exports = function(expect, request, base_url) {
     describe('GET /activities/:slug', function() {
         it('should return activities by slug', function(done) {
             request.get(base_url + 'activities/sys', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(null, res.body));
+                var json_body = JSON.parse(String.fromCharCode.apply(
+                    null, res.body));
                 var expected_result = {
                     name: 'Systems',
                     slugs: ['sys', 'sysadmin'],
@@ -57,7 +59,8 @@ module.exports = function(expect, request, base_url) {
 
         it('should fail with invalid slug error', function(done) {
             request.get(base_url + 'activities/404', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(null, res.body));
+                var json_body = JSON.parse(String.fromCharCode.apply(
+                    null, res.body));
                 var expected_result = {
                     error: "The provided slug wasn't valid",
                     errno: 6,
