@@ -11,11 +11,11 @@ module.exports = function(app) {
             }
 
             /*
-             * Get a map of user ids -> usernames, a map of activity ids -> activity slug
-             * names, and a map of project ids -> project slug names ( similarly to the
-             * code in activities.js and projects.js), all asynchronously. Each of these
-             * activates a boolean flag when they finish. When all booleans are raised,
-             * return the times.
+             * Get a map of user ids -> usernames, a map of activity ids ->
+             * activity slug names, and a map of project ids -> project slug
+             * names ( similarly to the code in activities.js and projects.js),
+             * all asynchronously. Each of these activates a boolean flag when
+             * they finish. When all booleans are raised, return the times.
              */
             var users_done = false,
                 activities_done = false,
@@ -52,11 +52,13 @@ module.exports = function(app) {
                     }
 
                     for (i = 0, len = slugs.length; i < len; i++) {
-                        id_activity_map[slugs[i].activity].slugs.push(slugs[i].name);
+                        id_activity_map[slugs[i].activity].slugs.push(
+                            slugs[i].name);
                     }
 
                     for (i = 0, len = times.length; i < len; i++) {
-                        times[i].activity = id_activity_map[times[i].activity].slugs;
+                        times[i].activity = id_activity_map[times[i].activity]
+                            .slugs;
                     }
 
                     activities_done = true;
@@ -80,11 +82,13 @@ module.exports = function(app) {
                     }
 
                     for (i = 0, len = slugs.length; i < len; i++) {
-                        id_project_map[slugs[i].project].slugs.push(slugs[i].name);
+                        id_project_map[slugs[i].project].slugs.push(
+                            slugs[i].name);
                     }
 
                     for (i = 0, len = times.length; i < len; i++) {
-                        times[i].project = id_project_map[times[i].project].slugs;
+                        times[i].project = id_project_map[times[i].project]
+                            .slugs;
                     }
 
                     projects_done = true;

@@ -28,7 +28,9 @@ module.exports = {
     },
 
     errorInvalidForeignKey: function(object) {
-        return createError('Invalid foreign key', 3, 'Invalid ' + object + ' id');
+        return createError(
+            'Invalid foreign key', 3,
+            'Invalid ' + object + ' id');
     },
 
     errorNoNameProvided: function(error) {
