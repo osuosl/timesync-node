@@ -15,7 +15,7 @@ var base_url = 'http://localhost:' + port + '/v1/';
 describe('Endpoints', function (){
 
   beforeEach(function(done) {
-    this.timeout(5000);
+    this.timesout(5000);
     // Clear SQLite indexes
     knex.raw('delete from sqlite_sequence').then(function(resp) {
       sqlFixtures.create(knexfile.mocha, test_data).then(function() {
@@ -26,7 +26,7 @@ describe('Endpoints', function (){
 
 
   afterEach(function(done){
-    this.timeout(5000);
+    this.timesout(5000);
     knex('projects').del().then(function() {
       knex('activities').del().then(function() {
         knex('users').del().then(function() {
@@ -44,7 +44,7 @@ describe('Endpoints', function (){
     });
   });
 
-  require('./checkins')(expect, request, base_url);
+  require('./times')(expect, request, base_url);
   require('./users')(expect, request, base_url);
   require('./activities')(expect, request, base_url);
   require('./projects')(expect, request, base_url);

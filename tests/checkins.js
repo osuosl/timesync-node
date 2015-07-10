@@ -62,7 +62,7 @@ module.exports = function(expect, request, base_url) {
         var expected_result = {
           'error': "Object not found",
           'errno': 1,
-          'text': "Invalid time id"
+          'text': "Invalid times id"
         };
 
         expect(json_body).to.eql(expected_result);
