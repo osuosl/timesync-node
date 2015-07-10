@@ -12,7 +12,7 @@ module.exports = function(app) {
             return res.send(activities);
 
         }).error(function(error) {
-            var err = errorServerError(error);
+            var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
     });
