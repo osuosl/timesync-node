@@ -1,1 +1,3 @@
-build/
+docs/build/
+node_modules/
+*.sqlite3
