@@ -1,15 +1,15 @@
-require('../src/app');
-
+require('mocha');
 var request_builder = require('request');
 var expect = require('expect.js');
 var sqlFixtures = require('sql-fixtures');
+require('../src/app');
 
 var request = request_builder.defaults({encoding: null});
 var test_data = require('./fixtures/test_data');
 var knexfile = require('../knexfile');
 var knex = require('knex')(knexfile.mocha);
 
-var port = process.env.PORT || 8000;
+var port = process.env.PORT || 8001;
 var base_url = 'http://localhost:' + port + '/v1/';
 
 describe('Endpoints', function() {
