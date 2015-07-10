@@ -44,7 +44,7 @@ describe('Endpoints', function (){
     });
   });
 
-  require('./checkins')(expect, request, base_url);
+  require('./times')(expect, request, base_url);
   require('./users')(expect, request, base_url);
   require('./activities')(expect, request, base_url);
   require('./projects')(expect, request, base_url);

@@ -21,7 +21,7 @@ var routes = require('./routes')(app);
 var users = require('./users')(app);
 var projects = require('./projects')(app);
 var activities = require('./activities')(app);
-var checkins = require('./checkins')(app);
+var times = require('./times')(app);
 
 app.listen(process.env.PORT || 8000, function () {
     console.log('App now listening on %s', process.env.PORT || 8000);
