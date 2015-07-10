@@ -92,34 +92,34 @@ module.exports = function(app) {
     });
 
     app.get(app.get('version') + '/times/:id', function (req, res) {
-        knex('times').where({'id': req.params.id}).then(function (time_list) {
-            if(time_list.length === 1) {
-                time = time_list[0];
+        knex('times').where({'id': req.params.id}).then(function (times_list) {
+            if(times_list.length === 1) {
+                times = times_list[0];
 
-                knex('users').where({'id': time.user}).select('username')
+                knex('users').where({'id': times.user}).select('username')
                 .then(function(user) {
-                    time.user = user[0].username;
+                    times.user = user[0].username;
 
-                    knex('activityslugs').where({'activity': time.activity})
+                    knex('activityslugs').where({'activity': times.activity})
                     .select('name').then(function(slugs) {
-                        time.activity = [];
+                        times.activity = [];
                         for (var i = 0, len = slugs.length; i < len; i++) {
-                            time.activity.push(slugs[i].name);
+                            times.activity.push(slugs[i].name);
                         }
 
-                        knex('projectslugs').where({'project': time.project})
+                        knex('projectslugs').where({'project': times.project})
                         .select('name').then(function(slugs) {
-                            time.project = [];
+                            times.project = [];
                             for (var i = 0, len = slugs.length; i < len; i++) {
-                                time.project.push(slugs[i].name);
+                                times.project.push(slugs[i].name);
                             }
 
-                            return res.send(time);
+                            return res.send(times);
                         });
                     });
                 });
             } else {
-                return res.status(404).send(errors.errorObjectNotFound("time"));
+                return res.status(404).send(errors.errorObjectNotFound("times"));
             }
         });
     });
