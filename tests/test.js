@@ -36,8 +36,8 @@ describe('Endpoints', function() {
             knex('activities').del().then(function() {
                 knex('users').del().then(function() {
                     knex('times').del().then(function() {
-                        knex('activityslugs').del().then(function() {
-                            knex('projectslugs').del().then(function() {
+                        knex('projectslugs').del().then(function() {
+                            knex('timesactivities').del().then(function() {
                                 sqlFixtures.destroy().then(function() {
                                     done();
                                 });

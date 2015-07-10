@@ -41,27 +41,37 @@ module.exports = function(app) {
                 return res.status(err.status).send(err);
             });
 
-            knex('activities').then(function(activities) {
-                if (activities.length === 0) {
-                    return res.send([]);
-                }
-
-                knex('activityslugs').then(function(slugs) {
-
-                    var id_activity_map = {};
-                    for (var i = 0, len = activities.length; i < len; i++) {
-                        activities[i].slugs = [];
-                        id_activity_map[activities[i].id] = activities[i];
+            knex('timesactivities').then(function(timesactivities) {
+                knex('activities').then(function(activities) {
+                    if (activities.length === 0) {
+                        return res.send([]);
                     }
 
-                    for (i = 0, len = slugs.length; i < len; i++) {
-                        id_activity_map[slugs[i].activity].slugs.push(
-                            slugs[i].name);
+                    var time_activity_map = {};
+                    for (var i = 0, len = timesactivities.length; i < len;
+                    i++) {
+                        if (time_activity_map[timesactivities[i].time] ===
+                        undefined) {
+                            time_activity_map[timesactivities[i].time] = [];
+                        }
+
+                        for (var j = 0, length = activities.length; j < length;
+                        j++) {
+                            if (activities[j].id ===
+                            timesactivities[i].activity) {
+                                time_activity_map[timesactivities[i].time]
+                                    .push(activities[j].slug);
+                                break;
+                            }
+                        }
                     }
 
                     for (i = 0, len = times.length; i < len; i++) {
-                        times[i].activity = id_activity_map[times[i].activity]
-                            .slugs;
+                        if (times[i].activities === undefined) {
+                            times[i].activities = [];
+                        }
+
+                        times[i].activities = time_activity_map[times[i].id];
                     }
 
                     activities_done = true;
@@ -72,7 +82,6 @@ module.exports = function(app) {
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
-
             }).error(function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
@@ -140,7 +149,7 @@ module.exports = function(app) {
                     .select('name').then(function(slugs) {
                         time.activity = [];
                         for (var i = 0, len = slugs.length; i < len; i++) {
-                            time.activity.push(slugs[i].name);
+                            time.activities.push(slugs[i].slug);
                         }
 
                         knex('projectslugs').where({project: time.project})

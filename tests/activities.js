@@ -2,31 +2,26 @@ module.exports = function(expect, request, base_url) {
     describe('GET /activities', function() {
         it('should return all activities in the database', function(done) {
             request.get(base_url + 'activities', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode
+                var json_body = JSON.parse(String.fromCharCod
                     .apply(null, res.body));
                 var expected_results = [
                     {
                         name: 'Documentation',
-                        slugs: ['doc'],
+                        slug: 'docs',
                         id: 1
                     },
                     {
                         name: 'Development',
-                        slugs: ['dev'],
+                        slug: 'dev',
                         id: 2
                     },
                     {
                         name: 'Systems',
-                        slugs: ['sysadmin', 'sys'],
+                        slug: 'sys',
                         id: 3
                     }
                 ];
 
-                [expected_results, json_body].forEach(function(list) {
-                    list.forEach(function(result) {
-                        result.slugs.sort();
-                    });
-                });
 
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
@@ -39,15 +34,13 @@ module.exports = function(expect, request, base_url) {
     describe('GET /activities/:slug', function() {
         it('should return activities by slug', function(done) {
             request.get(base_url + 'activities/sys', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode
+                var json_body = JSON.parse(String.fromCharCod
                     .apply(null, res.body));
                 var expected_result = {
                     name: 'Systems',
-                    slugs: ['sys', 'sysadmin'],
+                    slug: 'sys',
                     id: 3
                 };
-                expected_result.slugs.sort();
-                json_body.slugs.sort();
 
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
