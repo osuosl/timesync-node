@@ -1,3 +1,6 @@
+.. _draft-errors:
+
+======
 Errors
 ======
 Error types from the Timesync API.
@@ -13,7 +16,7 @@ concatenation for building strings using tokens from the context.
 The following error codes will exist:
 
 1. Object not found
-
+~~~~~~~~~~~~~~~~~~~
 To be returned if the server receives a valid key (e.g. Time ID or Activity Slug) which
 does not match an object in the database.
 
@@ -26,7 +29,7 @@ does not match an object in the database.
     }
 
 2. Server error
-
+~~~~~~~~~~~~~~~
 A generic catch-all for when there is a server error outside of the client's control.
 This may be the result of an uncaught exception, a database error, or any other condition
 which renders the server unable to process a valid request.
@@ -40,7 +43,7 @@ which renders the server unable to process a valid request.
     }
 
 3. Invalid foreign key
-
+~~~~~~~~~~~~~~~~~~~~~~
 A client attempts to make a POST request to create or update an object, but the new object
 sent by the client contains a foreign key parameter which does not point to a valid object
 in the database. (E.g. the client sends a new time which does not have a valid project.)
@@ -54,7 +57,7 @@ in the database. (E.g. the client sends a new time which does not have a valid p
     }
 
 4. Bad object
-
+~~~~~~~~~~~~~
 A client attempts to make a POST request to create or update an object, but the new object
 sent by the client contains a non-existent key, lacks a necessary key, or contains an invalid
 value for a key (e.g. a time with a string in the duration field.)
@@ -79,7 +82,7 @@ value for a key (e.g. a time with a string in the duration field.)
     }
 
 5. Invalid identifier
-
+~~~~~~~~~~~~~~~~~~~~~
 This error would be returned when an identifier field (e.g. time ID or activity slug) is
 malformed or otherwise not valid for use. This is to be distinguished from Object not found:
 Object not found occurs when a perfectly valid, well-formed identifier is supplied, but
