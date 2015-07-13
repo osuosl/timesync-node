@@ -3,7 +3,7 @@
 =========
 Draft API
 =========
-Below are the API specs for the Time Sync project.
+Below are the API specs for the TimeSync project.
 
 
 Connection
@@ -122,10 +122,10 @@ GET Endpoints
 POST Endpoints
 --------------
 
-To add a new object, POST to */<object name>/add* with a JSON body.
+To add a new object, POST to */<object name>/* with a JSON body.
 
 
-*/projects/add*
+*/projects/*
 
 .. code:: json
 
@@ -136,7 +136,7 @@ To add a new object, POST to */<object name>/add* with a JSON body.
        "owner": "example-2"
     }
 
-*/activities/add*
+*/activities/*
 
 .. code:: json
 
@@ -145,7 +145,7 @@ To add a new object, POST to */<object name>/add* with a JSON body.
        "slugs":["qa", "test"]
     }
 
-*/times/add*
+*/times/*
 
 .. code:: json
 
@@ -162,14 +162,8 @@ To add a new object, POST to */<object name>/add* with a JSON body.
     }
 
 Likewise, if you'd like to edit an existing object, POST to
-*/<object name>/add* with a JSON body.
+*/<object name>/<slug>* with a JSON body.
 
-..  To update an existing object, PUT to */<object name>/<id>* with a JSON body.
-    If you are sending a partial object to */<object name>/<id>*, send via PATCH request.
-    
-    If the partial object contains a list of slugs, the field will be overwritten with the
-    new list, not merged. If the client intends to add or change a slug, it must send the
-    complete list with this change.
 
 */projects/<slug>*
 
