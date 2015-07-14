@@ -163,6 +163,7 @@ To add a new object, POST to */<object name>/* with a JSON body.
 
 Likewise, if you'd like to edit an existing object, POST to
 */<object name>/<slug>* (or for time objects, */times/<id>*) with a JSON body.
+The object only needs to contain the part that is being updated.
 
 
 *POST /projects/<slug>*
