@@ -80,3 +80,4 @@ test suite and marks the push as working or not. This is especially helpful
 during code review.
 
 Travis runs the test suite and the linter as described above.
+

@@ -20,7 +20,7 @@ require('./routes')(app);
 require('./users')(app);
 require('./projects')(app);
 require('./activities')(app);
-require('./checkins')(app);
+require('./times')(app);
 
 app.listen(process.env.PORT || 8000, function() {
     console.log('App now listening on %s', process.env.PORT || 8000);
