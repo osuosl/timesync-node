@@ -31,9 +31,9 @@ API (not to the implementation).
 
 GET Endpoints
 -------------
-*/projects*
+*GET /projects*
 
-.. code:: json
+.. code-block:: javascript
 
     [
       {
@@ -47,9 +47,9 @@ GET Endpoints
       ...
     ]
 
-*/projects/<slug>*
+*GET /projects/<slug>*
 
-.. code:: json
+.. code-block:: javascript
 
     {
        "uri":"https://code.osuosl.org/projects/ganeti-webmgr",
@@ -59,12 +59,13 @@ GET Endpoints
        "id": 1
     }
 
-*/activities*
+*GET /activities*
 
-.. code:: json
+.. code-block:: javascript
 
     [
         {
+
            "name":"Documentation",
            "slugs":["docs", "doc"],
            "id": 1
@@ -72,9 +73,9 @@ GET Endpoints
         {...}
     ]
 
-*/activities/<slug>*
+*GET /activities/<slug>*
 
-.. code:: json
+.. code-block:: javascript
 
     {
        "name":"Documentation",
@@ -82,9 +83,9 @@ GET Endpoints
        "id": 1
     }
 
-*/times*
+*GET /times*
 
-.. code:: json
+.. code-block:: javascript
 
     [
       {
@@ -102,9 +103,9 @@ GET Endpoints
       {...}
     ]
 
-*/times/<time entry id>*
+*GET /times/<time entry id>*
 
-.. code:: json
+.. code-block:: javascript
 
     {
       "duration":12,
@@ -125,9 +126,9 @@ POST Endpoints
 To add a new object, POST to */<object name>/* with a JSON body.
 
 
-*/projects/*
+*POST /projects/*
 
-.. code:: json
+.. code-block:: javascript
 
     {
        "uri":"https://code.osuosl.org/projects/timesync",
@@ -136,18 +137,18 @@ To add a new object, POST to */<object name>/* with a JSON body.
        "owner": "example-2"
     }
 
-*/activities/*
+*POST /activities/*
 
-.. code:: json
+.. code-block:: javascript
 
     {
        "name":"Quality Assurance/Testing",
        "slugs":["qa", "test"]
     }
 
-*/times/*
+*POST /times/*
 
-.. code:: json
+.. code-block:: javascript
 
     {
       "duration":12,
@@ -165,26 +166,26 @@ Likewise, if you'd like to edit an existing object, POST to
 */<object name>/<slug>* (or for time objects, */times/<id>*) with a JSON body.
 
 
-*/projects/<slug>*
+*POST /projects/<slug>*
 
-.. code:: json
+.. code-block:: javascript
 
     {
        "name":"Ganeti Webmgr",
        "slugs":["webmgr", "gwm"],
     }
 
-*/activities/<slug>*
+*POST /activities/<slug>*
 
-.. code:: json
+.. code-block:: javascript
 
     {
        "slugs":["testing", "test"]
     }
 
-*/times/<id>*
+*POST /times/<id>*
 
-.. code:: json
+.. code-block:: javascript
 
     {
       "duration":20,
