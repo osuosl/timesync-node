@@ -65,7 +65,6 @@ GET Endpoints
 
     [
         {
-
            "name":"Documentation",
            "slugs":["docs", "doc"],
            "id": 1
