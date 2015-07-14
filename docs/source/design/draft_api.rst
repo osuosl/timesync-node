@@ -131,7 +131,7 @@ To add a new object, POST to */<object name>/* with a JSON body.
 
     {
        "uri":"https://code.osuosl.org/projects/timesync",
-       "name":"Timesync API",
+       "name":"TimeSync API",
        "slugs":["timesync", "time"],
        "owner": "example-2"
     }
@@ -162,7 +162,7 @@ To add a new object, POST to */<object name>/* with a JSON body.
     }
 
 Likewise, if you'd like to edit an existing object, POST to
-*/<object name>/<slug>* with a JSON body.
+*/<object name>/<slug>* (or for time objects, */times/<id>*) with a JSON body.
 
 
 */projects/<slug>*
