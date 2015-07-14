@@ -12,7 +12,7 @@ module.exports = {
      * Helper function to determine if a given slug is valid or not.
      */
     isInvalidSlug: function(slug) {
-        return slug.match(/^([a-zA-Z0-9\-_]*)$/);
+        return !slug.match(/^([a-zA-Z0-9\-_]*)$/);
     },
 
     /*
