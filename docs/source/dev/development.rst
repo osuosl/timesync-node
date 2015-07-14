@@ -8,10 +8,27 @@ Setup
 -----
 
 There are a few system requirements for installing a node-based application --
-namely, node itself and npm, its package manager. These dependencies can be
-installed on a Debian system with the following::
+namely, node itself and npm, its package manager. As Timesync uses node v0.12,
+it is necessary on Debian and CentOS to get it from either a `3rd party repo`_,
+or install the binary manually.
 
-    sudo apt-get install nodejs npm nodejs-legacy
+.. _`3rd party repo`: https://nodesource.com/blog/nodejs-v012-iojs-and-the-nodesource-linux-repositories
+
+.. note::
+
+   To check if your system already has a compatible version installed, run
+   ``node --version``. If your version is ``v0.12`` or above, you're good to
+   go.
+
+To install it manually, download the binary from nodejs.org, extract it, and
+add its ``bin/`` directory to the system's PATH::
+
+    $ curl -O https://nodejs.org/dist/v0.12.6/node-v0.12.6-linux-x64.tar.gz
+    $ tar -xzf node-v0.12.6-linux-x64.tar.gz
+    $ echo "PATH=$PATH:`pwd`/node-v0.12.6-linux-x64/bin" >> ~/.bashrc
+    $ source ~/.bashrc
+    $ node --version
+    v0.12.6
 
 After installation of the system dependencies, install the project-specific
 requirements using ``npm`` in the root of the project repository::
