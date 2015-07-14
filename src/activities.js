@@ -19,7 +19,7 @@ module.exports = function(app) {
 
     app.get(app.get('version') + '/activities/:slug', function(req, res) {
 
-        if (!errors.checkValidSlug(req.params.slug)) {
+        if (errors.isInvalidSlug(req.params.slug)) {
             var err = errors.errorInvalidIdentifier('slug', req.params.slug);
             return res.status(err.status).send(err);
         }
