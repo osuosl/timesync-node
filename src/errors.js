@@ -32,7 +32,11 @@ module.exports = {
      * param server_error (string): The error message (e.g. a SQL error).
      */
     errorServerError: function(server_error) {
-        return createError(500, 'Server error', server_error);
+        if (process.env.DEBUG) {
+            return createError(500, 'Server error', server_error);
+        } else {
+            return createError(500, 'Server error', 'Unexpected server error.');
+        }
     },
 
     /*
