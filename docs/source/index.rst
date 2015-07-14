@@ -1,3 +1,5 @@
+.. _timesync-docs:
+
 Welcome to TimeSync's documentation!
 ====================================
 TimeSync is an OSU Open Source Lab developed Time Tracking system.
@@ -9,6 +11,8 @@ Development Docs
 Design Docs
 -----------
 * :ref:`draft-api`
+* :ref:`draft-auth`
+* :ref:`draft-errors`
 * :ref:`draft-models`
 
 
@@ -19,9 +23,19 @@ Meeting Notes
 
 
 Indices and tables
-==================
-
+------------------
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
 
+
+.. toctree::
+    :maxdepth: 2
+    :hidden:
+
+    Developer Guide <dev/development>  
+    Draft API <design/draft_api>
+    Authorization <design/draft_auth>
+    Errors <design/draft_errors>
+    Draft Data Models <design/draft_models>
+    Meeting Notes <meetings/index>

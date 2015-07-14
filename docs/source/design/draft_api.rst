@@ -1,32 +1,33 @@
 .. _draft-api:
 
+=========
 Draft API
 =========
-Below is the api specs for the Time Sync project.
+Below are the API specs for the TimeSync project.
 
 
 Connection
 ----------
-All requests will be made via HTTPS. Available methods are GET to request an object, POST
-to create a new object, PUT to update an object, PATCH to update part of an object and
-DELETE to remove an object.
+All requests will be made via HTTPS. Available methods are GET to request an
+object, POST to create and/or edit a new object, and DELETE to remove an
+object.
 
 
 Format
 ------
-Responses will be returned in standard JSON format. Multiple results will be sent as a
-list of JSON objects. Order of results is not guaranteed. Single results will be a single
-JSON object.
+Responses will be returned in standard JSON format. Multiple results will be
+sent as a list of JSON objects. Order of results is not guaranteed. Single
+results will be a single JSON object.
 
 
 Versions
 --------
-The API will be versioned with the letter 'v' followed by increasing integers
+The API will be versioned with the letter 'v' followed by increasing integers.
 
 For example: https://timesync.osuosl.org/v1/projects
 
-Versions will be updated any time there is a significant change to the public API (not to
-the implementation).
+Versions will be updated any time there is a significant change to the public
+API (not to the implementation).
 
 GET Endpoints
 -------------
@@ -121,21 +122,21 @@ GET Endpoints
 POST Endpoints
 --------------
 
-To add a new object, POST to */<object name>/add* with a JSON body.
+To add a new object, POST to */<object name>/* with a JSON body.
 
 
-*/projects/add*
+*/projects/*
 
 .. code:: json
 
     {
        "uri":"https://code.osuosl.org/projects/timesync",
-       "name":"Timesync API",
+       "name":"TimeSync API",
        "slugs":["timesync", "time"],
        "owner": "example-2"
     }
 
-*/activities/add*
+*/activities/*
 
 .. code:: json
 
@@ -144,7 +145,7 @@ To add a new object, POST to */<object name>/add* with a JSON body.
        "slugs":["qa", "test"]
     }
 
-*/times/add*
+*/times/*
 
 .. code:: json
 
@@ -160,13 +161,9 @@ To add a new object, POST to */<object name>/add* with a JSON body.
       "updated_at":null
     }
 
-To update an existing object, PUT to */<object name>/<id>* with a JSON body.
+Likewise, if you'd like to edit an existing object, POST to
+*/<object name>/<slug>* (or for time objects, */times/<id>*) with a JSON body.
 
-If you are sending a partial object to */<object name>/<id>*, send via PATCH request.
-
-If the partial object contains a list of slugs, the field will be overwritten with the
-new list, not merged. If the client intends to add or change a slug, it must send the
-complete list with this change.
 
 */projects/<slug>*
 
@@ -194,25 +191,28 @@ complete list with this change.
       "date_worked":"2015-04-17"
     }
 
-In the case of a foreign key (such as project on a time) that does not point to a valid
-object or a malformed object sent in the request, an Object Not Found or Malformed Object
-error (respectively) will be returned, validation will return immediately, and the object
-will not be saved.
+In the case of a foreign key (such as project on a time) that does not point to
+a valid object or a malformed object sent in the request, an Object Not Found
+or Malformed Object error (respectively) will be returned, validation will
+return immediately, and the object will not be saved.
 
 
 DELETE Endpoints
 ----------------
 
-A DELETE request sent to any object's endpoint (e.g. */projects/<slug>*) will result in the
-deletion of the object from the records. It is up to the implementation to decide whether
-to use hard or soft deletes. What is important is that the object will not be included in
-requests to retrieve lists of objects, and attempts to access the object will fail.
-Future attempts to POST an object with that ID/slug should succeed, and completely overwrite
-the deleted object, if it still exists in the database. To an end user, it should appear
-as though the object truly does not exist.
+A DELETE request sent to any object's endpoint (e.g. */projects/<slug>*) will
+result in the deletion of the object from the records. It is up to the
+implementation to decide whether to use hard or soft deletes. What is important
+is that the object will not be included in requests to retrieve lists of
+objects, and attempts to access the object will fail. Future attempts to POST
+an object with that ID/slug should succeed, and completely overwrite the
+deleted object, if it still exists in the database. To an end user, it should
+appear as though the object truly does not exist.
 
-If the object exists, the API will return a 200 OK status with an empty response body.
+If the object exists, the API will return a 200 OK status with an empty
+response body.
 
-If the object does not exist, the API will return an Object Not Found error (see error docs).
+If the object does not exist, the API will return an Object Not Found error
+(see error docs).
 
 In case of any other error, the API will return a Server Error (see error docs).
