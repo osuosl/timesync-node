@@ -1,9 +1,7 @@
 TimeSync
 ========
 
-![travis](https://travis-ci.org/osuosl/timesync.svg?branch=develop)
-
-[![Dependency Status](https://david-dm.org/osuosl/timesync.svg)](https://david-dm.org/osuosl/timesync)
+![travis](https://travis-ci.org/osuosl/timesync.svg?branch=develop) [![Dependency Status](https://david-dm.org/osuosl/timesync.svg)](https://david-dm.org/osuosl/timesync)
 
 <img align="right" style="padding: 5px;" src="/timesync.png?raw=true" />
 
@@ -28,8 +26,38 @@ $ npm test
 $ npm run linter
 ```
 
+To make a quick request on the dev instance, first load the fixtures:
+```
+$ npm run fixtures
+```
+
+Then make a request with curl. Piping it to python makes the output pretty.
+```
+$ curl -XGET -s localhost:8000/v1/times | python -m json.tool
+[
+    {
+        "activity": [
+            "dev"
+        ],
+        "created_at": null,
+        "date_worked": null,
+        "duration": 12,
+        "id": 1,
+        "issue_uri": "https://github.com/osu-cass/whats-fresh-api/issues/56",
+        "notes": "",
+        "project": [
+            "wf"
+        ],
+        "updated_at": null,
+        "user": "tschuy"
+    }
+]
+
+```
+
+
 More in-depth documentation can be found inside the ``docs/`` folder. To build
-the docs, build them with spinxdocs by running the following:
+the docs, build them with sphinxdocs by running the following:
 
 ```
 $ pip install -r requirements.txt
