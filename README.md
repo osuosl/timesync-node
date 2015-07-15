@@ -28,22 +28,22 @@ $ npm run linter
 
 To make a quick request on the dev instance, first run the database migrations
 and load the fixtures:
+
 ```
 $ npm run migrations
 $ npm run fixtures
 ```
 
 Next, run the application:
+
 ```
 $ npm start
 ```
 
-```
-$ curl -XGET -s localhost:8000/v1/times | python -m json.tool
-``
+Then, in another terminal, make a request to the application with curl.
 
-Then, in another terminal, make a request with curl.
-Piping it to python makes the output pretty.
+(*Piping it to python makes the output pretty.*)
+
 ```
 $ curl -XGET -s localhost:8000/v1/times | python -m json.tool
 [
@@ -66,6 +66,8 @@ $ curl -XGET -s localhost:8000/v1/times | python -m json.tool
 ]
 
 ```
+
+Your output should look something like the above.
 
 
 More in-depth documentation can be found inside the ``docs/`` folder. To build
