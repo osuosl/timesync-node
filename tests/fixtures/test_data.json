@@ -55,6 +55,39 @@
         {
             "duration":12,
             "user":"users:1",
+            "project":"projects:1",
+            "notes":"",
+            "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+            "date_worked":null,
+            "created_at":null,
+            "updated_at":null,
+            "id": 1
+        },
+        {
+            "duration":12,
+            "user":"users:1",
+            "project":"projects:2",
+            "notes":"",
+            "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+            "date_worked":null,
+            "created_at":null,
+            "updated_at":null,
+            "id": 1
+        },
+        {
+            "duration":12,
+            "user":"users:2",
+            "project":"projects:1",
+            "notes":"",
+            "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+            "date_worked":null,
+            "created_at":null,
+            "updated_at":null,
+            "id": 1
+        },
+        {
+            "duration":12,
+            "user":"users:2",
             "project":"projects:2",
             "notes":"",
             "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
@@ -100,6 +133,16 @@
             "id": 2,
             "time": 1,
             "activity": 2
+        },
+        {
+            "id": 3,
+            "time": 3,
+            "activity": 2
+        },
+        {
+            "id": 4,
+            "time": 4,
+            "activity": 1
         }
     ]
 }
