@@ -26,12 +26,24 @@ $ npm test
 $ npm run linter
 ```
 
-To make a quick request on the dev instance, first load the fixtures:
+To make a quick request on the dev instance, first run the database migrations
+and load the fixtures:
 ```
+$ npm run migrations
 $ npm run fixtures
 ```
 
-Then make a request with curl. Piping it to python makes the output pretty.
+Next, run the application:
+```
+$ npm start
+```
+
+```
+$ curl -XGET -s localhost:8000/v1/times | python -m json.tool
+``
+
+Then, in another terminal, make a request with curl.
+Piping it to python makes the output pretty.
 ```
 $ curl -XGET -s localhost:8000/v1/times | python -m json.tool
 [
