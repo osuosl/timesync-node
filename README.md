@@ -3,6 +3,8 @@ TimeSync
 
 ![travis](https://travis-ci.org/osuosl/timesync.svg?branch=develop)
 
+[![Dependency Status](https://david-dm.org/osuosl/timesync.svg)](https://david-dm.org/osuosl/timesync)
+
 <img align="right" style="padding: 5px;" src="/timesync.png?raw=true" />
 
 TimeSync is the OSU Open Source Lab's time tracking system. It's designed to be
