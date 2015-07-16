@@ -1,4 +1,4 @@
-.. _timesync-docs:
+.. _timesync-node-docs:
 
 Welcome to TimeSync's documentation!
 ====================================
@@ -14,6 +14,9 @@ Meeting Notes
 * :ref:`dev-meeting-2015-07-10`
 * :ref:`dev-meeting-2015-04-09`
 
+Design
+------
+* :ref:`draft-models`
 
 Indices and tables
 ------------------
@@ -28,3 +31,4 @@ Indices and tables
 
     Developer Guide <dev/development>  
     Meeting Notes <meetings/index>
+    Draft Modesl <design/index>

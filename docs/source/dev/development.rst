@@ -8,7 +8,7 @@ Setup
 -----
 
 There are a few system requirements for installing a node-based application --
-namely, node itself and npm, its package manager. As Timesync uses node v0.12,
+namely, node itself and npm, its package manager. As TimeSync uses node v0.12,
 it is necessary on Debian and CentOS to get it from either a `3rd party repo`_,
 or install the binary manually.
 

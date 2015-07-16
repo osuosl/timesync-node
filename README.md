@@ -1,5 +1,5 @@
-TimeSync
-========
+TimeSync-Node
+==============
 
 ![travis](https://travis-ci.org/osuosl/timesync-node.svg?branch=develop) [![Dependency Status](https://david-dm.org/osuosl/timesync-node.svg)](https://david-dm.org/osuosl/timesync-node)
 
