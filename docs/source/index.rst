@@ -8,13 +8,6 @@ Development Docs
 ----------------
 * :ref:`development`
 
-Design Docs
------------
-* :ref:`draft-api`
-* :ref:`draft-auth`
-* :ref:`draft-errors`
-* :ref:`draft-models`
-
 
 Meeting Notes
 -------------
@@ -34,8 +27,4 @@ Indices and tables
     :hidden:
 
     Developer Guide <dev/development>  
-    Draft API <design/draft_api>
-    Authorization <design/draft_auth>
-    Errors <design/draft_errors>
-    Draft Data Models <design/draft_models>
     Meeting Notes <meetings/index>
