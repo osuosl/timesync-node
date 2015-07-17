@@ -1,5 +1,6 @@
 language: node_js
 script:
+  - bash ./scripts/travis-check-docs.bash
   - npm test
   - npm run linter
 before_script:
