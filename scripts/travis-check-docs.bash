@@ -4,11 +4,8 @@
 # Hello future developers! You are probably wondering whose stupid idea it was
 # to write this script, you just want to get your tests to pass and your code
 # to merge. An excellent sentiment! However, consider the state of the project
-# as a whole. When this was written, the docs and tests of GWM were out of date
-# Many configuration options were undocumented. GWM did strange things
-# everywhere and we couldn't figure out why. We decided that new features and
-# new PRs should require docs. You will probably be at the lab for a relatively
-# short time, so please be considerate of those who come after you.
+# as a whole. You will probably be at the lab for a relatively short time, so
+# please be considerate of those who come after you.
 
 
 
