@@ -175,7 +175,8 @@ module.exports = function(app) {
                         .then(function(slugs) {
                             // lastly, set the project
                             time.project = [];
-                            for (var i = 0, len = slugs.length; i < len; i++) {
+                            for (var i = 0, len = slugs.length; i < len;
+                            i++) {
                                 time.project.push(slugs[i].name);
                             }
 

@@ -125,5 +125,4 @@ module.exports = {
     errorAuthenticationFailure: function(strategyFailure) {
         return createError(401, 'Authentication failure', strategyFailure);
     },
-
 };
