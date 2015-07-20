@@ -28,7 +28,7 @@ module.exports = function(expect, request, base_url) {
                     });
                 });
 
-                expect(err === null);
+                expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
                 expect(json_body).to.eql(expected_results);
                 done();
@@ -49,7 +49,7 @@ module.exports = function(expect, request, base_url) {
                 expected_result.slugs.sort();
                 json_body.slugs.sort();
 
-                expect(err === null);
+                expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
 
                 expect(json_body).to.eql(expected_result);
