@@ -76,6 +76,8 @@ tests and measure coverage, run::
 
 	npm run coverage
 
+To see a detailed coverage report, open ``coverage/lcov-report/index.html``.
+
 .. _Istanbul: https://github.com/gotwarlost/istanbul
 .. _`its documentation`: http://mochajs.org/
 
@@ -103,4 +105,3 @@ test suite and marks the push as working or not. This is especially helpful
 during code review.
 
 Travis runs the test suite and the linter as described above.
-
