@@ -12,7 +12,7 @@
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "linter": "jshint ./src ./tests && jscs ./src ./tests",
     "fixtures": "node ./scripts/load_fixtures.js",
-    "test": "export DATABASE=mocha export PORT=8851 && rm -f test.sqlite3 && knex --env mocha migrate:latest && istanbul cover _mocha -- tests"
+    "test": "DATABASE=mocha PORT=8851 istanbul cover _mocha -- tests"
   },
   "repository": {
     "type": "git",

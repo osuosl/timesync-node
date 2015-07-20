@@ -14,6 +14,12 @@ var base_url = 'http://localhost:' + port + '/v1/';
 
 describe('Endpoints', function() {
 
+    before(function(done) {
+        knex.migrate.latest().then(function() {
+            done();
+        });
+    });
+
     beforeEach(function(done) {
         this.timeout(5000);
         // Clear SQLite indexes
