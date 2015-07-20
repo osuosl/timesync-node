@@ -18,7 +18,7 @@ module.exports = function(expect, request, base_url) {
                         id: 1
                     }
                 ];
-                expect(err === null);
+                expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
                 expect(JSON.parse(bodyAsString)).to.eql(expected_results);
                 done();
@@ -50,7 +50,7 @@ module.exports = function(expect, request, base_url) {
                 json_body.project.sort();
                 json_body.activity.sort();
 
-                expect(err === null);
+                expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
 
                 expect(json_body).to.eql(expected_result);
