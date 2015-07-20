@@ -71,6 +71,14 @@ TimeSync uses Mocha for testing. See `its documentation`_ for more information
 on how to write tests, or use the tests included in TimeSync as a guide. They
 can be found in ``tests/``.
 
+TimeSync test coverage is measured with the `Istanbul`_ package. To run the
+tests and measure coverage, run::
+
+	npm run coverage
+
+To see a detailed coverage report, open ``coverage/lcov-report/index.html``.
+
+.. _Istanbul: https://github.com/gotwarlost/istanbul
 .. _`its documentation`: http://mochajs.org/
 
 Code standards
@@ -97,4 +105,3 @@ test suite and marks the push as working or not. This is especially helpful
 during code review.
 
 Travis runs the test suite and the linter as described above.
-
