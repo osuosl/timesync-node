@@ -12,7 +12,8 @@
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "linter": "jshint ./src ./tests && jscs ./src ./tests",
     "fixtures": "node ./scripts/load_fixtures.js",
-    "test": "DATABASE=mocha PORT=8851 istanbul cover _mocha -- tests"
+    "test": "DATABASE=mocha PORT=8851 mocha tests",
+    "coverage": "DATABASE=mocha PORT=8851 istanbul cover _mocha -- tests"
   },
   "repository": {
     "type": "git",
