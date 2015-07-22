@@ -2,7 +2,7 @@ module.exports = function(expect, request, base_url) {
     describe('GET /activities', function() {
         it('should return all activities in the database', function(done) {
             request.get(base_url + 'activities', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCod
+                var json_body = JSON.parse(String.fromCharCode
                     .apply(null, res.body));
                 var expected_results = [
                     {
@@ -34,7 +34,7 @@ module.exports = function(expect, request, base_url) {
     describe('GET /activities/:slug', function() {
         it('should return activities by slug', function(done) {
             request.get(base_url + 'activities/sys', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCod
+                var json_body = JSON.parse(String.fromCharCode
                     .apply(null, res.body));
                 var expected_result = {
                     name: 'Systems',
@@ -69,7 +69,7 @@ module.exports = function(expect, request, base_url) {
 
         it('should fail with Invalid Slug error', function(done) {
             request.get(base_url + 'activities/test-!*@', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCod
+                var json_body = JSON.parse(String.fromCharCode
                     .apply(null, res.body));
                 var expected_result = {
                     status: 400,

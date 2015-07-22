@@ -32,7 +32,7 @@ module.exports = function(app) {
             }
 
             return res.send(activity[0]);
-            
+
         }).error(function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);

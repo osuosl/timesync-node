@@ -145,15 +145,18 @@ module.exports = function(app) {
                 .then(function(user) {
                     time.user = user[0].username;
 
-                    knex('activityslugs').where({activity: time.activity})
-                    .select('name').then(function(slugs) {
-                        time.activity = [];
+                    knex('activities').select('slug').where('id', 'in',
+                    knex('timesactivities').select('activity')
+                    .where({time: time.id})).then(function(slugs) {
+
+                        time.activities = [];
                         for (var i = 0, len = slugs.length; i < len; i++) {
                             time.activities.push(slugs[i].slug);
                         }
 
-                        knex('projectslugs').where({project: time.project})
-                        .select('name').then(function(slugs) {
+                        knex('projectslugs')
+                        .where({project: time.project}).select('name')
+                        .then(function(slugs) {
                             time.project = [];
                             for (var i = 0, len = slugs.length; i < len; i++) {
                                 time.project.push(slugs[i].name);

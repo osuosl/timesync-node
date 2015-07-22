@@ -8,7 +8,7 @@ module.exports = function(expect, request, base_url) {
                         duration: 12,
                         user: 'tschuy',
                         project: ['wf'],
-                        activity: ['dev'],
+                        activities: ['docs', 'dev'],
                         notes: '',
                         issue_uri: 'https://github.com/osu-cass' +
                             '/whats-fresh-api/issues/56',
@@ -35,7 +35,7 @@ module.exports = function(expect, request, base_url) {
                     duration: 12,
                     user: 'tschuy',
                     project: ['wf'],
-                    activity: ['dev'],
+                    activities: ['docs', 'dev'],
                     notes: '',
                     issue_uri: 'https://github.com/osu-cass/whats-fresh-api' +
                         '/issues/56',
@@ -46,9 +46,9 @@ module.exports = function(expect, request, base_url) {
                 };
 
                 expected_result.project.sort();
-                expected_result.activity.sort();
+                expected_result.activities.sort();
                 json_body.project.sort();
-                json_body.activity.sort();
+                json_body.activities.sort();
 
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
@@ -64,8 +64,8 @@ module.exports = function(expect, request, base_url) {
                     null, res.body));
                 var expected_result = {
                     error: 'Object not found',
-                    errno: 1,
-                    text: 'Invalid time id'
+                    status: 404,
+                    text: 'Nonexistent time'
                 };
 
                 expect(json_body).to.eql(expected_result);
