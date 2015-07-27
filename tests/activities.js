@@ -22,7 +22,6 @@ module.exports = function(expect, request, base_url) {
                     }
                 ];
 
-
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
                 expect(json_body).to.eql(expected_results);
