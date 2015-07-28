@@ -41,7 +41,6 @@
     "jscs": "^1.13.1",
     "jshint": "^2.8.0",
     "request": "^2.55.0",
-    "supertest": "^1.0.1",
     "sql-fixtures": "^0.11.0"
   }
 }
