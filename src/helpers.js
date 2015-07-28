@@ -1,6 +1,6 @@
 module.exports = {
 
-    check_project: function(name) {
+    checkProject: function(name) {
         name = null;
     }
 
