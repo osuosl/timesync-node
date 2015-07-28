@@ -11,14 +11,14 @@ module.exports = function(app) {
 
             knex('activityslugs').then(function(slugs) {
 
-                var id_activity_map = {};
+                var idActivityMap = {};
                 for (var i = 0, len = activities.length; i < len; i++) {
                     activities[i].slugs = [];
-                    id_activity_map[activities[i].id] = activities[i];
+                    idActivityMap[activities[i].id] = activities[i];
                 }
 
                 for (i = 0, len = slugs.length; i < len; i++) {
-                    id_activity_map[slugs[i].activity].slugs.push(
+                    idActivityMap[slugs[i].activity].slugs.push(
                         slugs[i].name);
                 }
 

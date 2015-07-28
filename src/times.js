@@ -17,23 +17,23 @@ module.exports = function(app) {
              * all asynchronously. Each of these activates a boolean flag when
              * they finish. When all booleans are raised, return the times.
              */
-            var users_done = false,
-                activities_done = false,
-                projects_done = false;
+            var usersDone = false,
+                activitiesDone = false,
+                projectsDone = false;
 
             knex('users').select('id', 'username').then(function(users) {
 
-                var id_user_map = {};
+                var idUserMap = {};
                 for (var i = 0, len = users.length; i < len; i++) {
-                    id_user_map[users[i].id] = users[i].username;
+                    idUserMap[users[i].id] = users[i].username;
                 }
 
                 for (i = 0, len = times.length; i < len; i++) {
-                    times[i].user = id_user_map[times[i].user];
+                    times[i].user = idUserMap[times[i].user];
                 }
 
-                users_done = true;
-                if (activities_done && projects_done) {
+                usersDone = true;
+                if (activitiesDone && projectsDone) {
                     return res.send(times);
                 }
             });
@@ -45,24 +45,24 @@ module.exports = function(app) {
 
                 knex('activityslugs').then(function(slugs) {
 
-                    var id_activity_map = {};
+                    var idActivityMap = {};
                     for (var i = 0, len = activities.length; i < len; i++) {
                         activities[i].slugs = [];
-                        id_activity_map[activities[i].id] = activities[i];
+                        idActivityMap[activities[i].id] = activities[i];
                     }
 
                     for (i = 0, len = slugs.length; i < len; i++) {
-                        id_activity_map[slugs[i].activity].slugs.push(
+                        idActivityMap[slugs[i].activity].slugs.push(
                             slugs[i].name);
                     }
 
                     for (i = 0, len = times.length; i < len; i++) {
-                        times[i].activity = id_activity_map[times[i].activity]
+                        times[i].activity = idActivityMap[times[i].activity]
                             .slugs;
                     }
 
-                    activities_done = true;
-                    if (users_done && projects_done) {
+                    activitiesDone = true;
+                    if (usersDone && projectsDone) {
                         return res.send(times);
                     }
                 });
@@ -75,24 +75,24 @@ module.exports = function(app) {
 
                 knex('projectslugs').then(function(slugs) {
 
-                    var id_project_map = {};
+                    var idProjectMap = {};
                     for (var i = 0, len = projects.length; i < len; i++) {
                         projects[i].slugs = [];
-                        id_project_map[projects[i].id] = projects[i];
+                        idProjectMap[projects[i].id] = projects[i];
                     }
 
                     for (i = 0, len = slugs.length; i < len; i++) {
-                        id_project_map[slugs[i].project].slugs.push(
+                        idProjectMap[slugs[i].project].slugs.push(
                             slugs[i].name);
                     }
 
                     for (i = 0, len = times.length; i < len; i++) {
-                        times[i].project = id_project_map[times[i].project]
+                        times[i].project = idProjectMap[times[i].project]
                             .slugs;
                     }
 
-                    projects_done = true;
-                    if (activities_done && users_done) {
+                    projectsDone = true;
+                    if (activitiesDone && usersDone) {
                         res.send(times);
                     }
                 });
@@ -101,9 +101,9 @@ module.exports = function(app) {
     });
 
     app.get(app.get('version') + '/times/:id', function(req, res) {
-        knex('times').where({id: req.params.id}).then(function(time_list) {
-            if (time_list.length === 1) {
-                time = time_list[0];
+        knex('times').where({id: req.params.id}).then(function(timeList) {
+            if (timeList.length === 1) {
+                time = timeList[0];
 
                 knex('users').where({id: time.user}).select('username')
                 .then(function(user) {
