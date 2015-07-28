@@ -43,6 +43,7 @@
     "requireDotNotation": true,
     "requireSpacesInForStatement": true,
     "requireSpaceBetweenArguments": true,
+    "requireCamelCaseOrUpperCaseIdentifiers": true,
     "requireCurlyBraces": [
         "do"
     ],
