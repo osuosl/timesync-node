@@ -1,10 +1,10 @@
-module.exports = function(expect, request, base_url) {
+module.exports = function(expect, request, baseUrl) {
     describe('GET /projects', function() {
         it('should return all projects in the database', function(done) {
-            request.get(base_url + 'projects', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(null,
+            request.get(baseUrl + 'projects', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode.apply(null,
                     res.body));
-                var expected_results = [
+                var expectedResults = [
                     {
                         uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
                         name: 'Ganeti Web Manager',
@@ -28,7 +28,7 @@ module.exports = function(expect, request, base_url) {
                     }
                 ];
 
-                [expected_results, json_body].forEach(function(list) {
+                [expectedResults, jsonBody].forEach(function(list) {
                     list.forEach(function(result) {
                         result.slugs.sort();
                     });
@@ -37,7 +37,7 @@ module.exports = function(expect, request, base_url) {
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
 
-                expect(json_body).to.eql(expected_results);
+                expect(jsonBody).to.eql(expectedResults);
                 done();
             });
         });
@@ -45,38 +45,38 @@ module.exports = function(expect, request, base_url) {
 
     describe('GET /projects/:slug', function() {
         it('should return projects by slug', function(done) {
-            request.get(base_url + 'projects/gwm', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(
+            request.get(baseUrl + 'projects/gwm', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode.apply(
                     null, res.body));
-                var expected_result = {
+                var expectedResult = {
                     uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
                     name: 'Ganeti Web Manager',
                     slugs: ['gwm', 'ganeti-webmgr'],
                     owner: 'tschuy',
                     id: 1
                 };
-                expected_result.slugs.sort();
-                json_body.slugs.sort();
+                expectedResult.slugs.sort();
+                jsonBody.slugs.sort();
 
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
 
-                expect(json_body).to.eql(expected_result);
+                expect(jsonBody).to.eql(expectedResult);
                 done();
             });
         });
 
         it('should fail with invalid slug error', function(done) {
-            request.get(base_url + 'projects/404', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(
+            request.get(baseUrl + 'projects/404', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode.apply(
                     null, res.body));
-                var expected_result = {
+                var expectedResult = {
                     error: "The provided slug wasn't valid",
                     errno: 6,
                     text: '404 is not a valid project slug.'
                 };
 
-                expect(json_body).to.eql(expected_result);
+                expect(jsonBody).to.eql(expectedResult);
                 expect(res.statusCode).to.equal(404);
 
                 done();

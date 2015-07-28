@@ -23,8 +23,8 @@ module.exports = {
         return createError('Object not found', 1, 'Invalid ' + object + ' id');
     },
 
-    errorDatabaseSaveFailed: function(sql_error) {
-        return createError('Database save failed', 2, sql_error);
+    errorDatabaseSaveFailed: function(sqlError) {
+        return createError('Database save failed', 2, sqlError);
     },
 
     errorInvalidForeignKey: function(object) {

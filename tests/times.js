@@ -1,10 +1,11 @@
-module.exports = function(expect, request, base_url) {
+module.exports = function(expect, request, baseUrl) {
     describe('GET /times', function() {
         it('should return all times in the database', function(done) {
-            request.get(base_url + 'times', function(err, res) {
+            request.get(baseUrl + 'times', function(err, res) {
                 var bodyAsString = String.fromCharCode.apply(null, res.body);
-                var expected_results = [
+                var expectedResults = [
                     {
+                        //jscs:disable
                         duration: 12,
                         user: 'tschuy',
                         project: ['wf'],
@@ -16,11 +17,12 @@ module.exports = function(expect, request, base_url) {
                         created_at: null,
                         updated_at: null,
                         id: 1
+                        //jscs:enable
                     }
                 ];
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
-                expect(JSON.parse(bodyAsString)).to.eql(expected_results);
+                expect(JSON.parse(bodyAsString)).to.eql(expectedResults);
                 done();
             });
         });
@@ -28,10 +30,11 @@ module.exports = function(expect, request, base_url) {
 
     describe('GET /times/:id', function() {
         it('should return times by id', function(done) {
-            request.get(base_url + 'times/1', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(
+            request.get(baseUrl + 'times/1', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode.apply(
                     null, res.body));
-                var expected_result = {
+                var expectedResult = {
+                    //jscs:disable
                     duration: 12,
                     user: 'tschuy',
                     project: ['wf'],
@@ -43,32 +46,33 @@ module.exports = function(expect, request, base_url) {
                     created_at: null,
                     updated_at: null,
                     id: 1
+                    //jscs:enable
                 };
 
-                expected_result.project.sort();
-                expected_result.activity.sort();
-                json_body.project.sort();
-                json_body.activity.sort();
+                expectedResult.project.sort();
+                expectedResult.activity.sort();
+                jsonBody.project.sort();
+                jsonBody.activity.sort();
 
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
 
-                expect(json_body).to.eql(expected_result);
+                expect(jsonBody).to.eql(expectedResult);
                 done();
             });
         });
 
         it('should fail with Object not found error', function(done) {
-            request.get(base_url + 'times/404', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(
+            request.get(baseUrl + 'times/404', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode.apply(
                     null, res.body));
-                var expected_result = {
+                var expectedResult = {
                     error: 'Object not found',
                     errno: 1,
                     text: 'Invalid time id'
                 };
 
-                expect(json_body).to.eql(expected_result);
+                expect(jsonBody).to.eql(expectedResult);
                 expect(res.statusCode).to.equal(404);
 
                 done();

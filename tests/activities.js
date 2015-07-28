@@ -1,10 +1,10 @@
-module.exports = function(expect, request, base_url) {
+module.exports = function(expect, request, baseUrl) {
     describe('GET /activities', function() {
         it('should return all activities in the database', function(done) {
-            request.get(base_url + 'activities', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(
+            request.get(baseUrl + 'activities', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode.apply(
                     null, res.body));
-                var expected_results = [
+                var expectedResults = [
                     {
                         name: 'Documentation',
                         slugs: ['doc'],
@@ -22,7 +22,7 @@ module.exports = function(expect, request, base_url) {
                     }
                 ];
 
-                [expected_results, json_body].forEach(function(list) {
+                [expectedResults, jsonBody].forEach(function(list) {
                     list.forEach(function(result) {
                         result.slugs.sort();
                     });
@@ -30,7 +30,7 @@ module.exports = function(expect, request, base_url) {
 
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
-                expect(json_body).to.eql(expected_results);
+                expect(jsonBody).to.eql(expectedResults);
                 done();
             });
         });
@@ -38,36 +38,36 @@ module.exports = function(expect, request, base_url) {
 
     describe('GET /activities/:slug', function() {
         it('should return activities by slug', function(done) {
-            request.get(base_url + 'activities/sys', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(
+            request.get(baseUrl + 'activities/sys', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode.apply(
                     null, res.body));
-                var expected_result = {
+                var expectedResult = {
                     name: 'Systems',
                     slugs: ['sys', 'sysadmin'],
                     id: 3
                 };
-                expected_result.slugs.sort();
-                json_body.slugs.sort();
+                expectedResult.slugs.sort();
+                jsonBody.slugs.sort();
 
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
 
-                expect(json_body).to.eql(expected_result);
+                expect(jsonBody).to.eql(expectedResult);
                 done();
             });
         });
 
         it('should fail with invalid slug error', function(done) {
-            request.get(base_url + 'activities/404', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode.apply(
+            request.get(baseUrl + 'activities/404', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode.apply(
                     null, res.body));
-                var expected_result = {
+                var expectedResult = {
                     error: "The provided slug wasn't valid",
                     errno: 6,
                     text: '404 is not a valid activity slug.'
                 };
 
-                expect(json_body).to.eql(expected_result);
+                expect(jsonBody).to.eql(expectedResult);
                 expect(res.statusCode).to.equal(404);
 
                 done();
