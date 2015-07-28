@@ -10,16 +10,16 @@ module.exports = function(expect) {
         });
 
         it('Returns false when passed invalid activity slug', function(done) {
-            expect(helper.checkActivities('developing',
+            expect(helper.checkActivities(['developing',
                                            'meeting',
-                                           'notanactivity')).to.equal(false);
+                                           'notanactivity'])).to.equal(false);
             done();
         });
 
         it('Returns false when passed null parameter', function(done) {
-            expect(helper.checkActivities('developing',
+            expect(helper.checkActivities(['developing',
                                            'meeting',
-                                           null)).to.equal(false);
+                                           null])).to.equal(false);
             done();
         });
     });
