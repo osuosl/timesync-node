@@ -55,3 +55,15 @@ describe('Endpoints', function() {
     require('./projects')(expect, request, base_url);
 
 });
+
+describe('Helpers', function() {
+
+    before(function(done) {
+        knex.migrate.latest().then(function() {
+            done();
+        });
+    });
+
+    require('./helpers')(expect);
+
+});
