@@ -81,4 +81,6 @@ describe('Helpers', function() {
         clearDatabase(done);
     });
 
+    var local_passport = require('../src/auth/local.js')(knex);
+    require('./helpers')(expect, request, baseUrl, local_passport);
 });

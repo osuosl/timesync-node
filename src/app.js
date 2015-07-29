@@ -17,7 +17,7 @@ app.set('version', '/v1');
 
 // Set up authentication
 var passport = require('passport');
-var local_passport = require('./auth/local.js');
+var local_passport = require('./auth/local.js')(knex);
 
 app.use(passport.initialize());
 app.use(passport.session());

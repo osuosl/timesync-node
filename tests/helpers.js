@@ -1,9 +1,31 @@
-// test/helpers.js
+var passport = require('passport');
+var chai = require('chai');
+chai.use(require('chai-passport-strategy'));
 
-var helper = require('../src/helpers');
+module.exports = function(expect, request, baseUrl, local_passport) {
+    describe('Password-based login strategy', function() {
+        var user
+          , info;
 
-module.exports = function(expect) {
-    // This line exists to please the linters and tests
-    // Remove it when you write real tests.
-    expect(helper);
-};
+        before(function(done) {
+          chai.passport.use(local_passport)
+            .success(function(u, i) {
+              user = u;
+              info = i;
+              done();
+            })
+            .req(function(req) {
+                req.body = {};
+                req.body.username = 'tschuy';
+                req.body.password = 'password';
+            })
+            .authenticate();
+        });
+
+        it('should supply user', function(done) {
+            expect(user).to.be.an.object;
+            expect(user.username).to.equal('tschuy');
+            done();
+        });
+    });
+}
