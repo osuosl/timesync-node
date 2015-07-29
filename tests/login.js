@@ -3,9 +3,9 @@ chai.use(require('chai-passport-strategy'));
 
 module.exports = function(expect, localPassport) {
 
-    describe('Local successful login', function() {
+    describe('Password-based login', function() {
 
-        it('should return user', function(done) {
+        it('returns user for good user/pass', function(done) {
             chai.passport.use(localPassport)
             .success(function(user) {
                 expect(user.username).to.equal('tschuy');
@@ -20,7 +20,7 @@ module.exports = function(expect, localPassport) {
 
         });
 
-        it('returns invalid username message', function(done) {
+        it('returns invalid username message for bad user', function(done) {
             chai.passport.use(localPassport)
             .fail(function(challenge) {
                 expect(challenge.message).to.equal('Incorrect username.');
@@ -34,7 +34,7 @@ module.exports = function(expect, localPassport) {
             .authenticate();
         });
 
-        it('returns invalid password message', function(done) {
+        it('returns invalid password message for bad pass', function(done) {
             chai.passport.use(localPassport)
             .fail(function(challenge) {
                 expect(challenge.message).to.equal('Incorrect password.');
@@ -48,7 +48,7 @@ module.exports = function(expect, localPassport) {
             .authenticate();
         });
 
-        it('returns missing user/pass message', function(done) {
+        it('returns missing creds message when no user/pass', function(done) {
             chai.passport.use(localPassport)
             .fail(function(challenge) {
                 expect(challenge.message).to.equal('Missing credentials');
