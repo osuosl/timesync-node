@@ -1,16 +1,20 @@
 module.exports = function(expect, request, baseUrl) {
     describe('GET /users', function() {
-        it('should return all users in the database', function(done) {
+        it('returns all users in the database', function(done) {
             request.get(baseUrl + 'users', function(err, res) {
                 var bodyAsString = String.fromCharCode.apply(null, res.body);
                 var expectedResults = [
                     {
                         id: 1,
-                        username: 'deanj'
+                        username: 'deanj',
+                        active: true,
+                        password: 'pass'
                     },
                     {
                         id: 2,
-                        username: 'tschuy'
+                        username: 'tschuy',
+                        active: false,
+                        password: 'password'
                     }
                 ];
                 expect(err).to.be(null);
