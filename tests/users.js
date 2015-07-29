@@ -8,13 +8,15 @@ module.exports = function(expect, request, baseUrl) {
                         id: 1,
                         username: 'deanj',
                         active: true,
-                        password: 'pass'
+                        //Hash generated from password 'pass'
+                        password: '$2a$10$nkGN8eZN1DbOahNfv8YgWO790imw7poGcjfik1k0zQ9mFqYqtMY0y'
                     },
                     {
                         id: 2,
                         username: 'tschuy',
                         active: false,
-                        password: 'password'
+                        //Hash generated from password 'password'
+                        password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W'
                     }
                 ];
                 expect(err).to.be(null);

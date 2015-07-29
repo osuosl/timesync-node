@@ -29,6 +29,7 @@
     "url": "https://github.com/tschuy/timesync/issues"
   },
   "dependencies": {
+    "bcrypt": "^0.8.4",
     "body-parser": "^1.12.3",
     "expect.js": "^0.3.1",
     "express": "^4.12.3",
