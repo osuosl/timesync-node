@@ -19,7 +19,7 @@ var reloadFixtures = function(done) {
             done();
         });
     });
-}
+};
 
 var clearDatabase = function(done) {
     knex('projects').del().then(function() {
@@ -37,7 +37,7 @@ var clearDatabase = function(done) {
             });
         });
     });
-}
+};
 
 describe('Endpoints', function() {
     this.timeout(5000);
