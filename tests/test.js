@@ -81,6 +81,6 @@ describe('Helpers', function() {
         clearDatabase(done);
     });
 
-    var local_passport = require('../src/auth/local.js')(knex);
-    require('./login')(expect, local_passport, knex);
+    var localPassport = require('../src/auth/local.js')(knex);
+    require('./login')(expect, localPassport);
 });

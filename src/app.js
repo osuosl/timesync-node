@@ -17,20 +17,20 @@ app.set('version', '/v1');
 
 // Set up authentication
 var passport = require('passport');
-var local_passport = require('./auth/local.js')();
+var localPassport = require('./auth/local.js')();
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser(function(user, done) {
-  done(null, user);
+    done(null, user);
 });
 
 passport.deserializeUser(function(user, done) {
-  done(null, user);
+    done(null, user);
 });
 
-passport.use(local_passport);
+passport.use(localPassport);
 
 //Load local functions
 require('./routes')(app);

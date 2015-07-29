@@ -1,15 +1,13 @@
-var passport = require('passport');
 var chai = require('chai');
 chai.use(require('chai-passport-strategy'));
 
-module.exports = function(expect, local_passport, knex) {
+module.exports = function(expect, localPassport) {
 
     describe('Local successful login', function() {
 
         it('should return user', function(done) {
-            chai.passport.use(local_passport)
-            .success(function(user, info) {
-                expect(user).to.be.an.object;
+            chai.passport.use(localPassport)
+            .success(function(user) {
                 expect(user.username).to.equal('tschuy');
                 done();
             })
@@ -23,7 +21,7 @@ module.exports = function(expect, local_passport, knex) {
         });
 
         it('returns invalid username message', function(done) {
-            chai.passport.use(local_passport)
+            chai.passport.use(localPassport)
             .fail(function(challenge) {
                 expect(challenge.message).to.equal('Incorrect username.');
                 done();
@@ -37,7 +35,7 @@ module.exports = function(expect, local_passport, knex) {
         });
 
         it('returns invalid password message', function(done) {
-            chai.passport.use(local_passport)
+            chai.passport.use(localPassport)
             .fail(function(challenge) {
                 expect(challenge.message).to.equal('Incorrect password.');
                 done();
@@ -51,7 +49,7 @@ module.exports = function(expect, local_passport, knex) {
         });
 
         it('returns missing user/pass message', function(done) {
-            chai.passport.use(local_passport)
+            chai.passport.use(localPassport)
             .fail(function(challenge) {
                 expect(challenge.message).to.equal('Missing credentials');
                 done();
@@ -62,4 +60,4 @@ module.exports = function(expect, local_passport, knex) {
             .authenticate();
         });
     });
-}
+};
