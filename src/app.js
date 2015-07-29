@@ -15,18 +15,9 @@ app.set('knex', knex);
 // Set API version prefix
 app.set('version', '/v1');
 
+// Set up authentication
 var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var bcrypt = require('bcrypt');
-
-var h;
-
-bcrypt.genSalt(10, function(err, salt) {
-    bcrypt.hash('password', salt, function(err, hash) {
-        console.log('hash: ' + hash);
-        h = hash;
-    });
-});
+var local_passport = require('./auth/local.js');
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -39,31 +30,7 @@ passport.deserializeUser(function(user, done) {
   done(null, user);
 });
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    knex('users').where({username: username}).then(function(users) {
-      if (!users) {
-        done(null, false, { message: 'Incorrect username.' });
-      }
-      var user = users[0];
-
-      bcrypt.compare(password, h, function(err, res) {
-          if(res) {
-            done(null, user);
-          }
-          else {
-            done(null, false, { message: 'Incorrect password.' });
-          }
-      });
-
-
-    }).catch(
-      function(err) {
-        done(err);
-      }
-    );
-  }
-));
+passport.use(local_passport);
 
 //Load local functions
 require('./routes')(app);
