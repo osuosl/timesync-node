@@ -22,6 +22,8 @@ exports.up = function(knex, Promise) {
   }).createTable('users', function (table) {
     table.increments('id').primary();
     table.string('username').unique().notNullable();
+    table.string('active').defaultTo(false);
+    table.string('password');
   }).createTable('projectslugs', function (table) {
     table.increments('id').primary();
     table.string('name').unique().notNullable();
