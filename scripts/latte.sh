@@ -1,3 +1,3 @@
 npm run linter
 npm run coverage
-echo "See coverage/index.html for full coverage information."
+echo "See file://`pwd`/coverage/lcov-report/index.html for full coverage information."
