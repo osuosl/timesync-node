@@ -24,6 +24,7 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
         }
 
+        // get matching activity
         knex('activities').select().where('slug', '=', req.params.slug)
         .then(function(activity) {
             if (activity.length === 0) {

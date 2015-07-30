@@ -1,4 +1,6 @@
 module.exports = function(expect, request, baseUrl) {
+    /* GET one of the /projects endpoints and check its response against
+       what should be returned */
     describe('GET /projects', function() {
         it('should return all projects in the database', function(done) {
             request.get(baseUrl + 'projects', function(err, res, body) {
@@ -81,7 +83,8 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it('should fail with Invalid Slug error', function(done) {
-            request.get(baseUrl + 'projects/test-!*@', function(err, res, body) {
+            request.get(baseUrl + 'projects/test-!*@',
+                    function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     status: 400,

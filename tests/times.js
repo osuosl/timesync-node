@@ -1,4 +1,6 @@
 module.exports = function(expect, request, baseUrl) {
+    /* GET one of the /times endpoints and check its response against
+       what should be returned */
     describe('GET /times', function() {
         it('should return all times in the database', function(done) {
             request.get(baseUrl + 'times', function(err, res, body) {

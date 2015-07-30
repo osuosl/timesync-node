@@ -8,19 +8,25 @@ module.exports = function(app) {
                 return res.send([]);
             }
 
+            // only return the project once both
+            // users and slugs have finished processing
             var usersDone = false,
                 slugsDone = false;
 
             knex('users').then(function(users) {
                 var idUserMap = {};
                 for (var i = 0, len = users.length; i < len; i++) {
+                    // make a map of every user id to their username
                     idUserMap[users[i].id] = users[i].username;
                 }
 
                 for (i = 0, len = projects.length; i < len; i++) {
+                    // using that user id, get the username and set it
+                    // to the project owner
                     projects[i].owner = idUserMap[projects[i].owner];
                 }
 
+                // processing finished. Return if slugs are also finished
                 usersDone = true;
                 if (slugsDone) {
                     return res.send(projects);
@@ -35,14 +41,20 @@ module.exports = function(app) {
 
                 var idProjectMap = {};
                 for (var i = 0, len = projects.length; i < len; i++) {
+                    // add slugs field to every project
                     projects[i].slugs = [];
+                    /* make a map of every project id to the whole project
+                       this is used to allow us to add slugs to projects
+                       by project id */
                     idProjectMap[projects[i].id] = projects[i];
                 }
 
                 for (i = 0, len = slugs.length; i < len; i++) {
+                    // add slugs to project by project id
                     idProjectMap[slugs[i].project].slugs.push(slugs[i].name);
                 }
 
+                // processing finished. Return if users are also finished
                 slugsDone = true;
                 if (usersDone) {
                     return res.send(projects);
@@ -78,8 +90,8 @@ module.exports = function(app) {
         * +----+---------+----------------------+-------------+
         * |  4 | Example | http://example.com/1 |      ex     |
         * |  4 | Example | http://example.com/1 |   example   |
-        * |  4 | Example | http://example.com/3 |    sample   |
-        * |  4 | Example | http://example.com/4 |   Beispiel  |
+        * |  4 | Example | http://example.com/1 |    sample   |
+        * |  4 | Example | http://example.com/1 |   Beispiel  |
         * +----+---------+----------------------+-------------+
         *
         * Equivalent SQL:
@@ -109,11 +121,16 @@ module.exports = function(app) {
         .then(function(results) {
 
             if (results.length !== 0) {
+                /* manually create our project object from
+                   the results. All results should be the same, save
+                   the slug, so just create it from the first one
+                   */
                 project = {id: results[0].id, name: results[0].name,
                            owner: results[0].owner, uri: results[0].uri,
                            slugs: []};
 
                 for (var i = 0, len = results.length; i < len; i++) {
+                    // add slugs to project
                     project.slugs.push(results[i].slug);
                 }
 
