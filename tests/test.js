@@ -21,24 +21,21 @@ var reloadFixtures = function(done) {
     });
 };
 
-// clearDatabasePromises gets iterated over by Promise,
-// this avoids the classic nested callback hell.
-var clearDatabasePromises = [
-    knex('projects').del(),
-    knex('activities').del(),
-    knex('users').del(),
-    knex('times').del(),
-    knex('activityslugs').del(),
-    knex('projectslugs').del(),
-    sqlFixtures.destroy(),
-];
-
-// clearDatabase is a callback function,
-// it used to look a lot uglier.
 var clearDatabase = (function(done) {
-    // This line actually iterates through the list databsePromises
-    Promise.all(clearDatabasePromises).then(function() {
-        done();
+    knex('projects').del().then(function() {
+        knex('activities').del().then(function() {
+            knex('users').del().then(function() {
+                knex('times').del().then(function() {
+                    knex('projectslugs').del().then(function() {
+                        knex('timesactivities').del().then(function() {
+                            sqlFixtures.destroy().then(function() {
+                                done();
+                            });
+                        });
+                    });
+                });
+            });
+        });
     });
 });
 
@@ -56,22 +53,7 @@ describe('Endpoints', function() {
     });
 
     afterEach(function(done) {
-        this.timeout(5000);
-        knex('projects').del().then(function() {
-            knex('activities').del().then(function() {
-                knex('users').del().then(function() {
-                    knex('times').del().then(function() {
-                        knex('projectslugs').del().then(function() {
-                            knex('timesactivities').del().then(function() {
-                                sqlFixtures.destroy().then(function() {
-                                    done();
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
+        clearDatabase(done);
     });
 
     require('./times')(expect, request, baseUrl);
