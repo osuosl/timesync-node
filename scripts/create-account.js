@@ -51,7 +51,7 @@ prompt.get(info, function(err, result) {
             .catch(
                 function() {
                     console.log('\nINVALID ENTRY: That username is already' +
-                                'in use, please choose a different handle');
+                                ' in use, please choose a different handle');
                     console.log('\n  Exiting...\n');
                     process.exit(0);
                 })
