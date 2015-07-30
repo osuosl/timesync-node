@@ -23,8 +23,8 @@ module.exports = function(expect, request, baseUrl) {
                     }
                 ];
 
-                expect(err).to.be(null);
-                expect(res.statusCode).to.be(200);
+                expect(err).to.equal(null);
+                expect(res.statusCode).to.equal(200);
                 expect(jsonBody).to.deep.equal(expectedResults);
                 done();
             });
