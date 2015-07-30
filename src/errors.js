@@ -1,7 +1,7 @@
-function createError(name, number, text) {
+function createError(status, name, text) {
     return {
+        status: status,
         error: name,
-        errno: number,
         text: text
     };
 }
@@ -9,40 +9,106 @@ function createError(name, number, text) {
 module.exports = {
 
     /*
-     * Uncertain of this function's purpose. We don't use it anywhere.
-     *      - Tristan
+     * Helper function to determine if a given slug is valid or not.
      */
-    // strip non-alphanumeric, non-hyphens
-    createSlugFrom: function(name) {
-        return name.toLowerCase()
-        .replace(/ /g, '-')
-        .replace(/[^\w-]+/g, '');
+    isInvalidSlug: function(slug) {
+        return !slug.match(/^([a-zA-Z0-9\-_]*)$/);
     },
 
+    /*
+     * Error 1: Object not found. Valid identifier, but does not point to a real
+     * object.
+     *
+     * param object (string): The name of the requested object type.
+     */
     errorObjectNotFound: function(object) {
-        return createError('Object not found', 1, 'Invalid ' + object + ' id');
+        return createError(404, 'Object not found', 'Nonexistent ' + object);
     },
 
-    errorDatabaseSaveFailed: function(sqlError) {
-        return createError('Database save failed', 2, sqlError);
+    /*
+     * Error 2: Server error. Error on the server that is not the client's
+     * fault.
+     *
+     * param serverError (string): The error message (e.g. a SQL error).
+     */
+    errorServerError: function(serverError) {
+        if (process.env.DEBUG) {
+            return createError(500, 'Server error', serverError);
+        } else {
+            return createError(500, 'Server error', 'Unexpected server error.');
+        }
     },
 
-    errorInvalidForeignKey: function(object) {
-        return createError(
-            'Invalid foreign key', 3,
-            'Invalid ' + object + ' id');
+    /*
+     * Error 3: Invalid foreign key. Client POSTed a valid object which
+     * references a
+     * non-existent one.
+     *
+     * param objectType (string): The name of the supplied object's type.
+     * param foreignKey (string): The name of the invalid key.
+     */
+    errorInvalidForeignKey: function(objectType, foreignKey) {
+        return createError(409, 'Invalid foreign key', 'The ' + objectType +
+            ' does not contain a valid ' + foreignKey + ' reference.');
     },
 
-    errorNoNameProvided: function(error) {
-        return createError('No Name provided', 4, error);
+    /*
+     * Error 4: Bad object. Variant 1: Unknown field. Client POSTed an object
+     * with an
+     * unknown field.
+     *
+     * param objectType (string): The name of the supplied object's type.
+     * param fieldName (string): The name of the unrecognized field.
+     */
+    errorBadObjectUnknownField: function(objectType, fieldName) {
+        return createError(400, 'Bad object', objectType +
+            ' does not have a ' + fieldName + ' field');
     },
 
-    errorInvalidValue: function(error) {
-        return createError("The provided value wasn't valid", 5, error);
+    /*
+     * Error 4: Bad object. Variant 2: Missing field. Client POSTed an object
+     * which did not contain a required field.
+     *
+     * param objectType (string): The name of the supplied object's type.
+     * param fieldName (string): The name of the missing field.
+     */
+    errorBadObjectMissingField: function(objectType, fieldName) {
+        return createError(400, 'Bad object', 'The ' + objectType +
+            ' is missing a ' + fieldName);
     },
 
-    errorInvalidSlug: function(error) {
-        return createError("The provided slug wasn't valid", 6, error);
+    /*
+     * Error 4: Bad object. Variant 3: Invalid field. Client POSTed an object
+     * with all the correct fields, but with an invalid value for one field
+     * (e.g. a string for a time).
+     *
+     * param objectType (string): The name of the supplied object's type.
+     * param fieldName (string): The name of the field with the invalid value.
+     * param expectedType (string): The actual type that the field should
+     *    contain.
+     * param receivedType (string): The type of the value received in the
+     *    field.
+     */
+    errorBadObjectInvalidField: function(objectType, fieldName, expectedType,
+    receivedType) {
+        return createError(400, 'Bad object', 'Field ' + fieldName + ' of ' +
+            objectType + ' should be a ' + expectedType +
+            ' but was received as ' + receivedType);
+    },
+
+    /*
+     * Error 5: Invalid identifier. The given slug or ID is not of the correct
+     * format to be valid, and therefore could never point to a valid object.
+     *
+     * param expectedType (string): Either 'slug' or 'ID' depending on which
+     *    was expected.
+     * param receivedIdentifier(string): The value that was received from the
+     *    client.
+     */
+    errorInvalidIdentifier: function(expectedType, receivedIdentifier) {
+        return createError(400, 'The provided identifier was invalid',
+            'Expected ' + expectedType + ' but received ' +
+            receivedIdentifier);
     }
 
 };
