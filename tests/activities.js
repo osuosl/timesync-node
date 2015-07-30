@@ -1,9 +1,8 @@
 module.exports = function(expect, request, baseUrl) {
     describe('GET /activities', function() {
         it('should return all activities in the database', function(done) {
-            request.get(baseUrl + 'activities', function(err, res) {
-                var jsonBody = JSON.parse(String.fromCharCode.apply(
-                    null, res.body));
+            request.get(baseUrl + 'activities', function(err, res, body) {
+                var jsonBody = JSON.parse(body);
                 var expectedResults = [
                     {
                         name: 'Documentation',
@@ -32,9 +31,8 @@ module.exports = function(expect, request, baseUrl) {
 
     describe('GET /activities/:slug', function() {
         it('should return activities by slug', function(done) {
-            request.get(baseUrl + 'activities/sys', function(err, res) {
-                var jsonBody = JSON.parse(String.fromCharCode.apply(
-                    null, res.body));
+            request.get(baseUrl + 'activities/sys', function(err, res, body) {
+                var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     name: 'Systems',
                     slug: 'sys',
@@ -50,9 +48,8 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it('should fail with invalid slug error', function(done) {
-            request.get(baseUrl + 'activities/404', function(err, res) {
-                var jsonBody = JSON.parse(String.fromCharCode.apply(
-                    null, res.body));
+            request.get(baseUrl + 'activities/404', function(err, res, body) {
+                var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     status: 404,
                     error: 'Object not found',
@@ -67,9 +64,8 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it('should fail with Invalid Slug error', function(done) {
-            request.get(baseUrl + 'activities/test-!*@', function(err, res) {
-                var jsonBody = JSON.parse(String.fromCharCode
-                    .apply(null, res.body));
+            request.get(baseUrl + 'activities/test-!*@', function(err, res, body) {
+                var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     status: 400,
                     error: 'The provided identifier was invalid',
