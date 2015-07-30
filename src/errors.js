@@ -29,11 +29,11 @@ module.exports = {
      * Error 2: Server error. Error on the server that is not the client's
      * fault.
      *
-     * param server_error (string): The error message (e.g. a SQL error).
+     * param serverError (string): The error message (e.g. a SQL error).
      */
-    errorServerError: function(server_error) {
+    errorServerError: function(serverError) {
         if (process.env.DEBUG) {
-            return createError(500, 'Server error', server_error);
+            return createError(500, 'Server error', serverError);
         } else {
             return createError(500, 'Server error', 'Unexpected server error.');
         }
@@ -44,12 +44,12 @@ module.exports = {
      * references a
      * non-existent one.
      *
-     * param object_type (string): The name of the supplied object's type.
-     * param foreign_key (string): The name of the invalid key.
+     * param objectType (string): The name of the supplied object's type.
+     * param foreignKey (string): The name of the invalid key.
      */
-    errorInvalidForeignKey: function(object_type, foreign_key) {
-        return createError(409, 'Invalid foreign key', 'The ' + object_type +
-            ' does not contain a valid ' + foreign_key + ' reference.');
+    errorInvalidForeignKey: function(objectType, foreignKey) {
+        return createError(409, 'Invalid foreign key', 'The ' + objectType +
+            ' does not contain a valid ' + foreignKey + ' reference.');
     },
 
     /*
@@ -57,24 +57,24 @@ module.exports = {
      * with an
      * unknown field.
      *
-     * param object_type (string): The name of the supplied object's type.
-     * param field_name (string): The name of the unrecognized field.
+     * param objectType (string): The name of the supplied object's type.
+     * param fieldName (string): The name of the unrecognized field.
      */
-    errorBadObjectUnknownField: function(object_type, field_name) {
-        return createError(400, 'Bad object', object_type +
-            ' does not have a ' + field_name + ' field');
+    errorBadObjectUnknownField: function(objectType, fieldName) {
+        return createError(400, 'Bad object', objectType +
+            ' does not have a ' + fieldName + ' field');
     },
 
     /*
      * Error 4: Bad object. Variant 2: Missing field. Client POSTed an object
      * which did not contain a required field.
      *
-     * param object_type (string): The name of the supplied object's type.
-     * param field_name (string): The name of the missing field.
+     * param objectType (string): The name of the supplied object's type.
+     * param fieldName (string): The name of the missing field.
      */
-    errorBadObjectMissingField: function(object_type, field_name) {
-        return createError(400, 'Bad object', 'The ' + object_type +
-            ' is missing a ' + field_name);
+    errorBadObjectMissingField: function(objectType, fieldName) {
+        return createError(400, 'Bad object', 'The ' + objectType +
+            ' is missing a ' + fieldName);
     },
 
     /*
@@ -82,33 +82,33 @@ module.exports = {
      * with all the correct fields, but with an invalid value for one field
      * (e.g. a string for a time).
      *
-     * param object_type (string): The name of the supplied object's type.
-     * param field_name (string): The name of the field with the invalid value.
-     * param expected_type (string): The actual type that the field should
+     * param objectType (string): The name of the supplied object's type.
+     * param fieldName (string): The name of the field with the invalid value.
+     * param expectedType (string): The actual type that the field should
      *    contain.
-     * param received_type (string): The type of the value received in the
+     * param receivedType (string): The type of the value received in the
      *    field.
      */
-    errorBadObjectInvalidField: function(object_type, field_name, expected_type,
-    received_type) {
-        return createError(400, 'Bad object', 'Field ' + field_name + ' of ' +
-            object_type + ' should be a ' + expected_type +
-            ' but was received as ' + received_type);
+    errorBadObjectInvalidField: function(objectType, fieldName, expectedType,
+    receivedType) {
+        return createError(400, 'Bad object', 'Field ' + fieldName + ' of ' +
+            objectType + ' should be a ' + expectedType +
+            ' but was received as ' + receivedType);
     },
 
     /*
      * Error 5: Invalid identifier. The given slug or ID is not of the correct
      * format to be valid, and therefore could never point to a valid object.
      *
-     * param expected_type (string): Either 'slug' or 'ID' depending on which
+     * param expectedType (string): Either 'slug' or 'ID' depending on which
      *    was expected.
-     * param received_identifier(string): The value that was received from the
+     * param receivedIdentifier(string): The value that was received from the
      *    client.
      */
-    errorInvalidIdentifier: function(expected_type, received_identifier) {
+    errorInvalidIdentifier: function(expectedType, receivedIdentifier) {
         return createError(400, 'The provided identifier was invalid',
-            'Expected ' + expected_type + ' but received ' +
-            received_identifier);
+            'Expected ' + expectedType + ' but received ' +
+            receivedIdentifier);
     }
 
 };

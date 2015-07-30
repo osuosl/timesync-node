@@ -1,16 +1,16 @@
-require('mocha');
-var request_builder = require('request');
-var expect = require('expect.js');
-var sqlFixtures = require('sql-fixtures');
 require('../src/app');
 
-var request = request_builder.defaults({encoding: null});
-var test_data = require('./fixtures/test_data');
+var requestBuilder = require('request');
+var expect = require('expect.js');
+var sqlFixtures = require('sql-fixtures');
+
+var request = requestBuilder.defaults({encoding: null});
+var testData = require('./fixtures/test_data');
 var knexfile = require('../knexfile');
 var knex = require('knex')(knexfile.mocha);
 
-var port = process.env.PORT || 8001;
-var base_url = 'http://localhost:' + port + '/v1/';
+var port = process.env.PORT || 8000;
+var baseUrl = 'http://localhost:' + port + '/v1/';
 
 describe('Endpoints', function() {
 
@@ -24,7 +24,7 @@ describe('Endpoints', function() {
         this.timeout(5000);
         // Clear SQLite indexes
         knex.raw('delete from sqlite_sequence').then(function() {
-            sqlFixtures.create(knexfile.mocha, test_data).then(function() {
+            sqlFixtures.create(knexfile.mocha, testData).then(function() {
                 done();
             });
         });
@@ -49,9 +49,9 @@ describe('Endpoints', function() {
         });
     });
 
-    require('./times')(expect, request, base_url);
-    require('./users')(expect, request, base_url);
-    require('./activities')(expect, request, base_url);
-    require('./projects')(expect, request, base_url);
+    require('./times')(expect, request, baseUrl);
+    require('./users')(expect, request, baseUrl);
+    require('./activities')(expect, request, baseUrl);
+    require('./projects')(expect, request, baseUrl);
 
 });

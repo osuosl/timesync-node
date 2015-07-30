@@ -1,10 +1,10 @@
-module.exports = function(expect, request, base_url) {
+module.exports = function(expect, request, baseUrl) {
     describe('GET /activities', function() {
         it('should return all activities in the database', function(done) {
-            request.get(base_url + 'activities', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode
-                    .apply(null, res.body));
-                var expected_results = [
+            request.get(baseUrl + 'activities', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode.apply(
+                    null, res.body));
+                var expectedResults = [
                     {
                         name: 'Documentation',
                         slug: 'docs',
@@ -24,7 +24,7 @@ module.exports = function(expect, request, base_url) {
 
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
-                expect(json_body).to.eql(expected_results);
+                expect(jsonBody).to.eql(expectedResults);
                 done();
             });
         });
@@ -32,10 +32,10 @@ module.exports = function(expect, request, base_url) {
 
     describe('GET /activities/:slug', function() {
         it('should return activities by slug', function(done) {
-            request.get(base_url + 'activities/sys', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode
-                    .apply(null, res.body));
-                var expected_result = {
+            request.get(baseUrl + 'activities/sys', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode.apply(
+                    null, res.body));
+                var expectedResult = {
                     name: 'Systems',
                     slug: 'sys',
                     id: 3
@@ -44,22 +44,22 @@ module.exports = function(expect, request, base_url) {
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
 
-                expect(json_body).to.eql(expected_result);
+                expect(jsonBody).to.eql(expectedResult);
                 done();
             });
         });
 
-        it('should fail with Object Not Found error', function(done) {
-            request.get(base_url + 'activities/test-404', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode
-                    .apply(null, res.body));
-                var expected_result = {
+        it('should fail with invalid slug error', function(done) {
+            request.get(baseUrl + 'activities/404', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode.apply(
+                    null, res.body));
+                var expectedResult = {
                     status: 404,
                     error: 'Object not found',
                     text: 'Nonexistent activity'
                 };
 
-                expect(json_body).to.eql(expected_result);
+                expect(jsonBody).to.eql(expectedResult);
                 expect(res.statusCode).to.equal(404);
 
                 done();
@@ -67,16 +67,16 @@ module.exports = function(expect, request, base_url) {
         });
 
         it('should fail with Invalid Slug error', function(done) {
-            request.get(base_url + 'activities/test-!*@', function(err, res) {
-                var json_body = JSON.parse(String.fromCharCode
+            request.get(baseUrl + 'activities/test-!*@', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode
                     .apply(null, res.body));
-                var expected_result = {
+                var expectedResult = {
                     status: 400,
                     error: 'The provided identifier was invalid',
                     text: 'Expected slug but received test-!*@'
                 };
 
-                expect(json_body).to.eql(expected_result);
+                expect(jsonBody).to.eql(expectedResult);
                 expect(res.statusCode).to.equal(400);
 
                 done();

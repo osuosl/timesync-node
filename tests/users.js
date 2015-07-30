@@ -1,21 +1,31 @@
-module.exports = function(expect, request, base_url) {
+module.exports = function(expect, request, baseUrl) {
     describe('GET /users', function() {
-        it('should return all users in the database', function(done) {
-            request.get(base_url + 'users', function(err, res) {
+        it('returns all users in the database', function(done) {
+            request.get(baseUrl + 'users', function(err, res) {
                 var bodyAsString = String.fromCharCode.apply(null, res.body);
-                var expected_results = [
+                var expectedResults = [
                     {
                         id: 1,
-                        username: 'deanj'
+                        username: 'deanj',
+                        active: 'false',
+                        //Hash generated from password 'pass'
+                        //jscs:disable maximumLineLength
+                        password: '$2a$10$nkGN8eZN1DbOahNfv8YgWO790imw7poGcjfik1k0zQ9mFqYqtMY0y'
+                        //jscs:enable maximumLineLength
                     },
                     {
                         id: 2,
-                        username: 'tschuy'
+                        username: 'tschuy',
+                        active: 'true',
+                        //Hash generated from password 'password'
+                        //jscs:disable maximumLineLength
+                        password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W'
+                        //jscs:enable maximumLineLength
                     }
                 ];
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
-                expect(JSON.parse(bodyAsString)).to.eql(expected_results);
+                expect(JSON.parse(bodyAsString)).to.eql(expectedResults);
                 done();
             });
         });

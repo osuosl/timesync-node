@@ -1,3 +1,4 @@
+
 {
     "activities":[
         {
@@ -16,16 +17,21 @@
             "id": 3
         }
     ],
-    "users":[
-        {
-            "username":"deanj",
-            "id": 1
-        },
-        {
-            "username":"tschuy",
-            "id": 2
-        }
-    ],
+   "users":[
+      {
+         "username":"deanj",
+         "id": 1,
+         "active": "false",
+         "password": "$2a$10$nkGN8eZN1DbOahNfv8YgWO790imw7poGcjfik1k0zQ9mFqYqtMY0y"
+      },
+      {
+         "username":"tschuy",
+         "id": 2,
+         "active": "true",
+         "password": "$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W"
+
+      }
+   ],
     "projects":[
         {
             "uri":"https:://code.osuosl.org/projects/ganeti-webmgr",

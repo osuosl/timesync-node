@@ -17,23 +17,23 @@ module.exports = function(app) {
              * all asynchronously. Each of these activates a boolean flag when
              * they finish. When all booleans are raised, return the times.
              */
-            var users_done = false,
-                activities_done = false,
-                projects_done = false;
+            var usersDone = false,
+                activitiesDone = false,
+                projectsDone = false;
 
             knex('users').select('id', 'username').then(function(users) {
 
-                var id_user_map = {};
+                var idUserMap = {};
                 for (var i = 0, len = users.length; i < len; i++) {
-                    id_user_map[users[i].id] = users[i].username;
+                    idUserMap[users[i].id] = users[i].username;
                 }
 
                 for (i = 0, len = times.length; i < len; i++) {
-                    times[i].user = id_user_map[times[i].user];
+                    times[i].user = idUserMap[times[i].user];
                 }
 
-                users_done = true;
-                if (activities_done && projects_done) {
+                usersDone = true;
+                if (activitiesDone && projectsDone) {
                     return res.send(times);
                 }
             }).error(function(error) {
@@ -47,19 +47,19 @@ module.exports = function(app) {
                         return res.send([]);
                     }
 
-                    var time_activity_map = {};
+                    var timeActivityMap = {};
                     for (var i = 0, len = timesactivities.length; i < len;
                     i++) {
-                        if (time_activity_map[timesactivities[i].time] ===
+                        if (timeActivityMap[timesactivities[i].time] ===
                         undefined) {
-                            time_activity_map[timesactivities[i].time] = [];
+                            timeActivityMap[timesactivities[i].time] = [];
                         }
 
                         for (var j = 0, length = activities.length; j < length;
                         j++) {
                             if (activities[j].id ===
                             timesactivities[i].activity) {
-                                time_activity_map[timesactivities[i].time]
+                                timeActivityMap[timesactivities[i].time]
                                     .push(activities[j].slug);
                                 break;
                             }
@@ -71,11 +71,11 @@ module.exports = function(app) {
                             times[i].activities = [];
                         }
 
-                        times[i].activities = time_activity_map[times[i].id];
+                        times[i].activities = timeActivityMap[times[i].id];
                     }
 
-                    activities_done = true;
-                    if (users_done && projects_done) {
+                    activitiesDone = true;
+                    if (usersDone && projectsDone) {
                         return res.send(times);
                     }
                 }).error(function(error) {
@@ -94,24 +94,24 @@ module.exports = function(app) {
 
                 knex('projectslugs').then(function(slugs) {
 
-                    var id_project_map = {};
+                    var idProjectMap = {};
                     for (var i = 0, len = projects.length; i < len; i++) {
                         projects[i].slugs = [];
-                        id_project_map[projects[i].id] = projects[i];
+                        idProjectMap[projects[i].id] = projects[i];
                     }
 
                     for (i = 0, len = slugs.length; i < len; i++) {
-                        id_project_map[slugs[i].project].slugs.push(
+                        idProjectMap[slugs[i].project].slugs.push(
                             slugs[i].name);
                     }
 
                     for (i = 0, len = times.length; i < len; i++) {
-                        times[i].project = id_project_map[times[i].project]
+                        times[i].project = idProjectMap[times[i].project]
                             .slugs;
                     }
 
-                    projects_done = true;
-                    if (activities_done && users_done) {
+                    projectsDone = true;
+                    if (activitiesDone && usersDone) {
                         res.send(times);
                     }
                 }).error(function(error) {
@@ -137,9 +137,9 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
         }
 
-        knex('times').where({id: req.params.id}).then(function(time_list) {
-            if (time_list.length === 1) {
-                time = time_list[0];
+        knex('times').where({id: req.params.id}).then(function(timeList) {
+            if (timeList.length === 1) {
+                time = timeList[0];
 
                 knex('users').where({id: time.user}).select('username')
                 .then(function(user) {
