@@ -39,8 +39,7 @@
     "mocha": "^2.2.4",
     "passport": "^0.2.2",
     "passport-local": "^1.0.0",
-    "sqlite3": "^3.0.8",
-    "strip-json-comments": "^1.0.2"
+    "sqlite3": "^3.0.8"
   },
   "devDependencies": {
     "istanbul": "^0.3.17",
