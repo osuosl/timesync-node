@@ -63,7 +63,13 @@ Some other commands have been made available through TimeSync's
 Testing
 -------
 
-To test the application, use the test command::
+TimeSync comes with a single command to run the tests, linters, and test
+coverage commands all at once. It's Latte, or *Lint and Throughly Test
+Everything*::
+
+    npm run latte
+
+To only test the application, use the test command::
 
     npm test
 
