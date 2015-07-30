@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+//To start the script, run 'npm run create-account'
+
 //Library requirements
 var prompt = require('prompt');
 var bcrypt = require('bcrypt');
