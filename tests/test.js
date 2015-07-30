@@ -78,6 +78,7 @@ describe('Endpoints', function() {
     require('./users')(expect, request, baseUrl);
     require('./activities')(expect, request, baseUrl);
     require('./projects')(expect, request, baseUrl);
+    require('./helpers')(expect);
 
 });
 
