@@ -13,6 +13,7 @@
     "linter": "jshint ./src ./tests && jscs ./src ./tests",
     "fixtures": "node ./scripts/load_fixtures.js",
     "test": "DATABASE=mocha PORT=8851 mocha tests",
+    "latte": "sh ./scripts/latte.sh",
     "coverage": "DATABASE=mocha PORT=8851 istanbul cover _mocha -- tests"
   },
   "repository": {
