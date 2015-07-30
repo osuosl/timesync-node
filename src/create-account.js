@@ -21,7 +21,7 @@ var info = {
             required: true
         },
         password: {
-            //hidden: true,
+            hidden: true,
             required: true
         }
     }
@@ -45,6 +45,16 @@ prompt.get(info, function(err, result) {
                 function() {
                     console.log('\nUser successfully created\n');
                 })
+            /*If the user enters a duplicate name, information will not be
+              added to the database. An error message will print to the screen
+              and the process will exit. */
+            .catch(
+                function() {
+                    console.log('\nINVALID ENTRY: That username is already' +
+                                'in use, please choose a different handle');
+                    console.log('\n  Exiting...\n');
+                    process.exit(0);
+                })
             //Exits the process after storing user info in the db
             .then(
                 function() {
@@ -55,6 +65,6 @@ prompt.get(info, function(err, result) {
 
     console.log('\nCommand-line input received:\n');
     console.log('  Username: ' + result.name);
-    console.log('  Password: ' + result.password);
+    //console.log('  Password: ' + result.password);
 });
 
