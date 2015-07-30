@@ -46,7 +46,15 @@ run the migrations::
 
     npm run migrations
 
-And run the server::
+TimeSync comes with a very basic Gruntfile that automatically restarts the
+server whenever files in ``src/`` are changed. To start Grunt, just run::
+
+    npm run grunt
+
+For more information on Grunt, see Grunt's `Getting Started guide`_.
+
+Alternatively, if you don't want to use Grunt, you can use Node's built-in
+runner::
 
     npm start
 
@@ -59,6 +67,9 @@ Some other commands have been made available through TimeSync's
     * ``npm run recreate``: destroy the database and re-run migrations
     * ``npm run linter``: run the jshint Javascript linter
     * ``npm run fixtures``: install a set of test fixtures
+
+.. _`Getting Started guide`: http://gruntjs.com/getting-started
+
 
 Testing
 -------
