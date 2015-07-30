@@ -34,9 +34,9 @@ clearDatabasePromises.push(sqlFixtures.destroy());
 
 // clearDatabase is a callback function,
 // it used to look a lot uglier.
-var clearDatabase = (function(done){
+var clearDatabase = (function(done) {
     // This line actually iterates through the list databsePromises
-    Promise.all(clearDatabasePromises).then(function(){
+    Promise.all(clearDatabasePromises).then(function() {
         done();
     });
 });
