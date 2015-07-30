@@ -21,16 +21,17 @@ var reloadFixtures = function(done) {
     });
 };
 
-// databsePromises gets iterated over by Promise,
+// clearDatabasePromises gets iterated over by Promise,
 // this avoids the classic nested callback hell.
-var clearDatabasePromises = [];
-clearDatabasePromises.push(knex('projects').del());
-clearDatabasePromises.push(knex('activities').del());
-clearDatabasePromises.push(knex('users').del());
-clearDatabasePromises.push(knex('times').del());
-clearDatabasePromises.push(knex('activityslugs').del());
-clearDatabasePromises.push(knex('projectslugs').del());
-clearDatabasePromises.push(sqlFixtures.destroy());
+var clearDatabasePromises = [
+    knex('projects').del(),
+    knex('activities').del(),
+    knex('users').del(),
+    knex('times').del(),
+    knex('activityslugs').del(),
+    knex('projectslugs').del(),
+    sqlFixtures.destroy(),
+];
 
 // clearDatabase is a callback function,
 // it used to look a lot uglier.
