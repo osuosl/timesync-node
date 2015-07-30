@@ -21,23 +21,25 @@ var reloadFixtures = function(done) {
     });
 };
 
-var clearDatabase = function(done) {
-    knex('projects').del().then(function() {
-        knex('activities').del().then(function() {
-            knex('users').del().then(function() {
-                knex('times').del().then(function() {
-                    knex('activityslugs').del().then(function() {
-                        knex('projectslugs').del().then(function() {
-                            sqlFixtures.destroy().then(function() {
-                                done();
-                            });
-                        });
-                    });
-                });
-            });
-        });
+// databsePromises gets iterated over by Promise,
+// this avoids the classic nested callback hell.
+var clearDatabasePromises = [];
+clearDatabasePromises.push(knex('projects').del());
+clearDatabasePromises.push(knex('activities').del());
+clearDatabasePromises.push(knex('users').del());
+clearDatabasePromises.push(knex('times').del());
+clearDatabasePromises.push(knex('activityslugs').del());
+clearDatabasePromises.push(knex('projectslugs').del());
+clearDatabasePromises.push(sqlFixtures.destroy());
+
+// clearDatabase is a callback function,
+// it used to look a lot uglier.
+var clearDatabase = (function(done){
+    // This line actually iterates through the list databsePromises
+    Promise.all(clearDatabasePromises).then(function(){
+        done();
     });
-};
+});
 
 describe('Endpoints', function() {
     this.timeout(5000);
