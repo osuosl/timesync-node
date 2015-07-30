@@ -33,6 +33,9 @@
     "body-parser": "^1.12.3",
     "expect.js": "^0.3.1",
     "express": "^4.12.3",
+    "grunt": "^0.4.5",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-develop": "^0.4.0",
     "knex": "^0.8.6",
     "mocha": "^2.2.4",
     "sqlite3": "^3.0.8"
