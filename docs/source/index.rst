@@ -1,7 +1,7 @@
 .. _timesync-node-docs:
 
-Welcome to TimeSync's documentation!
-====================================
+Welcome to TimeSync-Node's documentation!
+=========================================
 TimeSync is an OSU Open Source Lab developed Time Tracking system.
 
 Development Docs
@@ -29,6 +29,6 @@ Indices and tables
     :maxdepth: 2
     :hidden:
 
-    Developer Guide <dev/development>  
+    Developer Guide <dev/development>
     Meeting Notes <meetings/index>
-    Draft Modesl <design/index>
+    Draft Models <design/index>

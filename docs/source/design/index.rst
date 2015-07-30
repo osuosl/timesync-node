@@ -10,4 +10,4 @@ include design choices made by the TimeSync API).
 .. toctree::
     :maxdepth: 1
 
-    Draft Modesl <draft_models>
+    Draft Models <draft_models>
