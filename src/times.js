@@ -33,7 +33,7 @@ module.exports = function(app) {
                 if (activitiesDone && projectsDone) {
                     return res.send(times);
                 }
-            }).error(function(error) {
+            }).catch(function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
@@ -85,11 +85,11 @@ module.exports = function(app) {
                     if (usersDone && projectsDone) {
                         return res.send(times);
                     }
-                }).error(function(error) {
+                }).catch(function(error) {
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
-            }).error(function(error) {
+            }).catch(function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
@@ -126,17 +126,17 @@ module.exports = function(app) {
                     if (activitiesDone && usersDone) {
                         res.send(times);
                     }
-                }).error(function(error) {
+                }).catch(function(error) {
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
 
-            }).error(function(error) {
+            }).catch(function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
 
-        }).error(function(error) {
+        }).catch(function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
@@ -181,17 +181,17 @@ module.exports = function(app) {
 
                             return res.send(time);
 
-                        }).error(function(error) {
+                        }).catch(function(error) {
                             var err = errors.errorServerError(error);
                             return res.status(err.status).send(err);
                         });
 
-                    }).error(function(error) {
+                    }).catch(function(error) {
                         var err = errors.errorServerError(error);
                         return res.status(err.status).send(err);
                     });
 
-                }).error(function(error) {
+                }).catch(function(error) {
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
@@ -201,7 +201,7 @@ module.exports = function(app) {
                 return res.status(err.status).send(err);
             }
 
-        }).error(function(error) {
+        }).catch(function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });

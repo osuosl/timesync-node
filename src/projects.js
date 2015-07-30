@@ -32,7 +32,7 @@ module.exports = function(app) {
                     return res.send(projects);
                 }
 
-            }).error(function(error) {
+            }).catch(function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
@@ -60,12 +60,12 @@ module.exports = function(app) {
                     return res.send(projects);
                 }
 
-            }).error(function(error) {
+            }).catch(function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
 
-        }).error(function(error) {
+        }).catch(function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
@@ -140,7 +140,7 @@ module.exports = function(app) {
                 return res.status(err.status).send(err);
             }
 
-        }).error(function(error) {
+        }).catch(function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
