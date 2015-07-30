@@ -9,6 +9,7 @@ var knex = require('knex')(knexfile[db]);
 module.exports = function() {
     return new LocalStrategy(
         function(username, password, done) {
+            // done(err, user, message)
             knex('users').where({username: username}).then(function(users) {
                 if (users.length === 0) {
                     done(null, false, { message: 'Incorrect username.' });

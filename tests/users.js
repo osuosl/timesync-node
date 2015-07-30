@@ -22,9 +22,10 @@ module.exports = function(expect, request, baseUrl) {
                         //jscs:enable maximumLineLength
                     }
                 ];
-                expect(err).to.be(null);
-                expect(res.statusCode).to.be(200);
-                expect(JSON.parse(body)).to.eql(expectedResults);
+
+                expect(err).to.equal(null);
+                expect(res.statusCode).to.equal(200);
+                expect(JSON.parse(body)).to.deep.equal(expectedResults);
                 done();
             });
         });

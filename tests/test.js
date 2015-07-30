@@ -1,7 +1,7 @@
 require('../src/app');
 
 var requestBuilder = require('request');
-var expect = require('expect.js');
+var expect = require('chai').expect;
 var sqlFixtures = require('sql-fixtures');
 
 var request = requestBuilder.defaults({encoding: null});

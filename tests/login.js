@@ -8,6 +8,7 @@ module.exports = function(expect, localPassport) {
         it('returns user for good user/pass', function(done) {
             chai.passport.use(localPassport)
             .success(function(user) {
+                // Chai will expect
                 expect(user.username).to.equal('tschuy');
                 done();
             })

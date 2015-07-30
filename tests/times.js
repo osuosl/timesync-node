@@ -21,9 +21,10 @@ module.exports = function(expect, request, baseUrl) {
                         //jscs:enable
                     }
                 ];
-                expect(err).to.be(null);
-                expect(res.statusCode).to.be(200);
-                expect(JSON.parse(body)).to.eql(expectedResults);
+
+                expect(err).to.equal(null);
+                expect(res.statusCode).to.equal(200);
+                expect(JSON.parse(body)).to.deep.equal(expectedResults);
                 done();
             });
         });
@@ -52,7 +53,7 @@ module.exports = function(expect, request, baseUrl) {
                 expect(err).to.be(null);
                 expect(res.statusCode).to.be(200);
 
-                expect(jsonBody).to.eql(expectedResult);
+                expect(jsonBody).to.deep.equal(expectedResult);
                 done();
             });
         });
@@ -66,7 +67,7 @@ module.exports = function(expect, request, baseUrl) {
                     text: 'Nonexistent time'
                 };
 
-                expect(jsonBody).to.eql(expectedResult);
+                expect(jsonBody).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(404);
 
                 done();
