@@ -41,25 +41,25 @@ module.exports = function(app) {
                 return res.status(err.status).send(err);
             });
 
-            knex('timesactivities').then(function(timesactivities) {
+            knex('timesactivities').then(function(timesActivities) {
                 knex('activities').then(function(activities) {
                     if (activities.length === 0) {
                         return res.send([]);
                     }
 
                     var timeActivityMap = {};
-                    for (var i = 0, len = timesactivities.length; i < len;
+                    for (var i = 0, len = timesActivities.length; i < len;
                     i++) {
-                        if (timeActivityMap[timesactivities[i].time] ===
+                        if (timeActivityMap[timesActivities[i].time] ===
                         undefined) {
-                            timeActivityMap[timesactivities[i].time] = [];
+                            timeActivityMap[timesActivities[i].time] = [];
                         }
 
                         for (var j = 0, length = activities.length; j < length;
                         j++) {
                             if (activities[j].id ===
-                            timesactivities[i].activity) {
-                                timeActivityMap[timesactivities[i].time]
+                            timesActivities[i].activity) {
+                                timeActivityMap[timesActivities[i].time]
                                     .push(activities[j].slug);
                                 break;
                             }
