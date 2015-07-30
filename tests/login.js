@@ -8,7 +8,7 @@ module.exports = function(expect, localPassport) {
         it('returns user for good user/pass', function(done) {
             chai.passport.use(localPassport)
             .success(function(user) {
-                // Chai will expect
+                // Called when passport successfully logs in
                 expect(user.username).to.equal('tschuy');
                 done();
             })
@@ -24,6 +24,7 @@ module.exports = function(expect, localPassport) {
         it('returns invalid username message for bad user', function(done) {
             chai.passport.use(localPassport)
             .fail(function(challenge) {
+                // Called when passport fails to log in
                 expect(challenge.message).to.equal('Incorrect username.');
                 done();
             })
@@ -38,6 +39,7 @@ module.exports = function(expect, localPassport) {
         it('returns invalid password message for bad pass', function(done) {
             chai.passport.use(localPassport)
             .fail(function(challenge) {
+                // Called when passport fails to log in
                 expect(challenge.message).to.equal('Incorrect password.');
                 done();
             })
@@ -52,6 +54,7 @@ module.exports = function(expect, localPassport) {
         it('returns missing creds message when no user/pass', function(done) {
             chai.passport.use(localPassport)
             .fail(function(challenge) {
+                // Called when passport fails to log in
                 expect(challenge.message).to.equal('Missing credentials');
                 done();
             })

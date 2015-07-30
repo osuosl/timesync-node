@@ -5,9 +5,14 @@ var expect = require('chai').expect;
 var sqlFixtures = require('sql-fixtures');
 
 var request = requestBuilder.defaults({encoding: null});
-var testData = require('./fixtures/test_data');
 var knexfile = require('../knexfile');
 var knex = require('knex')(knexfile.mocha);
+
+var fs = require('fs');
+var strip = require('strip-json-comments');
+var testData = JSON.parse(
+    strip(fs.readFileSync('./tests/fixtures/test_data.json').toString()
+));
 
 var port = process.env.PORT || 8000;
 var baseUrl = 'http://localhost:' + port + '/v1/';
