@@ -1,15 +1,12 @@
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcrypt');
-var knexfile = require('../../knexfile');
-var db = process.env.DATABASE || 'development';
 
-//Load the database (default to development)
-var knex = require('knex')(knexfile[db]);
-
-module.exports = function() {
+module.exports = function(knex) {
     return new LocalStrategy(
         function(username, password, done) {
-            // done(err, user, message)
+            /* done parameters: err, user, information
+               authentication succeeds if err is null
+               and user is not false. */
             knex('users').where({username: username}).then(function(users) {
                 if (users.length === 0) {
                     done(null, false, { message: 'Incorrect username.' });
