@@ -10,7 +10,7 @@
     "start": "node ./src/app.js",
     "migrations": "knex migrate:latest",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
-    "linter": "jshint ./src ./tests && jscs ./src ./tests",
+    "linter": "jshint ./src ./tests ./scripts && jscs ./src ./tests ./scripts",
     "fixtures": "node ./scripts/load_fixtures.js",
     "test": "DATABASE=mocha PORT=8851 mocha tests",
     "latte": "sh ./scripts/latte.sh",
