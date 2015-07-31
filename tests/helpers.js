@@ -115,7 +115,6 @@ module.exports = function(expect) {
 
         it('throws when passed a bad slug', function(done) {
             helpers.checkProject('dogs').then().catch(function(err) {
-                err.sort();
                 expect(err).to.equal('dogs');
                 done();
             });
