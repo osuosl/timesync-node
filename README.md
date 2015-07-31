@@ -86,13 +86,13 @@ API Specification
 ------------------
 
 To build the api specification docs run the following commands (it is very
-similar to boodling the regular docs)
+similar to building the timesync-node docs)
 
 ```
 $ pip install -r requirements.txt
-$ cd timesync_api
-[timesync_api]$ make html
-[timesync_api]$ <browser> build/html/index.html
+$ cd timesync-api
+[timesync-api]$ make html
+[timesync-api]$ <browser> build/html/index.html
 ```
 
 It should be noted that these docs are a git-submodule. Watch out for that.
