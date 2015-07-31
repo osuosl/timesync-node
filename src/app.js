@@ -33,8 +33,6 @@ passport.deserializeUser(function(user, done) {
 passport.use(localPassport);
 
 //Load local functions
-require('./routes')(app);
-require('./users')(app);
 require('./projects')(app);
 require('./activities')(app);
 require('./times')(app);
