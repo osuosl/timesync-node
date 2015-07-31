@@ -83,4 +83,5 @@ describe('Helpers', function() {
 
     var localPassport = require('../src/auth/local.js')(knex);
     require('./login')(expect, localPassport);
+    require('./helpers')(expect);
 });
