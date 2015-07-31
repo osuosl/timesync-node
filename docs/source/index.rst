@@ -6,29 +6,29 @@ TimeSync is an OSU Open Source Lab developed Time Tracking system.
 
 Development Docs
 ----------------
-* :ref:`development`
+.. toctree::
+  :maxdepth: 2
+
+  Developer Guide <dev/development>
+
+
+Design
+------
+.. toctree::
+  :maxdepth: 2
+
+  Design <design/index>
 
 
 Meeting Notes
 -------------
-* :ref:`dev-meeting-2015-07-10`
-* :ref:`dev-meeting-2015-04-09`
+.. toctree::
+  :maxdepth: 2
 
-Design
-------
-* :ref:`draft-models`
+  Meetings <meetings/index>
 
 Indices and tables
 ------------------
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-.. toctree::
-    :maxdepth: 2
-    :hidden:
-
-    Developer Guide <dev/development>
-    Meeting Notes <meetings/index>
-    Draft Models <design/index>
