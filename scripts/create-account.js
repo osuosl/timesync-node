@@ -51,27 +51,27 @@ prompt.get(info, function(err, result) {
                     var errno = err.errno;
                     if (errno === 19) {
                         console.log('\nINVALID ENTRY: That username is ' +
-                                    'already in use, please choose a ' + 
+                                    'already in use, please choose a ' +
                                     'different  handle');
                         console.log('\n  Exiting...\n');
                         process.exit(0);
 
-                    }
-                    // NOTE: DON'T IGNORE - This will need to be fixed later
-                    // to work on databases other than sqlite
+                    } else {
+                        // NOTE: DON'T IGNORE - This will need to be fixed
+                        // later to work on databases other than sqlite
 
-                    /* If the error that occurs is not a constraint violation,
-                       an error message will print to the screen with a link to
-                       a list of result codes. The errno is also printed to the
-                       screen. */
-                    else {
-                        console.log('Something went wrong! Check out ' +
+                        /* If the error that occurs is not a constraint
+                           violation, an error message will print to the screen
+                           with a link to a list of result codes. The errno is
+                           also printed to the screen. */
+
+                        console.log('\nSomething went wrong! Check out ' +
                                     'https://www.sqlite.org/c3ref/' +
-                                    'c_abort.html to figure out what' +
+                                    'c_abort.html to figure out what ' +
                                     'happened.\n');
-                        console.log('  Your error number is: ');
-                        return onErr(err.errno);
-                    }   
+                        console.log('  Your error number is: ' + err.errno);
+                        console.log('\n  Exiting...\n');
+                    }
                 })
             // Exits the process after storing user info in the db
             .then(
