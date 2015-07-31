@@ -47,7 +47,7 @@ However if a username is unavailable, you'll be met with::
     prompt: name:  username
     prompt: password:  
 
-    INVALID ENTRY: That username is already in use, please choose a different  handle
+    INVALID ENTRY: That username is already in use, please choose a different handle
 
     Exiting... 
 

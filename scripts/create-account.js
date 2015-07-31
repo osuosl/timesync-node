@@ -52,7 +52,7 @@ prompt.get(info, function(err, result) {
                     if (errno === 19) {
                         console.log('\nINVALID ENTRY: That username is ' +
                                     'already in use, please choose a ' +
-                                    'different  handle');
+                                    'different handle');
                         console.log('\n  Exiting...\n');
                         process.exit(0);
 
