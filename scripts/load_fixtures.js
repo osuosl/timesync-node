@@ -1,8 +1,8 @@
 var sqlFixtures = require('sql-fixtures');
 var knexfile = require('../knexfile');
 
-var test_data = require('../tests/fixtures/test_data');
+var testData = require('../tests/fixtures/test_data');
 
-sqlFixtures.create(knexfile.development, test_data).then(function () {
-  process.exit(0);
+sqlFixtures.create(knexfile.development, testData).then(function() {
+    process.exit(0);
 });
