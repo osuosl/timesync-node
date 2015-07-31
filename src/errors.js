@@ -109,6 +109,21 @@ module.exports = {
         return createError(400, 'The provided identifier was invalid',
             'Expected ' + expectedType + ' but received ' +
             receivedIdentifier);
-    }
+    },
+
+    /* Error 6: Authentication failed due to an invalid username. */
+    errorInvalidUsername: function(username) {
+        return createError(401, 'Invalid username',
+            username + " is not a valid username")
+    },
+
+    /*
+     * Error 7: Authentication failure. The token, password, etc. was not
+     * valid. Due to the numerous auth types, it takes a string from the auth
+     * strategy and returns that.
+    */
+    errorAuthenticationFailure: function(strategyFailure) {
+        return createError(401, 'Authentication failure', strategyFailure)
+    },
 
 };
