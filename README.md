@@ -85,6 +85,16 @@ $ cd docs
 API Specification
 ------------------
 
+The API docs are a git submodule. Before building them you need to initialize
+the submodule with the following commands:
+
+```
+The following command initializes the empty submodule:
+$ git submodule update --init timesync-api
+The following command updates the submodule (when the remote repo gets updated):
+$ git submodule update timesync-api
+```
+
 To build the api specification docs run the following commands (it is very
 similar to building the timesync-node docs)
 
@@ -95,4 +105,3 @@ $ cd timesync-api
 [timesync-api]$ <browser> build/html/index.html
 ```
 
-It should be noted that these docs are a git-submodule. Watch out for that.
