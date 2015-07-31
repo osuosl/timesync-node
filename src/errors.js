@@ -114,7 +114,7 @@ module.exports = {
     /* Error 6: Authentication failed due to an invalid username. */
     errorInvalidUsername: function(username) {
         return createError(401, 'Invalid username',
-            username + " is not a valid username")
+            username + " is not a valid username");
     },
 
     /*
@@ -123,7 +123,7 @@ module.exports = {
      * strategy and returns that.
     */
     errorAuthenticationFailure: function(strategyFailure) {
-        return createError(401, 'Authentication failure', strategyFailure)
+        return createError(401, 'Authentication failure', strategyFailure);
     },
 
 };
