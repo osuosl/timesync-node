@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
-//To start the script, run 'npm run create-account'
+// To start the script, run 'npm run create-account'
 
-//Library requirements
+// Library requirements
 var prompt = require('prompt');
 var bcrypt = require('bcrypt');
 var knexfile = require('../knexfile');
 var db = process.env.DATABASE || 'development';
 
-//Load the database (default = development)
+// Load the database (default = development)
 var knex = require('knex')(knexfile[db]);
 
-//Prompt user for their information
+// Prompt user for their information
 var info = {
     properties: {
         name: {
@@ -37,7 +37,7 @@ prompt.start();
 prompt.get(info, function(err, result) {
     if (err) { return onErr(err); }
 
-    //Password encryption
+    // Password encryption
     bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hash(result.password, salt, function(err, hash) {
             knex('users').insert({username: result.name, password: hash})
@@ -45,9 +45,9 @@ prompt.get(info, function(err, result) {
                 function() {
                     console.log('\nUser successfully created\n');
                 })
-            /*If the user enters a duplicate name, information will not be
-              added to the database. An error message will print to the screen
-              and the process will exit. */
+            /* If the user enters a duplicate name, information will not be
+               added to the database. An error message will print to the screen
+               and the process will exit. */
             .catch(
                 function() {
                     console.log('\nINVALID ENTRY: That username is already' +
@@ -55,7 +55,7 @@ prompt.get(info, function(err, result) {
                     console.log('\n  Exiting...\n');
                     process.exit(0);
                 })
-            //Exits the process after storing user info in the db
+            // Exits the process after storing user info in the db
             .then(
                 function() {
                     process.exit(0);
@@ -65,6 +65,6 @@ prompt.get(info, function(err, result) {
 
     console.log('\nCommand-line input received:\n');
     console.log('  Username: ' + result.name);
-    //console.log('  Password: ' + result.password);
+    // console.log('  Password: ' + result.password);
 });
 
