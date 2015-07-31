@@ -77,8 +77,8 @@ describe('Helpers', function() {
         reloadFixtures(done);
     });
 
-    afterEach(function(done) {
-        clearDatabase(done);
+    afterEach(function() {
+        clearDatabase();
     });
 
 });
