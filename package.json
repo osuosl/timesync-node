@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tschuy/timesync.git"
+    "url": "https://github.com/osuosl/timesync-node.git"
   },
   "keywords": [
     "time",
@@ -27,7 +27,7 @@
   "author": "OSU Open Source Lab <support@osuosl.org>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/tschuy/timesync/issues"
+    "url": "https://github.com/osuosl/timesync-node/issues"
   },
   "dependencies": {
     "bcrypt": "^0.8.4",
