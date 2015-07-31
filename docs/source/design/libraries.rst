@@ -62,11 +62,11 @@ Both Chai and Mocha have excellent documentation:
 
 * `Mocha documentation`_
 * `Chai documentation`_
-* `Chai ``expect`` documentation`_
+* `Chai's expect documentation`_
 
 .. _Mocha documentation: http://mochajs.org/
 .. _Chai documentation: http://chaijs.com/
-.. _Chai ``expect`` documentation: http://chaijs.com/api/bdd/
+.. _Chai's expect documentation: http://chaijs.com/api/bdd/
 
 Passport
 --------
