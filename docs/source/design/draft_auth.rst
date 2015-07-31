@@ -1,5 +1,0 @@
-.. _draft-auth:
-
-=============
-Authorization
-=============

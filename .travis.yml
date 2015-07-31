@@ -6,3 +6,5 @@ script:
   - npm run linter
 before_script:
   - npm run migrations
+git:
+    submodules: false

@@ -1,9 +1,9 @@
-TimeSync
-========
+TimeSync-Node
+==============
 
 ![travis](https://travis-ci.org/osuosl/timesync-node.svg?branch=develop) [![Dependency Status](https://david-dm.org/osuosl/timesync-node.svg)](https://david-dm.org/osuosl/timesync-node)
 
-<img align="right" style="padding: 5px;" src="/timesync.png?raw=true" />
+<img align="right" style="padding: 5px;" src="/timesync-node.png?raw=true" />
 
 TimeSync is the OSU Open Source Lab's time tracking system. It's designed to be
 simple, have a sane API, and make sense while allowing users to track their
@@ -69,6 +69,8 @@ $ curl -XGET -s localhost:8000/v1/times | python -m json.tool
 
 Your output should look something like the above.
 
+Documentation
+-------------
 
 More in-depth documentation can be found inside the ``docs/`` folder. To build
 the docs, build them with sphinxdocs by running the following:
@@ -79,3 +81,27 @@ $ cd docs
 [docs]$ make html
 [docs]$ <browser> build/html/index.html
 ```
+
+API Specification
+------------------
+
+The API docs are a git submodule. Before building them you need to initialize
+the submodule with the following commands:
+
+```
+The following command initializes the empty submodule:
+$ git submodule update --init timesync-api
+The following command updates the submodule (when the remote repo gets updated):
+$ git submodule update timesync-api
+```
+
+To build the api specification docs run the following commands (it is very
+similar to building the timesync-node docs)
+
+```
+$ pip install -r requirements.txt
+$ cd timesync-api
+[timesync-api]$ make html
+[timesync-api]$ <browser> build/html/index.html
+```
+
