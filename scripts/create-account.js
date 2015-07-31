@@ -13,7 +13,7 @@ var knex = require('knex')(knexfile[db]);
 var info = {
     properties: {
         name: {
-            //Note to self: '\w' matches all alphanumeric char and '_'
+            // Note to self: '\w' matches all alphanumeric char and '_'
             validator: /^[\w\-\+\@\+\.]{1,30}$/,
             warning: 'Use up to 30 alphanumeric, _, @, +, . and - \n',
             required: true
@@ -47,11 +47,31 @@ prompt.get(info, function(err, result) {
                added to the database. An error message will print to the screen
                and the process will exit. */
             .catch(
-                function() {
-                    console.log('\nINVALID ENTRY: That username is already' +
-                                ' in use, please choose a different handle');
-                    console.log('\n  Exiting...\n');
-                    process.exit(0);
+                function(err) {
+                    var errno = err.errno;
+                    if (errno === 19) {
+                        console.log('\nINVALID ENTRY: That username is ' +
+                                    'already in use, please choose a ' + 
+                                    'different  handle');
+                        console.log('\n  Exiting...\n');
+                        process.exit(0);
+
+                    }
+                    // NOTE: DON'T IGNORE - This will need to be fixed later
+                    // to work on databases other than sqlite
+
+                    /* If the error that occurs is not a constraint violation,
+                       an error message will print to the screen with a link to
+                       a list of result codes. The errno is also printed to the
+                       screen. */
+                    else {
+                        console.log('Something went wrong! Check out ' +
+                                    'https://www.sqlite.org/c3ref/' +
+                                    'c_abort.html to figure out what' +
+                                    'happened.\n');
+                        console.log('  Your error number is: ');
+                        return onErr(err.errno);
+                    }   
                 })
             // Exits the process after storing user info in the db
             .then(
