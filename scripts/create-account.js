@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 // To start the script, run 'npm run create-account'
 
 // Library requirements
@@ -62,9 +60,5 @@ prompt.get(info, function(err, result) {
                 });
         });
     });
-
-    console.log('\nCommand-line input received:\n');
-    console.log('  Username: ' + result.name);
-    // console.log('  Password: ' + result.password);
 });
 
