@@ -4,7 +4,8 @@
 Libraries
 =========
 
-Below are a few libraries that TimeSync relies on.
+Below are the most important libraries that TimeSync uses. For a complete list,
+see the app's ``package.json`` file.
 
 Express
 -------
@@ -23,11 +24,13 @@ Knex is a simple, easy-to-use SQL query builder. What this means is that it
 constructs database queries in Javascript, without having to rely on string
 concatenation and manual query escaping.
 
-`Its docs`_ are super helpful for constructing queries. A simple query to grab
-all of the users from the database might look like this:
+The `Knex documentation`_ is super helpful for constructing queries. A simple
+query to grab all of the users from the database might look like this:
 
 .. code-block:: javascript
 
+    var knexfile = require('../knexfile');
+    var knex = require('knex')(knexfile['development']);
     knex('users').then(function(users) {
         // do things with users
     }).catch(function(error) {
@@ -38,7 +41,7 @@ Knex uses Bluebird promises. For information on promises in general, see the
 `MDN documentation`_ on promises. For how to use Bluebird promises specifically,
 see `Bluebird's README`_.
 
-.. _Its docs: http://knexjs.org/
+.. _Knex documentation: http://knexjs.org/
 .. _MDN documentation: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
 .. _Bluebird's README: https://github.com/petkaantonov/bluebird#introduction
 
@@ -73,9 +76,9 @@ Passport
 
 Passport is an authentication middleware for Node. It uses a Strategy system,
 where each strategy is a different way to authenticate a user. These can be
-things like username/password, OpenID, oAuth, etc. (For a full list, see `their
-homepage`_ -- there are hundreds.) The `Passport documentation`_ is available
-there as well.
+things like username/password, OpenID, oAuth, etc. (For a full list, see the
+`Passport homepage`_ -- there are hundreds.) The `Passport documentation`_
+is available there as well.
 
 To use a strategy, it can be loaded with ``passport.use``:
 
@@ -84,6 +87,12 @@ To use a strategy, it can be loaded with ``passport.use``:
     // app.js
     var localPassport = require('./auth/local.js')(knex);
     passport.use(localPassport);
+
+.. _Passport homepage: http://passportjs.org/
+.. _Passport documentation: http://passportjs.org/docs
+
+Passport Local
+--------------
 
 Currently, TimeSync is set up to use ``passport-local`` to do username/password
 authentication. To use ``passport-local``, create a new LocalStrategy with a
@@ -116,6 +125,23 @@ In pseudocode, a LocalStrategy might look something like this:
       });
     });
 
+External Resources
+------------------
 
-.. _their homepage: http://passportjs.org/
-.. _Passport documentation: http://passportjs.org/docs
+* `Knex documentation`_
+
+Promises
+~~~~~~~~
+* `MDN documentation`_
+* `Bluebird's README`_
+
+Testing
+~~~~~~~
+* `Mocha documentation`_
+* `Chai documentation`_
+* `Chai's expect documentation`_
+
+Authentication
+~~~~~~~~~~~~~~
+* `Passport documentation`_
+* `Passport homepage`_
