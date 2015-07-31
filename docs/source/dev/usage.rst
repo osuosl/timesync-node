@@ -17,7 +17,7 @@ the database.
 
 
 Expected Outputs
-----------------
+~~~~~~~~~~~~~~~~
 If things go right, expect to see something like this::
 
     $ npm run create-account
