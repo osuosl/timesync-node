@@ -11,3 +11,4 @@ include design choices made by the TimeSync API).
     :maxdepth: 1
 
     Draft Models <draft_models>
+    Libraries <libraries>

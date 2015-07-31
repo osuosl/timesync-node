@@ -15,6 +15,23 @@ app.set('knex', knex);
 // Set API version prefix
 app.set('version', '/v1');
 
+// Set up authentication
+var passport = require('passport');
+var localPassport = require('./auth/local.js')(knex);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.use(localPassport);
+
 //Load local functions
 require('./routes')(app);
 require('./users')(app);

@@ -1,7 +1,7 @@
 require('../src/app');
 
 var requestBuilder = require('request');
-var expect = require('expect.js');
+var expect = require('chai').expect;
 var sqlFixtures = require('sql-fixtures');
 
 var request = requestBuilder.defaults({encoding: null});
@@ -81,4 +81,7 @@ describe('Helpers', function() {
         clearDatabase(done);
     });
 
+    var localPassport = require('../src/auth/local.js')(knex);
+    require('./login')(expect, localPassport);
+    require('./helpers')(expect);
 });
