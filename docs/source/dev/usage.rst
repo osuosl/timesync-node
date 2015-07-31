@@ -15,9 +15,11 @@ up, run::
 This will prompt for a username and a password and store the information into
 the database.
 
+-----------------
 
-Expected Outputs
-~~~~~~~~~~~~~~~~
+
+Successful Account Creation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If things go right, expect to see something like this::
 
     $ npm run create-account
@@ -30,6 +32,11 @@ If things go right, expect to see something like this::
 
     User successfully created
 
+-----------------
+
+
+Duplicate Username
+~~~~~~~~~~~~~~~~~~
 However if a username is unavailable, you'll be met with::
 
     $ npm run create-account
@@ -47,8 +54,11 @@ However if a username is unavailable, you'll be met with::
 In which case, just do as it says - rerun the script and choose a different
 username. 
 
-------------
+-----------------
 
+
+Error No. 1
+~~~~~~~~~~~
 Don't worry too much if you happen upon this next error::
     
     $ npm run create-account
