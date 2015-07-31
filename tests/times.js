@@ -73,5 +73,21 @@ module.exports = function(expect, request, baseUrl) {
                 done();
             });
         });
+
+        it('fails with Invalid Identifier error', function(done) {
+            request.get(baseUrl + 'times/cat', function(err, res, body) {
+                var jsonBody = JSON.parse(body);
+                var expectedResult = {
+                    error: 'The provided identifier was invalid',
+                    status: 400,
+                    text: 'Expected ID but received cat'
+                };
+
+                expect(jsonBody).to.eql(expectedResult);
+                expect(res.statusCode).to.equal(400);
+
+                done();
+            });
+        });
     });
 };
