@@ -145,7 +145,7 @@ module.exports = function(app) {
     app.get(app.get('version') + '/times/:id', function(req, res) {
 
         if (isNaN(req.params.id)) { //isNaN can check if a string is a number
-            var err = errors.errorInvalidIdentifier('ID', req.params.slug);
+            var err = errors.errorInvalidIdentifier('ID', req.params.id);
             return res.status(err.status).send(err);
         }
 
