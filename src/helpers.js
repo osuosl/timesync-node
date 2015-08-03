@@ -5,16 +5,14 @@ var app = require('./app');
 var errors = require('./errors');
 
 module.exports = {
-    checkUser: function(username, objUser)
-        .then(function(){
-            if (username == objUser) {
-                return true;
+    checkUser: function(username, objUser) {
+        return new Promise(function(resolve, reject) {
+            if (username === objUser) {
+                return resolve(userID);
+            }else {
+                return reject();        
             }
-        })
-        .catch(function(){
-            if (username !== objUser) {
-                return false;
-            }
-        })
+        }
+    }
 };
 
