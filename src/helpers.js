@@ -5,14 +5,16 @@ var app = require('./app');
 var errors = require('./errors');
 
 module.exports = {
-    checkUser: function(username, objUser) {
-        if (username == objUser) {
-            return true;
-        }
-        if (username !== objUser) {
-            console.log('An error has occurred');
-            return false;
-        }
-    }
+    checkUser: function(username, objUser)
+        .then(function(){
+            if (username == objUser) {
+                return true;
+            }
+        })
+        .catch(function(){
+            if (username !== objUser) {
+                return false;
+            }
+        })
 };
 
