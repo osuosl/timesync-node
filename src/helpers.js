@@ -2,7 +2,6 @@
 
 var app = require('./app');
 var knex = app.get('knex');
-var errors = require('./errors');
 
 module.exports = {
     checkUser: function(username, objUser) {
@@ -13,10 +12,10 @@ module.exports = {
                     /* Knex only returns lists and not single items. 'users'
                        is a list with a single item. Hence, we use an index of
                        zero to retrieve that single item */
-                    return resolve(users[0].id); 
+                    return resolve(users[0].id);
                 });
             }else {
-                return reject();        
+                return reject();
             }
         });
     }

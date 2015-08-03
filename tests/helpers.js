@@ -10,7 +10,7 @@ module.exports = function(expect) {
                 done();
             });
         });
-        // Later: Include a test that checks if username is admin 
+        // Later: Include a test that checks if username is admin
         it('Returns false if username !== user', function(done) {
             helpers.checkUser('notauser', 'tschuy').then()
             .catch(function(err) {
