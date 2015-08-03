@@ -6,8 +6,7 @@ module.exports = function(expect) {
     describe('checkUser', function() {
         it('Returns user ID if username == user', function(done) {
             helpers.checkUser('tschuy', 'tschuy').then(function(userID) {
-                //expect('tschuy').to.be('tschuy');
-                expect(userID).to.be(2);
+                expect(userID).to.equal(2);
                 done();
             });
         });
