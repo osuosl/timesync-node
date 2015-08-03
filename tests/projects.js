@@ -422,7 +422,7 @@ module.exports = function(expect, request, baseUrl) {
                 //console.log('Test invalid project:', body, expectedResult, err);
                 request.get(baseUrl + 'projects', function(err, res, body) {
                     jsonBody = JSON.parse(body);
-                    var expectedResult1 = [
+                    var expectedResult = [
                         {
                             uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
                             name: 'Ganeti Web Manager',
@@ -458,6 +458,7 @@ module.exports = function(expect, request, baseUrl) {
 
         it('Fails if it receives an non-existant project', function(done) {
             request.del(baseUrl + 'projects/doesntexist', function(err, res, body) {
+                var jsonBody = JSON.parse(body)
                 var expectedResult = {
                     status: 404,
                     error: 'Object not found',
@@ -465,7 +466,7 @@ module.exports = function(expect, request, baseUrl) {
                 };
 
                 expect(res.statusCode).to.equal(404);
-                expect(body).to.deep.equal(expectedResult);
+                expect(jsonBody).to.deep.equal(expectedResult);
                 done();
             });
         });
