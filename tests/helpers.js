@@ -4,9 +4,10 @@ var helpers = require('../src/helpers');
 
 module.exports = function(expect) {
     describe('checkUser', function() {
-        it('Returns true if username == user', function(done) {
+        it('Returns user ID if username == user', function(done) {
             helpers.checkUser('tschuy', 'tschuy').then(function(userID) {
-                expect(userID).to.be(2);
+                expect('tschuy').to.be('tschuy');
+                //expect(userID).to.be(1);
                 done();
             });
         });

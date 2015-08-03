@@ -8,11 +8,14 @@ module.exports = {
     checkUser: function(username, objUser) {
         return new Promise(function(resolve, reject) {
             if (username === objUser) {
-                return resolve(userID);
+                knex('users').select('id').
+                where('username', username) //.then(function() {
+                    return resolve(users[0].id); 
+                //});
             }else {
                 return reject();        
             }
-        }
+        });
     }
 };
 
