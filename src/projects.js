@@ -145,4 +145,8 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
         });
     });
+
+    app.post(app.get('version') + '/projects', function(req, res) {
+        res.send({});
+    });
 };
