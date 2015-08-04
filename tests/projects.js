@@ -99,4 +99,77 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
     });
+
+    // Actually tests for PATCHing
+    describe('POST /projects/:slug', function() {
+
+        var project = {
+            name: 'Ganeti Web Mgr',
+            owner: 'voigte',
+            uri: 'https://code.osuosl.org/projects/',
+            slugs: [ 'gwm', 'gan-web' ]
+        }
+
+        var postArg = {
+            auth: {
+                user: 'tschuy',
+                password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
+                          'PvSG8rwN4xyaF5W'
+            },
+            object: project
+        };
+
+        var requestOptions = {
+            url: baseUrl + 'projects/',
+            json: true
+        };
+
+        // Test that a valid URI, slugs, owner, and name succesfully patches
+        // the project.
+        it('successfully patches project with valid URI, slugs, owner,' +
+           'and name', function(done) {
+            requestOptions.form = postArg;
+
+            request.post(requestOptions, function(err, res) {
+                console.log(err);
+                expect(err).to.be.a('null');
+                expect(res.statusCode).to.equal(404);
+
+                request.get(baseUrl + 'projects/gwm', function(err, res, body) {
+
+                    expect(err).to.be.a('null');
+                    expect(res.statusCode).to.equal(200);
+
+                    body = JSON.parse(body);
+                    expect(body).to.deep.equal(postArg.object);
+                    done();
+                });
+            });
+        });
+
+        // Test that valid URI succesfully patches the project.
+
+        // Test that valid slugs succesfully patches the project.
+
+        // Test that valid name succesfully patches the project.
+
+        // Test that valid owner succesfully patches the project.
+
+        // Test that all but valid URI unsuccesfully patches the project.
+
+        // Test that all but valid slugs unsuccesfully patches the project.
+
+        // Test that all but valid name unsuccesfully patches the project.
+
+        // Test that all but valid owner unsuccesfully patches the project.
+
+        // Test that invalid URI unsuccesfully patches the project.
+
+        // Test that invalid slugs unsuccesfully patches the project.
+
+        // Test that invalid name unsuccesfully patches the project.
+
+        // Test that invalid owner unsuccesfully patches the project.
+
+    });
 };
