@@ -13,7 +13,7 @@ var knex = require('knex')(knexfile[db]);
 var info = {
     properties: {
         name: {
-            // Note to self: '\w' matches all alphanumeric char and '_'
+            // Note: '\w' matches all alphanumeric char and '_'
             validator: /^[\w\-\+\@\+\.]{1,30}$/,
             warning: 'Use up to 30 alphanumeric, _, @, +, . and - \n',
             required: true
