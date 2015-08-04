@@ -63,6 +63,10 @@ describe('Endpoints', function() {
 
 });
 
+describe('Errors', function() {
+    require('./errors')(expect);
+});
+
 describe('Helpers', function() {
     this.timeout(5000);
 
