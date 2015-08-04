@@ -8,7 +8,7 @@ module.exports = {
         return new Promise(function(resolve, reject) {
             if (username === authUser) {
                 // .first('id') retrieves and resolves the first record
-                // from the query - http://knexjs.org/#Builder-first 
+                // from the query - http://knexjs.org/#Builder-first
                 knex('users').first('id')
                 .where('username', username).then(function(users) {
                     return resolve(users.id);
