@@ -76,8 +76,8 @@ Don't worry too much if you happen upon this next error::
     Exiting...
 
 According to SQlite's `result code definitions`_, an errno of 1 is indicative
-of either a SQL error or missing database. Odds are (with this script), it's
-the latter. To resolve the problem, run::
+of either a SQL error or missing database. Odds are, if you're running this in
+a development environment, it's the latter. To resolve the problem, run::
     
     $ npm run migrations
 
