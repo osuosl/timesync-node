@@ -118,7 +118,7 @@
         },
         {
             "name": "ganeti-webmgr",
-            "id": 8,
+            "id": 4,
             "project": 1,
             "activity": null
         }

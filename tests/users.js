@@ -1,9 +1,9 @@
-module.exports = function(expect, request, base_url) {
+module.exports = function(expect, request, baseUrl) {
     describe('GET /users', function() {
         it('should return all users in the database', function(done) {
-            request.get(base_url + 'users', function(err, res) {
-                var bodyAsString = String.fromCharCode.apply(null, res.body);
-                var expected_results = [
+            request.get(baseUrl + 'users', function(err, res, body) {
+                var jsonBody = JSON.parse(body);
+                var expectedResults = [
                     {
                         id: 1,
                         username: 'deanj'
@@ -20,7 +20,7 @@ module.exports = function(expect, request, base_url) {
                 ];
                 expect(err === null);
                 expect(res.statusCode).to.be(200);
-                expect(JSON.parse(bodyAsString)).to.eql(expected_results);
+                expect(jsonBody).to.deep.equal(expectedResults);
                 done();
             });
         });
