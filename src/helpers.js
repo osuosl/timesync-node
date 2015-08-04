@@ -4,9 +4,9 @@ var app = require('./app');
 var knex = app.get('knex');
 
 module.exports = {
-    checkUser: function(username, objUser) {
+    checkUser: function(username, authUser) {
         return new Promise(function(resolve, reject) {
-            if (username === objUser) {
+            if (username === authUser) {
                 knex('users').select('id')
                 .where('username', username).then(function(users) {
                     /* Knex only returns lists and not single items. 'users'
