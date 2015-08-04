@@ -223,8 +223,15 @@ module.exports = function(expect, request, baseUrl) {
             postInvalidUri.object.uri = "Ceci n'est pas un url";
             requestOptions.form = postInvalidUri;
 
-            request.post(requestOptions, function(err, res) {
-                // TODO invalid uri error
+            request.post(requestOptions, function(err, res, body) {
+                var expectedError = {
+                    status: 400,
+                    error: 'The provided identifier was invalid',
+                    text: "expected uri but receieved Ceci n'est pas un url"
+                };
+
+                expect(JSON.parse(body)).to.deep.equal(expectedError);
+                expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'projects', function(err, res, body) {
                     expect(err).to.be.a('null');
@@ -245,8 +252,15 @@ module.exports = function(expect, request, baseUrl) {
             postInvalidSlug.object.slugs = ['$*#*cat', 'dog', ')_!@#mouse'];
             requestOptions.form = postInvalidSlug;
 
-            request.post(requestOptions, function(err, res) {
-                // TODO invalid uri error
+            request.post(requestOptions, function(err, res, body) {
+                var expectedError = {
+                    status: 400,
+                    error: 'The provided identifier was invalid',
+                    text: 'expected slug but receieved $*#*cat and )_!@#mouse'
+                };
+
+                expect(JSON.parse(body)).to.deep.equal(expectedError);
+                expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'projects', function(err, res, body) {
                     expect(err).to.be.a('null');
@@ -266,8 +280,15 @@ module.exports = function(expect, request, baseUrl) {
             postExistingSlug.object.slugs = ['gwm', 'dog'];
             requestOptions.form = postExistingSlug;
 
-            request.post(requestOptions, function(err, res) {
-                // TODO invalid uri error
+            request.post(requestOptions, function(err, res, body) {
+                var expectedError = {
+                    status: 409,
+                    error: 'The slug provided already exists',
+                    text: 'slug gwm already exists'
+                };
+
+                expect(JSON.parse(body)).to.deep.equal(expectedError);
+                expect(res.statusCode).to.equal(409);
 
                 request.get(baseUrl + 'projects', function(err, res, body) {
                     expect(err).to.be.a('null');
@@ -286,8 +307,15 @@ module.exports = function(expect, request, baseUrl) {
             postNoSlug.object.slugs = undefined;
             requestOptions.form = postNoSlug;
 
-            request.post(requestOptions, function(err, res) {
-                // TODO invalid uri error
+            request.post(requestOptions, function(err, res, body) {
+                var expectedError = {
+                    status: 400,
+                    error: 'Bad object',
+                    text: 'The project is missing a slug'
+                };
+
+                expect(JSON.parse(body)).to.deep.equal(expectedError);
+                expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'projects', function(err, res, body) {
                     expect(err).to.be.a('null');
@@ -306,8 +334,15 @@ module.exports = function(expect, request, baseUrl) {
             postNoName.object.name = undefined;
             requestOptions.form = postNoName;
 
-            request.post(requestOptions, function(err, res) {
-                // TODO invalid uri error
+            request.post(requestOptions, function(err, res, body) {
+                var expectedError = {
+                    status: 400,
+                    error: 'Bad object',
+                    text: 'The project is missing a name'
+                };
+
+                expect(JSON.parse(body)).to.deep.equal(expectedError);
+                expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'projects', function(err, res, body) {
                     expect(err).to.be.a('null');
@@ -327,8 +362,16 @@ module.exports = function(expect, request, baseUrl) {
             postOtherOwner.object.owner = 'deanj';
             requestOptions.form = postOtherOwner;
 
-            request.post(requestOptions, function(err, res) {
-                // TODO invalid uri error
+            request.post(requestOptions, function(err, res, body) {
+                var expectedError = {
+                    status: 401,
+                    error: 'Authorization failure',
+                    text: 'tschuy does not have permission to create objects' +
+                        ' for user deanj'
+                };
+
+                expect(JSON.parse(body)).to.deep.equal(expectedError);
+                expect(res.statusCode).to.equal(401);
 
                 request.get(baseUrl + 'projects', function(err, res, body) {
                     expect(err).to.be.a('null');
