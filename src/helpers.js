@@ -10,8 +10,8 @@ module.exports = {
                 // .first('id') retrieves and resolves the first record
                 // from the query - http://knexjs.org/#Builder-first
                 knex('users').first('id')
-                .where('username', username).then(function(users) {
-                    return resolve(users.id);
+                .where('username', username).then(function(user) {
+                    return resolve(user.id);
                 });
             }else {
                 return reject();
