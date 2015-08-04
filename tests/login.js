@@ -14,8 +14,9 @@ module.exports = function(expect, localPassport) {
             })
             .req(function(req) {
                 req.body = {};
-                req.body.username = 'tschuy';
-                req.body.password = 'password';
+                req.body.auth = {};
+                req.body.auth.username = 'tschuy';
+                req.body.auth.password = 'password';
             })
             .authenticate();
 
@@ -30,8 +31,9 @@ module.exports = function(expect, localPassport) {
             })
             .req(function(req) {
                 req.body = {};
-                req.body.username = 'notauser';
-                req.body.password = 'password';
+                req.body.auth = {};
+                req.body.auth.username = 'notauser';
+                req.body.auth.password = 'password';
             })
             .authenticate();
         });
@@ -45,8 +47,9 @@ module.exports = function(expect, localPassport) {
             })
             .req(function(req) {
                 req.body = {};
-                req.body.username = 'tschuy';
-                req.body.password = 'pass';
+                req.body.auth = {};
+                req.body.auth.username = 'tschuy';
+                req.body.auth.password = 'pass';
             })
             .authenticate();
         });
