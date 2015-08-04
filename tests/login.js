@@ -15,6 +15,7 @@ module.exports = function(expect, localPassport) {
             .req(function(req) {
                 req.body = {};
                 req.body.auth = {};
+                req.body.auth.type = 'password';
                 req.body.auth.username = 'tschuy';
                 req.body.auth.password = 'password';
             })
@@ -32,6 +33,7 @@ module.exports = function(expect, localPassport) {
             .req(function(req) {
                 req.body = {};
                 req.body.auth = {};
+                req.body.auth.type = 'password';
                 req.body.auth.username = 'notauser';
                 req.body.auth.password = 'password';
             })
@@ -48,6 +50,7 @@ module.exports = function(expect, localPassport) {
             .req(function(req) {
                 req.body = {};
                 req.body.auth = {};
+                req.body.auth.type = 'password';
                 req.body.auth.username = 'tschuy';
                 req.body.auth.password = 'pass';
             })
