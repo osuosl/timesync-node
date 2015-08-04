@@ -7,12 +7,11 @@ module.exports = {
     checkUser: function(username, authUser) {
         return new Promise(function(resolve, reject) {
             if (username === authUser) {
-                knex('users').select('id')
+                // .first('id') retrieves and resolves the first record
+                // from the query - http://knexjs.org/#Builder-first 
+                knex('users').first('id')
                 .where('username', username).then(function(users) {
-                    /* Knex only returns lists and not single items. 'users'
-                       is a list with a single item. Hence, we use an index of
-                       zero to retrieve that single item */
-                    return resolve(users[0].id);
+                    return resolve(users.id);
                 });
             }else {
                 return reject();
