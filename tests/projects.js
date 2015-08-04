@@ -256,7 +256,7 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedError = {
                     status: 400,
                     error: 'The provided identifier was invalid',
-                    text: 'expected slug but receieved $*#*cat and )_!@#mouse'
+                    text: 'expected slug but receieved: $*#*cat, )_!@#mouse'
                 };
 
                 expect(JSON.parse(body)).to.deep.equal(expectedError);
@@ -366,8 +366,7 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedError = {
                     status: 401,
                     error: 'Authorization failure',
-                    text: 'tschuy does not have permission to create objects' +
-                        ' for user deanj'
+                    text: 'tschuy is not authorized to create objects for deanj'
                 };
 
                 expect(JSON.parse(body)).to.deep.equal(expectedError);
