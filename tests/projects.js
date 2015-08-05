@@ -103,17 +103,25 @@ module.exports = function(expect, request, baseUrl) {
     // Actually tests for PATCHing
     describe('POST /projects/:slug', function() {
 
-        var goodProject = {
+        var patchedProject = {
             name: 'Ganeti Web Mgr',
             owner: 'voigte',
+            slugs: [ 'gwm', 'gan-web' ],
             uri: 'https://code.osuosl.org/projects/',
-            slugs: [ 'gwm', 'gan-web' ]
         };
 
-        var goodProjectName  = {name: 'Ganeti Web Mgr'};
-        var goodProjectOwner = {owner: 'voigte'};
-        var goodProjectUri   = {uri: 'https://code.osuosl.org/projects/'}
-        var goodProjectSlugs = {slugs: [ 'gwm', 'gan-web' ]}
+        var originalProject = {
+            id: 1,
+            name: 'Ganeti Web Manager',
+            owner: 'tschuy',
+            slugs: ['gwm', 'ganeti-webmgr'],
+            uri: 'https://code.osuosl.org/projects/'
+        };
+
+        var patchedProjectName  = {name:  patchedProject.name };
+        var patchedProjectOwner = {owner: patchedProject.owner};
+        var patchedProjectUri   = {uri:   patchedProject.uri  };
+        var patchedProjectSlugs = {slugs: patchedProject.slugs};
 
         var badProject = {
             name: '',
@@ -121,6 +129,11 @@ module.exports = function(expect, request, baseUrl) {
             uri: 'mywebsite',
             slugs: [ ]
         };
+
+        var badprojectName   = {name:  badProject.name };
+        var badprojectOwner  = {Owner: badProject.owner};
+        var badprojectUri    = {uri:   badProject.uri  };
+        var badprojectSlugs  = {slugs: badProject.slugs};
 
         var postArg = {
             auth: {
@@ -131,56 +144,46 @@ module.exports = function(expect, request, baseUrl) {
         };
 
         var requestOptions = {
-            url: baseUrl + 'projects/',
+            url: baseUrl + 'projects/gwm',
             json: true
         };
 
         // Test that a valid URI, slugs, owner, and name succesfully patches
         // the project.
-        it('successfully patches project with valid URI, slugs, owner,' +
-           'and name', function(done) {
-            postArg.object = goodProject;
+        it('successfully patches a projects URI, slugs, owner, and name',
+           function() {
+            postArg.object = patchedProject;
             requestOptions.form = postArg;
 
-            request.post(requestOptions, function(err, res) {
-                console.log(err);
+            request.post(requestOptions, function(err, res, body) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
 
-                request.get(baseUrl + 'projects/gwm', function(err, res, body) {
+                // Set expected results to the new state of
+                var expectedResults = originalProject;
+                expectedResults.name = patchedProject.name;
+                expectedResults.uri = patchedProject.uri;
+                expectedResults.slugs = patchedProject.slugs;
+                expectedResults.owner = patchedProject.owner;
 
+                body = JSON.parse(body);
+
+                // expect body of post request to be the new state of gwm
+                expect(body).to.equal(expectedResults);
+
+                // Make a get request
+                request.get(requestOptions.url, function(err, res, body) {
                     expect(err).to.be.a('null');
                     expect(res.statusCode).to.equal(200);
 
                     body = JSON.parse(body);
-                    expect(body).to.deep.equal(postArg.object);
+                    expect(body).to.equal(expectedResults);
                     done();
                 });
             });
         });
 
         // Test that valid URI succesfully patches the project.
-        it('successfully patches just a valid uri', function(done) {
-            postArg.object = goodProjectUri;
-            requestOptions.form = postArg;
-
-            request.post(requestOptions, function(err, res) {
-                console.log(err);
-                expect(err).to.be.a('null');
-                expect(res.statusCode).to.equal(200);
-
-                request.get(baseUrl + 'projects/gwm', function(err, res, body) {
-                    expect(err).to.be.a('null');
-                    expect(res.statusCode).to.equal(200);
-
-                    console.log(postArg.object.uri);
-
-                    body = JSON.parse(body);
-                    expect(body.uri).to.deep.equal(postArg.object.uri);
-                    done();
-                });
-            });
-        });
 
         // Test that valid slugs succesfully patches the project.
 
