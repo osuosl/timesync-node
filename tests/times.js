@@ -2,7 +2,7 @@ module.exports = function(expect, request, baseUrl) {
     /* GET one of the /times endpoints and check its response against
        what should be returned */
     describe('GET /times', function() {
-        it('should return all times in the database', function(done) {
+        it('returns all times in the database', function(done) {
             request.get(baseUrl + 'times', function(err, res, body) {
                 var expectedResults = [
                     {
@@ -11,6 +11,7 @@ module.exports = function(expect, request, baseUrl) {
                         project: ['wf'],
                         activities: ['docs', 'dev'],
                         notes: '',
+                            //jscs:disable
                         issue_uri: 'https://github.com/osu-cass' +
                             '/whats-fresh-api/issues/56',
                         date_worked: null,
@@ -22,14 +23,15 @@ module.exports = function(expect, request, baseUrl) {
 
                 expect(err).to.equal(null);
                 expect(res.statusCode).to.equal(200);
-                expect(JSON.parse(body)).to.deep.equal(expectedResults);
+                expect(JSON.parse(body)).to.deep.have.same
+                    .members(expectedResults);
                 done();
             });
         });
     });
 
     describe('GET /times/:id', function() {
-        it('should return times by id', function(done) {
+        it('returns times by id', function(done) {
             request.get(baseUrl + 'times/1', function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
@@ -38,6 +40,7 @@ module.exports = function(expect, request, baseUrl) {
                     project: ['wf'],
                     activities: ['docs', 'dev'],
                     notes: '',
+                        //jscs:disable
                     issue_uri: 'https://github.com/osu-cass/whats-fresh-api' +
                         '/issues/56',
                     date_worked: null,
@@ -54,7 +57,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('should fail with Object not found error', function(done) {
+        it('fails with Object not found error', function(done) {
             request.get(baseUrl + 'times/404', function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
@@ -80,7 +83,7 @@ module.exports = function(expect, request, baseUrl) {
                     values: ['cat']
                 };
 
-                expect(jsonBody).to.eql(expectedResult);
+                expect(jsonBody).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(400);
 
                 done();
@@ -89,20 +92,8 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     describe('POST /times', function() {
-        it('should create a new time', function(done) {
-            var time = {
-                //jscs:disable
-                duration: 20,
-                user: 'tschuy',
-                project: 'pgd',
-                activities: ['dev', 'docs'],
-                notes: '',
-                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-                date_worked: '2015-07-30'
-                //jscs:enable
-            };
-
-            var postArg = {
+        function getPostObject(time) {
+            return {
                 auth: {
                     user: 'tschuy',
                     password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
@@ -110,74 +101,93 @@ module.exports = function(expect, request, baseUrl) {
                 },
                 object: time
             };
+        }
 
-            request.post(baseUrl + 'times/', postArg, function(err, res) {
+        var initialData = [
+            {
+                duration: 12,
+                user: 'tschuy',
+                project: ['wf'],
+                activities: ['docs', 'dev'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osu-cass' +
+                    '/whats-fresh-api/issues/56',
+                date_worked: null,
+                created_at: null,
+                updated_at: null,
+                //jscs:enable
+                id: 1
+            }
+        ];
 
-                expect(err).to.be(null);
-                expect(res.statusCode).to.be(200);
+        it('creates a new time', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'pgd',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(time);
+
+            request.post(baseUrl + 'times/', postArg, function(err, res, body) {
+
+                expect(err).to.equal(null);
+                expect(res.statusCode).to.equal(200);
+
+                var jsonBody = JSON.parse(body);
+                time.id = jsonBody.id;
+                expect(jsonBody).to.equal(time);
 
                 createdAt = Date.now().getTime() / 1000;
                 request.get(baseUrl + 'times', function(err, res, body) {
-                    var expectedResults = [
-                        {
-                            //jscs:disable
-                            duration: 12,
-                            user: 'tschuy',
-                            project: ['wf'],
-                            activities: ['docs', 'dev'],
-                            notes: '',
-                            issue_uri: 'https://github.com/osu-cass' +
-                                '/whats-fresh-api/issues/56',
-                            date_worked: null,
-                            created_at: null,
-                            updated_at: null,
-                            id: 1
-                        },
+                    var expectedResults = initialData.concat([
                         {
                             duration: 20,
                             user: 'tschuy',
                             project: ['pgd'],
                             activities: ['dev', 'docs'],
                             notes: '',
+                            //jscs:disable
                             issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                             date_worked: '2015-07-30',
                             created_at: createdAt,
                             updated_at: createdAt,
-                            id: 2
                             //jscs:enable
+                            id: 2
                         }
-                    ];
-                    expect(err).to.be(null);
-                    expect(res.statusCode).to.be(200);
-                    expect(JSON.parse(body)).to.eql(expectedResults);
+                    ]);
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.have.same
+                        .members(expectedResults);
                     done();
                 });
             });
         });
 
-        it('should fail with a negative duration', function() {
+        it('fails with a negative duration', function() {
             var time = {
-                //jscs:disable
                 duration: -20,
                 user: 'tschuy',
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
+                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
                 //jscs:enable
             };
 
-            var postArg = {
-                auth: {
-                    user: 'tschuy',
-                    password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
-                              'PvSG8rwN4xyaF5W'
-                },
-                object: time
-            };
+            var postArg = getPostObject(time);
 
-            request.post(baseUrl + 'times/', postArg, function(err, res) {
+            request.post(baseUrl + 'times/', postArg, function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     error: 'Bad object',
@@ -190,52 +200,28 @@ module.exports = function(expect, request, baseUrl) {
                 expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
-                    var expectedResults = [
-                        {
-                            //jscs:disable
-                            duration: 12,
-                            user: 'tschuy',
-                            project: ['wf'],
-                            activities: ['docs', 'dev'],
-                            notes: '',
-                            issue_uri: 'https://github.com/osu-cass' +
-                                '/whats-fresh-api/issues/56',
-                            date_worked: null,
-                            created_at: null,
-                            updated_at: null,
-                            id: 1
-                            //jscs:enable
-                        }
-                    ];
-                    expect(err).to.be(null);
-                    expect(res.statusCode).to.be(200);
-                    expect(JSON.parse(body)).to.eql(expectedResults);
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
                     done();
                 });
             });
         });
 
-        it('should fail with a non-numeric duration', function() {
+        it('fails with a non-numeric duration', function() {
             var time = {
-                //jscs:disable
                 duration: 'twenty',
                 user: 'tschuy',
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
+                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
                 //jscs:enable
             };
 
-            var postArg = {
-                auth: {
-                    user: 'tschuy',
-                    password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
-                              'PvSG8rwN4xyaF5W'
-                },
-                object: time
-            };
+            var postArg = getPostObject(time);
 
             request.post(baseUrl + 'times/', postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
@@ -246,56 +232,32 @@ module.exports = function(expect, request, baseUrl) {
                         'but was sent as string.'
                 };
 
-                expect(jsonBody).to.eql(expectedResult);
+                expect(jsonBody).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
-                    var expectedResults = [
-                        {
-                            //jscs:disable
-                            duration: 12,
-                            user: 'tschuy',
-                            project: ['wf'],
-                            activities: ['docs', 'dev'],
-                            notes: '',
-                            issue_uri: 'https://github.com/osu-cass' +
-                                '/whats-fresh-api/issues/56',
-                            date_worked: null,
-                            created_at: null,
-                            updated_at: null,
-                            id: 1
-                            //jscs:enable
-                        }
-                    ];
-                    expect(err).to.be(null);
-                    expect(res.statusCode).to.be(200);
-                    expect(JSON.parse(body)).to.eql(expectedResults);
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
                     done();
                 });
             });
         });
 
-        it('should fail with a bad activity', function() {
+        it('fails with a bad activity', function() {
             var time = {
-                //jscs:disable
                 duration: 20,
                 user: 'tschuy',
                 project: 'pgd',
                 activities: ['dev', 'docs', 'dancing'],
                 notes: '',
+                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
                 //jscs:enable
             };
 
-            var postArg = {
-                auth: {
-                    user: 'tschuy',
-                    password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
-                              'PvSG8rwN4xyaF5W'
-                },
-                object: time
-            };
+            var postArg = getPostObject(time);
 
             request.post(baseUrl + 'times/', postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
@@ -305,56 +267,32 @@ module.exports = function(expect, request, baseUrl) {
                     text: 'The time does not contain a valid activity reference'
                 };
 
-                expect(jsonBody).to.eql(expectedResult);
+                expect(jsonBody).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
-                    var expectedResults = [
-                        {
-                            //jscs:disable
-                            duration: 12,
-                            user: 'tschuy',
-                            project: ['wf'],
-                            activities: ['docs', 'dev'],
-                            notes: '',
-                            issue_uri: 'https://github.com/osu-cass' +
-                                '/whats-fresh-api/issues/56',
-                            date_worked: null,
-                            created_at: null,
-                            updated_at: null,
-                            id: 1
-                            //jscs:enable
-                        }
-                    ];
-                    expect(err).to.be(null);
-                    expect(res.statusCode).to.be(200);
-                    expect(JSON.parse(body)).to.eql(expectedResults);
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
                     done();
                 });
             });
         });
 
-        it('should fail with a bad project', function() {
+        it('fails with a bad project', function() {
             var time = {
-                //jscs:disable
                 duration: 20,
                 user: 'tschuy',
                 project: 'project? we need a project?',
                 activities: ['dev', 'docs'],
                 notes: '',
+                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
                 //jscs:enable
             };
 
-            var postArg = {
-                auth: {
-                    user: 'tschuy',
-                    password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
-                              'PvSG8rwN4xyaF5W'
-                },
-                object: time
-            };
+            var postArg = getPostObject(time);
 
             request.post(baseUrl + 'times/', postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
@@ -364,56 +302,32 @@ module.exports = function(expect, request, baseUrl) {
                     text: 'The time does not contain a valid project reference'
                 };
 
-                expect(jsonBody).to.eql(expectedResult);
+                expect(jsonBody).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
-                    var expectedResults = [
-                        {
-                            //jscs:disable
-                            duration: 12,
-                            user: 'tschuy',
-                            project: ['wf'],
-                            activities: ['docs', 'dev'],
-                            notes: '',
-                            issue_uri: 'https://github.com/osu-cass' +
-                                '/whats-fresh-api/issues/56',
-                            date_worked: null,
-                            created_at: null,
-                            updated_at: null,
-                            id: 1
-                            //jscs:enable
-                        }
-                    ];
-                    expect(err).to.be(null);
-                    expect(res.statusCode).to.be(200);
-                    expect(JSON.parse(body)).to.eql(expectedResults);
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
                     done();
                 });
             });
         });
 
-        it('should fail with a bad issue URI', function() {
+        it('fails with a bad issue URI', function() {
             var time = {
-                //jscs:disable
                 duration: 20,
                 user: 'tschuy',
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
+                //jscs:disable
                 issue_uri: 'I do my own thing, pal',
                 date_worked: '2015-07-30'
                 //jscs:enable
             };
 
-            var postArg = {
-                auth: {
-                    user: 'tschuy',
-                    password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
-                              'PvSG8rwN4xyaF5W'
-                },
-                object: time
-            };
+            var postArg = getPostObject(time);
 
             request.post(baseUrl + 'times/', postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
@@ -424,90 +338,49 @@ module.exports = function(expect, request, baseUrl) {
                           'was sent as "I do my own thing, pal"'
                 };
 
-                expect(jsonBody).to.eql(expectedResult);
+                expect(jsonBody).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
-                    var expectedResults = [
-                        {
-                            //jscs:disable
-                            duration: 12,
-                            user: 'tschuy',
-                            project: ['wf'],
-                            activities: ['docs', 'dev'],
-                            notes: '',
-                            issue_uri: 'https://github.com/osu-cass' +
-                                '/whats-fresh-api/issues/56',
-                            date_worked: null,
-                            created_at: null,
-                            updated_at: null,
-                            id: 1
-                            //jscs:enable
-                        }
-                    ];
-                    expect(err).to.be(null);
-                    expect(res.statusCode).to.be(200);
-                    expect(JSON.parse(body)).to.eql(expectedResults);
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
                     done();
                 });
             });
         });
 
-        it('should fail with a bad owner', function() {
+        it('fails with a bad owner', function() {
             var time = {
-                //jscs:disable
                 duration: 20,
-                user: 'deanj',
+                user: 'jenkinsl',
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                issue_uri: 'I do my own thing, pal',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
                 //jscs:enable
             };
 
-            var postArg = {auth:
-                {
-                    user: 'tschuy',
-                    password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
-                              'PvSG8rwN4xyaF5W'
-                },
-                time
-            };
+            var postArg = getPostObject(time);
 
             request.post(baseUrl + 'times/', postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
-                    error: 'Bad object',
-                    status: 400,
-                    text: 'Field owner of time should be authorized user but ' +
-                          'was sent as deanj'
+                    error: 'Authorization failure',
+                    status: 401,
+                    text: 'User tschuy is not authorized to create time ' +
+                        'entries for user jenkinsl'
                 };
 
-                expect(jsonBody).to.eql(expectedResult);
+                expect(jsonBody).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
-                    var expectedResults = [
-                        {
-                            //jscs:disable
-                            duration: 12,
-                            user: 'tschuy',
-                            project: ['wf'],
-                            activities: ['docs', 'dev'],
-                            notes: '',
-                            issue_uri: 'https://github.com/osu-cass' +
-                                '/whats-fresh-api/issues/56',
-                            date_worked: null,
-                            created_at: null,
-                            updated_at: null,
-                            id: 1
-                            //jscs:enable
-                        }
-                    ];
-                    expect(err).to.be(null);
-                    expect(res.statusCode).to.be(200);
-                    expect(JSON.parse(body)).to.eql(expectedResults);
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
                     done();
                 });
             });
