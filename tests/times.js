@@ -95,6 +95,7 @@ module.exports = function(expect, request, baseUrl) {
         function getPostObject(time) {
             return {
                 auth: {
+                    type: 'password',
                     user: 'tschuy',
                     password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
                               'PvSG8rwN4xyaF5W'
