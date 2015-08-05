@@ -18,7 +18,7 @@ module.exports = {
 
           Based on http://stackoverflow.com/a/19256344
         */
-        if(slug === undefined || slug === null) {
+        if (slug === undefined || slug === null) {
             // Javascript will cast these to "undefined" and "null",
             // which then pass the test
             return false;
