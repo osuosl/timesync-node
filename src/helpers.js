@@ -11,9 +11,9 @@ module.exports = {
           Valid:
             test
             a1b2-c3
+            1a2b
 
           Invalid:
-            1a2b
             a1b2--c3
 
           Based on http://stackoverflow.com/a/19256344
@@ -24,7 +24,8 @@ module.exports = {
             return false;
         }
 
-        var isSlug = new RegExp('^[a-z]+[a-z0-9]*(?:-[a-z0-9]+)*$');
+        var isSlug = new RegExp('^(?:[0-9]*-)*[0-9]*[a-z]+[a-z0-9]*' +
+            '(?:-[a-z0-9]+)*$');
         return isSlug.test(slug);
     },
     
