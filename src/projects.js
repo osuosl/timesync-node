@@ -147,6 +147,20 @@ module.exports = function(app) {
     });
 
     app.post(app.get('version') + '/projects', function(req, res) {
-        res.send({});
+        var obj = req.body.object;
+        var insertion = {uri: obj.uri, owner: 2, name: obj.name};
+
+        knex('projects').insert(insertion).then(function(project) {
+            // project is a list containing the ID of the newly created project
+            project = project[0];
+            var projectSlugs = obj.slugs.map(function(slug) {
+                return {name: slug, project: project}
+            });
+
+            knex('projectslugs').insert(projectSlugs).then(function() {
+                obj.id = 4;
+                res.send(JSON.stringify(obj));
+            });
+        });
     });
 };
