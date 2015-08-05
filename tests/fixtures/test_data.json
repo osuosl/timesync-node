@@ -17,21 +17,20 @@
             "id": 3
         }
     ],
-   "users":[
-      {
-         "username":"deanj",
-         "id": 1,
-         "active": "false",
-         "password": "$2a$10$nkGN8eZN1DbOahNfv8YgWO790imw7poGcjfik1k0zQ9mFqYqtMY0y"
-      },
-      {
-         "username":"tschuy",
-         "id": 2,
-         "active": "true",
-         "password": "$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W"
-
-      }
-   ],
+    "users":[
+        {
+            "username":"deanj",
+            "id": 1,
+            "active": "false",
+            "password": "$2a$10$nkGN8eZN1DbOahNfv8YgWO790imw7poGcjfik1k0zQ9mFqYqtMY0y"
+        },
+        {
+            "username":"tschuy",
+            "id": 2,
+            "active": "true",
+            "password": "$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W"
+        }
+    ],
     "projects":[
         {
             "uri":"https:://code.osuosl.org/projects/ganeti-webmgr",
@@ -55,14 +54,47 @@
     "times":[
         {
             "duration":12,
-            "user":"users:1",
-            "project":"projects:2",
+            "user":"users:0",
+            "project":"projects:0",
             "notes":"",
             "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
-            "date_worked":null,
+            "date_worked":"2015-04-19",
             "created_at":null,
             "updated_at":null,
             "id": 1
+        },
+        {
+            "duration":12,
+            "user":"users:0",
+            "project":"projects:1",
+            "notes":"",
+            "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+            "date_worked":"2015-04-20",
+            "created_at":null,
+            "updated_at":null,
+            "id": 2
+        },
+        {
+            "duration":12,
+            "user":"users:1",
+            "project":"projects:0",
+            "notes":"",
+            "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+            "date_worked":"2015-04-21",
+            "created_at":null,
+            "updated_at":null,
+            "id": 3
+        },
+        {
+            "duration":12,
+            "user":"users:1",
+            "project":"projects:1",
+            "notes":"",
+            "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+            "date_worked":"2015-04-22",
+            "created_at":null,
+            "updated_at":null,
+            "id": 4
         }
     ],
     "projectslugs":[
@@ -86,7 +118,7 @@
         },
         {
             "name": "ganeti-webmgr",
-            "id": 8,
+            "id": 4,
             "project": 1,
             "activity": null
         }
@@ -99,8 +131,18 @@
         },
         {
             "id": 2,
-            "time": 1,
+            "time": 2,
             "activity": 2
+        },
+        {
+            "id": 3,
+            "time": 3,
+            "activity": 2
+        },
+        {
+            "id": 4,
+            "time": 4,
+            "activity": 1
         }
     ]
 }

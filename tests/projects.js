@@ -7,7 +7,7 @@ module.exports = function(expect, request, baseUrl) {
                 var jsonBody = JSON.parse(body);
                 var expectedResults = [
                     {
-                        uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+                        uri:'https://code.osuosl.org/projects/ganeti-webmgr',
                         name: 'Ganeti Web Manager',
                         slugs: ['gwm', 'ganeti-webmgr'],
                         owner: 'tschuy',
@@ -46,8 +46,9 @@ module.exports = function(expect, request, baseUrl) {
 
     describe('GET /projects/:slug', function() {
         it('should return projects by slug', function(done) {
-            request.get(baseUrl + 'projects/gwm', function(err, res, body) {
-                var jsonBody = JSON.parse(body);
+            request.get(baseUrl + 'projects/gwm', function(err, res) {
+                var jsonBody = JSON.parse(String.fromCharCode.apply(null,
+                                                                     res.body));
                 var expectedResult = {
                     uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
                     name: 'Ganeti Web Manager',
@@ -66,7 +67,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('should fail with invalid slug error', function(done) {
+        it('should fail with Object Not Found error', function(done) {
             request.get(baseUrl + 'projects/404', function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {

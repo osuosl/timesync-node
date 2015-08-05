@@ -1,6 +1,7 @@
+
 module.exports = function(expect, request, baseUrl) {
     /* GET one of the /activities endpoints and check its response against
-       what should be returned */
+    what should be returned */
     describe('GET /activities', function() {
         it('should return all activities in the database', function(done) {
             request.get(baseUrl + 'activities', function(err, res, body) {
@@ -49,7 +50,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('should fail with invalid slug error', function(done) {
+        it('should fail with Object Not Found error', function(done) {
             request.get(baseUrl + 'activities/404', function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
@@ -67,7 +68,7 @@ module.exports = function(expect, request, baseUrl) {
 
         it('should fail with Invalid Slug error', function(done) {
             request.get(baseUrl + 'activities/test-!*@',
-                    function(err, res, body) {
+            function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     status: 400,

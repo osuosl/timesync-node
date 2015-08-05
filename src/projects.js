@@ -31,7 +31,6 @@ module.exports = function(app) {
                 if (slugsDone) {
                     return res.send(projects);
                 }
-
             }).catch(function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
@@ -113,8 +112,8 @@ module.exports = function(app) {
 
         knex('projectslugs')
         .select('projects.id as id', 'projects.name as name',
-            'projects.uri as uri', 'users.username as owner',
-            'projectslugs.name as slug')
+        'projects.uri as uri', 'users.username as owner',
+        'projectslugs.name as slug')
         .where('projectslugs.project', '=', slugsSubquery)
         .innerJoin('projects', 'projectslugs.project', 'projects.id')
         .innerJoin('users', 'users.id', 'projects.owner')
@@ -126,8 +125,8 @@ module.exports = function(app) {
                    the slug, so just create it from the first one
                    */
                 project = {id: results[0].id, name: results[0].name,
-                           owner: results[0].owner, uri: results[0].uri,
-                           slugs: []};
+                    owner: results[0].owner, uri: results[0].uri,
+                    slugs: []};
 
                 for (var i = 0, len = results.length; i < len; i++) {
                     // add slugs to project
