@@ -4,14 +4,15 @@ module.exports = function(expect) {
     describe('checkActivities', function() {
         it('returns a list of activities IDs for proper slugs', function(done) {
             helpers.checkActivities(['docs', 'dev']).then(function(activities) {
-                expect(activities).to.deep.equal([1, 2]);
+                expect(activities).to.deep.have.same.members([1, 2]);
                 done();
             });
         });
 
         it('throws when passed undefined', function(done) {
             helpers.checkActivities(undefined).then().catch(function(err) {
-                expect(err).to.be.a('null');
+                console.log(err);
+                expect(err).to.be.an('undefined');
                 done();
             });
         });
@@ -20,7 +21,7 @@ module.exports = function(expect) {
             helpers.checkActivities(['docs', 'dev', 'cats', 'dogs']).then()
             .catch(function(err) {
                 err.sort();
-                expect(err).to.deep.equal(['cats', 'dogs'].sort());
+                expect(err).to.deep.have.same.members(['cats', 'dogs'].sort());
                 done();
             });
         });
