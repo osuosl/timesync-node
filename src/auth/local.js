@@ -3,6 +3,10 @@ var bcrypt = require('bcrypt');
 
 module.exports = function(knex) {
     return new LocalStrategy(
+        {
+            usernameField: 'auth[username]',
+            passwordField: 'auth[password]'
+        },
         function(username, password, done) {
             /* done parameters: err, user, information
                authentication succeeds if err is null
