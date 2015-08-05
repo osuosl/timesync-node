@@ -6,10 +6,6 @@ Draft Data Models
 
 Below are the database models to be used in TimeSync.
 
-Slugs are `as used in Django <https://docs.djangoproject.com/en/1.8/glossary/#term-slug>`_.
-That is, a valid slug consists of any combination of upper and lowercase letters, numbers,
-hyphens, and underscores.
-
 Projects:
 ---------
 
