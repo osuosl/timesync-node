@@ -115,6 +115,15 @@ module.exports = function(expect, request, baseUrl) {
             name: 'TimeSync Node'
         };
 
+        // the project as added to the database
+        var newProject = {
+            uri: 'https://github.com/osuosl/timesync-node',
+            owner: 'tschuy',
+            slugs: ['ts', 'timesync'],
+            name: 'TimeSync Node',
+            id: 4
+        };
+
         // the base POST JSON
         var postArg = {
             auth: {
@@ -158,22 +167,16 @@ module.exports = function(expect, request, baseUrl) {
         it('successfully creates a new project with slugs', function(done) {
             requestOptions.form = postArg;
 
-            request.post(requestOptions, function(err, res) {
+            request.post(requestOptions, function(err, res, body) {
                 console.log(err);
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
 
+                expect(body).to.equal(newProject);
+
                 request.get(baseUrl + 'projects', function(err, res, body) {
                     // the projects/ endpoint should now have one more project
-                    var expectedResults = initialProjects.concat([
-                          {
-                              uri: 'https://github.com/osuosl/timesync-node',
-                              owner: 'tschuy',
-                              slugs: ['ts', 'timesync'],
-                              name: 'TimeSync Node',
-                              id: 4
-                          }
-                    ]);
+                    var expectedResults = initialProjects.concat([newProject]);
 
                     expect(err).to.be.a('null');
                     expect(res.statusCode).to.equal(200);
@@ -186,13 +189,20 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it('successfully creates a new project with no uri', function(done) {
+            // remove uri from post data
             var postNoUri = copyJsonObject(postArg);
             postNoUri.object.uri = undefined;
             requestOptions.form = postNoUri;
 
-            request.post(requestOptions, function(err, res) {
+            // remove uri from test object
+            var newProjectNoUri = copyJsonObject(postArg);
+            delete newProjectNoUri.uri;
+
+            request.post(requestOptions, function(err, res, body) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
+
+                expect(body).to.equal(newProject);
 
                 currentTime = Date.now().getTime() / 1000;
 
