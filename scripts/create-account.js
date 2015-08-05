@@ -40,8 +40,6 @@ prompt.get(info, function(err, result) {
         bcrypt.hash(result.password, salt, function(err, hash) {
             knex('users').insert({username: result.name, password: hash})
             .then(
-                /* Leave this function. It takes no parameters but removing it
-                   makes the success message print when it shouldn't */
                 function() {
                     console.log('\nUser successfully created\n');
                 })
@@ -77,8 +75,7 @@ prompt.get(info, function(err, result) {
                                     '\n');
                     }
                 })
-            /* Exits the process after storing user info in the db. Removing
-               the function breaks the script, so don't */
+            // Exits the process after storing user info in the db.
             .then(
                 function() {
                     process.exit(0);
