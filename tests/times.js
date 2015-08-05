@@ -92,15 +92,19 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     describe('POST /times', function() {
-        function getPostObject(time) {
+        function getPostObject(uri, time) {
             return {
-                auth: {
-                    type: 'password',
-                    user: 'tschuy',
-                    password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
-                              'PvSG8rwN4xyaF5W'
-                },
-                object: time
+                uri: uri,
+                json: true,
+                body: {
+                    auth: {
+                        type: 'password',
+                        user: 'tschuy',
+                        password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuI' +
+                            'R8MPvSG8rwN4xyaF5W'
+                    },
+                    object: time
+                }
             };
         }
 
@@ -135,9 +139,9 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
-            request.post(baseUrl + 'times/', postArg, function(err, res, body) {
+            request.post(postArg, function(err, res, body) {
 
                 expect(err).to.equal(null);
                 expect(res.statusCode).to.equal(200);
@@ -186,9 +190,9 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
-            request.post(baseUrl + 'times/', postArg, function(err, res, body) {
+            request.post(postArg, function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     error: 'Bad object',
@@ -222,9 +226,9 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
-            request.post(baseUrl + 'times/', postArg, function(err, res) {
+            request.post(postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     error: 'Bad object',
@@ -258,9 +262,9 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
-            request.post(baseUrl + 'times/', postArg, function(err, res) {
+            request.post(postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     error: 'Invalid foreign key',
@@ -293,9 +297,9 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
-            request.post(baseUrl + 'times/', postArg, function(err, res) {
+            request.post(postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     error: 'Invalid foreign key',
@@ -328,9 +332,9 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
-            request.post(baseUrl + 'times/', postArg, function(err, res) {
+            request.post(postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     error: 'Bad object',
@@ -364,9 +368,9 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
-            request.post(baseUrl + 'times/', postArg, function(err, res) {
+            request.post(postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     error: 'Authorization failure',
