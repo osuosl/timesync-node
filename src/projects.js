@@ -229,4 +229,38 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
         });
     });
+
+    /*
+    app.delete(app.get('version') + '/projects/:slug', function(req, res) {
+        if (!helpers.validateSlug(req.params.slug)) {
+            console.log('Invalid slug');
+            var err = errors.errorInvalidIdentifier('slug', req.params.slug);
+            console.log('Invalid Identifier:', err);
+            return res.status(err.status).send(err);
+        }
+
+        // delete matching project 
+        knex('projects').where('slug', req.params.slug).del()
+        .then(function(numObj) {
+            console.log('Inside then');
+            /* When deleting something from the table, the number of objects
+               deleted is returned. So to confirm that deletion was successful,
+               make sure that the number returned is at least one. */
+/*
+            if (numObj >= 1) {
+                console.log('Deleted at least one object');
+                return res.send();
+            }
+
+            console.log('Did not delete object');
+
+            var err = errors.errorObjectNotFound('slug', req.params.slug);
+            return res.status(err.status).send(err);
+        }).catch(function(error) {
+            console.log('Error');
+            var err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+        });
+    });
+    */
 };

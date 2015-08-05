@@ -226,6 +226,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
+
         it('fails to create a new project with an invalid uri', function(done) {
             var postInvalidUri = copyJsonObject(postArg);
             postInvalidUri.object.uri = "Ceci n'est pas un url";
@@ -396,4 +397,77 @@ module.exports = function(expect, request, baseUrl) {
         });
     });
 
+    describe('DELETE /projects/:slug', function() {
+        it('deletes the desired project', function(done) {
+            request.del(baseUrl + 'projects/wf', function(err, res){
+                expect(res.statusCode).to.equal(200);    
+                request.get(baseUrl + 'projects/wf', function(err, res, body){
+
+                    expect(body).to.be.a(null);
+                    expect(res.statusCode).to.equal(404);
+                    done();
+                });
+            });
+        });
+
+        it('Fails if it receives an invalid project', function(done) {
+            request.del(baseUrl + 'projects/Not.a-project!', function(err, res, body) {
+                var expectedResult = {
+                    status: 400,
+                    error: 'The provided identifier was invalid',
+                    text: 'Expected slug but received Not.a-project!',
+                    values: [ 'Not.a-project!' ]
+                };
+
+                //console.log('Test invalid project:', body, expectedResult, err);
+                request.get(baseUrl + 'projects', function(err, res, body) {
+                    jsonBody = JSON.parse(body);
+                    var expectedResult1 = [
+                        {
+                            uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+                            name: 'Ganeti Web Manager',
+                            slugs: ['gwm', 'ganeti-webmgr'],
+                            owner: 'tschuy',
+                            id: 1
+                        },
+                        {
+                            uri: 'https://code.osuosl.org/projects/pgd',
+                            name: 'Protein Geometry Database',
+                            slugs: ['pgd'],
+                            owner: 'deanj',
+                            id: 2
+                        },
+                        {
+                            uri: 'https://github.com/osu-cass/whats-fresh-api',
+                            name: 'Whats Fresh',
+                            slugs: ['wf'],
+                            owner: 'tschuy',
+                            id: 3
+                        }
+                    ];
+
+                    expect(res.statusCode).to.equal(200);
+                    expect(jsonBody).to.deep.equal(expectedResult);
+                });
+
+                expect(res.statusCode).to.equal(400);
+                expect(body).to.deep.equal(expectedResult);
+                done();
+            });
+        });
+
+        it('Fails if it receives an non-existant project', function(done) {
+            request.del(baseUrl + 'projects/doesntexist', function(err, res, body) {
+                var expectedResult = {
+                    status: 404,
+                    error: 'Object not found',
+                    text: 'Nonexistant project'
+                };
+
+                expect(res.statusCode).to.equal(404);
+                expect(body).to.deep.equal(expectedResult);
+                done();
+            });
+        });
+    });
 };
