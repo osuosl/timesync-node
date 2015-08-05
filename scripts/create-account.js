@@ -54,10 +54,12 @@ prompt.get(info, function(err, result) {
                     if (errno === 19) {
                         console.log('\nINVALID ENTRY: That username is ' +
                                     'already in use, please choose a ' +
-                                    'different handle');
-                        console.log('\n  Exiting...\n');
+                                    'different handle\n');
                         process.exit(0);
 
+                    } else if (errno === 1) {
+                        console.log('\nDoes your database exist?\n');
+                        process.exit(0);
                     } else {
                         // NOTE: DON'T IGNORE - This will need to be fixed
                         // later to work on databases other than sqlite
@@ -71,12 +73,12 @@ prompt.get(info, function(err, result) {
                                     'https://www.sqlite.org/c3ref/' +
                                     'c_abort.html to figure out what ' +
                                     'happened.\n');
-                        console.log('  Your error number is: ' + err.errno);
-                        console.log('\n  Exiting...\n');
+                        console.log('  Your error number is: ' + err.errno +
+                                    '\n');
                     }
                 })
             /* Exits the process after storing user info in the db. Removing
-               the function call breaks the script, so don't */
+               the function breaks the script, so don't */
             .then(
                 function() {
                     process.exit(0);
