@@ -168,7 +168,6 @@ module.exports = function(expect, request, baseUrl) {
             requestOptions.form = postArg;
 
             request.post(requestOptions, function(err, res, body) {
-                console.log(err);
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
 
