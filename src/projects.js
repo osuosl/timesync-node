@@ -147,6 +147,7 @@ module.exports = function(app) {
     });
 
     app.post(app.get('version') + '/projects', function(req, res) {
+        // TODO: get owner
         var obj = req.body.object;
         var insertion = {uri: obj.uri, owner: 2, name: obj.name};
 
@@ -158,7 +159,7 @@ module.exports = function(app) {
             });
 
             knex('projectslugs').insert(projectSlugs).then(function() {
-                obj.id = 4;
+                obj.id = project;
                 res.send(JSON.stringify(obj));
             });
         });

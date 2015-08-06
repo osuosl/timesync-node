@@ -189,46 +189,44 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        // it('successfully creates a new project with no uri', function(done) {
-        //     // remove uri from post data
-        //     var postNoUri = copyJsonObject(postArg);
-        //     postNoUri.object.uri = undefined;
-        //     requestOptions.form = postNoUri;
-        //
-        //     // remove uri from test object
-        //     var newProjectNoUri = copyJsonObject(postArg);
-        //     delete newProjectNoUri.uri;
-        //
-        //     request.post(requestOptions, function(err, res, body) {
-        //         expect(err).to.be.a('null');
-        //         expect(res.statusCode).to.equal(200);
-        //
-        //         expect(body).to.equal(newProject);
-        //
-        //         currentTime = Date.now().getTime() / 1000;
-        //
-        //         request.get(baseUrl + 'projects', function(err, res, body) {
-        //             // the projects/ endpoint should now have one more project
-        //             var expectedResults = initialProjects.concat([
-        //                   {
-        //                       owner: 'tschuy',
-        //                       uri: null,
-        //                       slugs: ['ts', 'timesync'],
-        //                       name: 'TimeSync Node',
-        //                       id: 4
-        //                   }
-        //             ]);
-        //
-        //             expect(err).to.be.a('null');
-        //             expect(res.statusCode).to.equal(200);
-        //
-        //             body = JSON.parse(body);
-        //             expect(body).to.deep.have.same.members(expectedResults);
-        //             done();
-        //         });
-        //     });
-        // });
-        //
+        it('successfully creates a new project with no uri', function(done) {
+            // remove uri from post data
+            var postNoUri = copyJsonObject(postArg);
+            postNoUri.object.uri = undefined;
+            requestOptions.form = postNoUri;
+
+            // remove uri from test object
+            var newProjectNoUri = copyJsonObject(newProject);
+            delete newProjectNoUri.uri;
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(err).to.be.a('null');
+                expect(res.statusCode).to.equal(200);
+
+                expect(body).to.deep.equal(newProjectNoUri);
+
+                request.get(baseUrl + 'projects', function(err, res, body) {
+                    // the projects/ endpoint should now have one more project
+                    var expectedResults = initialProjects.concat([
+                          {
+                              owner: 'tschuy',
+                              uri: null,
+                              slugs: ['ts', 'timesync'],
+                              name: 'TimeSync Node',
+                              id: 4
+                          }
+                    ]);
+
+                    expect(err).to.be.a('null');
+                    expect(res.statusCode).to.equal(200);
+
+                    body = JSON.parse(body);
+                    expect(body).to.deep.have.same.members(expectedResults);
+                    done();
+                });
+            });
+        });
+
         // it('fails to create a new project with an invalid uri', function(done) {
         //     var postInvalidUri = copyJsonObject(postArg);
         //     postInvalidUri.object.uri = "Ceci n'est pas un url";

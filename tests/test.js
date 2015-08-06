@@ -44,6 +44,7 @@ describe('Endpoints', function() {
 
     before(function(done) {
         knex.migrate.latest().then(function() {
+            done();
         });
     });
 
