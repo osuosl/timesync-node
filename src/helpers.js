@@ -3,7 +3,7 @@ var knex = app.get('knex');
 
 module.exports = {
     validateSlug: function(slug) {
-        /* matches, in order:
+        /* matches:
           1. at least one letter
           2. any number of alphanumeric
           3. hyphen-separated sets of alphanumeric
@@ -15,8 +15,6 @@ module.exports = {
 
           Invalid:
             a1b2--c3
-
-          Based on http://stackoverflow.com/a/19256344
         */
         if (slug === undefined || slug === null) {
             // Javascript will cast these to "undefined" and "null",
@@ -24,11 +22,15 @@ module.exports = {
             return false;
         }
 
-        var isSlug = new RegExp('^(?:[0-9]*-)*[0-9]*[a-z]+[a-z0-9]*' +
-            '(?:-[a-z0-9]+)*$');
-        return isSlug.test(slug);
+        var hasDoubleHyphens = new RegExp('--');
+        var containsLetter = new RegExp('[a-z]+');
+        var alphanumeric = new RegExp('^[a-z0-9-]*$'); // also allows hyphen
+
+        return (containsLetter.test(slug) &&
+                alphanumeric.test(slug) &&
+                !hasDoubleHyphens.test(slug));
     },
-    
+
     checkUser: function(username, authUser) {
         return new Promise(function(resolve, reject) {
             if (username === authUser) {
