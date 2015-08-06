@@ -117,12 +117,8 @@ module.exports = {
                 receivedIdentifiers;
             receivedIdentifiers = [receivedIdentifiers];
         } else {
-            message = 'Expected ' + expectedType + ' but received: ';
-            for (var i = 0; i < receivedIdentifiers.length; i++) {
-                message = message + receivedIdentifiers[i] + ', ';
-            }
-            // chop off last ', '
-            message = message.substring(0, message.length - 2);
+            message = 'Expected ' + expectedType + ' but received: ' +
+                receivedIdentifiers.join(', ');
         }
 
         return createError(400, 'The provided identifier was invalid',
@@ -153,13 +149,7 @@ module.exports = {
         if (slugs.length === 1) {
             message = 'slug ' + slugs[0] + ' already exists';
         } else {
-            message = 'slugs ';
-            for (var i = 0; i < slugs.length; i++) {
-                message = message + slugs[i] + ', ';
-            }
-            // chop off last ', '
-            message = message.substring(0, message.length - 2);
-            message = message + ' already exist';
+            message = 'slugs ' + slugs.join(', ') + ' already exist';
         }
 
         return createError(409, 'The slug provided already exists',

@@ -7,13 +7,13 @@
     "doc": "docs"
   },
   "scripts": {
-    "start": "node ./src/app.js",
-    "devel": "nodemon ./src/app.js",
+    "start": "node --harmony ./src/app.js",
+    "devel": "nodemon --harmony ./src/app.js",
     "migrations": "knex migrate:latest",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "linter": "jshint ./src ./tests ./scripts && jscs ./src ./tests ./scripts",
     "fixtures": "node ./scripts/load_fixtures.js",
-    "test": "DATABASE=mocha PORT=8851 mocha tests",
+    "test": "DATABASE=mocha PORT=8851 DEBUG=true mocha --harmony tests",
     "latte": "sh ./scripts/latte.sh",
     "coverage": "DATABASE=mocha PORT=8851 istanbul cover _mocha -- tests",
     "create-account": "node ./scripts/create-account.js"
