@@ -174,7 +174,7 @@ module.exports = function(app) {
         if (invalidSlugs.length) {
             err = errors.errorInvalidIdentifier('slug', invalidSlugs);
             return res.status(err.status).send(err);
-        };
+        }
 
         helpers.checkUser(req.body.auth.user, obj.owner)
         .then(function(userId) {
