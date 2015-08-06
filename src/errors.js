@@ -4,9 +4,10 @@ function createError(status, name, text, values) {
         error: name,
         text: text
     };
-    if(values) {
+    if (values) {
         err.values = values;
     }
+
     return err;
 }
 
@@ -135,12 +136,13 @@ module.exports = {
        but the object being created uses existing slugs.
     */
     errorSlugsAlreadyExist: function(slugs) {
+        var message;
         if (slugs.length === 1) {
-            var message = 'slug ' + slugs[0] + ' already exists';
+            message = 'slug ' + slugs[0] + ' already exists';
         } else {
-            var message = 'slugs ';
-            for(var i = 0; i < slugs.length; i++) {
-                message = message + slugs[i] + ', '
+            message = 'slugs ';
+            for (var i = 0; i < slugs.length; i++) {
+                message = message + slugs[i] + ', ';
             }
             // chop off last ', '
             message = message.substring(0, message.length - 2);
@@ -148,7 +150,16 @@ module.exports = {
         }
 
         return createError(409, 'The slug provided already exists',
-            message, slugs)
+            message, slugs);
+    },
+
+    /*
+     * Error 9: Authorization failure. Used when a user attempts to do something
+       they aren't allowed to do, but is properly authenticated.
+    */
+    errorAuthorizationFailure: function(user, activity) {
+        return createError(401, 'Authorization failure',
+            user + ' is not authorized to ' + activity);
     },
 
 };

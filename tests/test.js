@@ -55,6 +55,7 @@ describe('Endpoints', function() {
     afterEach(function(done) {
         clearDatabase(done);
     });
+
     require('./times')(expect, request, baseUrl);
     require('./activities')(expect, request, baseUrl);
     require('./projects')(expect, request, baseUrl);

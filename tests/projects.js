@@ -180,10 +180,8 @@ module.exports = function(expect, request, baseUrl) {
                     expect(err).to.be.a('null');
                     expect(res.statusCode).to.equal(200);
 
-                     var jsonBody = JSON.parse(body);
-                    // console.log(JSON.stringify(JSON.parse(body)));
-                    // console.log(JSON.stringify(expectedResults));
-                    expect(jsonBody).to.have.same.deep.members(expectedResults);
+                    expect(JSON.parse(body))
+                    .to.have.same.deep.members(expectedResults);
                     done();
                 });
             });
@@ -379,7 +377,7 @@ module.exports = function(expect, request, baseUrl) {
                     text: 'tschuy is not authorized to create objects for deanj'
                 };
 
-                expect(body).to.deep.equal(expectedError);
+                expect(JSON.parse(body)).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(401);
 
                 request.get(baseUrl + 'projects', function(err, res, body) {
