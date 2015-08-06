@@ -4,12 +4,12 @@ var deleter = require('../src/delete');
 module.exports = function(expect, request, baseUrl) {
     /* DELETE one of the times endpoints and check whether it can still be
        retrieved from the database */
-    describe('DELETE /times', function() {
+    describe('DELETE /times/:id', function() {
         it('Deletes the desired time instance', function(done) {
             deleter.deleteTime(1).then(function(time) {
                 expect(time).to.be.an('undefined');
-               
-                // Check if time instance was deleted from db 
+
+                // Check if time instance was deleted from db
                 request.get(baseUrl + 'times/1', function(err, res, body) {
                     var jsonBody = JSON.parse(body);
                     var expectedError = {
