@@ -113,7 +113,7 @@ module.exports = function(expect) {
             });
         });
 
-        it('throws when passed a bad slug', function(done) {
+        it('throws when passed a nonexistent slug', function(done) {
             helpers.checkProject('dogs').then().catch(function(err) {
                 expect(err).to.equal('dogs');
                 done();
@@ -123,6 +123,13 @@ module.exports = function(expect) {
         it('throws when passed a null slug', function(done) {
             helpers.checkProject(null).then().catch(function(err) {
                 expect(err).to.equal(null);
+                done();
+            });
+        });
+
+        it('throws when passed a bad slug', function(done) {
+            helpers.checkProject('#!^kittens').then().catch(function(err) {
+                expect(err).to.equal('#!^kittens');
                 done();
             });
         });

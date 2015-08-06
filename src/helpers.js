@@ -1,7 +1,7 @@
 var app = require('./app');
 var knex = app.get('knex');
 
-module.exports = {
+module.exports = helpers = {
     validateSlug: function(slug) {
         /* matches:
           1. at least one letter
@@ -60,7 +60,12 @@ module.exports = {
         // essentially, when the data you want is done resolving.
         // pass it to resolve(). If an error occurs, pass it to
         // reject().
-        return new Promise(function(resolver, reject) {
+        return new Promise(function(resolve, reject) {
+
+            if (!helpers.validateSlug(slug)) {
+                return reject(slug);
+            }
+
             // get project from database
             knex('projectslugs').select('project')
             .where('name', slug).then(function(project) {
@@ -69,7 +74,7 @@ module.exports = {
                     // invalid, etc.
                     reject(slug);
                 } else {
-                    resolver(project[0].project);
+                    resolve(project[0].project);
                 }
             }).catch(function(err) { reject(err); });
         });
