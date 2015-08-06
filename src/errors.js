@@ -110,10 +110,23 @@ module.exports = {
      * param receivedIdentifier(string): The value that was received from the
      *    client.
      */
-    errorInvalidIdentifier: function(expectedType, receivedIdentifier) {
+    errorInvalidIdentifier: function(expectedType, receivedIdentifiers) {
+        var message;
+        if (!Array.isArray(receivedIdentifiers)) {
+            message = 'Expected ' + expectedType + ' but received ' +
+                receivedIdentifiers;
+            receivedIdentifiers = [receivedIdentifiers];
+        } else {
+            message = 'Expected ' + expectedType + ' but received: ';
+            for (var i = 0; i < receivedIdentifiers.length; i++) {
+                message = message + receivedIdentifiers[i] + ', ';
+            }
+            // chop off last ', '
+            message = message.substring(0, message.length - 2);
+        }
+
         return createError(400, 'The provided identifier was invalid',
-            'Expected ' + expectedType + ' but received ' +
-            receivedIdentifier);
+            message, receivedIdentifiers);
     },
 
     /* Error 6: Authentication failed due to an invalid username. */

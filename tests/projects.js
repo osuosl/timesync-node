@@ -95,7 +95,8 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedResult = {
                     status: 400,
                     error: 'The provided identifier was invalid',
-                    text: 'Expected slug but received test-!*@'
+                    text: 'Expected slug but received test-!*@',
+                    values: ['test-!*@']
                 };
 
                 expect(jsonBody).to.eql(expectedResult);
@@ -234,7 +235,8 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedError = {
                     status: 400,
                     error: 'The provided identifier was invalid',
-                    text: "Expected uri but received Ceci n'est pas un url"
+                    text: "Expected uri but received Ceci n'est pas un url",
+                    values: ["Ceci n'est pas un url"]
                 };
 
                 expect(body).to.deep.equal(expectedError);
@@ -263,7 +265,8 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedError = {
                     status: 400,
                     error: 'The provided identifier was invalid',
-                    text: 'expected slug but receieved: $*#*cat, )_!@#mouse'
+                    text: 'Expected slug but received: $*#*cat, )_!@#mouse',
+                    values: ['$*#*cat', ')_!@#mouse']
                 };
 
                 expect(body).to.deep.equal(expectedError);
@@ -377,7 +380,7 @@ module.exports = function(expect, request, baseUrl) {
                     text: 'tschuy is not authorized to create objects for deanj'
                 };
 
-                expect(JSON.parse(body)).to.deep.equal(expectedError);
+                expect(body).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(401);
 
                 request.get(baseUrl + 'projects', function(err, res, body) {

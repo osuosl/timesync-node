@@ -1,6 +1,26 @@
 var errors = require('../src/errors');
 
 module.exports = function(expect) {
+    describe('5: errorInvalidIdentifier', function() {
+        it('returns x already exists for array of items', function(done) {
+            err = errors.errorInvalidIdentifier('x', ['a', 'b']);
+            expect(err.status).to.equal(400);
+            expect(err.error).to.equal('The provided identifier was invalid');
+            expect(err.text).to.equal('Expected x but received: a, b');
+            expect(err.values).to.deep.equal(['a', 'b']);
+            done();
+        });
+
+        it('returns x already exists for single x', function(done) {
+            err = errors.errorInvalidIdentifier('x', 'a');
+            expect(err.status).to.equal(400);
+            expect(err.error).to.equal('The provided identifier was invalid');
+            expect(err.text).to.equal('Expected x but received a');
+            expect(err.values).to.deep.equal(['a']);
+            done();
+        });
+    });
+
     describe('6: errorInvalidUsername', function() {
         it('returns invalid username error', function(done) {
             err = errors.errorInvalidUsername('bob');

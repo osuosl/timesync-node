@@ -150,8 +150,6 @@ module.exports = function(app) {
 
     app.post(app.get('version') + '/projects', function(req, res) {
         var err; // used for any error response
-        // TODO: get owner
-        // TODO: check slugs for validity
         var obj = req.body.object;
 
         if (obj.uri && !validUrl.isWebUri(obj.uri)) {
@@ -169,8 +167,16 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
         }
 
-        console.log(helpers);
-        helpers.checkUser(req.body.auth.username, obj.owner)
+        var invalidSlugs = obj.slugs.filter(function(slug) {
+            return !helpers.validateSlug(slug);
+        });
+
+        if (invalidSlugs.length) {
+            err = errors.errorInvalidIdentifier('slug', invalidSlugs);
+            return res.status(err.status).send(err);
+        };
+
+        helpers.checkUser(req.body.auth.user, obj.owner)
         .then(function(userId) {
             knex('projectslugs').where('name', 'in', obj.slugs)
             .then(function(slugs) {
@@ -203,7 +209,7 @@ module.exports = function(app) {
             });
         }).catch(function(err) {
             err = errors.errorAuthorizationFailure(
-                req.body.auth.username, 'create objects for ' + obj.owner);
+                req.body.auth.user, 'create objects for ' + obj.owner);
             return res.status(err.status).send(err);
         });
     });
