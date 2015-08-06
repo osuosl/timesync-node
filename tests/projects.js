@@ -169,7 +169,7 @@ module.exports = function(expect, request, baseUrl) {
         it('successfully creates a new project with slugs', function(done) {
             requestOptions.form = postArg;
 
-            request(requestOptions, function(err, res, body) {
+            request.post(requestOptions, function(err, res, body) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
                 expect(body).to.deep.equal(newProject);
