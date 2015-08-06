@@ -1,6 +1,7 @@
 module.exports = function(app) {
     var knex = app.get('knex');
     var errors = require('./errors');
+    var valid_url = require('valid-url');
 
     app.get(app.get('version') + '/projects', function(req, res) {
         knex('projects').then(function(projects) {
@@ -149,19 +150,47 @@ module.exports = function(app) {
     app.post(app.get('version') + '/projects', function(req, res) {
         // TODO: get owner
         var obj = req.body.object;
+
+        if (obj.uri && !valid_url.isWebUri(obj.uri)) {
+            var err = errors.errorInvalidIdentifier('uri', obj.uri);
+            return res.status(err.status).send(err);
+        }
+
+        if (!obj.slugs) {
+            var err = errors.errorBadObjectMissingField('project', 'slug');
+            return res.status(err.status).send(err);
+        }
+
+        if (!obj.name) {
+            var err = errors.errorBadObjectMissingField('project', 'name');
+            return res.status(err.status).send(err);
+        }
+
         var insertion = {uri: obj.uri, owner: 2, name: obj.name};
 
-        knex('projects').insert(insertion).then(function(project) {
-            // project is a list containing the ID of the newly created project
-            project = project[0];
-            var projectSlugs = obj.slugs.map(function(slug) {
-                return {name: slug, project: project}
+        knex('projectslugs').where('name', 'in', obj.slugs)
+        .then(function(slugs) {
+            if(slugs) {
+                var err = errors.errorSlugsAlreadyExist(
+                    slugs.map(function(slug) {
+                        return slug.name;
+                    }));
+                return res.status(err.status).send(err);
+            }
+            knex('projects').insert(insertion).then(function(project) {
+                // project is a list containing the ID of the
+                // newly created project
+                project = project[0];
+                var projectSlugs = obj.slugs.map(function(slug) {
+                    return {name: slug, project: project}
+                });
+
+                knex('projectslugs').insert(projectSlugs).then(function() {
+                    obj.id = project;
+                    res.send(JSON.stringify(obj));
+                });
             });
 
-            knex('projectslugs').insert(projectSlugs).then(function() {
-                obj.id = project;
-                res.send(JSON.stringify(obj));
-            });
         });
     });
 };

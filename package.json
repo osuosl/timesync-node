@@ -39,7 +39,8 @@
     "passport": "^0.2.2",
     "passport-local": "^1.0.0",
     "prompt": "^0.2.14",
-    "sqlite3": "^3.0.8"
+    "sqlite3": "^3.0.8",
+    "valid-url": "^1.0.9"
   },
   "devDependencies": {
     "chai": "^3.2.0",

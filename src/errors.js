@@ -1,9 +1,13 @@
-function createError(status, name, text) {
-    return {
+function createError(status, name, text, values) {
+    var err = {
         status: status,
         error: name,
         text: text
     };
+    if(values) {
+        err.values = values;
+    }
+    return err;
 }
 
 module.exports = {
@@ -124,6 +128,27 @@ module.exports = {
     */
     errorAuthenticationFailure: function(strategyFailure) {
         return createError(401, 'Authentication failure', strategyFailure);
+    },
+
+    /*
+     * Error 8: Slugs already exist. Used when a new object is being created,
+       but the object being created uses existing slugs.
+    */
+    errorSlugsAlreadyExist: function(slugs) {
+        if (slugs.length === 1) {
+            var message = 'slug ' + slugs[0] + ' already exists';
+        } else {
+            var message = 'slugs ';
+            for(slug of slugs) {
+                message.concat(slug + ', ')
+            }
+            // chop off last ', '
+            message = message.substring(0, message.length - 2);
+            message.concat(' already exist')
+        }
+
+        return createError(409, 'The slug provided already exists',
+            message, slugs)
     },
 
 };
