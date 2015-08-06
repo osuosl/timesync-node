@@ -27,9 +27,9 @@ module.exports = function(expect) {
         });
 
         it('throws when passed a list containing a null slug', function(done) {
-            helpers.checkActivities(['docs', 'dev', null]).then()
+            helpers.checkActivities(null).then()
             .catch(function(err) {
-                expect(err).to.deep.equal([null]);
+                expect(err).to.deep.equal(null);
                 done();
             });
         });
