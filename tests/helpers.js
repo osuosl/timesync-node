@@ -42,6 +42,11 @@ module.exports = function(expect) {
             done();
         });
 
+        it(properSlug + 'with only one letter', function(done) {
+            expect(helpers.validateSlug('a')).to.equal(true);
+            done();
+        });
+
         it(properSlug + 'starting with number-hyphen', function(done) {
             expect(helpers.validateSlug('1-23abc')).to.equal(true);
             done();
@@ -64,6 +69,16 @@ module.exports = function(expect) {
 
         it('returns false for null input', function(done) {
             expect(helpers.validateSlug(null)).to.equal(false);
+            done();
+        });
+
+        it('returns false for beginning hyphen', function(done) {
+            expect(helpers.validateSlug('-a')).to.equal(false);
+            done();
+        });
+
+        it('returns false for ending hyphen', function(done) {
+            expect(helpers.validateSlug('a-')).to.equal(false);
             done();
         });
 

@@ -22,9 +22,18 @@ module.exports = {
             return false;
         }
 
+        // if slug is only one character long, shortcut and finish
+        // rolling this into the alphanumeric test would conflict with
+        // getting rid of beginning/ending hyphens
+        if (RegExp('^[a-z]$').test(slug)) {
+            return true;
+        }
+
         var hasDoubleHyphens = new RegExp('--');
         var containsLetter = new RegExp('[a-z]+');
-        var alphanumeric = new RegExp('^[a-z0-9-]*$'); // also allows hyphen
+
+        // alphanumeric plus hyphens, but with no external hyphens
+        var alphanumeric = new RegExp('^[a-z0-9]+[a-z0-9-]*[a-z0-9]+$');
 
         return (containsLetter.test(slug) &&
                 alphanumeric.test(slug) &&
