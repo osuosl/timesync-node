@@ -19,7 +19,7 @@ $ npm install
 $ npm run devel
 ```
 
-``npm run devel`` is a convenience that automatically restart the server
+``npm run devel`` is a convenience that will automatically restart the server
 every time source files are changed. The standard ``npm start`` still works,
 and will not restart the server automatically.
 
@@ -100,7 +100,7 @@ $ git submodule update timesync-api
 ```
 
 To build the api specification docs run the following commands (it is very
-similar to building the timesync-node docs)
+similar to building the timesync-node docs):
 
 ```
 $ pip install -r requirements.txt
