@@ -4,6 +4,7 @@ function createError(status, name, text, values) {
         error: name,
         text: text
     };
+
     if (values) {
         err.values = values;
     }
