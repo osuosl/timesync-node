@@ -268,7 +268,7 @@ module.exports = function(expect, request, baseUrl) {
                     text: 'expected slug but receieved: $*#*cat, )_!@#mouse'
                 };
 
-                expect(JSON.parse(body)).to.deep.equal(expectedError);
+                expect(body).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'projects', function(err, res, body) {
@@ -286,14 +286,15 @@ module.exports = function(expect, request, baseUrl) {
         it('fails to create a new project with an existing slug',
         function(done) {
             var postExistingSlug = copyJsonObject(postArg);
-            postExistingSlug.object.slugs = ['gwm', 'dog'];
+            postExistingSlug.object.slugs = ['gwm', 'ganeti-webmgr', 'dog'];
             requestOptions.form = postExistingSlug;
 
             request.post(requestOptions, function(err, res, body) {
                 var expectedError = {
                     status: 409,
                     error: 'The slug provided already exists',
-                    text: 'slug gwm already exists'
+                    text: 'slugs ganeti-webmgr, gwm already exist',
+                    values: ['ganeti-webmgr', 'gwm']
                 };
 
                 expect(body).to.deep.equal(expectedError);
@@ -378,7 +379,7 @@ module.exports = function(expect, request, baseUrl) {
                     text: 'tschuy is not authorized to create objects for deanj'
                 };
 
-                expect(JSON.parse(body)).to.deep.equal(expectedError);
+                expect(body).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(401);
 
                 request.get(baseUrl + 'projects', function(err, res, body) {

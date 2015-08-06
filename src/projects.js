@@ -149,6 +149,7 @@ module.exports = function(app) {
 
     app.post(app.get('version') + '/projects', function(req, res) {
         // TODO: get owner
+        // TODO: check slugs for validity
         var obj = req.body.object;
 
         if (obj.uri && !valid_url.isWebUri(obj.uri)) {
@@ -170,13 +171,14 @@ module.exports = function(app) {
 
         knex('projectslugs').where('name', 'in', obj.slugs)
         .then(function(slugs) {
-            if(slugs) {
+            if(slugs.length) {
                 var err = errors.errorSlugsAlreadyExist(
                     slugs.map(function(slug) {
                         return slug.name;
                     }));
                 return res.status(err.status).send(err);
             }
+
             knex('projects').insert(insertion).then(function(project) {
                 // project is a list containing the ID of the
                 // newly created project

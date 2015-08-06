@@ -20,4 +20,22 @@ module.exports = function(expect) {
             done();
         });
     });
+
+    describe('8: errorSlugsAlreadyExist', function() {
+        it('returns slug already exists for single slug', function(done) {
+            err = errors.errorSlugsAlreadyExist(['gwm']);
+            expect(err.status).to.equal(409);
+            expect(err.error).to.equal('The slug provided already exists');
+            expect(err.text).to.equal('slug gwm already exists');
+            done();
+        });
+
+        it('returns slugs already exist for multiple slug', function(done) {
+            err = errors.errorSlugsAlreadyExist(['ganeti-webmgr', 'gwm']);
+            expect(err.status).to.equal(409);
+            expect(err.error).to.equal('The slug provided already exists');
+            expect(err.text).to.equal('slugs ganeti-webmgr, gwm already exist');
+            done();
+        });
+    });
 };

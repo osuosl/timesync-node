@@ -139,12 +139,12 @@ module.exports = {
             var message = 'slug ' + slugs[0] + ' already exists';
         } else {
             var message = 'slugs ';
-            for(slug of slugs) {
-                message.concat(slug + ', ')
+            for(var i = 0; i < slugs.length; i++) {
+                message = message + slugs[i] + ', '
             }
             // chop off last ', '
             message = message.substring(0, message.length - 2);
-            message.concat(' already exist')
+            message = message + ' already exist';
         }
 
         return createError(409, 'The slug provided already exists',
