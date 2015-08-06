@@ -1,12 +1,20 @@
-// delete endpoints
-var deleter = require('../src/delete');
+//var deleter = require('../src/delete');
 
 module.exports = function(expect, request, baseUrl) {
     /* DELETE one of the times endpoints and check whether it can still be
        retrieved from the database */
+
+    var requestOptions = {
+        url: baseUrl + 'times/',
+        json: true,
+        method: 'DELETE'
+    };
+
     describe('DELETE /times/:id', function() {
         it('Deletes the desired time instance', function(done) {
-            deleter.deleteTime(1).then(function(time) {
+            request.del(requestOptions, function(err, res) {
+                expect(err).to.be.a('null');
+                expect(res.statusCode).to.equal(200);
                 expect(time).to.be.an('undefined');
 
                 // Check if time instance was deleted from db
@@ -25,10 +33,21 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('Fails if it receives an invalid time id', function(done) {
-            deleter.deleteTime('notanid').then(function(timeid) {
+        // Checks that a nonexistent time id will fail /ex: time id = 6013
+        it('Fails if it receives a bad time id', function(done) {
+            request.del(requestOptions, function(err, res) {
                 expect(timeid).to.be.an('undefined');
-                //expect(res.statusCode).to.equal(400);
+                expect(res.statusCode).to.equal(404);
+                done();
+            });
+        });
+
+        // Check that an invalid time id will fail /ex: time id = 'father time'
+        it('Fails if it receives an invalid time id', function(done) {
+            request.del(requestOptions, function(err, res) {
+                //('notanid').then(function(timeid) {
+                expect(timeid).to.be.an('undefined');
+                expect(res.statusCode).to.equal(400);
                 done();
             });
         });
