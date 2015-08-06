@@ -1,4 +1,4 @@
-require('../src/app');
+var app = require('../src/app');
 
 var requestBuilder = require('request');
 var expect = require('chai').expect;
@@ -83,5 +83,5 @@ describe('Helpers', function() {
 
     var localPassport = require('../src/auth/local.js')(knex);
     require('./login')(expect, localPassport);
-    require('./helpers')(expect);
+    require('./helpers')(expect, app);
 });

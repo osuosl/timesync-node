@@ -1,9 +1,7 @@
 module.exports = function(app) {
     var knex = app.get('knex');
     var errors = require('./errors');
-    console.log(errors);
-    var helpers = require('./helpers');
-    console.log(helpers);
+    var helpers = require('./helpers')(app);
     var validUrl = require('valid-url');
 
     app.get(app.get('version') + '/projects', function(req, res) {
