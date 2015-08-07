@@ -273,7 +273,7 @@ module.exports = function(expect, request, baseUrl) {
                 };
 
                 expect(jsonBody).to.deep.equal(expectedResult);
-                expect(res.statusCode).to.equal(400);
+                expect(res.statusCode).to.equal(409);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
                     expect(err).to.equal(null);
