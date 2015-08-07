@@ -1,6 +1,10 @@
+'use strict';
+
 module.exports = function(app) {
     var knex = app.get('knex');
     var errors = require('./errors');
+    var helpers = require('./helpers')(app);
+    var validUrl = require('valid-url');
 
     app.get(app.get('version') + '/projects', function(req, res) {
         knex('projects').then(function(projects) {
@@ -125,7 +129,7 @@ module.exports = function(app) {
                    the results. All results should be the same, save
                    the slug, so just create it from the first one
                    */
-                project = {id: results[0].id, name: results[0].name,
+                let project = {id: results[0].id, name: results[0].name,
                            owner: results[0].owner, uri: results[0].uri,
                            slugs: []};
 
@@ -142,6 +146,86 @@ module.exports = function(app) {
 
         }).catch(function(error) {
             var err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+        });
+    });
+
+    app.post(app.get('version') + '/projects', function(req, res) {
+        var obj = req.body.object;
+
+        // run various checks
+
+        // check validity of uri
+        if (obj.uri && !validUrl.isWebUri(obj.uri)) {
+            let err = errors.errorInvalidIdentifier('uri', obj.uri);
+            return res.status(err.status).send(err);
+        }
+
+        // check existence of slugs
+        if (!obj.slugs) {
+            let err = errors.errorBadObjectMissingField('project', 'slug');
+            return res.status(err.status).send(err);
+        }
+
+        // check existence of name
+        if (!obj.name) {
+            let err = errors.errorBadObjectMissingField('project', 'name');
+            return res.status(err.status).send(err);
+        }
+
+        // check validity of slugs
+        var invalidSlugs = obj.slugs.filter(function(slug) {
+            return !helpers.validateSlug(slug);
+        });
+
+        if (invalidSlugs.length) {
+            let err = errors.errorInvalidIdentifier('slug', invalidSlugs);
+            return res.status(err.status).send(err);
+        }
+
+        // check validity of owner -- it must match the submitting user
+        // if checkUser fails, the user submitting the request doesn't match
+        helpers.checkUser(req.body.auth.user, obj.owner).then(function(userId) {
+
+            // select any slugs that match the ones submitted
+            // this is to check that none of the submitted slugs are currently
+            // in use.
+            knex('projectslugs').where('name', 'in', obj.slugs)
+            .then(function(slugs) {
+
+                // if any slugs match the slugs passed to us, error out
+                if (slugs.length) {
+                    let err = errors.errorSlugsAlreadyExist(
+                        slugs.map(function(slug) {
+                            return slug.name;
+                        })
+
+                    );
+                    return res.status(err.status).send(err);
+                }
+
+                // create object to insert into database
+                var insertion = {uri: obj.uri, owner: userId, name: obj.name};
+
+                knex('projects').insert(insertion).then(function(project) {
+                    // project is a list containing the ID of the
+                    // newly created project
+                    project = project[0];
+                    var projectSlugs = obj.slugs.map(function(slug) {
+                        return {name: slug, project: project};
+                    });
+
+                    knex('projectslugs').insert(projectSlugs).then(function() {
+                        obj.id = project;
+                        res.send(JSON.stringify(obj));
+                    });
+                });
+
+            });
+        }).catch(function(err) {
+            // checkUser failed, meaning the user is not authorized
+            err = errors.errorAuthorizationFailure(
+                req.body.auth.user, 'create objects for ' + obj.owner);
             return res.status(err.status).send(err);
         });
     });

@@ -16,8 +16,12 @@ To start a local instance running on port 8000, just run:
 
 ```
 $ npm install
-$ npm start
+$ npm run devel
 ```
+
+``npm run devel`` is a convenience that automatically restart the server
+every time source files are changed. The standard ``npm start`` still works,
+and will not restart the server automatically.
 
 To run the test suite and linter run:
 
@@ -104,4 +108,3 @@ $ cd timesync-api
 [timesync-api]$ make html
 [timesync-api]$ <browser> build/html/index.html
 ```
-

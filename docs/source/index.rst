@@ -10,7 +10,7 @@ Development Docs
   :maxdepth: 2
 
   Developer Guide <dev/development>
-
+  Usage Guide <dev/usage>
 
 Design
 ------

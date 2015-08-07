@@ -48,7 +48,11 @@ run the migrations::
 
 And run the server::
 
-    npm start
+    npm devel
+
+.. note:: ``npm devel`` uses the ``nodemon`` tool to automatically restart your
+    test server when files are changed. To run TimeSync in production, use
+    ``npm start``.
 
 TimeSync can now be accessed on ``http://localhost:8000``, or the port
 specified in console output if appropriate.

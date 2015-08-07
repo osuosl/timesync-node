@@ -1,9 +1,14 @@
-function createError(status, name, text) {
-    return {
+function createError(status, name, text, values) {
+    var err = {
         status: status,
         error: name,
         text: text
     };
+    if (values) {
+        err.values = values;
+    }
+
+    return err;
 }
 
 module.exports = {
@@ -105,10 +110,59 @@ module.exports = {
      * param receivedIdentifier(string): The value that was received from the
      *    client.
      */
-    errorInvalidIdentifier: function(expectedType, receivedIdentifier) {
+    errorInvalidIdentifier: function(expectedType, receivedIdentifiers) {
+        var message;
+        if (!Array.isArray(receivedIdentifiers)) {
+            message = 'Expected ' + expectedType + ' but received ' +
+                receivedIdentifiers;
+            receivedIdentifiers = [receivedIdentifiers];
+        } else {
+            message = 'Expected ' + expectedType + ' but received: ' +
+                receivedIdentifiers.join(', ');
+        }
+
         return createError(400, 'The provided identifier was invalid',
-            'Expected ' + expectedType + ' but received ' +
-            receivedIdentifier);
-    }
+            message, receivedIdentifiers);
+    },
+
+    /* Error 6: Authentication failed due to an invalid username. */
+    errorInvalidUsername: function(username) {
+        return createError(401, 'Invalid username',
+            username + ' is not a valid username');
+    },
+
+    /*
+     * Error 7: Authentication failure. The token, password, etc. was not
+     * valid. Due to the numerous auth types, it takes a string from the auth
+     * strategy and returns that.
+    */
+    errorAuthenticationFailure: function(strategyFailure) {
+        return createError(401, 'Authentication failure', strategyFailure);
+    },
+
+    /*
+     * Error 8: Slugs already exist. Used when a new object is being created,
+       but the object being created uses existing slugs.
+    */
+    errorSlugsAlreadyExist: function(slugs) {
+        var message;
+        if (slugs.length === 1) {
+            message = 'slug ' + slugs[0] + ' already exists';
+        } else {
+            message = 'slugs ' + slugs.join(', ') + ' already exist';
+        }
+
+        return createError(409, 'The slug provided already exists',
+            message, slugs);
+    },
+
+    /*
+     * Error 9: Authorization failure. Used when a user attempts to do something
+       they aren't allowed to do, but is properly authenticated.
+    */
+    errorAuthorizationFailure: function(user, activity) {
+        return createError(401, 'Authorization failure',
+            user + ' is not authorized to ' + activity);
+    },
 
 };
