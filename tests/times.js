@@ -95,7 +95,7 @@ module.exports = function(expect, request, baseUrl) {
        retrieved from the database */
 
     describe('DELETE /times/:id', function() {
-        it('Deletes the desired time instance', function(done) {
+        it('deletes the desired time instance', function(done) {
             request.del(baseUrl + 'times/1', function(err, res) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
@@ -118,7 +118,7 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         // Checks that a nonexistent time id will fail /ex: time id = 6013
-        it('Fails if it receives a bad time id', function(done) {
+        it('fails if it receives a bad time id', function(done) {
             request.del(baseUrl + 'times/6013', function(err, res) {
                 var expectedError = {
                     status: 404,
@@ -134,7 +134,7 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         // Checks that an invalid time id will fail /ex: time id = 'tabby'
-        it('Fails if it receives an invalid time id', function(done) {
+        it('fails if it receives an invalid time id', function(done) {
             request.del(baseUrl + 'times/tabby', function(err, res) {
                 var expectedError = {
                     status: 400,
