@@ -1,6 +1,10 @@
+'use strict';
+
 module.exports = function(app) {
     var knex = app.get('knex');
     var errors = require('./errors');
+    var helpers = require('./helpers')(app);
+    var validUrl = require('valid-url');
 
     app.get(app.get('version') + '/times', function(req, res) {
 
@@ -152,7 +156,7 @@ module.exports = function(app) {
         knex('times').where({id: req.params.id}).then(function(timeList) {
             // get the matching time entry
             if (timeList.length === 1) {
-                time = timeList[0];
+                let time = timeList[0];
 
                 knex('users').where({id: time.user}).select('username')
                 .then(function(user) {
@@ -203,6 +207,108 @@ module.exports = function(app) {
 
         }).catch(function(error) {
             var err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+        });
+    });
+
+    app.post(app.get('version') + '/times', function(req, res) {
+        var time = req.body.object;
+
+        if (!time.duration) {
+            let err = errors.errorBadObjectMissingField('time', 'duration');
+            return res.status(err.status).send(err);
+        }
+
+        //jscs:disable
+        if (time.issue_uri && !validUrl.isWebUri(time.issue_uri)) {
+            let err = errors.errorBadObjectInvalidField('time', 'issue', 'URI',
+                'invalid URI ' + time.issue_uri);
+            return res.status(err.status).send(err);
+        }
+        //jscs:enable
+
+        //jscs:disable
+        if (!Date.parse(time.date_worked)) {
+            let err = errors.errorBadObjectInvalidField('time', 'date_worked',
+                'ISO-8601 date', time.date_worked);
+            return res.status(err.status).send(err);
+        }
+        //jscs:enable
+
+        if (typeof time.duration !== 'number') {
+            let err = errors.errorBadObjectInvalidField('time', 'duration',
+                'positive number', typeof time.duration);
+            return res.status(err.status).send(err);
+        }
+
+        if (time.duration < 0) {
+            let err = errors.errorBadObjectInvalidField('time', 'duration',
+                'positive number', 'negative number');
+            return res.status(err.status).send(err);
+        }
+
+        helpers.checkUser(req.body.auth.user, time.user).then(function(userId) {
+            helpers.checkProject(time.project).then(function(projectId) {
+                helpers.checkActivities(time.activities).then(
+                function(activityIds) {
+
+                    let createdAt = new Date().toISOString().substring(0, 10);
+                    let insertion = {
+                        duration: time.duration,
+                        user: userId,
+                        project: projectId,
+                        notes: time.notes,
+                        //jscs:disable
+                        issue_uri: time.issue_uri,
+                        date_worked: time.date_worked,
+                        created_at: createdAt
+                        //jscs:enable
+                    };
+
+                    knex('times').insert(insertion).then(function(timeId) {
+
+                        timeId = timeId[0];
+
+                        let insertion = [];
+                        for (let activityId in activityIds) {
+                            insertion.push({
+                                time: timeId,
+                                activity: activityId
+                            });
+                        }
+
+                        if (insertion.length === 0) {
+                            time.id = timeId;
+                            return res.send(time);
+                        }
+
+                        knex('timesactivities').insert(insertion).then(
+                        function() {
+                            time.id = time;
+                            return res.send(JSON.stringify(time));
+                        }).catch(function(error) {
+                            knex('times').del().where({id: time}).then(
+                            function() {
+                                let err = errors.errorServerError(error);
+                                return res.status(err.status).send(err);
+                            });
+                        });
+                    }).catch(function(error) {
+                        let err = errors.errorServerError(error);
+                        return res.status(err.status).send(err);
+                    });
+                }).catch(function() {
+                    let err = errors.errorInvalidForeignKey(
+                        'time', 'activities');
+                    return res.status(err.status).send(err);
+                });
+            }).catch(function() {
+                let err = errors.errorInvalidForeignKey('time', 'project');
+                return res.status(err.status).send(err);
+            });
+        }).catch(function() {
+            let err = errors.errorAuthorizationFailure(
+                req.body.auth.user, 'create time entries for ' + time.user);
             return res.status(err.status).send(err);
         });
     });
