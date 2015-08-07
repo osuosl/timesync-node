@@ -159,6 +159,12 @@ module.exports = function(app) {
                     reject({type: 'database', value: err});
                 });
             });
+        },
+
+        checkActivities: function(slugs) {
+            return new Promise(function(resolve, reject) {
+                resolve(1, 2);
+            });
         }
     };
 
