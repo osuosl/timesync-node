@@ -92,7 +92,6 @@ module.exports = function(expect, request, baseUrl) {
             request.del(baseUrl + 'activity/docs', function(err, res) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
-                //expect('docs').to.be.an('undefined');
 
                 // Checks to see that the activity has been deleted from the db
                 request.get(baseUrl + 'activities/docs',
