@@ -49,7 +49,7 @@ module.exports = helpers = {
                 .where('username', username).then(function(user) {
                     return resolve(user.id);
                 });
-            }else {
+            } else {
                 return reject();
             }
         });
@@ -76,7 +76,9 @@ module.exports = helpers = {
                 } else {
                     resolve(project[0].project);
                 }
-            }).catch(function(err) { reject(err); });
+            }).catch(function(err) {
+                reject({type: 'database', value: err});
+            });
         });
     }
 };
