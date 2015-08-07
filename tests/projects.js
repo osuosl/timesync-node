@@ -108,19 +108,19 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Tests Patching Projects
-    // Test that a valid URI, slugs, owner, and name succesfully patches
+    // Test that a valid uri, slugs, owner, and name succesfully patches
     //      the project.
-    // Test that valid URI succesfully patches the project.
+    // Test that valid uri succesfully patches the project.
     // Test that valid slugs succesfully patches the project.
     // Test that valid name succesfully patches the project.
     // Test that valid owner succesfully patches the project.
     // Test that all invalid elements unsucessfully patches the project.
-    // Test that all but valid URI unsuccesfully patches the project.
+    // Test that all but valid uri unsuccesfully patches the project.
     // Test that all but valid slugs unsuccesfully patches the project.
     // Test that all but valid name unsuccesfully patches the project.
     // Test that all but valid owner unsuccesfully patches the project.
     // Test that all but invalid key unsuccesfully patches the project.
-    // Test that invalid URI unsuccesfully patches the project.
+    // Test that invalid uri unsuccesfully patches the project.
     // Test that invalid slugs unsuccesfully patches the project.
     // Test that invalid name unsuccesfully patches the project.
     // Test that invalid owner unsuccesfully patches the project.
@@ -174,6 +174,9 @@ module.exports = function(expect, request, baseUrl) {
             json: true
         };
 
+        // Function used for validating that the object in the database
+        // is in the correct state (change or unchanged based on if the POST
+        // was valid)
         var checkListEndpoint = function(done, expectedResults) {
             // Make a get request
             request.get(requestOptions.url, function(err, res, body) {
@@ -186,21 +189,17 @@ module.exports = function(expect, request, baseUrl) {
             });
         };
 
-        var JSONcopy = function(a) {
-            return JSON.parse(JSON.stringify(a));
-        };
-
-        it('successfully patches a projects URI, slugs, owner, and name',
+        it("successfully patches a project's uri, slugs, owner, and name",
            function(done) {
-            postArg.object = JSONcopy(patchedProject);
-            requestOptions.form = JSONcopy(postArg);
+            postArg.object = copyJsonObject(patchedProject);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
 
-                // Set expected results to the new state of
-                var expectedResults = JSONcopy(originalProject);
+                // Set expected results to the new state of the project gwm
+                var expectedResults = copyJsonObject(originalProject);
                 expectedResults.name = patchedProject.name;
                 expectedResults.uri = patchedProject.uri;
                 expectedResults.slugs = patchedProject.slugs;
@@ -215,15 +214,15 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('successfully patches a projects URI', function(done) {
-            postArg.object = JSONcopy(patchedProjectUri);
-            requestOptions.form = JSONcopy(postArg);
+        it("successfully patches a project's uri", function(done) {
+            postArg.object = copyJsonObject(patchedProjectUri);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
 
-                var expectedResults = JSONcopy(originalProject);
+                var expectedResults = copyJsonObject(originalProject);
                 expectedResults.uri = patchedProject.uri;
 
                 body = JSON.parse(body);
@@ -234,15 +233,15 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('successfully patches a projects slugs', function(done) {
-            postArg.object = JSONcopy(patchedProjectSlugs);
-            requestOptions.form = JSONcopy(postArg);
+        it("successfully patches a project's slugs", function(done) {
+            postArg.object = copyJsonObject(patchedProjectSlugs);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
 
-                var expectedResults = JSONcopy(originalProject);
+                var expectedResults = copyJsonObject(originalProject);
                 expectedResults.slugs = patchedProject.slugs;
 
                 body = JSON.parse(body);
@@ -253,15 +252,15 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('successfully patches a projects name', function(done) {
-            postArg.object = JSONcopy(patchedProjectName);
-            requestOptions.form = JSONcopy(postArg);
+        it("successfully patches a project's name", function(done) {
+            postArg.object = copyJsonObject(patchedProjectName);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
 
-                var expectedResults = JSONcopy(originalProject);
+                var expectedResults = copyJsonObject(originalProject);
                 expectedResults.name = patchedProject.name;
 
                 body = JSON.parse(body);
@@ -272,15 +271,15 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('successfully patches a projects owner', function(done) {
-            postArg.object = JSONcopy(patchedProjectOwner);
-            requestOptions.form = JSONcopy(postArg);
+        it("successfully patches a project's owner", function(done) {
+            postArg.object = copyJsonObject(patchedProjectOwner);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
 
-                var expectedResults = JSONcopy(originalProject);
+                var expectedResults = copyJsonObject(originalProject);
                 expectedResults.owner = patchedProject.owner;
 
                 body = JSON.parse(body);
@@ -291,10 +290,10 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('doesnt patche a project with bad uri, name, slugs, and and owner',
+        it("doesn't patch a project with bad uri, name, slugs, and and owner",
            function(done) {
-            postArg.object = JSONcopy(badProject);
-            requestOptions.form = JSONcopy(postArg);
+            postArg.object = copyJsonObject(badProject);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.equal('Bad object');
@@ -307,15 +306,15 @@ module.exports = function(expect, request, baseUrl) {
                 'project does not have a key fieldname'
                 ]).to.include.members([JSON.parse(body).text]);
 
-                var expectedResults = JSONcopy(originalProject);
+                var expectedResults = copyJsonObject(originalProject);
 
                 checkListEndpoint(done, expectedResults);
             });
         });
 
-        it('doesnt patch a project with only bad uri', function(done) {
-            postArg.object = JSONcopy(badProjectUri);
-            requestOptions.form = JSONcopy(postArg);
+        it("doesn't patch a project with only bad uri", function(done) {
+            postArg.object = copyJsonObject(badProjectUri);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.equal('Bad object');
@@ -323,15 +322,15 @@ module.exports = function(expect, request, baseUrl) {
                 expect(JSON.parse(body).text).to.equal('Field uri of project' +
                     'should be string but was sent as array');
 
-                var expectedResults = JSONcopy(originalProject);
+                var expectedResults = copyJsonObject(originalProject);
 
                 checkListEndpoint(done, expectedResults);
             });
         });
 
-        it('doesnt patch a project with only bad slugs', function(done) {
-            postArg.object.slugs = JSONcopy(badProjectSlugs);
-            requestOptions.form = JSONcopy(postArg);
+        it("doesn't patch a project with only bad slugs", function(done) {
+            postArg.object.slugs = copyJsonObject(badProjectSlugs);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.equal('Bad object');
@@ -339,15 +338,15 @@ module.exports = function(expect, request, baseUrl) {
                 expect(JSON.parse(body).text).to.equal('Field slugs of' +
                     ' project should be array but was sent as string');
 
-                var expectedResults = JSONcopy(originalProject);
+                var expectedResults = copyJsonObject(originalProject);
 
                 checkListEndpoint(done, expectedResults);
             });
         });
 
-        it('doesnt patch a project with only bad name', function(done) {
-            postArg.object = JSONcopy(badProjectName);
-            requestOptions.form = JSONcopy(postArg);
+        it("doesn't patch a project with only bad name", function(done) {
+            postArg.object = copyJsonObject(badProjectName);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.equal('Bad object');
@@ -355,15 +354,15 @@ module.exports = function(expect, request, baseUrl) {
                 expect(JSON.parse(body).text).to.equal('Field name of' +
                     ' project should be string but was sent as array');
 
-                var expectedResults = JSONcopy(originalProject);
+                var expectedResults = copyJsonObject(originalProject);
 
                 checkListEndpoint(done, expectedResults);
             });
         });
 
-        it('doesnt patch a project with just bad owner', function(done) {
-            postArg.object = JSONcopy(badProjectOwner);
-            requestOptions.form = JSONcopy(postArg);
+        it("doesn't patch a project with just bad owner", function(done) {
+            postArg.object = copyJsonObject(badProjectOwner);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.equal('Bad object');
@@ -371,15 +370,15 @@ module.exports = function(expect, request, baseUrl) {
                 expect(JSON.parse(body).text).to.equal('Field owner of' +
                     ' project should be string but was sent as array');
 
-                var expectedResults = JSONcopy(originalProject);
+                var expectedResults = copyJsonObject(originalProject);
 
                 checkListEndpoint(done, expectedResults);
             });
         });
 
-        it('doesnt patch a project with just invalid key', function(done) {
-            postArg.object = JSONcopy(badProjectKey);
-            requestOptions.form = JSONcopy(postArg);
+        it("doesn't patch a project with just invalid key", function(done) {
+            postArg.object = copyJsonObject(badProjectKey);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.equal('Bad object');
@@ -387,16 +386,16 @@ module.exports = function(expect, request, baseUrl) {
                 expect(JSON.parse(body).text).to.equal('project does not' +
                     ' have a key fieldname');
 
-                var expectedResults = JSONcopy(originalProject);
+                var expectedResults = copyJsonObject(originalProject);
 
                 checkListEndpoint(done, expectedResults);
             });
         });
 
-        it('doesnt patch a project with invalid uri', function(done) {
-            postArg.form = JSONcopy(originalProject);
+        it("doesn't patch a project with invalid uri", function(done) {
+            postArg.form = copyJsonObject(originalProject);
             postArg.form.uri = badProject.uri;
-            requestOptions.form = JSONcopy(postArg);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.equal('Bad object');
@@ -404,16 +403,16 @@ module.exports = function(expect, request, baseUrl) {
                 expect(JSON.parse(body).text).to.equal('Field uri of project' +
                     ' should be string but was sent as array');
 
-                var expectedResults = JSONcopy(originalProject);
+                var expectedResults = copyJsonObject(originalProject);
 
                 checkListEndpoint(done, expectedResults);
             });
         });
 
-        it('doesnt patch a project with invalid slugs', function(done) {
-            postArg.object = JSONcopy(originalProject);
+        it("doesn't patch a project with invalid slugs", function(done) {
+            postArg.object = copyJsonObject(originalProject);
             postArg.object.slugs = badProject.slugs;
-            requestOptions.form = JSONcopy(postArg);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.equal('Bad object');
@@ -421,16 +420,16 @@ module.exports = function(expect, request, baseUrl) {
                 expect(JSON.parse(body).text).to.equal('Field slugs of' +
                     ' project should be array but was sent as string');
 
-                var expectedResults = JSONcopy(originalProject);
+                var expectedResults = copyJsonObject(originalProject);
 
                 checkListEndpoint(done, expectedResults);
             });
         });
 
-        it('doesnt patch a project with invalid name', function(done) {
-            postArg.form = JSONcopy(originalProject);
+        it("doesn't patch a project with invalid name", function(done) {
+            postArg.form = copyJsonObject(originalProject);
             postArg.form.name = badProject.name;
-            requestOptions.form = JSONcopy(postArg);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.equal('Bad object');
@@ -444,10 +443,10 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('doesnt patch a project with invalid owner', function(done) {
-            postArg.form = JSONcopy(originalProject);
+        it("doesn't patch a project with invalid owner", function(done) {
+            postArg.form = copyJsonObject(originalProject);
             postArg.form.owner = badProject.owner;
-            requestOptions.form = JSONcopy(postArg);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.equal('Bad object');
@@ -461,10 +460,10 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('doesnt patch a project with invalid key', function(done) {
-            postArg.form = JSONcopy(originalProject);
+        it("doesn't patch a project with invalid key", function(done) {
+            postArg.form = copyJsonObject(originalProject);
             postArg.form.key = badProject.key;
-            requestOptions.form = JSONcopy(postArg);
+            requestOptions.form = copyJsonObject(postArg);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.equal('Bad Foreign Key');
