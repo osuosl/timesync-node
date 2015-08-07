@@ -94,27 +94,25 @@ var knex = app.get('knex');
 
 module.exports = {
     checkActivities: function(names) {
-        return new Promise(function(resolver, reject){
-            knex('activities').where('slug', 'in', names).then(function(slugs){
-                if(names === undefined){
+        return new Promise(function(resolver, reject) {
+            knex('activities').where('slug', 'in', names).then(function(slugs) {
+                if (names == undefined) {
                     reject(names);
-                }
-                else{
-                    var results = slugs.map(function(value){
+                } else {
+                    var results = slugs.map(function(value) {
                         return value.slug;
                     });
-                    var unmatched = names.filter(function(value){
-                        if(results.indexOf(value) < 0){
+                    var unmatched = names.filter(function(value) {
+                        if (results.indexOf(value) < 0) {
                             return value;
                         }
                     });
-                    var ids = slugs.map(function(value){
+                    var ids = slugs.map(function(value) {
                         return value.id;
                     });
-                    if(unmatched.length === 0){
+                    if (unmatched.length === 0) {
                         resolver(ids);
-                    }
-                    else{
+                    } else {
                         reject(unmatched);
                     }
                 }
