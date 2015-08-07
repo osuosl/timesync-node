@@ -112,7 +112,7 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         // Checks that delete will fail w/ nonexistent slug
-        it('fails if it receives a bad slug', function(done) {
+        it('fails if it receives a nonexistent slug', function(done) {
             request.del(baseUrl + 'activities/naps', function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedError = {
