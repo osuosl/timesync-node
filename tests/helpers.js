@@ -108,28 +108,29 @@ module.exports = function(expect) {
         it('throws when passed undefined', function(done) {
             helpers.checkProject(undefined).then().catch(function(err) {
                 // this means that the time.slug was undefined
-                expect(err).to.equal(undefined);
+                expect(err).to.deep.equal({type: 'invalid', value: undefined});
                 done();
             });
         });
 
         it('throws when passed a nonexistent slug', function(done) {
             helpers.checkProject('dogs').then().catch(function(err) {
-                expect(err).to.equal('dogs');
+                expect(err).to.deep.equal({type: 'nonexistent', value: 'dogs'});
                 done();
             });
         });
 
         it('throws when passed a null slug', function(done) {
             helpers.checkProject(null).then().catch(function(err) {
-                expect(err).to.equal(null);
+                expect(err).to.deep.equal({type: 'invalid', value: null});
                 done();
             });
         });
 
         it('throws when passed a bad slug', function(done) {
             helpers.checkProject('#!^kittens').then().catch(function(err) {
-                expect(err).to.equal('#!^kittens');
+                expect(err).to.deep.equal(
+                    {type: 'invalid', value: '#!^kittens'});
                 done();
             });
         });

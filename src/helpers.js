@@ -63,7 +63,7 @@ module.exports = helpers = {
         return new Promise(function(resolve, reject) {
 
             if (!helpers.validateSlug(slug)) {
-                return reject(slug);
+                return reject({type: 'invalid', value: slug});
             }
 
             // get project from database
@@ -72,7 +72,7 @@ module.exports = helpers = {
                 if (project.length === 0) {
                     // project doesn't exist -- it could be null, undefined,
                     // invalid, etc.
-                    reject(slug);
+                    reject({type: 'nonexistent', value: slug});
                 } else {
                     resolve(project[0].project);
                 }
