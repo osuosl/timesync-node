@@ -135,6 +135,7 @@ module.exports = function(expect, app) {
         });
     });
 };
+
 var helpers = require('../src/helpers');
 
 module.exports = function(expect) {
