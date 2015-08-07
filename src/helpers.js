@@ -1,7 +1,7 @@
 var app = require('./app');
 var knex = app.get('knex');
 
-module.exports = {
+module.exports = helpers = {
     validateSlug: function(slug) {
         /* matches:
           1. at least one letter
@@ -49,9 +49,36 @@ module.exports = {
                 .where('username', username).then(function(user) {
                     return resolve(user.id);
                 });
-            }else {
+            } else {
                 return reject();
             }
+        });
+    },
+
+    checkProject: function(slug) {
+        // Bluebird promises take a resolve and a reject
+        // essentially, when the data you want is done resolving.
+        // pass it to resolve(). If an error occurs, pass it to
+        // reject().
+        return new Promise(function(resolve, reject) {
+
+            if (!helpers.validateSlug(slug)) {
+                return reject({type: 'invalid', value: slug});
+            }
+
+            // get project from database
+            knex('projectslugs').select('project')
+            .where('name', slug).then(function(project) {
+                if (project.length === 0) {
+                    // project doesn't exist -- it could be null, undefined,
+                    // invalid, etc.
+                    reject({type: 'nonexistent', value: slug});
+                } else {
+                    resolve(project[0].project);
+                }
+            }).catch(function(err) {
+                reject({type: 'database', value: err});
+            });
         });
     }
 };
