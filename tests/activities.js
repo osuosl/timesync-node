@@ -92,7 +92,7 @@ module.exports = function(expect, request, baseUrl) {
             request.del(baseUrl + 'activity/docs', function(err, res) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
-                expect('docs').to.be.an('undefined');
+                //expect('docs').to.be.an('undefined');
 
                 // Checks to see that the activity has been deleted from the db
                 request.get(baseUrl + 'activities/docs',
@@ -104,6 +104,7 @@ module.exports = function(expect, request, baseUrl) {
                         text: 'Nonexistent activity'
                     };
 
+                    expect('docs').to.be.an('undefined');
                     expect(jsonBody).to.deep.have.same.members(expectedError);
                     expect(res.statusCode).to.equal(404);
                     done();
@@ -119,7 +120,7 @@ module.exports = function(expect, request, baseUrl) {
                     status: 404,
                     error: 'Object not found',
                     text: 'Nonexistent activity'
-                };                 
+                };
 
                 expect('naps').to.be.an('undefined');
                 expect(jsonBody).to.deep.have.same.members(expectedError);
@@ -133,10 +134,11 @@ module.exports = function(expect, request, baseUrl) {
             request.del(baseUrl + 'activities/###!what',
             function(err, res, body) {
                 var jsonBody = JSON.parse(body);
-                var expectedError = JSON.parse(body);
+                var expectedError = {
                     status: 400,
                     error: 'Invalid identifier',
-                    text: "Expected slug but received '###!what'"
+                    text: 'Expected slug but received ###!what',
+                    values: ['###!what']
                 };
 
                 expect('###!what').to.be.an('undefined');
