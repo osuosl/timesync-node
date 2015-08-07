@@ -113,8 +113,16 @@ module.exports = function(expect, request, baseUrl) {
 
         // Checks that delete will fail w/ nonexistent slug
         it('Fails if it receives a bad slug', function(done) {
-            request.del(baseUrl + 'activities/naps', function(err, res) {
+            request.del(baseUrl + 'activities/naps', function(err, res, body) {
+                var jsonBody = JSON.parse(body);
+                var expectedError = {
+                    status: 404,
+                    error: 'Object not found',
+                    text: 'Nonexistent activity'
+                };                 
+
                 expect('naps').to.be.an('undefined');
+                expect(jsonBody).to.deep.have.same.members(expectedError);
                 expect(res.statusCode).to.equal(404);
                 done();
             });
@@ -122,8 +130,17 @@ module.exports = function(expect, request, baseUrl) {
 
         // Checks that delete will fail w/ invalid slug
         it('Fails if it receives an invalid slug', function(done) {
-            request.del(baseUrl + 'activities/###!what', function(err, res) {
+            request.del(baseUrl + 'activities/###!what',
+            function(err, res, body) {
+                var jsonBody = JSON.parse(body);
+                var expectedError = JSON.parse(body);
+                    status: 400,
+                    error: 'Invalid identifier',
+                    text: "Expected slug but received '###!what'"
+                };
+
                 expect('###!what').to.be.an('undefined');
+                expect(jsonBody).to.deep.have.same.members(expectedError);
                 expect(res.statusCode).to.equal(400);
                 done();
             });
