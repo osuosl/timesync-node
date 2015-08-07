@@ -1,6 +1,8 @@
-module.exports = helpers = function(app) {
+var helpers;
+
+module.exports = function(app) {
     var knex = app.get('knex');
-    return {
+    helpers = {
         validateSlug: function(slug) {
             /* matches:
               1. at least one letter
@@ -61,7 +63,7 @@ module.exports = helpers = function(app) {
             // reject().
             return new Promise(function(resolve, reject) {
 
-                if (!helpers(app).validateSlug(slug)) {
+                if (!helpers.validateSlug(slug)) {
                     return reject({type: 'invalid', value: slug});
                 }
 
@@ -81,4 +83,6 @@ module.exports = helpers = function(app) {
             });
         }
     };
+
+    return helpers;
 };
