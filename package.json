@@ -15,7 +15,7 @@
     "fixtures": "node ./scripts/load_fixtures.js",
     "test": "DATABASE=mocha PORT=8851 DEBUG=true mocha --harmony tests",
     "latte": "sh ./scripts/latte.sh",
-    "coverage": "DATABASE=mocha PORT=8851 node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
+    "coverage": "DATABASE=mocha PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
     "create-account": "node ./scripts/create-account.js"
   },
   "repository": {
