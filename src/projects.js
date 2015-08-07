@@ -229,4 +229,121 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
         });
     });
+
+    app.post(app.get('version') + '/projects/:slug', function(req, res) {
+        var obj = req.body.object;
+
+        // run various checks
+
+        // check validity of uri
+        if (obj.uri && !validUrl.isWebUri(obj.uri)) {
+            let err = errors.errorInvalidIdentifier('uri', obj.uri);
+            return res.status(err.status).send(err);
+        }
+
+        // check validity of slugs
+        if(obj.slugs && obj.slugs.length) {
+            var invalidSlugs = obj.slugs.filter(function(slug) {
+                return !helpers.validateSlug(slug);
+            });
+
+            if (invalidSlugs.length) {
+                let err = errors.errorInvalidIdentifier('slug', invalidSlugs);
+                return res.status(err.status).send(err);
+            }
+        }
+
+        obj.slugs = obj.slugs || [];
+
+        knex('projectslugs').first().where({name: req.params.slug}).then(function(ps) {
+            // ps contains the slug with the project id
+            knex('projects').first().where({id: ps.project}).then(function(project) {
+                // TODO check user against db
+                helpers.checkUser(req.body.auth.user, req.body.auth.user).then(function(userId) {
+                    knex('projectslugs').where('name', 'in', obj.slugs).then(function(slugs) {
+
+                        var overlappingSlugs = slugs.filter(function(slug) {
+                            return slug.project !== ps.project;
+                        });
+
+                        if (overlappingSlugs.length) {
+                            overlappingSlugs = overlappingSlugs.map(function(slug) {
+                                return slug.name;
+                            });
+
+                            let err = errors.errorSlugsAlreadyExist(overlappingSlugs);
+                            return res.status(err.status).send(err);
+                        }
+
+                        // all checks have passed
+
+                        project.uri = obj.uri || project.uri;
+                        project.owner = userId;
+                        project.name = obj.name || project.name;
+
+                        knex('projects').where({id: project.id}).update(project).then(function() {
+                            var slugNames = slugs.map(function(slug) {
+                                return slug.name;
+                            })
+
+                            var newSlugs = [];
+
+                            for (let i = 0; i < obj.slugs.length; i++) {
+                                // indexOf returns -1 if the parameter is in
+                                // the array, so this returns true if
+                                // the slug is not in slugNames
+                                if (slugNames.indexOf(obj.slugs[i]) === -1) {
+                                    newSlugs.push(obj.slugs[i]);
+                                }
+                            }
+
+                            knex('projectslugs').where({project: project.id}).then(function(existingSlugs) {
+                                var existingSlugs = existingSlugs.map(function(slug) {
+                                    return slug.name;
+                                });
+
+                                var delSlugs = [];
+                                if(obj.slugs.length) {
+                                    delSlugs = existingSlugs.filter(function(slug) {
+                                        return obj.slugs.indexOf(slug) === -1;
+                                    });
+                                }
+
+                                var projectSlugs = newSlugs.map(function(newSlug) {
+                                    return {name: newSlug, project: project.id};
+                                });
+
+                                var returnProject = function() {
+                                    knex('projectslugs').where({project: project.id}).then(function(pro) {
+                                        if(obj.slugs.length) {
+                                            project.slugs = obj.slugs;
+                                        } else {
+                                            project.slugs = existingSlugs;
+                                        }
+
+                                        project.owner = req.body.auth.user;
+                                        res.send(JSON.stringify(project));
+                                    });
+                                };
+
+                                var addSlugs = function() {
+                                    if(projectSlugs.length) {
+                                        knex('projectslugs').insert(projectSlugs).then(returnProject);
+                                    } else {
+                                        returnProject();
+                                    }
+                                };
+
+                                if(delSlugs.length) {
+                                    knex('projectslugs').where('name', 'in', delSlugs).del().then(addSlugs);
+                                } else {
+                                    addSlugs();
+                                }
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
 };

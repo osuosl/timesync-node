@@ -129,7 +129,7 @@ module.exports = function(expect, request, baseUrl) {
 
         var patchedProject = {
             name: 'Ganeti Web Mgr',
-            owner: 'voigte',
+            owner: 'tschuy',
             slugs: ['gwm', 'gan-web'],
             uri: 'https://code.osuosl.org/projects/',
         };
@@ -139,7 +139,7 @@ module.exports = function(expect, request, baseUrl) {
             name: 'Ganeti Web Manager',
             owner: 'tschuy',
             slugs: ['gwm', 'ganeti-webmgr'],
-            uri: 'https://code.osuosl.org/projects/'
+            uri: 'https://code.osuosl.org/projects/ganeti-webmgr'
         };
 
         var patchedProjectName  = {name:  patchedProject.name };
@@ -184,7 +184,7 @@ module.exports = function(expect, request, baseUrl) {
                 expect(res.statusCode).to.equal(200);
 
                 body = JSON.parse(body);
-                expect(body).to.equal(expectedResults);
+                expect(body).to.deep.equal(expectedResults);
                 done();
             });
         };
@@ -205,10 +205,8 @@ module.exports = function(expect, request, baseUrl) {
                 expectedResults.slugs = patchedProject.slugs;
                 expectedResults.owner = patchedProject.owner;
 
-                body = JSON.parse(body);
-
                 // expect body of post request to be the new state of gwm
-                expect(body).to.equal(expectedResults);
+                expect(body).to.deep.equal(expectedResults);
 
                 checkListEndpoint(done, expectedResults);
             });
@@ -225,9 +223,7 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedResults = copyJsonObject(originalProject);
                 expectedResults.uri = patchedProject.uri;
 
-                body = JSON.parse(body);
-
-                expect(body).to.equal(expectedResults);
+                expect(body).to.deep.equal(expectedResults);
 
                 checkListEndpoint(done, expectedResults);
             });
@@ -244,9 +240,7 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedResults = copyJsonObject(originalProject);
                 expectedResults.slugs = patchedProject.slugs;
 
-                body = JSON.parse(body);
-
-                expect(body).to.equal(expectedResults);
+                expect(body).to.deep.equal(expectedResults);
 
                 checkListEndpoint(done, expectedResults);
             });
