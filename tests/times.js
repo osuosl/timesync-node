@@ -99,7 +99,6 @@ module.exports = function(expect, request, baseUrl) {
             request.del(baseUrl + 'times/1', function(err, res) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
-                expect(time).to.be.an('undefined');
 
                 // Check if time instance was deleted from db
                 request.get(baseUrl + 'times/1', function(err, res, body) {
@@ -110,6 +109,7 @@ module.exports = function(expect, request, baseUrl) {
                         text: 'Nonexistent activity'
                     };
 
+                    expect(1).to.be.an('undefined');
                     expect(jsonBody).to.have.same.members(expectedError);
                     expect(res.statusCode).to.equal(404);
                     done();
