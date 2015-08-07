@@ -1,6 +1,5 @@
-var helpers = require('../src/helpers');
-
-module.exports = function(expect) {
+module.exports = function(expect, app) {
+    var helpers = require('../src/helpers')(app);
     describe('checkUser', function() {
         it('Returns user ID if username == user', function(done) {
             helpers.checkUser('tschuy', 'tschuy').then(function(userID) {
