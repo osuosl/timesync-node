@@ -11,11 +11,11 @@ module.exports = function(expect, request, baseUrl) {
                         project: ['wf'],
                         activities: ['docs', 'dev'],
                         notes: '',
-                            //jscs:disable
+                        //jscs:disable
                         issue_uri: 'https://github.com/osu-cass' +
                             '/whats-fresh-api/issues/56',
-                        date_worked: null,
-                        created_at: null,
+                        date_worked: '2015-04-19',
+                        created_at: '2015-04-19',
                         updated_at: null,
                         id: 1
                     }
@@ -40,11 +40,11 @@ module.exports = function(expect, request, baseUrl) {
                     project: ['wf'],
                     activities: ['docs', 'dev'],
                     notes: '',
-                        //jscs:disable
+                    //jscs:disable
                     issue_uri: 'https://github.com/osu-cass/whats-fresh-api' +
                         '/issues/56',
-                    date_worked: null,
-                    created_at: null,
+                    date_worked: '2015-04-19',
+                    created_at: '2015-04-19',
                     updated_at: null,
                     id: 1
                 };
@@ -118,8 +118,8 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:disable
                 issue_uri: 'https://github.com/osu-cass' +
                     '/whats-fresh-api/issues/56',
-                date_worked: null,
-                created_at: null,
+                date_worked: '2015-04-19',
+                created_at: '2015-04-19',
                 updated_at: null,
                 //jscs:enable
                 id: 1
@@ -139,18 +139,16 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times/', time);
+            var postArg = getPostObject(baseUrl + 'times', time);
 
             request.post(postArg, function(err, res, body) {
 
                 expect(err).to.equal(null);
                 expect(res.statusCode).to.equal(200);
 
-                var jsonBody = JSON.parse(body);
-                time.id = jsonBody.id;
-                expect(jsonBody).to.equal(time);
+                time.id = body.id;
+                expect(body).to.deep.equal(time);
 
-                createdAt = Date.now().getTime() / 1000;
                 request.get(baseUrl + 'times', function(err, res, body) {
                     var expectedResults = initialData.concat([
                         {
@@ -162,15 +160,16 @@ module.exports = function(expect, request, baseUrl) {
                             //jscs:disable
                             issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                             date_worked: '2015-07-30',
-                            created_at: createdAt,
-                            updated_at: createdAt,
+                            updated_at: null,
                             //jscs:enable
                             id: 2
                         }
                     ]);
                     expect(err).to.equal(null);
                     expect(res.statusCode).to.equal(200);
-                    expect(JSON.parse(body)).to.deep.have.same
+                    console.log(JSON.parse(body));
+                    //console.log(expectedResults);
+                    expect(JSON.parse(body)).to.deep.include
                         .members(expectedResults);
                     done();
                 });
@@ -190,10 +189,9 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times/', time);
+            var postArg = getPostObject(baseUrl + 'times', time);
 
             request.post(postArg, function(err, res, body) {
-                var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     error: 'Bad object',
                     status: 400,
@@ -201,7 +199,7 @@ module.exports = function(expect, request, baseUrl) {
                         'but was sent as negative number.'
                 };
 
-                expect(jsonBody).to.eql(expectedResult);
+                expect(body).to.eql(expectedResult);
                 expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
@@ -226,7 +224,7 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times/', time);
+            var postArg = getPostObject(baseUrl + 'times', time);
 
             request.post(postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
@@ -262,7 +260,7 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times/', time);
+            var postArg = getPostObject(baseUrl + 'times', time);
 
             request.post(postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
@@ -297,7 +295,7 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times/', time);
+            var postArg = getPostObject(baseUrl + 'times', time);
 
             request.post(postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
@@ -332,7 +330,7 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times/', time);
+            var postArg = getPostObject(baseUrl + 'times', time);
 
             request.post(postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
@@ -368,7 +366,7 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times/', time);
+            var postArg = getPostObject(baseUrl + 'times', time);
 
             request.post(postArg, function(err, res) {
                 var jsonBody = JSON.parse(body);
