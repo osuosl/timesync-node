@@ -30,7 +30,14 @@ module.exports = function(expect, request, baseUrl) {
         // Checks that a nonexistent time id will fail /ex: time id = 6013
         it('Fails if it receives a bad time id', function(done) {
             request.del(baseUrl + 'times/6013', function(err, res) {
-                expect(timeid).to.be.an('undefined');
+                var expectedError = {
+                    status: 404,
+                    error: 'Object not found',
+                    text: 'Nonexistent time id'
+                };
+
+                expect(6013).to.be.an('undefined');
+                expect(body).to.deep.have.same.members(expectedError);
                 expect(res.statusCode).to.equal(404);
                 done();
             });
@@ -39,8 +46,14 @@ module.exports = function(expect, request, baseUrl) {
         // Checks that an invalid time id will fail /ex: time id = 'tabby'
         it('Fails if it receives an invalid time id', function(done) {
             request.del(baseUrl + 'times/tabby', function(err, res) {
-                // ('notanid').then(function(timeid) {
-                expect(timeid).to.be.an('undefined');
+                var expectedError = {
+                    status: 400,
+                    error: 'Invalid indentifier',
+                    text: 'Expected integer but received a string'
+                };
+
+                expect('tabby').to.be.an('undefined');
+                expect(body).to.deep.have.same.members(expectedError);
                 expect(res.statusCode).to.equal(400);
                 done();
             });
