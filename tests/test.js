@@ -59,6 +59,8 @@ describe('Endpoints', function() {
     require('./times')(expect, request, baseUrl);
     require('./activities')(expect, request, baseUrl);
     require('./projects')(expect, request, baseUrl);
+    require('./delete')(expect, request, baseUrl);
+
 });
 
 describe('Errors', function() {
