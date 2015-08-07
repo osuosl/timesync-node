@@ -233,9 +233,35 @@ module.exports = function(app) {
     app.post(app.get('version') + '/projects/:slug', function(req, res) {
         var obj = req.body.object;
 
-        // run various checks
+        // valid keys
+        var validKeys = ['name', 'uri', 'owner', 'slugs'];
+        for (let key in obj) {
+            // indexOf returns -1 if the parameter is in
+            // the array, so this returns true if
+            // the slug is not in slugNames
+            if (validKeys.indexOf(key) === -1) {
+                let err = errors.errorBadObjectUnknownField('project', key);
+                return res.status(err.status).send(err);
+            }
+        }
+
+        // check string fields
+        for (let field of ['name', 'uri', 'owner']) {
+          if(obj[field] && helpers.getType(obj[field]) !== 'string') {
+              let err = errors.errorBadObjectInvalidField('project', field, 'string', helpers.getType(obj[field]));
+              return res.status(err.status).send(err);
+          }
+        }
+
+        // check that slugs is array
+        if (obj.slugs && helpers.getType(obj.slugs) !== 'array') {
+            let err = errors.errorBadObjectInvalidField('project', 'slugs', 'array', helpers.getType(obj.slugs));
+            return res.status(err.status).send(err);
+        }
+
 
         // check validity of uri
+
         if (obj.uri && !validUrl.isWebUri(obj.uri)) {
             let err = errors.errorInvalidIdentifier('uri', obj.uri);
             return res.status(err.status).send(err);
