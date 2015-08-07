@@ -161,8 +161,8 @@ module.exports = function(app) {
             });
         },
 
-        checkActivities: function(slugs) {
-            return new Promise(function(resolve, reject) {
+        checkActivities: function() {
+            return new Promise(function(resolve) {
                 resolve(1, 2);
             });
         }
