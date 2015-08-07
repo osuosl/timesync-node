@@ -1,4 +1,4 @@
-module.exports = function(app) {
+module.exports = helpers = function(app) {
     var knex = app.get('knex');
     return {
         validateSlug: function(slug) {
@@ -61,7 +61,7 @@ module.exports = function(app) {
             // reject().
             return new Promise(function(resolve, reject) {
 
-                if (!helpers.validateSlug(slug)) {
+                if (!helpers(app).validateSlug(slug)) {
                     return reject({type: 'invalid', value: slug});
                 }
 
