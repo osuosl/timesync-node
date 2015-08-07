@@ -246,18 +246,18 @@ module.exports = function(app) {
         }
 
         // check string fields
-        for (let field of ['name', 'uri', 'owner']) {
-            if (obj[field] && helpers.getType(obj[field]) !== 'string') {
-                let err = errors.errorBadObjectInvalidField(
-                    'project', field, 'string', helpers.getType(obj[field]));
-                return res.status(err.status).send(err);
-            }
-        }
+        let fields = [
+          {name: 'name', type: 'string'},
+          {name: 'uri', type: 'string'},
+          {name: 'owner', type: 'string'},
+          {name: 'slugs', type: 'array'}
+        ];
 
-        // check that slugs is array
-        if (obj.slugs && helpers.getType(obj.slugs) !== 'array') {
+        var validationFailure = helpers.validateFields(obj, fields, true);
+        if (validationFailure) {
             let err = errors.errorBadObjectInvalidField(
-                'project', 'slugs', 'array', helpers.getType(obj.slugs));
+                'project', validationFailure.name, validationFailure.type,
+                validationFailure.actualType);
             return res.status(err.status).send(err);
         }
 
