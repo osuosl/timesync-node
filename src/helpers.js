@@ -85,8 +85,8 @@ module.exports = function(app) {
 
         getType: function(receivedObject) {
             // typeof returns object for arrays, so we need a special check
-            if(typeof receivedObject === 'object') {
-                if(Array.isArray(receivedObject)) {
+            if (typeof receivedObject === 'object') {
+                if (Array.isArray(receivedObject)) {
                     return 'array';
                 } else {
                     return 'object';

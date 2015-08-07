@@ -247,28 +247,28 @@ module.exports = function(app) {
 
         // check string fields
         for (let field of ['name', 'uri', 'owner']) {
-          if(obj[field] && helpers.getType(obj[field]) !== 'string') {
-              let err = errors.errorBadObjectInvalidField('project', field, 'string', helpers.getType(obj[field]));
-              return res.status(err.status).send(err);
-          }
+            if (obj[field] && helpers.getType(obj[field]) !== 'string') {
+                let err = errors.errorBadObjectInvalidField(
+                    'project', field, 'string', helpers.getType(obj[field]));
+                return res.status(err.status).send(err);
+            }
         }
 
         // check that slugs is array
         if (obj.slugs && helpers.getType(obj.slugs) !== 'array') {
-            let err = errors.errorBadObjectInvalidField('project', 'slugs', 'array', helpers.getType(obj.slugs));
+            let err = errors.errorBadObjectInvalidField(
+                'project', 'slugs', 'array', helpers.getType(obj.slugs));
             return res.status(err.status).send(err);
         }
 
-
         // check validity of uri
-
         if (obj.uri && !validUrl.isWebUri(obj.uri)) {
             let err = errors.errorInvalidIdentifier('uri', obj.uri);
             return res.status(err.status).send(err);
         }
 
         // check validity of slugs
-        if(obj.slugs && obj.slugs.length) {
+        if (obj.slugs && obj.slugs.length) {
             var invalidSlugs = obj.slugs.filter(function(slug) {
                 return !helpers.validateSlug(slug);
             });
@@ -280,13 +280,17 @@ module.exports = function(app) {
         }
 
         obj.slugs = obj.slugs || [];
+        var auth = req.body.auth;
 
-        knex('projectslugs').first().where({name: req.params.slug}).then(function(ps) {
+        knex('projectslugs')
+        .first().where({name: req.params.slug}).then(function(ps) {
             // ps contains the slug with the project id
-            knex('projects').first().where({id: ps.project}).then(function(project) {
+            knex('projects')
+            .first().where({id: ps.project}).then(function(project) {
                 // TODO check user against db
-                helpers.checkUser(req.body.auth.user, req.body.auth.user).then(function(userId) {
-                    knex('projectslugs').where('name', 'in', obj.slugs).then(function(slugs) {
+                helpers.checkUser(auth.user, auth.user).then(function(userId) {
+                    knex('projectslugs')
+                    .where('name', 'in', obj.slugs).then(function(slugs) {
 
                         var overlappingSlugs = slugs.filter(function(slug) {
                             return slug.project !== ps.project;
@@ -307,10 +311,11 @@ module.exports = function(app) {
                         project.owner = userId;
                         project.name = obj.name || project.name;
 
-                        knex('projects').where({id: project.id}).update(project).then(function() {
+                        knex('projects')
+                        .where({id: project.id}).update(project).then(function() {
                             var slugNames = slugs.map(function(slug) {
                                 return slug.name;
-                            })
+                            });
 
                             var newSlugs = [];
 
@@ -323,13 +328,14 @@ module.exports = function(app) {
                                 }
                             }
 
-                            knex('projectslugs').where({project: project.id}).then(function(existingSlugs) {
-                                var existingSlugs = existingSlugs.map(function(slug) {
+                            knex('projectslugs')
+                            .where({project: project.id}).then(function(existingSlugs) {
+                                existingSlugs = existingSlugs.map(function(slug) {
                                     return slug.name;
                                 });
 
                                 var delSlugs = [];
-                                if(obj.slugs.length) {
+                                if (obj.slugs.length) {
                                     delSlugs = existingSlugs.filter(function(slug) {
                                         return obj.slugs.indexOf(slug) === -1;
                                     });
@@ -340,28 +346,28 @@ module.exports = function(app) {
                                 });
 
                                 var returnProject = function() {
-                                    knex('projectslugs').where({project: project.id}).then(function(pro) {
-                                        if(obj.slugs.length) {
-                                            project.slugs = obj.slugs;
-                                        } else {
-                                            project.slugs = existingSlugs;
-                                        }
+                                    if (obj.slugs.length) {
+                                        project.slugs = obj.slugs;
+                                    } else {
+                                        project.slugs = existingSlugs;
+                                    }
 
-                                        project.owner = req.body.auth.user;
-                                        res.send(JSON.stringify(project));
-                                    });
+                                    project.owner = req.body.auth.user;
+                                    res.send(JSON.stringify(project));
                                 };
 
                                 var addSlugs = function() {
-                                    if(projectSlugs.length) {
-                                        knex('projectslugs').insert(projectSlugs).then(returnProject);
+                                    if (projectSlugs.length) {
+                                        knex('projectslugs')
+                                        .insert(projectSlugs).then(returnProject);
                                     } else {
                                         returnProject();
                                     }
                                 };
 
-                                if(delSlugs.length) {
-                                    knex('projectslugs').where('name', 'in', delSlugs).del().then(addSlugs);
+                                if (delSlugs.length) {
+                                    knex('projectslugs')
+                                    .where('name', 'in', delSlugs).del().then(addSlugs);
                                 } else {
                                     addSlugs();
                                 }

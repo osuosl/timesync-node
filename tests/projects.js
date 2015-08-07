@@ -143,7 +143,7 @@ module.exports = function(expect, request, baseUrl) {
         };
 
         var patchedProjectName  = {name:  patchedProject.name };
-        var patchedProjectOwner = {owner: patchedProject.owner};
+        // var patchedProjectOwner = {owner: patchedProject.owner};
         var patchedProjectUri   = {uri:   patchedProject.uri  };
         var patchedProjectSlugs = {slugs: patchedProject.slugs};
 
@@ -263,25 +263,25 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-    //     it("successfully patches a project's owner", function(done) {
-    //         postArg.object = copyJsonObject(patchedProjectOwner);
-    //         requestOptions.form = copyJsonObject(postArg);
-    //
-    //         request.post(requestOptions, function(err, res, body) {
-    //             expect(err).to.be.a('null');
-    //             expect(res.statusCode).to.equal(200);
-    //
-    //             var expectedResults = copyJsonObject(originalProject);
-    //             expectedResults.owner = patchedProject.owner;
-    //
-    //             body = JSON.parse(body);
-    //
-    //             expect(body).to.equal(expectedResults);
-    //
-    //             checkListEndpoint(done, expectedResults);
-    //         });
-    //     });
-    //
+        //     it("successfully patches a project's owner", function(done) {
+        //         postArg.object = copyJsonObject(patchedProjectOwner);
+        //         requestOptions.form = copyJsonObject(postArg);
+        //
+        //         request.post(requestOptions, function(err, res, body) {
+        //             expect(err).to.be.a('null');
+        //             expect(res.statusCode).to.equal(200);
+        //
+        //             var expectedResults = copyJsonObject(originalProject);
+        //             expectedResults.owner = patchedProject.owner;
+        //
+        //             body = JSON.parse(body);
+        //
+        //             expect(body).to.equal(expectedResults);
+        //
+        //             checkListEndpoint(done, expectedResults);
+        //         });
+        //     });
+        //
         it("doesn't patch a project with bad uri, name, slugs, and and owner",
            function(done) {
             postArg.object = copyJsonObject(badProject);
