@@ -88,6 +88,8 @@ module.exports = function(app) {
             if (typeof receivedObject === 'object') {
                 if (Array.isArray(receivedObject)) {
                     return 'array';
+                } else if (receivedObject === null) {
+                    return 'null';
                 } else {
                     return 'object';
                 }

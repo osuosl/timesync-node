@@ -134,4 +134,37 @@ module.exports = function(expect, app) {
             });
         });
     });
+
+    describe('getType', function() {
+
+        it('returns "array" for an array', function(done) {
+            expect(helpers.getType([])).to.equal('array');
+            done();
+        });
+
+        it('returns "string" for a string', function(done) {
+            expect(helpers.getType('')).to.equal('string');
+            done();
+        });
+
+        it('returns "undefined" for undefined', function(done) {
+            expect(helpers.getType(undefined)).to.equal('undefined');
+            done();
+        });
+
+        it('returns "null" for null', function(done) {
+            expect(helpers.getType(null)).to.equal('null');
+            done();
+        });
+
+        it('returns "number" for int', function(done) {
+            expect(helpers.getType(12)).to.equal('number');
+            done();
+        });
+
+        it('returns "number" for float', function(done) {
+            expect(helpers.getType(12.2)).to.equal('number');
+            done();
+        });
+    });
 };
