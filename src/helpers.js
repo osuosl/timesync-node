@@ -96,7 +96,7 @@ module.exports = {
     checkActivities: function(names) {
         return new Promise(function(resolver, reject) {
             knex('activities').where('slug', 'in', names).then(function(slugs) {
-                if (names == undefined) {
+                if (names === undefined || names === null) {
                     reject(names);
                 } else {
                     var results = slugs.map(function(value) {
