@@ -90,13 +90,13 @@ module.exports = function(app) {
 
 var app = require('./app');
 var knex = app.get('knex');
-var errors = require('./errors');
+//var errors = require('./errors');
 
 module.exports = {
     checkActivities: function(names) {
         return new Promise(function(resolver, reject){
             knex('activities').where('slug', 'in', names).then(function(slugs){
-                if(names == undefined){
+                if(names === undefined){
                     reject(names);
                 }
                 else{
@@ -105,14 +105,13 @@ module.exports = {
                     });
                     var unmatched = names.filter(function(value){
                         if(results.indexOf(value) < 0){
-                            console.log('Filtering:', value);
                             return value;
                         }
                     });
                     var ids = slugs.map(function(value){
                         return value.id;
                     });
-                    if(unmatched.length == 0){
+                    if(unmatched.length === 0){
                         resolver(ids);
                     }
                     else{

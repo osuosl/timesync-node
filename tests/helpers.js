@@ -148,7 +148,6 @@ module.exports = function(expect) {
 
         it('throws when passed undefined', function(done) {
             helpers.checkActivities(undefined).then().catch(function(err) {
-                console.log(err);
                 expect(err).to.be.an('undefined');
                 done();
             });
