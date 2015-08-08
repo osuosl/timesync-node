@@ -90,7 +90,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('DELETE /activities/:slug', function() {
         it('deletes the activity affiliated with the activity slug',
         function(done) {
-            request.del(baseUrl + 'activity/docs', function(err, res) {
+            request.del(baseUrl + 'activities/docs', function(err, res) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
 
@@ -104,8 +104,8 @@ module.exports = function(expect, request, baseUrl) {
                         text: 'Nonexistent activity'
                     };
 
-                    expect('docs').to.be.an('undefined');
-                    expect(jsonBody).to.deep.have.same.members(expectedError);
+                    //expect('docs').to.be.an('undefined');
+                    expect(jsonBody).to.deep.equal(expectedError);
                     expect(res.statusCode).to.equal(404);
                     done();
                 });
@@ -119,11 +119,11 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedError = {
                     status: 404,
                     error: 'Object not found',
-                    text: 'Nonexistent activity'
+                    text: 'Nonexistent slug'
                 };
 
-                expect('naps').to.be.an('undefined');
-                expect(jsonBody).to.deep.have.same.members(expectedError);
+                //expect('naps').to.be.an('undefined');
+                expect(jsonBody).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(404);
                 done();
             });
@@ -131,18 +131,16 @@ module.exports = function(expect, request, baseUrl) {
 
         // Checks that delete will fail w/ invalid slug
         it('fails if it receives an invalid slug', function(done) {
-            request.del(baseUrl + 'activities/###!what',
+            request.del(baseUrl + 'activities/!what',
             function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedError = {
                     status: 400,
-                    error: 'Invalid identifier',
-                    text: 'Expected slug but received ###!what',
-                    values: ['###!what']
+                    error: 'The provided identifier was invalid',
+                    text: 'Expected slug but received !what',
+                    values: ['!what']
                 };
-
-                expect('###!what').to.be.an('undefined');
-                expect(jsonBody).to.deep.have.same.members(expectedError);
+                expect(jsonBody).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(400);
                 done();
             });
