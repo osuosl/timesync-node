@@ -1,4 +1,4 @@
-require('../src/app');
+var app = require('../src/app');
 
 var requestBuilder = require('request');
 var expect = require('chai').expect;
@@ -67,7 +67,6 @@ describe('Errors', function() {
 });
 
 describe('Helpers', function() {
-    this.timeout(5000);
 
     before(function(done) {
         knex.migrate.latest().then(function() {
@@ -85,5 +84,5 @@ describe('Helpers', function() {
 
     var localPassport = require('../src/auth/local.js')(knex);
     require('./login')(expect, localPassport);
-    require('./helpers')(expect);
+    require('./helpers')(expect, app);
 });

@@ -1,8 +1,5 @@
-// test/helpers.js
-
-var helpers = require('../src/helpers');
-
-module.exports = function(expect) {
+module.exports = function(expect, app) {
+    var helpers = require('../src/helpers')(app);
     describe('checkUser', function() {
         it('Returns user ID if username == user', function(done) {
             helpers.checkUser('tschuy', 'tschuy').then(function(userID) {
@@ -96,6 +93,45 @@ module.exports = function(expect) {
         function(done) {
             expect(helpers.validateSlug('a1b2--c3')).to.equal(false);
             done();
+        });
+    });
+
+    describe('checkProject', function() {
+        it('returns a project ID for proper slug', function(done) {
+            helpers.checkProject('ganeti-webmgr').then(function(project) {
+                expect(project).to.equal(1);
+                done();
+            });
+        });
+
+        it('throws when passed undefined', function(done) {
+            helpers.checkProject(undefined).then().catch(function(err) {
+                // this means that the time.slug was undefined
+                expect(err).to.deep.equal({type: 'invalid', value: undefined});
+                done();
+            });
+        });
+
+        it('throws when passed a nonexistent slug', function(done) {
+            helpers.checkProject('dogs').then().catch(function(err) {
+                expect(err).to.deep.equal({type: 'nonexistent', value: 'dogs'});
+                done();
+            });
+        });
+
+        it('throws when passed a null slug', function(done) {
+            helpers.checkProject(null).then().catch(function(err) {
+                expect(err).to.deep.equal({type: 'invalid', value: null});
+                done();
+            });
+        });
+
+        it('throws when passed a bad slug', function(done) {
+            helpers.checkProject('#!^kittens').then().catch(function(err) {
+                expect(err).to.deep.equal(
+                    {type: 'invalid', value: '#!^kittens'});
+                done();
+            });
         });
     });
 };

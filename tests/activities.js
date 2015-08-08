@@ -72,7 +72,8 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedResult = {
                     status: 400,
                     error: 'The provided identifier was invalid',
-                    text: 'Expected slug but received test-!*@'
+                    text: 'Expected slug but received test-!*@',
+                    values: ['test-!*@']
                 };
 
                 expect(jsonBody).to.eql(expectedResult);
