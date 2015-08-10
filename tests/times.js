@@ -106,7 +106,7 @@ module.exports = function(expect, request, baseUrl) {
                     var expectedError = {
                         status: 404,
                         error: 'Object not found',
-                        text: 'Nonexistent activity'
+                        text: 'Nonexistent time'
                     };
 
                     expect(jsonBody).to.deep.equal(expectedError);
@@ -119,17 +119,18 @@ module.exports = function(expect, request, baseUrl) {
         // Checks that a nonexistent time id will fail /ex: time id = 6013
         it('fails if it receives a nonexistent time id', function(done) {
             request.del(baseUrl + 'times/6013', function(err, res, body) {
+                var jsonBody = JSON.parse(body);
                 var expectedError = {
                     status: 404,
                     error: 'Object not found',
                     text: 'Nonexistent time id'
                 };
 
-                expect(body).to.deep.equal(expectedError);
+                expect(jsonBody).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(404);
                 
                 request.get(baseUrl + 'times', function(err, res, body) {
-                    var jsonBody = JSON.parse(body);
+                    var jsBody = JSON.parse(body);
                     var expectedResult = {
                         duration: 12,
                         user: 'users:1',
@@ -143,9 +144,9 @@ module.exports = function(expect, request, baseUrl) {
                         id: 1
                     };
 
-                    expect(err).to.equal(null);
+                    expect(err).to.be.a('null');
                     expect(res.statusCode).to.equal(200);                    
-                    expect(jsonBody).to.deep.equal(expectedResult);
+                    expect(jsBody).to.deep.equal(expectedResult);
                     
                     done();
                 });
@@ -155,17 +156,18 @@ module.exports = function(expect, request, baseUrl) {
         // Checks that an invalid time id will fail /ex: time id = 'tabby'
         it('fails if it receives an invalid time id', function(done) {
             request.del(baseUrl + 'times/tabby', function(err, res, body) {
+                var jsonBody = JSON.parse(body);
                 var expectedError = {
                     status: 400,
                     error: 'Invalid indentifier',
                     text: 'Expected integer but received a string'
                 };
 
-                expect(body).to.deep.equal(expectedError);
+                expect(jsonBody).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(400);
                 
                 request.get(baseUrl + 'times', function(err, res, body) {
-                    var jsonBody = JSON.parse(body);
+                    var jsBody = JSON.parse(body);
                     var expectedResult = {
                         duration: 12,
                         user: 'users:1',
@@ -179,9 +181,9 @@ module.exports = function(expect, request, baseUrl) {
                         id: 1
                     };
 
-                    expect(err).to.equal(null);
+                    expect(err).to.be.a('null');
                     expect(res.statusCode).to.equal(200);
-                    expect(jsonBody).to.deep.equal(expectedResult);
+                    expect(jsBody).to.deep.equal(expectedResult);
 
                     done();
                 });
