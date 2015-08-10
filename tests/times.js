@@ -151,7 +151,7 @@ module.exports = function(expect, request, baseUrl) {
 
                     expect(err).to.be.a('null');
                     expect(res.statusCode).to.equal(200);
-                    expect(jsBody).to.deep.equal(expectedResult);
+                    expect(jsBody).to.deep.have.same.members(expectedResult);
 
                     done();
                 });
@@ -193,7 +193,7 @@ module.exports = function(expect, request, baseUrl) {
 
                     expect(err).to.be.a('null');
                     expect(res.statusCode).to.equal(200);
-                    expect(jsBody).to.deep.equal(expectedResult);
+                    expect(jsBody).to.deep.have.same.members(expectedResult);
 
                     done();
                 });
