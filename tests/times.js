@@ -80,7 +80,8 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedResult = {
                     error: 'The provided identifier was invalid',
                     status: 400,
-                    text: 'Expected ID but received cat'
+                    text: 'Expected ID but received cat',
+                    values: ['cat']
                 };
 
                 expect(jsonBody).to.eql(expectedResult);
