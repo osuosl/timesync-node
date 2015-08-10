@@ -246,6 +246,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
+        // This test should be reenabled when administrator users are added
         //     it("successfully patches a project's owner", function(done) {
         //         postArg.object = copyJsonObject(patchedProjectOwner);
         //         requestOptions.form = copyJsonObject(postArg);
@@ -264,7 +265,7 @@ module.exports = function(expect, request, baseUrl) {
         //             checkListEndpoint(done, expectedResults);
         //         });
         //     });
-        //
+        
         it("doesn't patch a project with bad uri, name, slugs, and and owner",
            function(done) {
             postArg.object = copyJsonObject(badProject);
