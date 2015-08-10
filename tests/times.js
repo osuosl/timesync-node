@@ -109,7 +109,7 @@ module.exports = function(expect, request, baseUrl) {
                         text: 'Nonexistent activity'
                     };
 
-                    expect(jsonBody).to.have.same.members(expectedError);
+                    expect(jsonBody).to.deep.equal(expectedError);
                     expect(res.statusCode).to.equal(404);
                     done();
                 });
@@ -117,32 +117,74 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         // Checks that a nonexistent time id will fail /ex: time id = 6013
-        it('fails if it receives a bad time id', function(done) {
-            request.del(baseUrl + 'times/6013', function(err, res) {
+        it('fails if it receives a nonexistent time id', function(done) {
+            request.del(baseUrl + 'times/6013', function(err, res, body) {
                 var expectedError = {
                     status: 404,
                     error: 'Object not found',
                     text: 'Nonexistent time id'
                 };
 
-                expect(body).to.deep.have.same.members(expectedError);
+                expect(body).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(404);
-                done();
+                
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    var jsonBody = JSON.parse(body);
+                    var expectedResult = {
+                        duration: 12,
+                        user: 'users:1',
+                        project: 'projects:2',
+                        notes: '',
+                        issue_uri: 'https:://github.com/osu-cass/' +
+                                   'whats-fresh-api/issues/56',
+                        date_worked: null,
+                        created_at: null,
+                        updated_at: null,
+                        id: 1
+                    };
+
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);                    
+                    expect(jsonBody).to.deep.equal(expectedResult);
+                    
+                    done();
+                });
             });
         });
 
         // Checks that an invalid time id will fail /ex: time id = 'tabby'
         it('fails if it receives an invalid time id', function(done) {
-            request.del(baseUrl + 'times/tabby', function(err, res) {
+            request.del(baseUrl + 'times/tabby', function(err, res, body) {
                 var expectedError = {
                     status: 400,
                     error: 'Invalid indentifier',
                     text: 'Expected integer but received a string'
                 };
 
-                expect(body).to.deep.have.same.members(expectedError);
+                expect(body).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(400);
-                done();
+                
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    var jsonBody = JSON.parse(body);
+                    var expectedResult = {
+                        duration: 12,
+                        user: 'users:1',
+                        project: 'projects:2',
+                        notes: '',
+                        issue_uri: 'https:://github.com/osu-cass/' +
+                                   'whats-fresh-api/issues/56',
+                        date_worked: null,
+                        created_at: null,
+                        updated_at: null,
+                        id: 1
+                    };
+
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(jsonBody).to.deep.equal(expectedResult);
+
+                    done();
+                });
             });
         });
     });
