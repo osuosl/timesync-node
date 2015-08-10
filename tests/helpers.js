@@ -21,12 +21,12 @@ module.exports = function(expect, app) {
         it('returns field when field is missing if required', function(done) {
             var obj = {string: 'string', array: []};
             var fields = [
-              {name: 'string', type: 'string'},
-              {name: 'array', type: 'array'},
-              {name: 'integer', type: 'number'},
+              {name: 'string', type: 'string', required: true},
+              {name: 'array', type: 'array', required: true},
+              {name: 'integer', type: 'number', required: true},
             ];
 
-            var validation = helpers.validateFields(obj, fields, true);
+            var validation = helpers.validateFields(obj, fields);
 
             var expectedReturn = {
                 name: 'integer',
@@ -41,12 +41,12 @@ module.exports = function(expect, app) {
         it('returns field if field is of wrong type', function(done)  {
             var obj = {string: 'string', array: [], integer: 'string'};
             var fields = [
-                {name: 'string', type: 'string'},
-                {name: 'array', type: 'array'},
-                {name: 'integer', type: 'number'},
+                {name: 'string', type: 'string', required: true},
+                {name: 'array', type: 'array', required: true},
+                {name: 'integer', type: 'number', required: true},
             ];
 
-            var validation = helpers.validateFields(obj, fields, true);
+            var validation = helpers.validateFields(obj, fields);
 
             var expectedReturn = {
                 name: 'integer',
@@ -61,12 +61,12 @@ module.exports = function(expect, app) {
         it('returns nothing when field is missing if not req', function(done)  {
             var obj = {string: 'string', array: []};
             var fields = [
-                {name: 'string', type: 'string'},
-                {name: 'array', type: 'array'},
-                {name: 'integer', type: 'number'},
+                {name: 'string', type: 'string', required: true},
+                {name: 'array', type: 'array', required: true},
+                {name: 'integer', type: 'number', required: false},
             ];
 
-            var validation = helpers.validateFields(obj, fields, false);
+            var validation = helpers.validateFields(obj, fields);
 
             expect(validation).to.be.an('undefined');
             done();

@@ -58,26 +58,27 @@ module.exports = function(app) {
             });
         },
 
-        validateFields: function(object, fields, required) {
-            /* fields is an array of objects with 'type' and 'name' keys.
-               object is the object containing those fields. The value is tested
-               against the type, and if there's a mismatch, validateFields
-               returns an object with the type, name, and actual_type of the
-               field.
+        validateFields: function(object, fields) {
+            /* fields is an array of objects with 'type', 'required' and 'name'
+               keys. object is the object containing those fields. The value is
+               tested against the type, and if there's a mismatch,
+               validateFields returns an object with the type, name, required,
+               and actual_type of the field.
 
-               If required is set to true, the fields are expected to not be
-               undefined. Otherwise, undefined fields will not raise an error.
+               If required is set to true, the field is expected to not be
+               undefined. If false, an undefined field will not raise an error.
             */
 
             for (let field of fields) {
                 let fieldValue = helpers.getType(object[field.name]);
                 if (fieldValue !== field.type) {
-                    if (!required && fieldValue === 'undefined') {
-                        continue; // skip this field if it's allowed to be undef
-                    } else {
-                        field.actualType = fieldValue;
-                        return field;
+                    if (object[field.name] === undefined && !field.required) {
+                        // if the field isn't required, and it's undefined,
+                        // skip it
+                        continue;
                     }
+                    field.actualType = fieldValue;
+                    return field;
                 }
             }
         },
