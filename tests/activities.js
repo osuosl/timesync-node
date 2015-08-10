@@ -104,9 +104,9 @@ module.exports = function(expect, request, baseUrl) {
                         text: 'Nonexistent activity'
                     };
 
-                    //expect('docs').to.be.an('undefined');
                     expect(jsonBody).to.deep.equal(expectedError);
                     expect(res.statusCode).to.equal(404);
+
                     done();
                 });
             });
@@ -122,9 +122,9 @@ module.exports = function(expect, request, baseUrl) {
                     text: 'Nonexistent slug'
                 };
 
-                //expect('naps').to.be.an('undefined');
                 expect(jsonBody).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(404);
+
                 done();
             });
         });
@@ -140,8 +140,10 @@ module.exports = function(expect, request, baseUrl) {
                     text: 'Expected slug but received !what',
                     values: ['!what']
                 };
+
                 expect(jsonBody).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(400);
+
                 done();
             });
         });

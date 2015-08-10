@@ -43,8 +43,6 @@ module.exports = function(app) {
 
     });
 
-    // DELETE implementation starts here -- delete this comment later
-
     app.delete(app.get('version') + '/activities/:slug', function(req, res) {
         if (!helpers.validateSlug(req.params.slug)) {
             var err = errors.errorInvalidIdentifier('slug', req.params.slug);
@@ -54,7 +52,9 @@ module.exports = function(app) {
         // delete matching activity
         knex('activities').where('slug', req.params.slug).del()
         .then(function(numObj) {
-            // if the number of objects deleted is at least one
+            /* When deleting something from the table, the number of objects
+               deleted is returned. So to confirm that deletion was successful,
+               make sure that the number returned is at least one. */
             if (numObj >= 1) {
                 return res.send();
             }
