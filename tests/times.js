@@ -128,26 +128,31 @@ module.exports = function(expect, request, baseUrl) {
 
                 expect(jsonBody).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(404);
-                
+
                 request.get(baseUrl + 'times', function(err, res, body) {
                     var jsBody = JSON.parse(body);
-                    var expectedResult = {
-                        duration: 12,
-                        user: 'users:1',
-                        project: 'projects:2',
-                        notes: '',
-                        issue_uri: 'https:://github.com/osu-cass/' +
-                                   'whats-fresh-api/issues/56',
-                        date_worked: null,
-                        created_at: null,
-                        updated_at: null,
-                        id: 1
-                    };
+                    var expectedResult = [
+                        {
+                            // jscs: disable
+                            id: 1,
+                            duration: 12,
+                            user: 'tschuy',
+                            project: ['wf'],
+                            notes: '',
+                            issue_uri: 'https://github.com/osu-cass/' +
+                                       'whats-fresh-api/issues/56',
+                            date_worked: null,
+                            created_at: null,
+                            updated_at: null,
+                            activities : ['docs', 'dev']
+                            // jscs: enable
+                        }
+                    ];
 
                     expect(err).to.be.a('null');
-                    expect(res.statusCode).to.equal(200);                    
+                    expect(res.statusCode).to.equal(200);
                     expect(jsBody).to.deep.equal(expectedResult);
-                    
+
                     done();
                 });
             });
@@ -159,27 +164,32 @@ module.exports = function(expect, request, baseUrl) {
                 var jsonBody = JSON.parse(body);
                 var expectedError = {
                     status: 400,
-                    error: 'Invalid indentifier',
-                    text: 'Expected integer but received a string'
+                    error: 'The provided identifier was invalid',
+                    text: 'Expected id but received tabby'
                 };
 
                 expect(jsonBody).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(400);
-                
+
                 request.get(baseUrl + 'times', function(err, res, body) {
                     var jsBody = JSON.parse(body);
-                    var expectedResult = {
-                        duration: 12,
-                        user: 'users:1',
-                        project: 'projects:2',
-                        notes: '',
-                        issue_uri: 'https:://github.com/osu-cass/' +
-                                   'whats-fresh-api/issues/56',
-                        date_worked: null,
-                        created_at: null,
-                        updated_at: null,
-                        id: 1
-                    };
+                    var expectedResult = [
+                        {
+                            // jscs: disable
+                            id: 1,
+                            duration: 12,
+                            user: 'tschuy',
+                            project: ['wf'],
+                            notes: '',
+                            issue_uri: 'https://github.com/osu-cass/' +
+                                       'whats-fresh-api/issues/56',
+                            date_worked: null,
+                            created_at: null,
+                            updated_at: null,
+                            activities: ['docs', 'dev']
+                            // jscs: enable
+                        }
+                    ];
 
                     expect(err).to.be.a('null');
                     expect(res.statusCode).to.equal(200);
