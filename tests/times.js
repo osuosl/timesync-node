@@ -166,7 +166,8 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedError = {
                     status: 400,
                     error: 'The provided identifier was invalid',
-                    text: 'Expected id but received tabby'
+                    text: 'Expected id but received tabby',
+                    values: ['tabby']
                 };
 
                 expect(jsonBody).to.deep.equal(expectedError);
