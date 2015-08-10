@@ -17,6 +17,76 @@ module.exports = function(expect, app) {
         });
     });
 
+    describe('validateFields', function() {
+        it('returns field when field is missing if required', function(done) {
+            var obj = {string: 'string', array: []};
+            var fields = [
+              {name: 'string', type: 'string'},
+              {name: 'array', type: 'array'},
+              {name: 'integer', type: 'number'},
+            ];
+
+            var validation = helpers.validateFields(obj, fields, true);
+
+            var expectedReturn = {
+                name: 'integer',
+                type: 'number',
+                actualType: 'undefined'
+            };
+
+            expect(validation).to.deep.equal(expectedReturn);
+            done();
+        });
+
+        it('returns field if field is of wrong type', function(done)  {
+            var obj = {string: 'string', array: [], integer: 'string'};
+            var fields = [
+                {name: 'string', type: 'string'},
+                {name: 'array', type: 'array'},
+                {name: 'integer', type: 'number'},
+            ];
+
+            var validation = helpers.validateFields(obj, fields, true);
+
+            var expectedReturn = {
+                name: 'integer',
+                type: 'number',
+                actualType: 'string'
+            };
+
+            expect(validation).to.deep.equal(expectedReturn);
+            done();
+        });
+
+        it('returns nothing when field is missing if not req', function(done)  {
+            var obj = {string: 'string', array: []};
+            var fields = [
+                {name: 'string', type: 'string'},
+                {name: 'array', type: 'array'},
+                {name: 'integer', type: 'number'},
+            ];
+
+            var validation = helpers.validateFields(obj, fields, false);
+
+            expect(validation).to.be.an('undefined');
+            done();
+        });
+
+        it('returns nothing when fields are good', function(done)  {
+            var obj = {string: 'string', array: [], integer: 1};
+            var fields = [
+                {name: 'string', type: 'string'},
+                {name: 'array', type: 'array'},
+                {name: 'integer', type: 'number'},
+            ];
+
+            var validation = helpers.validateFields(obj, fields, false);
+
+            expect(validation).to.be.an('undefined');
+            done();
+        });
+    });
+
     describe('validateSlug', function() {
         it('returns true for proper slug', function(done) {
             expect(helpers.validateSlug('kitten')).to.equal(true);
