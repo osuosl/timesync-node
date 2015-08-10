@@ -315,8 +315,6 @@ module.exports = function(expect, request, baseUrl) {
             requestOptions.form.auth.password = 'pass';
             requestOptions.form.object = copyJsonObject(patchedProject);
 
-            console.log(requestOptions);
-
             request.post(requestOptions, function(err, res, body) {
                 expect(body.error).to.equal('Authorization failure');
                 expect(res.statusCode).to.equal(401);

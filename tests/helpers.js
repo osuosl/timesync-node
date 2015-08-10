@@ -21,9 +21,9 @@ module.exports = function(expect, app) {
         it('returns field when field is missing if required', function(done) {
             var obj = {string: 'string', array: []};
             var fields = [
-              {name: 'string', type: 'string', required: true},
-              {name: 'array', type: 'array', required: true},
-              {name: 'integer', type: 'number', required: true},
+                {name: 'string', type: 'string', required: true},
+                {name: 'array', type: 'array', required: true},
+                {name: 'integer', type: 'number', required: true},
             ];
 
             var validation = helpers.validateFields(obj, fields);
@@ -31,6 +31,7 @@ module.exports = function(expect, app) {
             var expectedReturn = {
                 name: 'integer',
                 type: 'number',
+                required: true,
                 actualType: 'undefined'
             };
 
@@ -51,6 +52,7 @@ module.exports = function(expect, app) {
             var expectedReturn = {
                 name: 'integer',
                 type: 'number',
+                required: true,
                 actualType: 'string'
             };
 

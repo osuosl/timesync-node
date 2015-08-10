@@ -155,7 +155,7 @@ module.exports = function(app) {
 
         // run various checks
 
-        // check validity of uri
+        // check validity of uri syntax
         if (obj.uri && !validUrl.isWebUri(obj.uri)) {
             let err = errors.errorInvalidIdentifier('uri', obj.uri);
             return res.status(err.status).send(err);
@@ -247,10 +247,10 @@ module.exports = function(app) {
 
         // check string fields
         let fields = [
-          {name: 'name', type: 'string'},
-          {name: 'uri', type: 'string'},
-          {name: 'owner', type: 'string'},
-          {name: 'slugs', type: 'array'}
+          {name: 'name', type: 'string', required: false},
+          {name: 'uri', type: 'string', required: false},
+          {name: 'owner', type: 'string', required: false},
+          {name: 'slugs', type: 'array', required: false}
         ];
 
         // validateFields takes the object to check fields on,
@@ -264,7 +264,7 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
         }
 
-        // check validity of uri
+        // check validity of uri syntax
         if (obj.uri && !validUrl.isWebUri(obj.uri)) {
             let err = errors.errorInvalidIdentifier('uri', obj.uri);
             return res.status(err.status).send(err);

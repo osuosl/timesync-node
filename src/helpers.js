@@ -77,6 +77,7 @@ module.exports = function(app) {
                         // skip it
                         continue;
                     }
+
                     field.actualType = fieldValue;
                     return field;
                 }
@@ -110,18 +111,18 @@ module.exports = function(app) {
             });
         },
 
-        getType: function(receivedObject) {
+        getType: function(receieved) {
             // typeof returns object for arrays, so we need a special check
-            if (typeof receivedObject === 'object') {
-                if (Array.isArray(receivedObject)) {
+            if (typeof receieved === 'object') {
+                if (Array.isArray(receieved)) {
                     return 'array';
-                } else if (receivedObject === null) {
+                } else if (receieved === null) {
                     return 'null';
                 } else {
                     return 'object';
                 }
             } else {
-                return typeof receivedObject;
+                return typeof receieved;
             }
         }
     };
