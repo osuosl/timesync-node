@@ -108,23 +108,6 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Tests Patching Projects
-    // Test that a valid uri, slugs, owner, and name succesfully patches
-    //      the project.
-    // Test that valid uri succesfully patches the project.
-    // Test that valid slugs succesfully patches the project.
-    // Test that valid name succesfully patches the project.
-    // Test that valid owner succesfully patches the project.
-    // Test that all invalid elements unsucessfully patches the project.
-    // Test that all but valid uri unsuccesfully patches the project.
-    // Test that all but valid slugs unsuccesfully patches the project.
-    // Test that all but valid name unsuccesfully patches the project.
-    // Test that all but valid owner unsuccesfully patches the project.
-    // Test that all but invalid key unsuccesfully patches the project.
-    // Test that invalid uri unsuccesfully patches the project.
-    // Test that invalid slugs unsuccesfully patches the project.
-    // Test that invalid name unsuccesfully patches the project.
-    // Test that invalid owner unsuccesfully patches the project.
-    // Test that invalid key unsuccesfully patches the project.
     describe('POST /projects/:slug', function() {
 
         var patchedProject = {
@@ -292,10 +275,14 @@ module.exports = function(expect, request, baseUrl) {
                 expect(res.statusCode).to.equal(400);
 
                 expect([
-                'Field uri of project should be string but was received as array',
-                'Field name of project should be string but was received as array',
-                'Field owner of project should be string but was received as array',
-                'Field slugs of project should be array but was received as string',
+                'Field uri of project should be string but was received as ' +
+                    'array',
+                'Field name of project should be string but was received as ' +
+                    'array',
+                'Field owner of project should be string but was received as ' +
+                    'array',
+                'Field slugs of project should be array but was received as ' +
+                    'string',
                 'project does not have a key field'
                 ]).to.include.members([body.text]);
 

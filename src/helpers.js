@@ -28,7 +28,7 @@ module.exports = function(app) {
             // if slug is only one character long, shortcut and finish
             // rolling this into the alphanumeric test would conflict with
             // getting rid of beginning/ending hyphens
-            if (RegExp('^[a-z]$').test(slug)) {
+            if (new RegExp('^[a-z]$').test(slug)) {
                 return true;
             }
 
