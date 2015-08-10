@@ -109,7 +109,6 @@ module.exports = function(expect, request, baseUrl) {
                         text: 'Nonexistent activity'
                     };
 
-                    expect(1).to.be.an('undefined');
                     expect(jsonBody).to.have.same.members(expectedError);
                     expect(res.statusCode).to.equal(404);
                     done();
@@ -126,7 +125,6 @@ module.exports = function(expect, request, baseUrl) {
                     text: 'Nonexistent time id'
                 };
 
-                expect(6013).to.be.an('undefined');
                 expect(body).to.deep.have.same.members(expectedError);
                 expect(res.statusCode).to.equal(404);
                 done();
@@ -142,7 +140,6 @@ module.exports = function(expect, request, baseUrl) {
                     text: 'Expected integer but received a string'
                 };
 
-                expect('tabby').to.be.an('undefined');
                 expect(body).to.deep.have.same.members(expectedError);
                 expect(res.statusCode).to.equal(400);
                 done();
