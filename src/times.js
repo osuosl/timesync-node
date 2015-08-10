@@ -206,4 +206,27 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
         });
     });
+
+    app.delete(app.get('version') + '/times/:id', function(req, res) {
+        // Check that the given time id is valid
+        if (isNaN(req.params.id)) {
+            var err = errors.errorInvalidIdentifier('id', req.params.id);
+            return res.status(err.status).send(err);
+        }
+
+        knex('times').where('id', req.params.id).del().then(function(numObj) {
+            /* When deleting something from the table, the number of objects
+               deleted is returned. So to confirm that deletion was successful,
+               make sure that the number returned is at least one. */
+            if (numObj >= 1) {
+                return res.send();
+            }
+
+            var err = errors.errorObjectNotFound('time id');
+            return res.status(err.status).send(err);
+        }).catch(function(error) {
+            var err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+        });
+    });
 };
