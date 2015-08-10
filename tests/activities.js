@@ -125,7 +125,32 @@ module.exports = function(expect, request, baseUrl) {
                 expect(jsonBody).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(404);
 
-                done();
+                request.get(baseUrl + 'activities', function(err, res, body) {
+                    var jsBody = JSON.parse(body);
+                    var expectedResult = [
+                        {
+                            name: 'Documentation',
+                            slug: 'docs',
+                            id: 1
+                        },
+                        {
+                            name: 'Development',
+                            slug: 'dev',
+                            id: 2
+                        },
+                        {
+                            name: 'Systems',
+                            slug: 'sys',
+                            id: 3
+                        }
+                    ];
+
+                    expect(err).to.be.a('null');
+                    expect(res.statusCode).to.equal(200);
+                    expect(jsBody).to.deep.have.same.members(expectedResult);
+
+                    done();
+                });
             });
         });
 
@@ -144,7 +169,32 @@ module.exports = function(expect, request, baseUrl) {
                 expect(jsonBody).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(400);
 
-                done();
+                request.get(baseUrl + 'activities', function(err, res, body) {
+                    var jsBody = JSON.parse(body);
+                    var expectedResult = [
+                        {
+                            name: 'Documentation',
+                            slug: 'docs',
+                            id: 1
+                        },
+                        {
+                            name: 'Development',
+                            slug: 'dev',
+                            id: 2
+                        },
+                        {
+                            name: 'Systems',
+                            slug: 'sys',
+                            id: 3
+                        }
+                    ];
+
+                    expect(err).to.be.a('null');
+                    expect(res.statusCode).to.equal(200);
+                    expect(jsBody).to.deep.have.same.members(expectedResult);
+
+                    done();
+                });
             });
         });
     });
