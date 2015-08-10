@@ -304,7 +304,7 @@ module.exports = function(app) {
         .then(function(project) {
             if (req.body.auth.user !== project.owner) {
                 let err = errors.errorAuthorizationFailure(
-                    req.body.auth.user, 'create objects for ' + obj.owner);
+                    req.body.auth.user, 'create objects for ' + project.owner);
                 return res.status(err.status).send(err);
             }
 

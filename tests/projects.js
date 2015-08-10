@@ -174,8 +174,8 @@ module.exports = function(expect, request, baseUrl) {
 
         it("successfully patches a project's uri, slugs, owner, and name",
            function(done) {
-            postArg.object = copyJsonObject(patchedProject);
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(patchedProject);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.be.a('null');
@@ -196,8 +196,8 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it("successfully patches a project's uri", function(done) {
-            postArg.object = copyJsonObject(patchedProjectUri);
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(patchedProjectUri);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.be.a('null');
@@ -213,8 +213,8 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it("successfully patches a project's slugs", function(done) {
-            postArg.object = copyJsonObject(patchedProjectSlugs);
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(patchedProjectSlugs);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.be.a('null');
@@ -230,8 +230,8 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it("successfully patches a project's name", function(done) {
-            postArg.object = copyJsonObject(patchedProjectName);
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(patchedProjectName);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(err).to.be.a('null');
@@ -265,11 +265,11 @@ module.exports = function(expect, request, baseUrl) {
         //             checkListEndpoint(done, expectedResults);
         //         });
         //     });
-        
+
         it("doesn't patch a project with bad uri, name, slugs, and and owner",
            function(done) {
-            postArg.object = copyJsonObject(badProject);
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(badProject);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(body.error).to.equal('Bad object');
@@ -309,9 +309,29 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it("doesn't patch a project with only bad slugs", function(done) {
-            postArg.object = copyJsonObject(badProjectSlugs);
+        it("doesn't patch a project with a different owner", function(done) {
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.auth.user = 'deanj';
+            requestOptions.form.auth.password = 'pass';
+            requestOptions.form.object = copyJsonObject(patchedProject);
+
+            console.log(requestOptions);
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Authorization failure');
+                expect(res.statusCode).to.equal(401);
+                expect(body.text).to.equal('deanj is not authorized to ' +
+                    'create objects for tschuy');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with only bad slugs", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(badProjectSlugs);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(body.error).to.equal('Bad object');
@@ -326,8 +346,8 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it("doesn't patch a project with only bad name", function(done) {
-            postArg.object = copyJsonObject(badProjectName);
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(badProjectName);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(body.error).to.equal('Bad object');
@@ -342,8 +362,8 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it("doesn't patch a project with just bad owner", function(done) {
-            postArg.object = copyJsonObject(badProjectOwner);
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(badProjectOwner);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(body.error).to.equal('Bad object');
@@ -358,8 +378,8 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it("doesn't patch a project with just invalid key", function(done) {
-            postArg.object = copyJsonObject(badProjectKey);
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(badProjectKey);
 
             request.post(requestOptions, function(err, res, body) {
                 expect(body.error).to.equal('Bad object');
@@ -374,10 +394,10 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it("doesn't patch a project with invalid uri", function(done) {
-            postArg.object = copyJsonObject(originalProject);
-            delete postArg.object.id;
-            postArg.object.uri = badProject.uri;
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.uri = badProject.uri;
 
             request.post(requestOptions, function(err, res, body) {
                 expect(body.error).to.equal('Bad object');
@@ -392,10 +412,10 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it("doesn't patch a project with invalid slugs", function(done) {
-            postArg.object = copyJsonObject(originalProject);
-            delete postArg.object.id;
-            postArg.object.slugs = badProject.slugs;
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.slugs = badProject.slugs;
 
             request.post(requestOptions, function(err, res, body) {
                 expect(body.error).to.equal('Bad object');
@@ -410,10 +430,10 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it("doesn't patch a project with invalid name", function(done) {
-            postArg.object = copyJsonObject(originalProject);
-            delete postArg.object.id;
-            postArg.object.name = badProject.name;
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.name = badProject.name;
 
             request.post(requestOptions, function(err, res, body) {
                 expect(body.error).to.equal('Bad object');
@@ -428,10 +448,10 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it("doesn't patch a project with invalid owner", function(done) {
-            postArg.object = copyJsonObject(originalProject);
-            delete postArg.object.id;
-            postArg.object.owner = badProject.owner;
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.owner = badProject.owner;
 
             request.post(requestOptions, function(err, res, body) {
                 expect(body.error).to.equal('Bad object');
@@ -446,10 +466,10 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it("doesn't patch a project with invalid key", function(done) {
-            postArg.object = copyJsonObject(originalProject);
-            delete postArg.object.id;
-            postArg.object.key = badProject.key;
             requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.key = badProject.key;
 
             request.post(requestOptions, function(err, res, body) {
                 expect(body.error).to.equal('Bad object');
