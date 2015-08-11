@@ -38,6 +38,7 @@ module.exports = function(app) {
                     return res.send(times);
                 }
             }).catch(function(error) {
+                console.log('Get users failed.');
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
@@ -90,10 +91,12 @@ module.exports = function(app) {
                         return res.send(times);
                     }
                 }).catch(function(error) {
+                    console.log('Get activities failed.');
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
             }).catch(function(error) {
+                console.log('Get timesactivities failed.');
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
@@ -131,16 +134,19 @@ module.exports = function(app) {
                         res.send(times);
                     }
                 }).catch(function(error) {
+                    console.log('Get project slugs failed.');
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
 
             }).catch(function(error) {
+                console.log('Get projects failed.');
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
 
         }).catch(function(error) {
+            console.log('Get times failed.');
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
@@ -221,8 +227,8 @@ module.exports = function(app) {
 
         //jscs:disable
         if (time.issue_uri && !validUrl.isWebUri(time.issue_uri)) {
-            let err = errors.errorBadObjectInvalidField('time', 'issue', 'URI',
-                'invalid URI ' + time.issue_uri);
+            let err = errors.errorBadObjectInvalidField('time', 'issue_uri',
+                'URI', 'invalid URI ' + time.issue_uri);
             return res.status(err.status).send(err);
         }
         //jscs:enable
@@ -270,7 +276,7 @@ module.exports = function(app) {
                         timeId = timeId[0];
 
                         let insertion = [];
-                        for (let activityId in activityIds) {
+                        for (let activityId of activityIds) {
                             insertion.push({
                                 time: timeId,
                                 activity: activityId
@@ -284,7 +290,7 @@ module.exports = function(app) {
 
                         knex('timesactivities').insert(insertion).then(
                         function() {
-                            time.id = time;
+                            time.id = timeId;
                             return res.send(JSON.stringify(time));
                         }).catch(function(error) {
                             knex('times').del().where({id: time}).then(

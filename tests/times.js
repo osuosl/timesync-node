@@ -160,6 +160,8 @@ module.exports = function(expect, request, baseUrl) {
                             //jscs:disable
                             issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                             date_worked: '2015-07-30',
+                            created_at: new Date().toISOString()
+                                            .substring(0, 10),
                             updated_at: null,
                             //jscs:enable
                             id: 2
@@ -167,8 +169,6 @@ module.exports = function(expect, request, baseUrl) {
                     ]);
                     expect(err).to.equal(null);
                     expect(res.statusCode).to.equal(200);
-                    console.log(JSON.parse(body));
-                    //console.log(expectedResults);
                     expect(JSON.parse(body)).to.deep.include
                         .members(expectedResults);
                     done();
@@ -176,7 +176,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('fails with a negative duration', function() {
+        it('fails with a negative duration', function(done) {
             var time = {
                 duration: -20,
                 user: 'tschuy',
@@ -196,22 +196,24 @@ module.exports = function(expect, request, baseUrl) {
                     error: 'Bad object',
                     status: 400,
                     text: 'Field duration of time should be positive number ' +
-                        'but was sent as negative number.'
+                        'but was sent as negative number'
                 };
 
                 expect(body).to.eql(expectedResult);
                 expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
+
                     expect(err).to.equal(null);
                     expect(res.statusCode).to.equal(200);
-                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    expect(JSON.parse(body)).to.deep.have.same
+                        .members(initialData);
                     done();
                 });
             });
         });
 
-        it('fails with a non-numeric duration', function() {
+        it('fails with a non-numeric duration', function(done) {
             var time = {
                 duration: 'twenty',
                 user: 'tschuy',
@@ -226,16 +228,15 @@ module.exports = function(expect, request, baseUrl) {
 
             var postArg = getPostObject(baseUrl + 'times', time);
 
-            request.post(postArg, function(err, res) {
-                var jsonBody = JSON.parse(body);
+            request.post(postArg, function(err, res, body) {
                 var expectedResult = {
                     error: 'Bad object',
                     status: 400,
                     text: 'Field duration of time should be positive number ' +
-                        'but was sent as string.'
+                        'but was sent as string'
                 };
 
-                expect(jsonBody).to.deep.equal(expectedResult);
+                expect(body).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
@@ -247,7 +248,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('fails with a bad activity', function() {
+        it('fails with a bad activity', function(done) {
             var time = {
                 duration: 20,
                 user: 'tschuy',
@@ -262,15 +263,15 @@ module.exports = function(expect, request, baseUrl) {
 
             var postArg = getPostObject(baseUrl + 'times', time);
 
-            request.post(postArg, function(err, res) {
-                var jsonBody = JSON.parse(body);
+            request.post(postArg, function(err, res, body) {
                 var expectedResult = {
                     error: 'Invalid foreign key',
                     status: 409,
-                    text: 'The time does not contain a valid activity reference'
+                    text: 'The time does not contain a valid activities ' +
+                            'reference.'
                 };
 
-                expect(jsonBody).to.deep.equal(expectedResult);
+                expect(body).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(409);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
@@ -282,7 +283,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('fails with a bad project', function() {
+        it('fails with a bad project', function(done) {
             var time = {
                 duration: 20,
                 user: 'tschuy',
@@ -297,16 +298,15 @@ module.exports = function(expect, request, baseUrl) {
 
             var postArg = getPostObject(baseUrl + 'times', time);
 
-            request.post(postArg, function(err, res) {
-                var jsonBody = JSON.parse(body);
+            request.post(postArg, function(err, res, body) {
                 var expectedResult = {
                     error: 'Invalid foreign key',
                     status: 409,
-                    text: 'The time does not contain a valid project reference'
+                    text: 'The time does not contain a valid project reference.'
                 };
 
-                expect(jsonBody).to.deep.equal(expectedResult);
-                expect(res.statusCode).to.equal(400);
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(409);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
                     expect(err).to.equal(null);
@@ -317,7 +317,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('fails with a bad issue URI', function() {
+        it('fails with a bad issue URI', function(done) {
             var time = {
                 duration: 20,
                 user: 'tschuy',
@@ -332,16 +332,15 @@ module.exports = function(expect, request, baseUrl) {
 
             var postArg = getPostObject(baseUrl + 'times', time);
 
-            request.post(postArg, function(err, res) {
-                var jsonBody = JSON.parse(body);
+            request.post(postArg, function(err, res, body) {
                 var expectedResult = {
                     error: 'Bad object',
                     status: 400,
-                    text: 'Field issue_uri of time should be valid URI but ' +
-                          'was sent as "I do my own thing, pal"'
+                    text: 'Field issue_uri of time should be URI but ' +
+                          'was sent as invalid URI I do my own thing, pal'
                 };
 
-                expect(jsonBody).to.deep.equal(expectedResult);
+                expect(body).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
@@ -353,7 +352,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('fails with a bad owner', function() {
+        it('fails with a bad owner', function(done) {
             var time = {
                 duration: 20,
                 user: 'jenkinsl',
@@ -368,17 +367,16 @@ module.exports = function(expect, request, baseUrl) {
 
             var postArg = getPostObject(baseUrl + 'times', time);
 
-            request.post(postArg, function(err, res) {
-                var jsonBody = JSON.parse(body);
+            request.post(postArg, function(err, res, body) {
                 var expectedResult = {
                     error: 'Authorization failure',
                     status: 401,
-                    text: 'User tschuy is not authorized to create time ' +
-                        'entries for user jenkinsl'
+                    text: 'tschuy is not authorized to create time ' +
+                        'entries for jenkinsl'
                 };
 
-                expect(jsonBody).to.deep.equal(expectedResult);
-                expect(res.statusCode).to.equal(400);
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(401);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
                     expect(err).to.equal(null);
