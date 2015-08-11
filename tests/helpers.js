@@ -70,7 +70,7 @@ module.exports = function(expect, app) {
 
             var validation = helpers.validateFields(obj, fields);
 
-            expect(validation).to.be.an('undefined');
+            expect(validation).to.be.a('null');
             done();
         });
 
@@ -84,7 +84,7 @@ module.exports = function(expect, app) {
 
             var validation = helpers.validateFields(obj, fields, false);
 
-            expect(validation).to.be.an('undefined');
+            expect(validation).to.be.a('null');
             done();
         });
     });

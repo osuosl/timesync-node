@@ -82,6 +82,8 @@ module.exports = function(app) {
                     return field;
                 }
             }
+
+            return null;
         },
 
         checkProject: function(slug) {
