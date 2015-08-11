@@ -391,7 +391,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it("doesn't patch a project with invalid uri", function(done) {
+        it("doesn't patch a project with wrong-type uri", function(done) {
             requestOptions.form = copyJsonObject(postArg);
             requestOptions.form.object = copyJsonObject(originalProject);
             delete requestOptions.form.object.id;
@@ -409,7 +409,43 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
+        it("doesn't patch a project with invalid uri", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.uri = 'string but not uri';
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('Field uri of project' +
+                    ' should be uri but was received as string');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
         it("doesn't patch a project with invalid slugs", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.slugs = ['@#SAfsda', '232sa$%'];
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('Field slugs of project' +
+                    ' should be slugs but was received as non-slug strings');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with wrong-type slugs", function(done) {
             requestOptions.form = copyJsonObject(postArg);
             requestOptions.form.object = copyJsonObject(originalProject);
             delete requestOptions.form.object.id;
@@ -427,7 +463,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it("doesn't patch a project with invalid name", function(done) {
+        it("doesn't patch a project with wrong-type name", function(done) {
             requestOptions.form = copyJsonObject(postArg);
             requestOptions.form.object = copyJsonObject(originalProject);
             delete requestOptions.form.object.id;
@@ -445,7 +481,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it("doesn't patch a project with invalid owner", function(done) {
+        it("doesn't patch a project with wrong-type owner", function(done) {
             requestOptions.form = copyJsonObject(postArg);
             requestOptions.form.object = copyJsonObject(originalProject);
             delete requestOptions.form.object.id;
