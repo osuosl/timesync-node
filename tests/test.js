@@ -49,11 +49,9 @@ describe('Endpoints', function() {
     });
 
     beforeEach(function(done) {
-        reloadFixtures(done);
-    });
-
-    afterEach(function(done) {
-        clearDatabase(done);
+        clearDatabase(function() {
+            reloadFixtures(done);
+        });
     });
 
     require('./times')(expect, request, baseUrl);
@@ -74,11 +72,9 @@ describe('Helpers', function() {
     });
 
     beforeEach(function(done) {
-        reloadFixtures(done);
-    });
-
-    afterEach(function(done) {
-        clearDatabase(done);
+        clearDatabase(function() {
+            reloadFixtures(done);
+        });
     });
 
     var localPassport = require('../src/auth/local.js')(knex);
