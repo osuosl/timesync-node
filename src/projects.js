@@ -5,6 +5,7 @@ module.exports = function(app) {
     var errors = require('./errors');
     var helpers = require('./helpers')(app);
     var validUrl = require('valid-url');
+    var passport = require('passport');
 
     app.get(app.get('version') + '/projects', function(req, res) {
         knex('projects').then(function(projects) {
@@ -150,269 +151,295 @@ module.exports = function(app) {
         });
     });
 
-    app.post(app.get('version') + '/projects', function(req, res) {
-        var obj = req.body.object;
-
-        // run various checks
-
-        // check validity of uri syntax
-        if (obj.uri && !validUrl.isWebUri(obj.uri)) {
-            let err = errors.errorInvalidIdentifier('uri', obj.uri);
-            return res.status(err.status).send(err);
-        }
-
-        // check existence of slugs
-        if (!obj.slugs) {
-            let err = errors.errorBadObjectMissingField('project', 'slug');
-            return res.status(err.status).send(err);
-        }
-
-        // check existence of name
-        if (!obj.name) {
-            let err = errors.errorBadObjectMissingField('project', 'name');
-            return res.status(err.status).send(err);
-        }
-
-        // check validity of slugs
-        var invalidSlugs = obj.slugs.filter(function(slug) {
-            return !helpers.validateSlug(slug);
-        });
-
-        if (invalidSlugs.length) {
-            let err = errors.errorInvalidIdentifier('slug', invalidSlugs);
-            return res.status(err.status).send(err);
-        }
-
-        // check validity of owner -- it must match the submitting user
-        // if checkUser fails, the user submitting the request doesn't match
-        helpers.checkUser(req.body.auth.user, obj.owner).then(function(userId) {
-
-            // select any slugs that match the ones submitted
-            // this is to check that none of the submitted slugs are currently
-            // in use.
-            knex('projectslugs').where('name', 'in', obj.slugs)
-            .then(function(slugs) {
-
-                // if any slugs match the slugs passed to us, error out
-                if (slugs.length) {
-                    let err = errors.errorSlugsAlreadyExist(
-                        slugs.map(function(slug) {
-                            return slug.name;
-                        })
-
-                    );
-                    return res.status(err.status).send(err);
-                }
-
-                // create object to insert into database
-                var insertion = {uri: obj.uri, owner: userId, name: obj.name};
-
-                knex('projects').insert(insertion).then(function(project) {
-                    // project is a list containing the ID of the
-                    // newly created project
-                    project = project[0];
-                    var projectSlugs = obj.slugs.map(function(slug) {
-                        return {name: slug, project: project};
-                    });
-
-                    knex('projectslugs').insert(projectSlugs).then(function() {
-                        obj.id = project;
-                        res.send(JSON.stringify(obj));
-                    });
-                });
-
-            });
-        }).catch(function(err) {
-            // checkUser failed, meaning the user is not authorized
-            err = errors.errorAuthorizationFailure(
-                req.body.auth.user, 'create objects for ' + obj.owner);
-            return res.status(err.status).send(err);
-        });
-    });
-
-    app.post(app.get('version') + '/projects/:slug', function(req, res) {
-        let obj = req.body.object;
-
-        // valid keys
-        let validKeys = ['name', 'uri', 'owner', 'slugs'];
-        for (let key in obj) {
-            // indexOf returns -1 if the parameter is not in the array,
-            // so this returns true if the slug is not in slugNames
-            if (validKeys.indexOf(key) === -1) {
-                let err = errors.errorBadObjectUnknownField('project', key);
+    app.post(app.get('version') + '/projects', function(req, res, next) {
+        passport.authenticate('local', function(autherr, user, info) {
+            if (!user) {
+                let err = errors.errorAuthenticationFailure(
+                    info.message);
                 return res.status(err.status).send(err);
             }
-        }
 
-        // check string fields
-        let fields = [
-          {name: 'name', type: 'string', required: false},
-          {name: 'uri', type: 'string', required: false},
-          {name: 'owner', type: 'string', required: false},
-          {name: 'slugs', type: 'array', required: false}
-        ];
+            var obj = req.body.object;
 
-        // validateFields takes the object to check fields on,
-        // and an array of field names and types
-        let validationFailure = helpers.validateFields(obj, fields);
-        if (validationFailure) {
-            let err = errors.errorBadObjectInvalidField(
-                'project', validationFailure.name, validationFailure.type,
-                validationFailure.actualType);
-            return res.status(err.status).send(err);
-        }
+            // run various checks
 
-        // check validity of uri syntax
-        if (obj.uri && !validUrl.isWebUri(obj.uri)) {
-            let err = errors.errorBadObjectInvalidField(
-                'project', 'uri', 'uri', 'string');
-            return res.status(err.status).send(err);
-        }
+            // check validity of uri syntax
+            if (obj.uri && !validUrl.isWebUri(obj.uri)) {
+                let err = errors.errorInvalidIdentifier('uri', obj.uri);
+                return res.status(err.status).send(err);
+            }
 
-        // check validity of slugs
-        if (obj.slugs && obj.slugs.length) {
-            let invalidSlugs = obj.slugs.filter(function(slug) {
+            // check existence of slugs
+            if (!obj.slugs) {
+                let err = errors.errorBadObjectMissingField('project', 'slug');
+                return res.status(err.status).send(err);
+            }
+
+            // check existence of name
+            if (!obj.name) {
+                let err = errors.errorBadObjectMissingField('project', 'name');
+                return res.status(err.status).send(err);
+            }
+
+            // check validity of slugs
+            var invalidSlugs = obj.slugs.filter(function(slug) {
                 return !helpers.validateSlug(slug);
             });
 
             if (invalidSlugs.length) {
-                let err = errors.errorBadObjectInvalidField(
-                    'project', 'slugs', 'slugs', 'non-slug strings');
-                return res.status(err.status).send(err);
-            }
-        }
-
-        obj.slugs = obj.slugs || [];
-
-        // returns the project ID for the project slug
-        let projectIdQuery = knex('projectslugs').select('project')
-        .where('name', req.params.slug);
-
-        // retrieves the project from the database, selecting the project
-        // where its ID matches the slug's project (the projectIdQuery).
-
-        // also makes the owner field the username so it can be checked, and
-        // puts the ownerId into the ownerId field.
-        knex('projects').first().select(
-            'projects.id as id',
-            'projects.name as name',
-            'projects.uri as uri',
-            'users.username as owner',
-            'users.id as ownerId')
-        .where('projects.id', '=', projectIdQuery)
-        .innerJoin('users', 'users.id', 'projects.owner')
-        .then(function(project) {
-            // project contains all of the information about the project the
-            // user is updating
-            if (req.body.auth.user !== project.owner) {
-                let err = errors.errorAuthorizationFailure(
-                    req.body.auth.user, 'create objects for ' + project.owner);
+                let err = errors.errorInvalidIdentifier('slug', invalidSlugs);
                 return res.status(err.status).send(err);
             }
 
-            knex('projectslugs')
-            .where('name', 'in', obj.slugs).then(function(slugs) {
-                // slugs contains all of the slugs named by the user that
-                // currently exist in the database. This list is used to check
-                // that they're not overlapping with existing slugs, and to
-                // calculate which slugs need to be added.
+            // check validity of owner -- it must match the submitting user
+            // if checkUser fails, the user submitting the request doesn't match
+            helpers.checkUser(user.username, obj.owner).then(function(userId) {
 
-                // final check: do any of the slugs POSTed to this
-                // endpoint already belong to some other project?
-                let overlappingSlugs = slugs.filter(function(slug) {
-                    return slug.project !== project.id;
-                });
+                // select any slugs that match the ones submitted
+                // this is to check that none of the submitted slugs are
+                // currently in use.
+                knex('projectslugs').where('name', 'in', obj.slugs)
+                .then(function(slugs) {
 
-                if (overlappingSlugs.length) {
-                    overlappingSlugs = overlappingSlugs.map(function(slug) {
-                        return slug.name;
+                    // if any slugs match the slugs passed to us, error out
+                    if (slugs.length) {
+                        let err = errors.errorSlugsAlreadyExist(
+                            slugs.map(function(slug) {
+                                return slug.name;
+                            })
+
+                        );
+                        return res.status(err.status).send(err);
+                    }
+
+                    // create object to insert into database
+                    var insertion = {
+                        uri: obj.uri,
+                        owner: userId,
+                        name: obj.name
+                    };
+
+                    knex('projects').insert(insertion).then(function(project) {
+                        // project is a list containing the ID of the
+                        // newly created project
+                        project = project[0];
+                        var projectSlugs = obj.slugs.map(function(slug) {
+                            return {name: slug, project: project};
+                        });
+
+                        knex('projectslugs')
+                        .insert(projectSlugs).then(function() {
+                            obj.id = project;
+                            res.send(JSON.stringify(obj));
+                        });
                     });
 
-                    let err = errors.errorSlugsAlreadyExist(overlappingSlugs);
+                });
+            }).catch(function(err) {
+                // checkUser failed, meaning the user is not authorized
+                err = errors.errorAuthorizationFailure(
+                    req.body.auth.username, 'create objects for ' + obj.owner);
+                return res.status(err.status).send(err);
+            });
+        })(req, res, next);
+    });
+
+    app.post(app.get('version') + '/projects/:slug', function(req, res, next) {
+        passport.authenticate('local', function(autherr, user, info) {
+            if (!user) {
+                let err = errors.errorAuthenticationFailure(
+                    info.message);
+                return res.status(err.status).send(err);
+            }
+
+            let obj = req.body.object;
+
+            // valid keys
+            let validKeys = ['name', 'uri', 'owner', 'slugs'];
+            for (let key in obj) {
+                // indexOf returns -1 if the parameter is not in the array,
+                // so this returns true if the slug is not in slugNames
+                if (validKeys.indexOf(key) === -1) {
+                    let err = errors.errorBadObjectUnknownField('project', key);
+                    return res.status(err.status).send(err);
+                }
+            }
+
+            // check string fields
+            let fields = [
+              {name: 'name', type: 'string', required: false},
+              {name: 'uri', type: 'string', required: false},
+              {name: 'owner', type: 'string', required: false},
+              {name: 'slugs', type: 'array', required: false}
+            ];
+
+            // validateFields takes the object to check fields on,
+            // and an array of field names and types
+            let validationFailure = helpers.validateFields(obj, fields);
+            if (validationFailure) {
+                let err = errors.errorBadObjectInvalidField(
+                    'project', validationFailure.name, validationFailure.type,
+                    validationFailure.actualType);
+                return res.status(err.status).send(err);
+            }
+
+            // check validity of uri syntax
+            if (obj.uri && !validUrl.isWebUri(obj.uri)) {
+                let err = errors.errorBadObjectInvalidField(
+                    'project', 'uri', 'uri', 'string');
+                return res.status(err.status).send(err);
+            }
+
+            // check validity of slugs
+            if (obj.slugs && obj.slugs.length) {
+                let invalidSlugs = obj.slugs.filter(function(slug) {
+                    return !helpers.validateSlug(slug);
+                });
+
+                if (invalidSlugs.length) {
+                    let err = errors.errorBadObjectInvalidField(
+                        'project', 'slugs', 'slugs', 'non-slug strings');
+                    return res.status(err.status).send(err);
+                }
+            }
+
+            obj.slugs = obj.slugs || [];
+
+            // returns the project ID for the project slug
+            let projectIdQuery = knex('projectslugs').select('project')
+            .where('name', req.params.slug);
+
+            // retrieves the project from the database, selecting the project
+            // where its ID matches the slug's project (the projectIdQuery).
+
+            // also makes the owner field the username so it can be checked, and
+            // puts the ownerId into the ownerId field.
+            knex('projects').first().select(
+                'projects.id as id',
+                'projects.name as name',
+                'projects.uri as uri',
+                'users.username as owner',
+                'users.id as ownerId')
+            .where('projects.id', '=', projectIdQuery)
+            .innerJoin('users', 'users.id', 'projects.owner')
+            .then(function(project) {
+                // project contains all of the information about the project the
+                // user is updating
+                if (user.username !== project.owner) {
+                    let err = errors.errorAuthorizationFailure(
+                        req.body.auth.username,
+                        'create objects for ' + project.owner);
                     return res.status(err.status).send(err);
                 }
 
-                // all checks have passed
+                knex('projectslugs')
+                .where('name', 'in', obj.slugs).then(function(slugs) {
+                    // slugs contains all of the slugs named by the user that
+                    // currently exist in the database. This list is used to
+                    // check that they're not overlapping with existing slugs,
+                    // and to calculate which slugs need to be added.
 
-                // modify the project object gotten from the database
-                // and then reinsert it into the database
-
-                // when using knex.update() I have better luck updating
-                // the entire object, even fields that aren't changed
-                project.uri = obj.uri || project.uri;
-                project.owner = project.ownerId;
-                project.name = obj.name || project.name;
-
-                delete project.ownerId;
-
-                knex('projects')
-                .where({id: project.id}).update(project).then(function() {
-                    // slugNames contains the list of names of slugs that
-                    // overlap with what the user submitted.
-                    let slugNames = slugs.map(function(slug) {
-                        return slug.name;
+                    // final check: do any of the slugs POSTed to this
+                    // endpoint already belong to some other project?
+                    let overlappingSlugs = slugs.filter(function(slug) {
+                        return slug.project !== project.id;
                     });
 
-                    knex('projectslugs')
-                    .where({project: project.id}).then(function(existingSlugs) {
-                        existingSlugs = existingSlugs.map(function(slug) {
+                    if (overlappingSlugs.length) {
+                        overlappingSlugs = overlappingSlugs.map(function(slug) {
                             return slug.name;
                         });
-                        // existingSlugs contains a list of all of the slugs,
-                        // by name, that already belong to the project
 
-                        // get list of slugs that is no longer in POST request
-                        let delSlugs = [];
-                        if (obj.slugs.length) {
-                            delSlugs = existingSlugs.filter(function(slug) {
-                                return obj.slugs.indexOf(slug) === -1;
-                            });
-                        }
+                        let err = errors.errorSlugsAlreadyExist(
+                            overlappingSlugs);
+                        return res.status(err.status).send(err);
+                    }
 
-                        // make a list containing all of the slugs that need to
-                        // be inserted
-                        let newSlugs = obj.slugs.filter(function(objSlug) {
-                            if (slugNames.indexOf(objSlug) === -1) {
-                                return true;
-                            }
-                        }).map(function(newSlug) {
-                            return {name: newSlug, project: project.id};
+                    // all checks have passed
+
+                    // modify the project object gotten from the database
+                    // and then reinsert it into the database
+
+                    // when using knex.update() I have better luck updating
+                    // the entire object, even fields that aren't changed
+                    project.uri = obj.uri || project.uri;
+                    project.owner = project.ownerId;
+                    project.name = obj.name || project.name;
+
+                    delete project.ownerId;
+
+                    knex('projects')
+                    .where({id: project.id}).update(project).then(function() {
+                        // slugNames contains the list of names of slugs that
+                        // overlap with what the user submitted.
+                        let slugNames = slugs.map(function(slug) {
+                            return slug.name;
                         });
 
-                        // make a list containing creation and deletion promises
-                        let slugsPromises = [];
-                        if (delSlugs.length) {
-                            slugsPromises.push(knex('projectslugs')
-                            .where('name', 'in', delSlugs).del());
-                        }
+                        knex('projectslugs')
+                        .where({project: project.id})
+                        .then(function(existingSlugs) {
+                            existingSlugs = existingSlugs.map(function(slug) {
+                                return slug.name;
+                            });
+                            // existingSlugs contains a list of all of slugs
+                            // that already belong to the project, by name
 
-                        if (newSlugs.length) {
-                            slugsPromises.push(knex('projectslugs')
-                            .insert(newSlugs));
-                        }
-
-                        Promise.all(slugsPromises).then(function() {
+                            // get list of slugs that is no longer in POST
+                            // request
+                            let delSlugs = [];
                             if (obj.slugs.length) {
-                                project.slugs = obj.slugs;
-                            } else {
-                                project.slugs = existingSlugs;
+                                delSlugs = existingSlugs.filter(function(slug) {
+                                    return obj.slugs.indexOf(slug) === -1;
+                                });
                             }
 
-                            project.owner = req.body.auth.user;
-                            res.send(JSON.stringify(project));
-                        }).catch(function(error) {
-                            var err = errors.errorServerError(error);
-                            return res.status(err.status).send(err);
+                            // make a list containing all of the slugs that need
+                            // to be inserted
+                            let newSlugs = obj.slugs.filter(function(objSlug) {
+                                if (slugNames.indexOf(objSlug) === -1) {
+                                    return true;
+                                }
+                            }).map(function(newSlug) {
+                                return {name: newSlug, project: project.id};
+                            });
+
+                            // make a list containing creation and
+                            // deletion promises
+                            let slugsPromises = [];
+                            if (delSlugs.length) {
+                                slugsPromises.push(knex('projectslugs')
+                                .where('name', 'in', delSlugs).del());
+                            }
+
+                            if (newSlugs.length) {
+                                slugsPromises.push(knex('projectslugs')
+                                .insert(newSlugs));
+                            }
+
+                            Promise.all(slugsPromises).then(function() {
+                                if (obj.slugs.length) {
+                                    project.slugs = obj.slugs;
+                                } else {
+                                    project.slugs = existingSlugs;
+                                }
+
+                                project.owner = user.username;
+                                res.send(JSON.stringify(project));
+                            }).catch(function(error) {
+                                var err = errors.errorServerError(error);
+                                return res.status(err.status).send(err);
+                            });
                         });
                     });
+                }).catch(function(error) {
+                    var err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
                 });
             }).catch(function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
-        }).catch(function(error) {
-            var err = errors.errorServerError(error);
-            return res.status(err.status).send(err);
-        });
+        })(req, res, next);
     });
 };

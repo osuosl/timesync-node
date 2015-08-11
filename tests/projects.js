@@ -146,9 +146,8 @@ module.exports = function(expect, request, baseUrl) {
 
         var postArg = {
             auth: {
-                user: 'tschuy',
-                password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
-                          'PvSG8rwN4xyaF5W'
+                username: 'tschuy',
+                password: 'password'
             },
         };
 
@@ -266,7 +265,24 @@ module.exports = function(expect, request, baseUrl) {
         //         });
         //     });
 
-        it("doesn't patch a project with bad uri, name, slugs, and and owner",
+        it("doesn't patch a project with bad authentication",
+           function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(patchedProject);
+            requestOptions.form.auth.password = 'not correct password';
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(res.statusCode).to.equal(401);
+
+                expect(body.error).to.equal('Authentication failure');
+                expect(body.text).to.equal('Incorrect password.');
+
+                var expectedResults = copyJsonObject(originalProject);
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with bad uri, name, slugs, and owner",
            function(done) {
             requestOptions.form = copyJsonObject(postArg);
             requestOptions.form.object = copyJsonObject(badProject);
@@ -311,7 +327,7 @@ module.exports = function(expect, request, baseUrl) {
 
         it("doesn't patch a project with a different owner", function(done) {
             requestOptions.form = copyJsonObject(postArg);
-            requestOptions.form.auth.user = 'deanj';
+            requestOptions.form.auth.username = 'deanj';
             requestOptions.form.auth.password = 'pass';
             requestOptions.form.object = copyJsonObject(patchedProject);
 
@@ -540,9 +556,8 @@ module.exports = function(expect, request, baseUrl) {
         // the base POST JSON
         var postArg = {
             auth: {
-                user: 'tschuy',
-                password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
-                          'PvSG8rwN4xyaF5W'
+                username: 'tschuy',
+                password: 'password'
             },
             object: project
         };
@@ -633,6 +648,30 @@ module.exports = function(expect, request, baseUrl) {
 
                     body = JSON.parse(body);
                     expect(body).to.deep.have.same.members(expectedResults);
+                    done();
+                });
+            });
+        });
+
+        it('fails to create a new project with bad authentication',
+           function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(newProject);
+            requestOptions.form.auth.password = 'not correct password';
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(res.statusCode).to.equal(401);
+
+                expect(body.error).to.equal('Authentication failure');
+                expect(body.text).to.equal('Incorrect password.');
+
+                request.get(baseUrl + 'projects', function(err, res, body) {
+                    expect(err).to.be.a('null');
+                    expect(res.statusCode).to.equal(200);
+
+                    body = JSON.parse(body);
+                    // the projects/ list shouldn't have changed
+                    expect(body).to.deep.have.same.members(initialProjects);
                     done();
                 });
             });
