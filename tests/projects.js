@@ -410,7 +410,7 @@ module.exports = function(expect, request, baseUrl) {
                         text: 'Nonexistent project'
                     }
 
-                    expect(jsonBody).to.deep.equal(expectedResult);
+                    expect(jsonBody).to.deep.have.same.members(expectedResult);
                     expect(res.statusCode).to.equal(404);
                     done();
                 });
@@ -454,11 +454,11 @@ module.exports = function(expect, request, baseUrl) {
                     ];
 
                     expect(res.statusCode).to.equal(200);
-                    expect(jsonBody).to.deep.equal(expectedResult);
+                    expect(jsonBody).to.deep.have.same.members(expectedResult);
                 });
 
                 expect(res.statusCode).to.equal(400);
-                expect(jsonBody).to.deep.equal(expectedResult);
+                expect(jsonBody).to.deep.have.same.members(expectedResult);
                 done();
             });
         });
@@ -499,11 +499,11 @@ module.exports = function(expect, request, baseUrl) {
                     ];
 
                     expect(res.statusCode).to.equal(200);
-                    expect(jsonBody).to.deep.equal(expectedResult);
+                    expect(jsonBody).to.deep.have.same.members(expectedResult);
                 });
 
                 expect(res.statusCode).to.equal(404);
-                expect(jsonBody).to.deep.equal(expectedResult);
+                expect(jsonBody).to.deep.have.same.members(expectedResult);
                 done();
             });
         });
