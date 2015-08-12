@@ -399,8 +399,8 @@ module.exports = function(expect, request, baseUrl) {
 
     describe('DELETE /projects/:slug', function() {
         it('deletes the desired project', function(done) {
-            request.del(baseUrl + 'projects/wf', function(err, res){
-                expect(res.statusCode).to.equal(200);    
+            request.del(baseUrl + 'projects/wf', function(err, res) {
+                expect(res.statusCode).to.equal(200);
 
                 request.get(baseUrl + 'projects/wf', function(err, res, body){
                     var jsonBody = JSON.parse(body);
@@ -418,13 +418,14 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it('Fails if it receives an invalid project', function(done) {
-            request.del(baseUrl + 'projects/Not.a-project!', function(err, res, body) {
+            request.del(baseUrl + 'projects/Not.a-project!', 
+                    function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     status: 400,
                     error: 'The provided identifier was invalid',
                     text: 'Expected slug but received Not.a-project!',
-                    values: [ 'Not.a-project!' ]
+                    values: ['Not.a-project!']
                 };
 
                 request.get(baseUrl + 'projects', function(err, res, body) {
@@ -463,7 +464,8 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('Fails if it receives an non-existant project', function(done) {
+        it('Fails if it receives an non-existant project', 
+                function(done) {
             request.del(baseUrl + 'projects/doesntexist', function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {

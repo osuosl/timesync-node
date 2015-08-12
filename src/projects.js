@@ -237,10 +237,10 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
         }
 
-        // delete matching project 
+        // delete matching project
         var projectSubquery = knex('projectslugs').select('project')
         .where('name', req.params.slug);
-        knex('projects').select('id').where( 'id', '=', projectSubquery)
+        knex('projects').select('id').where('id', '=', projectSubquery)
         .del().then(function(numObj) {
 
             /* When deleting something from the table, the number of objects
