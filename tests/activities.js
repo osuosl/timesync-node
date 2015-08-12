@@ -90,12 +90,12 @@ module.exports = function(expect, request, baseUrl) {
     describe('DELETE /activities/:slug', function() {
         it('deletes the activity affiliated with the activity slug',
         function(done) {
-            request.del(baseUrl + 'activities/docs', function(err, res) {
+            request.del(baseUrl + 'activities/sys', function(err, res) {
                 expect(err).to.be.a('null');
                 expect(res.statusCode).to.equal(200);
 
                 // Checks to see that the activity has been deleted from the db
-                request.get(baseUrl + 'activities/docs',
+                request.get(baseUrl + 'activities/sys',
                 function(err, res, body) {
                     var jsonBody = JSON.parse(body);
                     var expectedError = {
@@ -197,5 +197,47 @@ module.exports = function(expect, request, baseUrl) {
                 });
             });
         });
+
+        // Test and implementation currently blocked until we decide how we
+        // want to handle this (soft delete vs. refusal to delete)
+        /*it('fails if the activity is referenced by timesactivities',
+        function(done) {
+            request.del(baseUrl + 'activities/docs', function(err, res, body) {
+                var jsonBody = JSON.parse(body);*/
+                /*var expectedError = {
+                    // Insert expected error text here
+                };
+
+                expect(jsonBody).to.deep.equal(expectedError);
+                expect(res.statusCode).to.be.(/*insert error code here);*/
+
+                /*request.get(baseUrl + 'activities', function(err, res, body) {
+                    var jsBody = JSON.parse(body);
+                    var expectedResult = [
+                        {
+                            name: 'Documentation',
+                            slug: 'docs',
+                            id: 1
+                        },
+                        {
+                            name: 'Development',
+                            slug: 'dev',
+                            id: 2
+                        },
+                        {
+                            name: 'Systems',
+                            slug: 'sys',
+                            id: 3
+                        }
+                    ];
+
+                    expect(err).to.be.a('null');
+                    expect(res.statusCode).to.equal(200);
+                    expect(jsBody).to.deep.have.same.members(expectedResult);
+
+                    done();
+                });
+            });
+        });*/
     });
 };
