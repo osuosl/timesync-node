@@ -401,9 +401,16 @@ module.exports = function(expect, request, baseUrl) {
         it('deletes the desired project', function(done) {
             request.del(baseUrl + 'projects/wf', function(err, res){
                 expect(res.statusCode).to.equal(200);    
+
                 request.get(baseUrl + 'projects/wf', function(err, res, body){
 
-                    expect(body).to.be.a(null);
+                    var expectedResult = {
+                        status: 404,
+                        error: 'Object not found',
+                        text: 'Nonexistent project'
+                    }
+
+                    expect(body).to.deep.equal(expectedResult);
                     expect(res.statusCode).to.equal(404);
                     done();
                 });
@@ -464,6 +471,36 @@ module.exports = function(expect, request, baseUrl) {
                     error: 'Object not found',
                     text: 'Nonexistant project'
                 };
+
+                request.get(baseUrl + 'projects', function(err, res, body) {
+                    jsonBody = JSON.parse(body);
+                    var expectedResult = [
+                        {
+                            uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+                            name: 'Ganeti Web Manager',
+                            slugs: ['gwm', 'ganeti-webmgr'],
+                            owner: 'tschuy',
+                            id: 1
+                        },
+                        {
+                            uri: 'https://code.osuosl.org/projects/pgd',
+                            name: 'Protein Geometry Database',
+                            slugs: ['pgd'],
+                            owner: 'deanj',
+                            id: 2
+                        },
+                        {
+                            uri: 'https://github.com/osu-cass/whats-fresh-api',
+                            name: 'Whats Fresh',
+                            slugs: ['wf'],
+                            owner: 'tschuy',
+                            id: 3
+                        }
+                    ];
+
+                    expect(res.statusCode).to.equal(200);
+                    expect(jsonBody).to.deep.equal(expectedResult);
+                });
 
                 expect(res.statusCode).to.equal(404);
                 expect(jsonBody).to.deep.equal(expectedResult);

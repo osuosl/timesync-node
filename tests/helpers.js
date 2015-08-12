@@ -89,11 +89,6 @@ module.exports = function(expect, app) {
             done();
         });
 
-        it('returns false with non-alphanumeric input', function(done) {
-            expect(helpers.validateSlug('a2-$c')).to.equal(false);
-            done();
-        });
-
         it('returns false for slugs with multiple hyphens in a row',
         function(done) {
             expect(helpers.validateSlug('a1b2--c3')).to.equal(false);
@@ -126,6 +121,7 @@ module.exports = function(expect, app) {
 
         it('throws when passed a null slug', function(done) {
             helpers.checkProject(null).then().catch(function(err) {
+                expect(err).to.deep.equal({type: 'invalid', value: null});
                 done();
             });
         });
