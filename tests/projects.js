@@ -226,7 +226,6 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-
         it('fails to create a new project with an invalid uri', function(done) {
             var postInvalidUri = copyJsonObject(postArg);
             postInvalidUri.object.uri = "Ceci n'est pas un url";
@@ -402,7 +401,7 @@ module.exports = function(expect, request, baseUrl) {
             request.del(baseUrl + 'projects/wf', function(err, res) {
                 expect(res.statusCode).to.equal(200);
 
-                request.get(baseUrl + 'projects/wf', function(err, res, body){
+                request.get(baseUrl + 'projects/wf', function(err, res, body) {
                     var jsonBody = JSON.parse(body);
                     var expectedResult = {
                         status: 404,
@@ -418,7 +417,7 @@ module.exports = function(expect, request, baseUrl) {
         });
 
         it('Fails if it receives an invalid project', function(done) {
-            request.del(baseUrl + 'projects/Not.a-project!', 
+            request.del(baseUrl + 'projects/Not.a-project!',
                     function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
@@ -432,7 +431,8 @@ module.exports = function(expect, request, baseUrl) {
                     jsonBody = JSON.parse(body);
                     var expectedResult = [
                         {
-                            uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+                            uri: 'https://code.osuosl.org/projects/ganeti-' +
+                                'webmgr',
                             name: 'Ganeti Web Manager',
                             slugs: ['gwm', 'ganeti-webmgr'],
                             owner: 'tschuy',
@@ -464,9 +464,10 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('Fails if it receives an non-existant project', 
+        it('Fails if it receives an non-existant project',
                 function(done) {
-            request.del(baseUrl + 'projects/doesntexist', function(err, res, body) {
+            request.del(baseUrl + 'projects/doesntexist',
+                    function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     status: 404,
@@ -478,7 +479,8 @@ module.exports = function(expect, request, baseUrl) {
                     jsonBody = JSON.parse(body);
                     var expectedResult = [
                         {
-                            uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+                            uri: 'https://code.osuosl.org/projects/ganeti-' +
+                                'webmgr',
                             name: 'Ganeti Web Manager',
                             slugs: ['gwm', 'ganeti-webmgr'],
                             owner: 'tschuy',
