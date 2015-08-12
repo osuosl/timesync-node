@@ -232,7 +232,6 @@ module.exports = function(app) {
 
     app.delete(app.get('version') + '/projects/:slug', function(req, res) {
         if (!helpers.validateSlug(req.params.slug)) {
-            console.log('Invalid slug');
             var err = errors.errorInvalidIdentifier('slug', req.params.slug);
             return res.status(err.status).send(err);
         }

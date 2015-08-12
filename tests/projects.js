@@ -455,7 +455,7 @@ module.exports = function(expect, request, baseUrl) {
                     ];
 
                     expect(res.statusCode).to.equal(200);
-                    expect(jsonBody).to.deep.equal(expectedResult);
+                    expect(jsonBody).to.deep.have.same.members(expectedResult);
                 });
 
                 expect(res.statusCode).to.equal(400);
@@ -503,7 +503,7 @@ module.exports = function(expect, request, baseUrl) {
                     ];
 
                     expect(res.statusCode).to.equal(200);
-                    expect(jsonBody).to.deep.equal(expectedResult);
+                    expect(jsonBody).to.deep.have.same.members(expectedResult);
                 });
 
                 expect(res.statusCode).to.equal(404);
