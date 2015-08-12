@@ -38,7 +38,6 @@ module.exports = function(app) {
                     return res.send(times);
                 }
             }).catch(function(error) {
-                console.log('Get users failed.');
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
@@ -91,12 +90,10 @@ module.exports = function(app) {
                         return res.send(times);
                     }
                 }).catch(function(error) {
-                    console.log('Get activities failed.');
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
             }).catch(function(error) {
-                console.log('Get timesactivities failed.');
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
@@ -134,19 +131,16 @@ module.exports = function(app) {
                         res.send(times);
                     }
                 }).catch(function(error) {
-                    console.log('Get project slugs failed.');
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
 
             }).catch(function(error) {
-                console.log('Get projects failed.');
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
 
         }).catch(function(error) {
-            console.log('Get times failed.');
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
