@@ -133,13 +133,5 @@ module.exports = function(expect, app) {
                 done();
             });
         });
-
-        it('throws when passed a bad slug', function(done) {
-            helpers.checkProject('#!^kittens').then().catch(function(err) {
-                expect(err).to.deep.equal(
-                    {type: 'invalid', value: '#!^kittens'});
-                done();
-            });
-        });
     });
 };

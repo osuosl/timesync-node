@@ -426,7 +426,6 @@ module.exports = function(expect, request, baseUrl) {
                     values: [ 'Not.a-project!' ]
                 };
 
-                //console.log('Test invalid project:', body, expectedResult, err);
                 request.get(baseUrl + 'projects', function(err, res, body) {
                     jsonBody = JSON.parse(body);
                     var expectedResult = [
