@@ -408,9 +408,9 @@ module.exports = function(expect, request, baseUrl) {
                         status: 404,
                         error: 'Object not found',
                         text: 'Nonexistent project'
-                    }
+                    };
 
-                    expect(jsonBody).to.deep.have.same.members(expectedResult);
+                    expect(jsonBody).to.deep.equal(expectedResult);
                     expect(res.statusCode).to.equal(404);
                     done();
                 });
@@ -454,18 +454,18 @@ module.exports = function(expect, request, baseUrl) {
                     ];
 
                     expect(res.statusCode).to.equal(200);
-                    expect(jsonBody).to.deep.have.same.members(expectedResult);
+                    expect(jsonBody).to.deep.equal(expectedResult);
                 });
 
                 expect(res.statusCode).to.equal(400);
-                expect(jsonBody).to.deep.have.same.members(expectedResult);
+                expect(jsonBody).to.deep.equal(expectedResult);
                 done();
             });
         });
 
         it('Fails if it receives an non-existant project', function(done) {
             request.del(baseUrl + 'projects/doesntexist', function(err, res, body) {
-                var jsonBody = JSON.parse(body)
+                var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     status: 404,
                     error: 'Object not found',
@@ -499,11 +499,11 @@ module.exports = function(expect, request, baseUrl) {
                     ];
 
                     expect(res.statusCode).to.equal(200);
-                    expect(jsonBody).to.deep.have.same.members(expectedResult);
+                    expect(jsonBody).to.deep.equal(expectedResult);
                 });
 
                 expect(res.statusCode).to.equal(404);
-                expect(jsonBody).to.deep.have.same.members(expectedResult);
+                expect(jsonBody).to.deep.equal(expectedResult);
                 done();
             });
         });
