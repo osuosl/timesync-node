@@ -82,9 +82,9 @@ You can select which subset of tests to run using pattern matching::
     npm test -- -g POST
 
 This will only run tests which are within a ``describe('.*POST.*', function()
-{`` block (where ``.*POST.*`` is a regular expression. Essentially the ``-g``
-syntax can be treated as a fuzzy-search where only tests wrapped in a block
-with the substring you enter are run).
+{`` or ``it('.*POST.*'), function() {`` block (where ``.*POST.*`` is a regular
+expression.  Essentially the ``-g`` syntax can be treated as a fuzzy-search
+where only tests wrapped in a block with the substring you enter are run).
 
 TimeSync uses Mocha for testing. See `its documentation`_ for more information
 on how to write tests, or use the tests included in TimeSync as a guide. They
@@ -93,7 +93,7 @@ can be found in ``tests/``.
 TimeSync test coverage is measured with the `Istanbul`_ package. To run the
 tests and measure coverage, run::
 
-	npm run coverage
+    npm run coverage
 
 To see a detailed coverage report, open ``coverage/lcov-report/index.html``.
 
