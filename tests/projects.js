@@ -403,14 +403,14 @@ module.exports = function(expect, request, baseUrl) {
                 expect(res.statusCode).to.equal(200);    
 
                 request.get(baseUrl + 'projects/wf', function(err, res, body){
-
+                    var jsonBody = JSON.parse(body);
                     var expectedResult = {
                         status: 404,
                         error: 'Object not found',
                         text: 'Nonexistent project'
                     }
 
-                    expect(body).to.deep.equal(expectedResult);
+                    expect(jsonBody).to.deep.equal(expectedResult);
                     expect(res.statusCode).to.equal(404);
                     done();
                 });
@@ -419,6 +419,7 @@ module.exports = function(expect, request, baseUrl) {
 
         it('Fails if it receives an invalid project', function(done) {
             request.del(baseUrl + 'projects/Not.a-project!', function(err, res, body) {
+                var jsonBody = JSON.parse(body);
                 var expectedResult = {
                     status: 400,
                     error: 'The provided identifier was invalid',
@@ -457,7 +458,7 @@ module.exports = function(expect, request, baseUrl) {
                 });
 
                 expect(res.statusCode).to.equal(400);
-                expect(body).to.deep.equal(expectedResult);
+                expect(jsonBody).to.deep.equal(expectedResult);
                 done();
             });
         });
@@ -468,7 +469,7 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedResult = {
                     status: 404,
                     error: 'Object not found',
-                    text: 'Nonexistant project'
+                    text: 'Nonexistent slug'
                 };
 
                 request.get(baseUrl + 'projects', function(err, res, body) {
