@@ -430,6 +430,7 @@ module.exports = function(expect, request, baseUrl) {
 
                         expect(res.statusCode).to.equal(405);
                         expect(body).to.deep.equal(expectedResult);
+                        done();
             });
         });
 
