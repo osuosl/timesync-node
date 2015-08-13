@@ -397,7 +397,8 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     describe('DELETE /projects/:slug', function() {
-        it('deletes the desired project', function(done) {
+        it('deletes the desired project if no times are associated with it',
+                function(done) {
             request.del(baseUrl + 'projects/wf', function(err, res) {
                 expect(res.statusCode).to.equal(200);
 
@@ -413,6 +414,21 @@ module.exports = function(expect, request, baseUrl) {
                     expect(res.statusCode).to.equal(404);
                     done();
                 });
+            });
+        });
+
+        it('Failes if it recieves a project with times assiciated',
+            function(done) {
+                request.del(baseUrl + 'projects/pgd',
+                    function(err, res, body) {
+                        var expectedResult = {
+                            status: 405,
+                            error: 'DELETE not allowed',
+                            text: 'Project has associated time'
+                        };
+
+                        expect(res.statusCode).to.equal(405);
+                        expect(body).to.deep.equal(expectedResult);
             });
         });
 
