@@ -96,8 +96,13 @@ For more information, see the `node-sql-fixtures documentation`_.
 Using additional fixtures
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
- To override the set of fixtures that is being installed for a group of tests,
- add a new ``beforeEach`` section to the test's ``describe()`` statement:
+Every test is run from within two ``describe()`` statements -- the first being
+the category (``Endpoint``, ``Helper``, etc), and the second the thing being
+tested (``GET wugs/``, ``checkActivity``, etc). Each ``describe()`` can have
+its own ``beforeEach``.
+
+To override the set of fixtures that is being installed for a group of tests,
+add a ``beforeEach`` section to the test's ``describe()`` statement:
 
  .. code-block:: javascript
 
