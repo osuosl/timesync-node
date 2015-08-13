@@ -20,7 +20,7 @@ module.exports = function(app) {
                 a1b2--c3
             */
             if (slug === undefined || slug === null) {
-                // Javascript will cast these to "undefined" and "null",
+                // Javascript will cast these to 'undefined' and 'null',
                 // which then pass the test
                 return false;
             }
@@ -126,6 +126,39 @@ module.exports = function(app) {
             } else {
                 return typeof receieved;
             }
+        },
+
+        checkActivities: function(names) {
+            return new Promise(function(resolve, reject) {
+                knex('activities').where('slug', 'in', names)
+                .then(function(slugs) {
+                    if (names === undefined || names === null) {
+                        reject({type: 'invalid', value: names});
+                    } else {
+                        var results = slugs.map(function(value) {
+                            return value.slug;
+                        });
+
+                        var unmatched = names.filter(function(value) {
+                            if (results.indexOf(value) < 0) {
+                                return value;
+                            }
+                        });
+
+                        var ids = slugs.map(function(value) {
+                            return value.id;
+                        });
+
+                        if (unmatched.length === 0) {
+                            resolve(ids);
+                        } else {
+                            reject({type: 'nonexistent', value: unmatched});
+                        }
+                    }
+                }).catch(function(err) {
+                    reject({type: 'database', value: err});
+                });
+            });
         }
     };
 
