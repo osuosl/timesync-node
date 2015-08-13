@@ -1,3 +1,5 @@
+'use strict';
+
 var helpers;
 
 module.exports = function(app) {
@@ -26,7 +28,7 @@ module.exports = function(app) {
             // if slug is only one character long, shortcut and finish
             // rolling this into the alphanumeric test would conflict with
             // getting rid of beginning/ending hyphens
-            if (RegExp('^[a-z]$').test(slug)) {
+            if (new RegExp('^[a-z]$').test(slug)) {
                 return true;
             }
 
@@ -56,6 +58,34 @@ module.exports = function(app) {
             });
         },
 
+        validateFields: function(object, fields) {
+            /* fields is an array of objects with 'type', 'required' and 'name'
+               keys. object is the object containing those fields. The value is
+               tested against the type, and if there's a mismatch,
+               validateFields returns an object with the type, name, required,
+               and actual_type of the field.
+
+               If required is set to true, the field is expected to not be
+               undefined. If false, an undefined field will not raise an error.
+            */
+
+            for (let field of fields) {
+                let fieldValue = helpers.getType(object[field.name]);
+                if (fieldValue !== field.type) {
+                    if (object[field.name] === undefined && !field.required) {
+                        // if the field isn't required, and it's undefined,
+                        // skip it
+                        continue;
+                    }
+
+                    field.actualType = fieldValue;
+                    return field;
+                }
+            }
+
+            return null;
+        },
+
         checkProject: function(slug) {
             // Bluebird promises take a resolve and a reject
             // essentially, when the data you want is done resolving.
@@ -81,6 +111,21 @@ module.exports = function(app) {
                     reject({type: 'database', value: err});
                 });
             });
+        },
+
+        getType: function(receieved) {
+            // typeof returns object for arrays, so we need a special check
+            if (typeof receieved === 'object') {
+                if (Array.isArray(receieved)) {
+                    return 'array';
+                } else if (receieved === null) {
+                    return 'null';
+                } else {
+                    return 'object';
+                }
+            } else {
+                return typeof receieved;
+            }
         },
 
         checkActivities: function(names) {

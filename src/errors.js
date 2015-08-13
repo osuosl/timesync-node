@@ -97,7 +97,7 @@ module.exports = {
     errorBadObjectInvalidField: function(objectType, fieldName, expectedType,
     receivedType) {
         return createError(400, 'Bad object', 'Field ' + fieldName + ' of ' +
-            objectType + ' should be a ' + expectedType +
+            objectType + ' should be ' + expectedType +
             ' but was received as ' + receivedType);
     },
 

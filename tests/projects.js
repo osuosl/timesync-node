@@ -107,6 +107,434 @@ module.exports = function(expect, request, baseUrl) {
         });
     });
 
+    // Tests Patching Projects
+    describe('POST /projects/:slug', function() {
+
+        var patchedProject = {
+            name: 'Ganeti Web Mgr',
+            owner: 'tschuy',
+            slugs: ['gwm', 'gan-web'],
+            uri: 'https://code.osuosl.org/projects/',
+        };
+
+        var originalProject = {
+            id: 1,
+            name: 'Ganeti Web Manager',
+            owner: 'tschuy',
+            slugs: ['gwm', 'ganeti-webmgr'],
+            uri: 'https://code.osuosl.org/projects/ganeti-webmgr'
+        };
+
+        var patchedProjectName  = {name:  patchedProject.name };
+        // var patchedProjectOwner = {owner: patchedProject.owner};
+        var patchedProjectUri   = {uri:   patchedProject.uri  };
+        var patchedProjectSlugs = {slugs: patchedProject.slugs};
+
+        var badProject = {
+            name:  ['a name'],
+            owner: ['a owner'],
+            uri:   ['a website'],
+            slugs: 'a slug',
+            key:   'value'
+        };
+
+        var badProjectName  = {name:  badProject.name };
+        var badProjectOwner = {owner: badProject.owner};
+        var badProjectUri   = {uri:   badProject.uri  };
+        var badProjectSlugs = {slugs: badProject.slugs};
+        var badProjectKey   = {key:   'value'         };
+
+        var postArg = {
+            auth: {
+                username: 'tschuy',
+                password: 'password'
+            },
+        };
+
+        var requestOptions = {
+            url: baseUrl + 'projects/gwm',
+            json: true
+        };
+
+        // Function used for validating that the object in the database
+        // is in the correct state (change or unchanged based on if the POST
+        // was valid)
+        var checkListEndpoint = function(done, expectedResults) {
+            // Make a get request
+            request.get(requestOptions.url, function(err, res, body) {
+                expect(err).to.be.a('null');
+                expect(res.statusCode).to.equal(200);
+
+                body = JSON.parse(body);
+                expect(body).to.deep.equal(expectedResults);
+                done();
+            });
+        };
+
+        it("successfully patches a project's uri, slugs, owner, and name",
+           function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(patchedProject);
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(err).to.be.a('null');
+                expect(res.statusCode).to.equal(200);
+
+                // Set expected results to the new state of the project gwm
+                var expectedResults = copyJsonObject(originalProject);
+                expectedResults.name = patchedProject.name;
+                expectedResults.uri = patchedProject.uri;
+                expectedResults.slugs = patchedProject.slugs;
+                expectedResults.owner = patchedProject.owner;
+
+                // expect body of post request to be the new state of gwm
+                expect(body).to.deep.equal(expectedResults);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("successfully patches a project's uri", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(patchedProjectUri);
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(err).to.be.a('null');
+                expect(res.statusCode).to.equal(200);
+
+                var expectedResults = copyJsonObject(originalProject);
+                expectedResults.uri = patchedProject.uri;
+
+                expect(body).to.deep.equal(expectedResults);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("successfully patches a project's slugs", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(patchedProjectSlugs);
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(err).to.be.a('null');
+                expect(res.statusCode).to.equal(200);
+
+                var expectedResults = copyJsonObject(originalProject);
+                expectedResults.slugs = patchedProject.slugs;
+
+                expect(body).to.deep.equal(expectedResults);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("successfully patches a project's name", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(patchedProjectName);
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(err).to.be.a('null');
+                expect(res.statusCode).to.equal(200);
+
+                var expectedResults = copyJsonObject(originalProject);
+                expectedResults.name = patchedProject.name;
+
+                expect(body).to.deep.equal(expectedResults);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        // This test should be reenabled when administrator users are added
+        //     it("successfully patches a project's owner", function(done) {
+        //         postArg.object = copyJsonObject(patchedProjectOwner);
+        //         requestOptions.form = copyJsonObject(postArg);
+        //
+        //         request.post(requestOptions, function(err, res, body) {
+        //             expect(err).to.be.a('null');
+        //             expect(res.statusCode).to.equal(200);
+        //
+        //             var expectedResults = copyJsonObject(originalProject);
+        //             expectedResults.owner = patchedProject.owner;
+        //
+        //             body = JSON.parse(body);
+        //
+        //             expect(body).to.equal(expectedResults);
+        //
+        //             checkListEndpoint(done, expectedResults);
+        //         });
+        //     });
+
+        it("doesn't patch a project with bad authentication",
+           function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(patchedProject);
+            requestOptions.form.auth.password = 'not correct password';
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(res.statusCode).to.equal(401);
+
+                expect(body.error).to.equal('Authentication failure');
+                expect(body.text).to.equal('Incorrect password.');
+
+                var expectedResults = copyJsonObject(originalProject);
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with bad uri, name, slugs, and owner",
+           function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(badProject);
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+
+                expect([
+                'Field uri of project should be string but was received as ' +
+                    'array',
+                'Field name of project should be string but was received as ' +
+                    'array',
+                'Field owner of project should be string but was received as ' +
+                    'array',
+                'Field slugs of project should be array but was received as ' +
+                    'string',
+                'project does not have a key field'
+                ]).to.include.members([body.text]);
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with only bad uri", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = badProjectUri;
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('Field uri of project' +
+                    ' should be string but was received as array');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with a different owner", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.auth.username = 'deanj';
+            requestOptions.form.auth.password = 'pass';
+            requestOptions.form.object = copyJsonObject(patchedProject);
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Authorization failure');
+                expect(res.statusCode).to.equal(401);
+                expect(body.text).to.equal('deanj is not authorized to ' +
+                    'create objects for tschuy');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with only bad slugs", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(badProjectSlugs);
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('Field slugs of' +
+                    ' project should be array but was received as string');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with only bad name", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(badProjectName);
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('Field name of' +
+                    ' project should be string but was received as array');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with just bad owner", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(badProjectOwner);
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('Field owner of' +
+                    ' project should be string but was received as array');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with just invalid key", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(badProjectKey);
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('project does not' +
+                    ' have a key field');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with wrong-type uri", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.uri = badProject.uri;
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('Field uri of project' +
+                    ' should be string but was received as array');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with invalid uri", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.uri = 'string but not uri';
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('Field uri of project' +
+                    ' should be uri but was received as string');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with invalid slugs", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.slugs = ['@#SAfsda', '232sa$%'];
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('Field slugs of project' +
+                    ' should be slugs but was received as non-slug strings');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with wrong-type slugs", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.slugs = badProject.slugs;
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('Field slugs of' +
+                    ' project should be array but was received as string');
+
+                var expectedResults = copyJsonObject(originalProject);
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with wrong-type name", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.name = badProject.name;
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('Field name of' +
+                    ' project should be string but was received as array');
+
+                var expectedResults = originalProject;
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with wrong-type owner", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.owner = badProject.owner;
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('Field owner of' +
+                    ' project should be string but was received as array');
+
+                var expectedResults = originalProject;
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+        it("doesn't patch a project with invalid key", function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(originalProject);
+            delete requestOptions.form.object.id;
+            requestOptions.form.object.key = badProject.key;
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(body.error).to.equal('Bad object');
+                expect(res.statusCode).to.equal(400);
+                expect(body.text).to.equal('project does not' +
+                    ' have a key field');
+
+                var expectedResults = originalProject;
+
+                checkListEndpoint(done, expectedResults);
+            });
+        });
+
+    });
+
     describe('POST /projects', function() {
         // the project object to attempt to add
         var project = {
@@ -128,9 +556,8 @@ module.exports = function(expect, request, baseUrl) {
         // the base POST JSON
         var postArg = {
             auth: {
-                user: 'tschuy',
-                password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8M' +
-                          'PvSG8rwN4xyaF5W'
+                username: 'tschuy',
+                password: 'password'
             },
             object: project
         };
@@ -221,6 +648,30 @@ module.exports = function(expect, request, baseUrl) {
 
                     body = JSON.parse(body);
                     expect(body).to.deep.have.same.members(expectedResults);
+                    done();
+                });
+            });
+        });
+
+        it('fails to create a new project with bad authentication',
+           function(done) {
+            requestOptions.form = copyJsonObject(postArg);
+            requestOptions.form.object = copyJsonObject(newProject);
+            requestOptions.form.auth.password = 'not correct password';
+
+            request.post(requestOptions, function(err, res, body) {
+                expect(res.statusCode).to.equal(401);
+
+                expect(body.error).to.equal('Authentication failure');
+                expect(body.text).to.equal('Incorrect password.');
+
+                request.get(baseUrl + 'projects', function(err, res, body) {
+                    expect(err).to.be.a('null');
+                    expect(res.statusCode).to.equal(200);
+
+                    body = JSON.parse(body);
+                    // the projects/ list shouldn't have changed
+                    expect(body).to.deep.have.same.members(initialProjects);
                     done();
                 });
             });
