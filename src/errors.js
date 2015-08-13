@@ -166,14 +166,14 @@ module.exports = {
     },
 
     /*
-     * Error 10: Delete failure. Used when a user attempts to delete an
-     * object that is being referenced by another object.
-     *
-     * ex) Attempting to delete a project that has times associated with it
+     * Error 10: Request failure. Used when a user attempts to GET, POST,
+     * DELETE, etc. an object that is not allowed.
+     * 
+     * param objectType (string): The name of the supplied object type
     */
-    errorDeleteFailure: function(objectType1, objectType2) {
-        return createError(405, 'DELETE not allowed', objectType1  + ' has ' +
-            'associated ' + objectType2);
+    errorRequestFailure: function(objectType) {
+        return createError(405, 'Method not allowed', 'The method specified ' +
+            'is not allowed for the ' + objectType + ' identified');
     },
 
 };
