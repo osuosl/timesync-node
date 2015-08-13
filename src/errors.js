@@ -168,7 +168,7 @@ module.exports = {
     /*
      * Error 10: Request failure. Used when a user attempts to GET, POST,
      * DELETE, etc. an object that is not allowed.
-     * 
+     *
      * param objectType (string): The name of the supplied object type
     */
     errorRequestFailure: function(objectType) {
