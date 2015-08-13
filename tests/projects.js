@@ -399,10 +399,10 @@ module.exports = function(expect, request, baseUrl) {
     describe('DELETE /projects/:slug', function() {
         it('deletes the desired project if no times are associated with it',
                 function(done) {
-            request.del(baseUrl + 'projects/wf', function(err, res) {
+            request.del(baseUrl + 'projects/pgd', function(err, res) {
                 expect(res.statusCode).to.equal(200);
 
-                request.get(baseUrl + 'projects/wf', function(err, res, body) {
+                request.get(baseUrl + 'projects/pgd', function(err, res, body) {
                     var jsonBody = JSON.parse(body);
                     var expectedResult = {
                         status: 404,
@@ -417,14 +417,15 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('Failes if it recieves a project with times assiciated',
+        it('Failes if it recieves a project with times associated',
             function(done) {
-                request.del(baseUrl + 'projects/pgd',
+                request.del(baseUrl + 'projects/wf',
                     function(err, res, body) {
                         var expectedResult = {
                             status: 405,
-                            error: 'DELETE not allowed',
-                            text: 'Project has associated time'
+                            error: 'Method not allowed',
+                            text: 'The method specified is not allowed for' +
+                                'project identified'
                         };
 
                         expect(res.statusCode).to.equal(405);
@@ -480,7 +481,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('Fails if it receives an non-existant project',
+        it('Fails if it receives an non-existent project',
                 function(done) {
             request.del(baseUrl + 'projects/doesntexist',
                     function(err, res, body) {
