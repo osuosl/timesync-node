@@ -165,4 +165,15 @@ module.exports = {
             user + ' is not authorized to ' + activity);
     },
 
+    /*
+     * Error 10: Delete failure. Used when a user attempts to delete an
+     * object that is being referenced by another object.
+     *
+     * ex) Attempting to delete a project that has times associated with it
+    */
+    errorDeleteFailure: function(objectType1, objectType2) {
+        return createError(405, 'DELETE not allowed', objectType1 ' is ' +
+            'associated with ' + objectType2);
+    },
+    
 };
