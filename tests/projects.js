@@ -417,7 +417,7 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('Failes if it recieves a project with times associated',
+        it('Fails if it recieves a project with times associated',
             function(done) {
                 request.del(baseUrl + 'projects/wf',
                     function(err, res, body) {
