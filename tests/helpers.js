@@ -39,7 +39,7 @@ module.exports = function(expect, app) {
             done();
         });
 
-        it('returns field if field is of wrong type', function(done)  {
+        it('returns field if field is of wrong type', function(done) {
             var obj = {string: 'string', array: [], integer: 'string'};
             var fields = [
                 {name: 'string', type: 'string', required: true},
@@ -60,7 +60,7 @@ module.exports = function(expect, app) {
             done();
         });
 
-        it('returns nothing when field is missing if not req', function(done)  {
+        it('returns nothing when field is missing if not req', function(done) {
             var obj = {string: 'string', array: []};
             var fields = [
                 {name: 'string', type: 'string', required: true},
@@ -74,7 +74,7 @@ module.exports = function(expect, app) {
             done();
         });
 
-        it('returns nothing when fields are good', function(done)  {
+        it('returns nothing when fields are good', function(done) {
             var obj = {string: 'string', array: [], integer: 1};
             var fields = [
                 {name: 'string', type: 'string'},
