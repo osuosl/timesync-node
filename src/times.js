@@ -363,8 +363,8 @@ module.exports = function(app) {
                                 time.id = timeId;
                                 return res.send(JSON.stringify(time));
                             }).catch(function(error) {
-                                knex('times').del().where({id: time}).then(
-                                function() {
+                                knex('times').del().where({id: timeId})
+                                .then(function() {
                                     let err = errors.errorServerError(error);
                                     return res.status(err.status).send(err);
                                 });
