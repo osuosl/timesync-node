@@ -9,7 +9,7 @@ module.exports = {
   mocha: {
     client: 'sqlite3',
     connection: {
-      filename: './test.sqlite3'
+      filename: ':memory:'
     }
   }
 };

@@ -4,8 +4,14 @@ var bodyParser = require('body-parser');
 var knexfile = require('../knexfile');
 var db = process.env.DATABASE || 'development';
 
-//Load the database (default to development)
-var knex = require('knex')(knexfile[db]);
+if (!GLOBAL.knex) {
+    //Load the database (default to development)
+    var knex = require('knex')(knexfile[db]);
+} else {
+    // use the knex connection initiated from inside the testing
+    // environment
+    var knex = GLOBAL.knex;
+}
 
 var app = express();
 app.use(bodyParser.json());
