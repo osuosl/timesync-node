@@ -2,8 +2,9 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var knexfile = require('../knexfile');
-var db = process.env.DATABASE || 'development';
+var db = process.env.DATABASE || /* istanbul ignore next */ 'development';
 
+/* istanbul ignore if */
 if (!GLOBAL.knex) {
     //Load the database (default to development)
     var knex = require('knex')(knexfile[db]);
@@ -28,10 +29,12 @@ var localPassport = require('./auth/local.js')(knex);
 app.use(passport.initialize());
 app.use(passport.session());
 
+/* istanbul ignore next */
 passport.serializeUser(function(user, done) {
     done(null, user);
 });
 
+/* istanbul ignore next */
 passport.deserializeUser(function(user, done) {
     done(null, user);
 });
@@ -45,6 +48,7 @@ require('./times')(app);
 
 module.exports = app;
 
-app.listen(process.env.PORT || 8000, function() {
-    console.log('App now listening on %s', process.env.PORT || 8000);
+app.listen(process.env.PORT || /* istanbul ignore next */ 8000, function() {
+    console.log('App now listening on %s',
+                process.env.PORT || /* istanbul ignore next */ 8000);
 });

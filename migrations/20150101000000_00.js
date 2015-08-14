@@ -35,6 +35,7 @@ exports.up = function(knex, Promise) {
     });
 };
 
+/* istanbul ignore next */
 exports.down = function(knex, Promise) {
     return knex.schema.dropTable('projects');
 };
