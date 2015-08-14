@@ -321,11 +321,10 @@ module.exports = function(app) {
             }
             //jscs:enable
 
-            helpers.checkUser(user.username, time.user)
-            .then(function(userId) {
+            helpers.checkUser(user.username, time.user).then(function(userId) {
                 helpers.checkProject(time.project).then(function(projectId) {
-                    helpers.checkActivities(time.activities).then(
-                    function(activityIds) {
+                    helpers.checkActivities(time.activities)
+                    .then(function(activityIds) {
 
                         let createdAt = new Date().toISOString()
                             .substring(0, 10);
