@@ -321,6 +321,7 @@ module.exports = function(app) {
             }
             //jscs:enable
 
+            //Finish checks for user, project, and activity
             helpers.checkUser(user.username, time.user).then(function(userId) {
                 helpers.checkProject(time.project).then(function(projectId) {
                     helpers.checkActivities(time.activities)
