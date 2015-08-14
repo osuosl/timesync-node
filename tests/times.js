@@ -11,7 +11,7 @@ module.exports = function(expect, request, baseUrl) {
                         project: ['wf'],
                         activities: ['docs', 'dev'],
                         notes: '',
-                        //jscs:disable
+                            //jscs:disable
                         issue_uri: 'https://github.com/osu-cass' +
                             '/whats-fresh-api/issues/56',
                         date_worked: '2015-04-19',
@@ -40,7 +40,7 @@ module.exports = function(expect, request, baseUrl) {
                     project: ['wf'],
                     activities: ['docs', 'dev'],
                     notes: '',
-                    //jscs:disable
+                        //jscs:disable
                     issue_uri: 'https://github.com/osu-cass/whats-fresh-api' +
                         '/issues/56',
                     date_worked: '2015-04-19',
@@ -99,9 +99,8 @@ module.exports = function(expect, request, baseUrl) {
                 body: {
                     auth: {
                         type: 'password',
-                        user: 'tschuy',
-                        password: '$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuI' +
-                            'R8MPvSG8rwN4xyaF5W'
+                        username: 'tschuy',
+                        password: 'password'
                     },
                     object: time
                 }
@@ -139,7 +138,7 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times', time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
             request.post(postArg, function(err, res, body) {
 
@@ -149,6 +148,7 @@ module.exports = function(expect, request, baseUrl) {
                 time.id = body.id;
                 expect(body).to.deep.equal(time);
 
+                createdAt = new Date().toISOString().substring(0, 10);
                 request.get(baseUrl + 'times', function(err, res, body) {
                     var expectedResults = initialData.concat([
                         {
@@ -160,8 +160,7 @@ module.exports = function(expect, request, baseUrl) {
                             //jscs:disable
                             issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                             date_worked: '2015-07-30',
-                            created_at: new Date().toISOString()
-                                            .substring(0, 10),
+                            created_at: createdAt,
                             updated_at: null,
                             //jscs:enable
                             id: 2
@@ -169,8 +168,80 @@ module.exports = function(expect, request, baseUrl) {
                     ]);
                     expect(err).to.equal(null);
                     expect(res.statusCode).to.equal(200);
-                    expect(JSON.parse(body)).to.deep.include
+                    expect(JSON.parse(body)).to.deep.have.same
                         .members(expectedResults);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a bad password', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'pgd',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+            postArg.body.auth.password = 'not the real password';
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Authentication failure',
+                    status: 401,
+                    text: 'Incorrect password.'
+                };
+
+                expect(res.statusCode).to.equal(401);
+                expect(body).to.deep.equal(expectedResult);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.deep.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a missing login', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'pgd',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+            delete postArg.body.auth;
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Authentication failure',
+                    status: 401,
+                    text: 'Missing credentials'
+                };
+
+                expect(res.statusCode).to.equal(401);
+                expect(body).to.deep.equal(expectedResult);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.deep.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
                     done();
                 });
             });
@@ -189,9 +260,10 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times', time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
             request.post(postArg, function(err, res, body) {
+
                 var expectedResult = {
                     error: 'Bad object',
                     status: 400,
@@ -199,15 +271,13 @@ module.exports = function(expect, request, baseUrl) {
                         'but was sent as negative number'
                 };
 
-                expect(body).to.eql(expectedResult);
+                expect(body).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
-
                     expect(err).to.equal(null);
                     expect(res.statusCode).to.equal(200);
-                    expect(JSON.parse(body)).to.deep.have.same
-                        .members(initialData);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
                     done();
                 });
             });
@@ -226,14 +296,49 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times', time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
             request.post(postArg, function(err, res, body) {
+
                 var expectedResult = {
                     error: 'Bad object',
                     status: 400,
                     text: 'Field duration of time should be positive number ' +
                         'but was sent as string'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a missing duration', function(done) {
+            var time = {
+                user: 'tschuy',
+                project: 'pgd',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'The time is missing a duration'
                 };
 
                 expect(body).to.deep.equal(expectedResult);
@@ -261,18 +366,89 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times', time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
             request.post(postArg, function(err, res, body) {
+
                 var expectedResult = {
                     error: 'Invalid foreign key',
                     status: 409,
                     text: 'The time does not contain a valid activities ' +
-                            'reference.'
+                        'reference.'
                 };
 
                 expect(body).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(409);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a non-string activity', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'pgd',
+                activities: ['dev', 'docs', -14],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'Field activities of time should be slugs but was ' +
+                        'sent as array containing at least 1 number'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with missing activities', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'pgd',
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'The time is missing a activities'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
                     expect(err).to.equal(null);
@@ -296,9 +472,10 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times', time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
             request.post(postArg, function(err, res, body) {
+
                 var expectedResult = {
                     error: 'Invalid foreign key',
                     status: 409,
@@ -307,6 +484,76 @@ module.exports = function(expect, request, baseUrl) {
 
                 expect(body).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(409);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a non-string project', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: ['Who needs', 'proper types?'],
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'Field project of time should be slug but was sent ' +
+                        'as array'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a missing project', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'The time is missing a project'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
                     expect(err).to.equal(null);
@@ -330,9 +577,10 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times', time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
             request.post(postArg, function(err, res, body) {
+
                 var expectedResult = {
                     error: 'Bad object',
                     status: 400,
@@ -352,7 +600,92 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        it('fails with a bad owner', function(done) {
+        it('fails with a non-string issue URI', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'pgd',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 3.14159265,
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'Field issue_uri of time should be URI but ' +
+                          'was sent as number'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('works with a missing issue URI', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'pgd',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                expect(err).to.equal(null);
+                expect(res.statusCode).to.equal(200);
+
+                time.id = body.id;
+                expect(body).to.deep.equal(time);
+
+                createdAt = new Date().toISOString().substring(0, 10);
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    var expectedResults = initialData.concat([
+                        {
+                            duration: 20,
+                            user: 'tschuy',
+                            project: ['pgd'],
+                            activities: ['dev', 'docs'],
+                            notes: '',
+                            //jscs:disable
+                            issue_uri: null,
+                            date_worked: '2015-07-30',
+                            created_at: createdAt,
+                            updated_at: null,
+                            //jscs:enable
+                            id: 2
+                        }
+                    ]);
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.have.same
+                        .members(expectedResults);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a bad user', function(done) {
             var time = {
                 duration: 20,
                 user: 'jenkinsl',
@@ -365,9 +698,10 @@ module.exports = function(expect, request, baseUrl) {
                 //jscs:enable
             };
 
-            var postArg = getPostObject(baseUrl + 'times', time);
+            var postArg = getPostObject(baseUrl + 'times/', time);
 
             request.post(postArg, function(err, res, body) {
+
                 var expectedResult = {
                     error: 'Authorization failure',
                     status: 401,
@@ -377,6 +711,182 @@ module.exports = function(expect, request, baseUrl) {
 
                 expect(body).to.deep.equal(expectedResult);
                 expect(res.statusCode).to.equal(401);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a non-string user', function(done) {
+            var time = {
+                duration: 20,
+                user: {username: 'tschuy'},
+                project: 'pgd',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'Field user of time should be username but ' +
+                          'was sent as object'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a missing user', function(done) {
+            var time = {
+                duration: 20,
+                project: 'pgd',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'The time is missing a user'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a bad date worked', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'pgd',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: 'baaaaaaaad'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'Field date_worked of time should be ISO-8601 date ' +
+                        'but was sent as baaaaaaaad'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a non-string date worked', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'pgd',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: 1234
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'Field date_worked of time should be ISO-8601 date ' +
+                        'but was sent as number'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a missing date worked', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'pgd',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'The time is missing a date_worked'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
 
                 request.get(baseUrl + 'times', function(err, res, body) {
                     expect(err).to.equal(null);
