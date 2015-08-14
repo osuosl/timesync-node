@@ -292,13 +292,13 @@ module.exports = function(expect, request, baseUrl) {
                 expect(res.statusCode).to.equal(400);
 
                 expect([
-                'Field uri of project should be string but was received as ' +
+                'Field uri of project should be string but was sent as ' +
                     'array',
-                'Field name of project should be string but was received as ' +
+                'Field name of project should be string but was sent as ' +
                     'array',
-                'Field owner of project should be string but was received as ' +
+                'Field owner of project should be string but was sent as ' +
                     'array',
-                'Field slugs of project should be array but was received as ' +
+                'Field slugs of project should be array but was sent as ' +
                     'string',
                 'project does not have a key field'
                 ]).to.include.members([body.text]);
@@ -317,7 +317,7 @@ module.exports = function(expect, request, baseUrl) {
                 expect(body.error).to.equal('Bad object');
                 expect(res.statusCode).to.equal(400);
                 expect(body.text).to.equal('Field uri of project' +
-                    ' should be string but was received as array');
+                    ' should be string but was sent as array');
 
                 var expectedResults = copyJsonObject(originalProject);
 
@@ -351,7 +351,7 @@ module.exports = function(expect, request, baseUrl) {
                 expect(body.error).to.equal('Bad object');
                 expect(res.statusCode).to.equal(400);
                 expect(body.text).to.equal('Field slugs of' +
-                    ' project should be array but was received as string');
+                    ' project should be array but was sent as string');
 
                 var expectedResults = copyJsonObject(originalProject);
 
@@ -367,7 +367,7 @@ module.exports = function(expect, request, baseUrl) {
                 expect(body.error).to.equal('Bad object');
                 expect(res.statusCode).to.equal(400);
                 expect(body.text).to.equal('Field name of' +
-                    ' project should be string but was received as array');
+                    ' project should be string but was sent as array');
 
                 var expectedResults = copyJsonObject(originalProject);
 
@@ -383,7 +383,7 @@ module.exports = function(expect, request, baseUrl) {
                 expect(body.error).to.equal('Bad object');
                 expect(res.statusCode).to.equal(400);
                 expect(body.text).to.equal('Field owner of' +
-                    ' project should be string but was received as array');
+                    ' project should be string but was sent as array');
 
                 var expectedResults = copyJsonObject(originalProject);
 
@@ -417,7 +417,7 @@ module.exports = function(expect, request, baseUrl) {
                 expect(body.error).to.equal('Bad object');
                 expect(res.statusCode).to.equal(400);
                 expect(body.text).to.equal('Field uri of project' +
-                    ' should be string but was received as array');
+                    ' should be string but was sent as array');
 
                 var expectedResults = copyJsonObject(originalProject);
 
@@ -435,7 +435,7 @@ module.exports = function(expect, request, baseUrl) {
                 expect(body.error).to.equal('Bad object');
                 expect(res.statusCode).to.equal(400);
                 expect(body.text).to.equal('Field uri of project' +
-                    ' should be uri but was received as string');
+                    ' should be uri but was sent as string');
 
                 var expectedResults = copyJsonObject(originalProject);
 
@@ -453,7 +453,7 @@ module.exports = function(expect, request, baseUrl) {
                 expect(body.error).to.equal('Bad object');
                 expect(res.statusCode).to.equal(400);
                 expect(body.text).to.equal('Field slugs of project' +
-                    ' should be slugs but was received as non-slug strings');
+                    ' should be slugs but was sent as non-slug strings');
 
                 var expectedResults = copyJsonObject(originalProject);
 
@@ -471,7 +471,7 @@ module.exports = function(expect, request, baseUrl) {
                 expect(body.error).to.equal('Bad object');
                 expect(res.statusCode).to.equal(400);
                 expect(body.text).to.equal('Field slugs of' +
-                    ' project should be array but was received as string');
+                    ' project should be array but was sent as string');
 
                 var expectedResults = copyJsonObject(originalProject);
 
@@ -489,7 +489,7 @@ module.exports = function(expect, request, baseUrl) {
                 expect(body.error).to.equal('Bad object');
                 expect(res.statusCode).to.equal(400);
                 expect(body.text).to.equal('Field name of' +
-                    ' project should be string but was received as array');
+                    ' project should be string but was sent as array');
 
                 var expectedResults = originalProject;
 
@@ -507,7 +507,7 @@ module.exports = function(expect, request, baseUrl) {
                 expect(body.error).to.equal('Bad object');
                 expect(res.statusCode).to.equal(400);
                 expect(body.text).to.equal('Field owner of' +
-                    ' project should be string but was received as array');
+                    ' project should be string but was sent as array');
 
                 var expectedResults = originalProject;
 
