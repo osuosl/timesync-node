@@ -5,13 +5,14 @@ module.exports = function(app) {
     app.get(app.get('version') + '/activities', function(req, res) {
 
         knex('activities').then(function(activities) {
+            /* istanbul ignore if */
             if (activities.length === 0) {
                 return res.send([]);
             }
 
             return res.send(activities);
 
-        }).catch(function(error) {
+        }).catch(/* istanbul ignore next */ function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
@@ -34,7 +35,7 @@ module.exports = function(app) {
 
             return res.send(activity[0]);
 
-        }).catch(function(error) {
+        }).catch(/* istanbul ignore next */ function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });

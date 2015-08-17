@@ -9,6 +9,7 @@ module.exports = function(app) {
 
     app.get(app.get('version') + '/projects', function(req, res) {
         knex('projects').then(function(projects) {
+            /* istanbul ignore if */
             if (projects.length === 0) {
                 return res.send([]);
             }
@@ -33,11 +34,12 @@ module.exports = function(app) {
 
                 // processing finished. Return if slugs are also finished
                 usersDone = true;
+                /* istanbul ignore if */
                 if (slugsDone) {
                     return res.send(projects);
                 }
 
-            }).catch(function(error) {
+            }).catch(/* istanbul ignore next */ function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
@@ -61,16 +63,17 @@ module.exports = function(app) {
 
                 // processing finished. Return if users are also finished
                 slugsDone = true;
+                /* istanbul ignore else */
                 if (usersDone) {
                     return res.send(projects);
                 }
 
-            }).catch(function(error) {
+            }).catch(/* istanbul ignore next */ function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
 
-        }).catch(function(error) {
+        }).catch(/* istanbul ignore next */ function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
@@ -145,7 +148,7 @@ module.exports = function(app) {
                 return res.status(err.status).send(err);
             }
 
-        }).catch(function(error) {
+        }).catch(/* istanbul ignore next */ function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
@@ -426,17 +429,18 @@ module.exports = function(app) {
 
                                 project.owner = user.username;
                                 res.send(JSON.stringify(project));
-                            }).catch(function(error) {
+                            })
+                            .catch(/* istanbul ignore next */ function(error) {
                                 var err = errors.errorServerError(error);
                                 return res.status(err.status).send(err);
                             });
                         });
                     });
-                }).catch(function(error) {
+                }).catch(/* istanbul ignore next */ function(error) {
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
-            }).catch(function(error) {
+            }).catch(/* istanbul ignore next */ function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });

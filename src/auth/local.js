@@ -26,13 +26,11 @@ module.exports = function(knex) {
                         }
                     });
                 }
-            }).catch(
-              function(err) {
-                  done(err);
-              }
 
-            );
+            }).catch(/* istanbul ignore next */ function(err) {
+                done(err);
+            });
         }
 
-  );
+    );
 };

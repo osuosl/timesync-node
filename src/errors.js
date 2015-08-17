@@ -36,7 +36,8 @@ module.exports = {
      *
      * param serverError (string): The error message (e.g. a SQL error).
      */
-    errorServerError: function(serverError) {
+
+    errorServerError: /* istanbul ignore next */ function(serverError) {
         if (process.env.DEBUG) {
             return createError(500, 'Server error', serverError);
         } else {

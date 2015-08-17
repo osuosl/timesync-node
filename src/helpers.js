@@ -107,7 +107,7 @@ module.exports = function(app) {
                     } else {
                         resolve(project[0].project);
                     }
-                }).catch(function(err) {
+                }).catch(/* istanbul ignore next */ function(err) {
                     reject({type: 'database', value: err});
                 });
             });
@@ -155,7 +155,7 @@ module.exports = function(app) {
                             reject({type: 'nonexistent', value: unmatched});
                         }
                     }
-                }).catch(function(err) {
+                }).catch(/* istanbul ignore next */ function(err) {
                     reject({type: 'database', value: err});
                 });
             });

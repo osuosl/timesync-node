@@ -6,6 +6,7 @@ module.exports = function(app) {
 
         knex('times').then(function(times) {
 
+            /* istanbul ignore if */
             if (times.length === 0) {
                 return res.send([]);
             }
@@ -30,16 +31,18 @@ module.exports = function(app) {
 
                 // processing finished. Return if others are also finished
                 usersDone = true;
-                if (activitiesDone && projectsDone) {
+                /* istanbul ignore if */
+                if (activitiesDone && /* istanbul ignore next */ projectsDone) {
                     return res.send(times);
                 }
-            }).catch(function(error) {
+            }).catch(/* istanbul ignore next */ function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
 
             knex('timesactivities').then(function(timesActivities) {
                 knex('activities').then(function(activities) {
+                    /* istanbul ignore if */
                     if (activities.length === 0) {
                         return res.send([]);
                     }
@@ -71,6 +74,7 @@ module.exports = function(app) {
                     }
 
                     for (i = 0, len = times.length; i < len; i++) {
+                        /* istanbul ignore else */
                         if (times[i].activities === undefined) {
                             times[i].activities = [];
                         }
@@ -82,19 +86,21 @@ module.exports = function(app) {
 
                     // processing finished. Return if others are also finished
                     activitiesDone = true;
+                    /* istanbul ignore if */
                     if (usersDone && projectsDone) {
                         return res.send(times);
                     }
-                }).catch(function(error) {
+                }).catch(/* istanbul ignore next */ function(error) {
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
-            }).catch(function(error) {
+            }).catch(/* istanbul ignore next */ function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
 
             knex('projects').then(function(projects) {
+                /* istanbul ignore if */
                 if (projects.length === 0) {
                     return res.send([]);
                 }
@@ -123,20 +129,20 @@ module.exports = function(app) {
 
                     // processing finished. Return if others are also finished
                     projectsDone = true;
+                    /* istanbul ignore if */
+                    /* istanbul ignore else */
                     if (activitiesDone && usersDone) {
                         res.send(times);
                     }
-                }).catch(function(error) {
+                }).catch(/* istanbul ignore next */ function(error) {
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
-
-            }).catch(function(error) {
+            }).catch(/* istanbul ignore next */ function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
-
-        }).catch(function(error) {
+        }).catch(/* istanbul ignore next */ function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
@@ -180,18 +186,15 @@ module.exports = function(app) {
                             }
 
                             return res.send(time);
-
-                        }).catch(function(error) {
+                        }).catch(/* istanbul ignore next */ function(error) {
                             var err = errors.errorServerError(error);
                             return res.status(err.status).send(err);
                         });
-
-                    }).catch(function(error) {
+                    }).catch(/* istanbul ignore next */ function(error) {
                         var err = errors.errorServerError(error);
                         return res.status(err.status).send(err);
                     });
-
-                }).catch(function(error) {
+                }).catch(/* istanbul ignore next */ function(error) {
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
@@ -200,8 +203,7 @@ module.exports = function(app) {
                 var err = errors.errorObjectNotFound('time');
                 return res.status(err.status).send(err);
             }
-
-        }).catch(function(error) {
+        }).catch(/* istanbul ignore next */ function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
