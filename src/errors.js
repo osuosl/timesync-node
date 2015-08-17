@@ -169,6 +169,9 @@ module.exports = {
      * Error 10: Request failure. Used when a user attempts to GET, POST,
      * DELETE, etc. an object that is not allowed.
      *
+     * Note. Before calling this error in your code, set the 'Allow' header
+     *       with - res.setHeader('Allow: ', 'methods allowed')
+     *
      * param objectType (string): The name of the supplied object type
     */
     errorRequestFailure: function(objectType) {
