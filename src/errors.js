@@ -165,4 +165,18 @@ module.exports = {
             user + ' is not authorized to ' + activity);
     },
 
+    /*
+     * Error 10: Request failure. Used when a user attempts to GET, POST,
+     * DELETE, etc. an object that is not allowed.
+     *
+     * Note. Before calling this error in your code, set the 'Allow' header
+     *       with - res.setHeader('Allow: ', 'methods allowed')
+     *
+     * param objectType (string): The name of the supplied object type
+    */
+    errorRequestFailure: function(objectType) {
+        return createError(405, 'Method not allowed', 'The method specified ' +
+            'is not allowed for the ' + objectType + ' identified');
+    },
+
 };
