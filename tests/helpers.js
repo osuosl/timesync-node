@@ -17,6 +17,78 @@ module.exports = function(expect, app) {
         });
     });
 
+    describe('validateFields', function() {
+        it('returns field when field is missing if required', function(done) {
+            var obj = {string: 'string', array: []};
+            var fields = [
+                {name: 'string', type: 'string', required: true},
+                {name: 'array', type: 'array', required: true},
+                {name: 'integer', type: 'number', required: true},
+            ];
+
+            var validation = helpers.validateFields(obj, fields);
+
+            var expectedReturn = {
+                name: 'integer',
+                type: 'number',
+                required: true,
+                actualType: 'undefined'
+            };
+
+            expect(validation).to.deep.equal(expectedReturn);
+            done();
+        });
+
+        it('returns field if field is of wrong type', function(done)  {
+            var obj = {string: 'string', array: [], integer: 'string'};
+            var fields = [
+                {name: 'string', type: 'string', required: true},
+                {name: 'array', type: 'array', required: true},
+                {name: 'integer', type: 'number', required: true},
+            ];
+
+            var validation = helpers.validateFields(obj, fields);
+
+            var expectedReturn = {
+                name: 'integer',
+                type: 'number',
+                required: true,
+                actualType: 'string'
+            };
+
+            expect(validation).to.deep.equal(expectedReturn);
+            done();
+        });
+
+        it('returns nothing when field is missing if not req', function(done)  {
+            var obj = {string: 'string', array: []};
+            var fields = [
+                {name: 'string', type: 'string', required: true},
+                {name: 'array', type: 'array', required: true},
+                {name: 'integer', type: 'number', required: false},
+            ];
+
+            var validation = helpers.validateFields(obj, fields);
+
+            expect(validation).to.be.a('null');
+            done();
+        });
+
+        it('returns nothing when fields are good', function(done)  {
+            var obj = {string: 'string', array: [], integer: 1};
+            var fields = [
+                {name: 'string', type: 'string'},
+                {name: 'array', type: 'array'},
+                {name: 'integer', type: 'number'},
+            ];
+
+            var validation = helpers.validateFields(obj, fields, false);
+
+            expect(validation).to.be.a('null');
+            done();
+        });
+    });
+
     describe('validateSlug', function() {
         it('returns true for proper slug', function(done) {
             expect(helpers.validateSlug('kitten')).to.equal(true);
@@ -130,6 +202,74 @@ module.exports = function(expect, app) {
             helpers.checkProject('#!^kittens').then().catch(function(err) {
                 expect(err).to.deep.equal(
                     {type: 'invalid', value: '#!^kittens'});
+                done();
+            });
+        });
+    });
+
+    describe('getType', function() {
+
+        it('returns "array" for an array', function(done) {
+            expect(helpers.getType([])).to.equal('array');
+            done();
+        });
+
+        it('returns "string" for a string', function(done) {
+            expect(helpers.getType('')).to.equal('string');
+            done();
+        });
+
+        it('returns "undefined" for undefined', function(done) {
+            expect(helpers.getType(undefined)).to.equal('undefined');
+            done();
+        });
+
+        it('returns "null" for null', function(done) {
+            expect(helpers.getType(null)).to.equal('null');
+            done();
+        });
+
+        it('returns "number" for int', function(done) {
+            expect(helpers.getType(12)).to.equal('number');
+            done();
+        });
+
+        it('returns "number" for float', function(done) {
+            expect(helpers.getType(12.2)).to.equal('number');
+            done();
+        });
+    });
+
+    describe('checkActivities', function() {
+        it('returns a list of activities IDs for proper slugs', function(done) {
+            helpers.checkActivities(['docs', 'dev']).then(function(activities) {
+                expect(activities).to.deep.have.same.members([1, 2]);
+                done();
+            });
+        });
+
+        it('throws when passed undefined', function(done) {
+            helpers.checkActivities(undefined).then().catch(function(err) {
+                expect(err).to.deep.equal({type: 'invalid', value: undefined});
+                done();
+            });
+        });
+
+        it('throws when passed a list containing bad slugs', function(done) {
+            helpers.checkActivities(['docs', 'dev', 'cats', 'dogs']).then()
+            .catch(function(err) {
+                expect(err).to.deep.equal({
+                    type: 'nonexistent',
+                    value: ['cats', 'dogs']
+                });
+                done();
+            });
+        });
+
+        it('throws when passed a null slug', function(done) {
+            helpers.checkActivities(null).then()
+            .catch(function(err) {
+                expect(err).to.deep.equal({type: 'invalid', value: null});
                 done();
             });
         });

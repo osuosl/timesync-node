@@ -30,6 +30,13 @@ $ npm test
 $ npm run linter
 ```
 
+To run a subset of the tests:
+
+```
+$ npm test -- -g <substring of test description>
+$ npm test -- -g POST   # Runs all tests with POST in the `describe` string
+```
+
 To make a quick request on the dev instance, first run the database migrations
 and load the fixtures:
 
