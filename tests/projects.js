@@ -421,15 +421,16 @@ module.exports = function(expect, request, baseUrl) {
             function(done) {
                 request.del(baseUrl + 'projects/wf',
                     function(err, res, body) {
+                        var jsonBody = JSON.parse(body);
                         var expectedResult = {
                             status: 405,
                             error: 'Method not allowed',
-                            text: 'The method specified is not allowed for' +
-                                'project identified'
+                            text: 'The method specified is not allowed for ' +
+                                'the project identified'
                         };
 
                         expect(res.statusCode).to.equal(405);
-                        expect(body).to.deep.equal(expectedResult);
+                        expect(jsonBody).to.deep.equal(expectedResult);
                         done();
             });
         });
