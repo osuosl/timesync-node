@@ -6,7 +6,6 @@ module.exports = function(expect, request, baseUrl) {
             request.get(baseUrl + 'times', function(err, res, body) {
                 var expectedResults = [
                     {
-                        //jscs:disable
                         duration: 12,
                         user: 'tschuy',
                         project: ['wf'],
@@ -18,7 +17,6 @@ module.exports = function(expect, request, baseUrl) {
                         created_at: null,
                         updated_at: null,
                         id: 1
-                        //jscs:enable
                     }
                 ];
 
@@ -35,7 +33,6 @@ module.exports = function(expect, request, baseUrl) {
             request.get(baseUrl + 'times/1', function(err, res, body) {
                 var jsonBody = JSON.parse(body);
                 var expectedResult = {
-                    //jscs:disable
                     duration: 12,
                     user: 'tschuy',
                     project: ['wf'],
@@ -47,7 +44,6 @@ module.exports = function(expect, request, baseUrl) {
                     created_at: null,
                     updated_at: null,
                     id: 1
-                    //jscs:enable
                 };
 
                 expect(err).to.equal(null);
