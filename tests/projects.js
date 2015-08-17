@@ -432,8 +432,8 @@ module.exports = function(expect, request, baseUrl) {
                         expect(res.statusCode).to.equal(405);
                         expect(jsonBody).to.deep.equal(expectedResult);
                         done();
+                    });
             });
-        });
 
         it('Fails if it receives an invalid project', function(done) {
             request.del(baseUrl + 'projects/Not.a-project!',

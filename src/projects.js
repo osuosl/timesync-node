@@ -237,22 +237,10 @@ module.exports = function(app) {
         }
 
         // delete matching project
-/**
-        var projectSubquery = knex('projectslugs').select('project')
-        .where('name', req.params.slug);
-        var projectId = knex('projects').select('id').where('id', '=', projectSubquery);
-        if(knex('times').where('project', '=', projectId).length != 0) {
-            var err = errors.errorRequestFailure('project', projectSubquery);
-            return res.status(err.status).send(err);
-
-        } else {
-*/
-
-
-
         knex('times').where('project', '=', function() {
             this.table('projects').select('id').where('id', '=', function() {
-            this.table('projectslugs').select('project').where('name', req.params.slug);
+                this.table('projectslugs').select('project').where('name',
+                        req.params.slug);
             });
         }).then(function(times) {
 
@@ -261,18 +249,22 @@ module.exports = function(app) {
                 let err = errors.errorRequestFailure('project');
                 return res.status(err.status).send(err);
             } else {
-                knex('projects').select('id').where('id', '=', function() {
-                    this.table('projectslugs').select('project').where('name', req.params.slug)
+                knex('projects').select('id').where('id', '=',
+                        function() {
+                    this.table('projectslugs').select('project').where('name',
+                            req.params.slug);
                 }).del().then(function(numObj) {
 
-                    /* When deleting something from the table, the number of objects
-                       deleted is returned. So to confirm that deletion was successful,
-                       make sure that the number returned is at least one. */
+                    /* When deleting something from the table, the number of
+                       objects deleted is returned. So to confirm that deletion
+                       was successful, make sure that the number returned is at
+                       least one. */
                     if (numObj >= 1) {
                         return res.send();
                     }
 
-                    var err = errors.errorObjectNotFound('slug', req.params.slug);
+                    var err = errors.errorObjectNotFound('slug',
+                            req.params.slug);
                     return res.status(err.status).send(err);
                 }).catch(function(error) {
                     var err = errors.errorServerError(error);
