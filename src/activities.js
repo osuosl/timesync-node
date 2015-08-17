@@ -53,12 +53,12 @@ module.exports = function(app) {
         .where('slug', req.params.slug);
 
         // Check timesactivities to see if an activity (id) is being referenced
-        knex('timesactivities').where('id', '=', activityId)
+        knex('timesactivities').select('id').where('id', '=', activityId)
         .then(function(activity) {
             /* If the length of the activity array is greater than 0, then
                the activity id is being referenced by timesactivities */
             if (activity.length > 0) {
-                res.setHeader('Allow: ', 'GET, POST');
+                res.set('Allow', 'GET, POST');
                 let err = errors.errorRequestFailure('activity');
                 return res.status(err.status).send(err);
             }

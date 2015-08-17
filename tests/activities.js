@@ -204,6 +204,7 @@ module.exports = function(expect, request, baseUrl) {
                           'activity identified'
                 };
 
+                expect(res.headers.allow).to.equal('GET, POST');
                 expect(jsonBody).to.deep.equal(expectedError);
                 expect(res.statusCode).to.equal(405);
 
