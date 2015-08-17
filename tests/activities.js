@@ -198,20 +198,21 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        // Test and implementation currently blocked until we decide how we
-        // want to handle this (soft delete vs. refusal to delete)
-        /*it('fails if the activity is referenced by timesactivities',
+        it('fails if the activity is referenced by timesactivities',
         function(done) {
             request.del(baseUrl + 'activities/docs', function(err, res, body) {
-                var jsonBody = JSON.parse(body);*/
-                /*var expectedError = {
-                    // Insert expected error text here
+                var jsonBody = JSON.parse(body);
+                var expectedError = {
+                    status: 405,
+                    error: 'Method not allowed',
+                    text: 'The method specified is not allowed for the ' +
+                          'activity identified'
                 };
 
                 expect(jsonBody).to.deep.equal(expectedError);
-                expect(res.statusCode).to.be.(/*insert error code here);*/
+                expect(res.statusCode).to.equal(405);
 
-                /*request.get(baseUrl + 'activities', function(err, res, body) {
+                request.get(baseUrl + 'activities', function(err, res, body) {
                     var jsBody = JSON.parse(body);
                     var expectedResult = [
                         {
@@ -238,6 +239,6 @@ module.exports = function(expect, request, baseUrl) {
                     done();
                 });
             });
-        });*/
+        });
     });
 };
