@@ -35,7 +35,7 @@ module.exports = function(app) {
 
                 // processing finished. Return if others are also finished
                 usersDone = true;
-                if (activitiesDone && /* istanbul ignore next */ projectsDone) {
+                if (activitiesDone && projectsDone) {
                     return res.send(times);
                 }
             }).catch(function(error) {
@@ -254,7 +254,7 @@ module.exports = function(app) {
 
             if (helpers.getType(time.activities) !== 'array') {
                 let err = errors.errorBadObjectInvalidField('time',
-                    'activities', 'slugs', helpers.getType(time.project));
+                    'activities', 'slugs', helpers.getType(time.activities));
                 return res.status(err.status).send(err);
             }
 
@@ -280,8 +280,8 @@ module.exports = function(app) {
             }
 
             //Test issue URI
-            //jscs:disable
-            if (time.issue_uri && helpers.getType(time.issue_uri) !== 'string') {
+            if (time.issue_uri &&
+            helpers.getType(time.issue_uri) !== 'string') {
                 let err = errors.errorBadObjectInvalidField('time', 'issue_uri',
                     'URI', helpers.getType(time.issue_uri));
                 return res.status(err.status).send(err);
@@ -292,10 +292,8 @@ module.exports = function(app) {
                     'URI', 'invalid URI ' + time.issue_uri);
                 return res.status(err.status).send(err);
             }
-            //jscs:enable
 
             //Test date worked
-            //jscs:disable
             if (!time.date_worked) {
                 let err = errors.errorBadObjectMissingField('time',
                                                             'date_worked');
@@ -303,17 +301,17 @@ module.exports = function(app) {
             }
 
             if (helpers.getType(time.date_worked) !== 'string') {
-                let err = errors.errorBadObjectInvalidField('time', 'date_worked',
-                    'ISO-8601 date', helpers.getType(time.date_worked));
+                let err = errors.errorBadObjectInvalidField('time',
+                    'date_worked', 'ISO-8601 date',
+                    helpers.getType(time.date_worked));
                 return res.status(err.status).send(err);
             }
 
             if (!Date.parse(time.date_worked)) {
-                let err = errors.errorBadObjectInvalidField('time', 'date_worked',
-                    'ISO-8601 date', time.date_worked);
+                let err = errors.errorBadObjectInvalidField('time',
+                    'date_worked', 'ISO-8601 date', time.date_worked);
                 return res.status(err.status).send(err);
             }
-            //jscs:enable
 
             //Finish checks for user, project, and activity
             helpers.checkUser(user.username, time.user).then(function(userId) {
@@ -328,11 +326,9 @@ module.exports = function(app) {
                             user: userId,
                             project: projectId,
                             notes: time.notes,
-                            //jscs:disable
                             issue_uri: time.issue_uri,
                             date_worked: time.date_worked,
                             created_at: createdAt
-                            //jscs:enable
                         };
 
                         knex('times').insert(insertion).then(function(timeId) {
