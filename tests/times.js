@@ -125,7 +125,7 @@ module.exports = function(expect, request, baseUrl) {
             }
         ];
 
-        it('creates a new time', function(done) {
+        it('creates a new time with activities', function(done) {
             var time = {
                 duration: 20,
                 user: 'tschuy',
@@ -411,6 +411,42 @@ module.exports = function(expect, request, baseUrl) {
                     status: 400,
                     text: 'Field activities of time should be slugs but was ' +
                         'sent as array containing at least 1 number'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a non-array activities', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'pgd',
+                activities: 1.414141414,
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'Field activities of time should be slugs but was ' +
+                        'sent as number'
                 };
 
                 expect(body).to.deep.equal(expectedResult);

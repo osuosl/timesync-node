@@ -35,7 +35,7 @@ module.exports = function(app) {
 
                 // processing finished. Return if others are also finished
                 usersDone = true;
-                if (activitiesDone && projectsDone) {
+                if (activitiesDone && /* istanbul ignore next */ projectsDone) {
                     return res.send(times);
                 }
             }).catch(function(error) {
@@ -135,12 +135,10 @@ module.exports = function(app) {
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
-
             }).catch(function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
-
         }).catch(function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
@@ -185,17 +183,14 @@ module.exports = function(app) {
                             }
 
                             return res.send(time);
-
                         }).catch(function(error) {
                             var err = errors.errorServerError(error);
                             return res.status(err.status).send(err);
                         });
-
                     }).catch(function(error) {
                         var err = errors.errorServerError(error);
                         return res.status(err.status).send(err);
                     });
-
                 }).catch(function(error) {
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
@@ -205,7 +200,6 @@ module.exports = function(app) {
                 var err = errors.errorObjectNotFound('time');
                 return res.status(err.status).send(err);
             }
-
         }).catch(function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
@@ -351,11 +345,6 @@ module.exports = function(app) {
                                     time: timeId,
                                     activity: activityId
                                 });
-                            }
-
-                            if (insertion.length === 0) {
-                                time.id = timeId;
-                                return res.send(time);
                             }
 
                             knex('timesactivities').insert(insertion).then(
