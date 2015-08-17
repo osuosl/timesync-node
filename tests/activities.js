@@ -84,9 +84,6 @@ module.exports = function(expect, request, baseUrl) {
         });
     });
 
-    /* DELETE one of the activities endpoints and check whether it can still
-       be retrieved from the database */
-
     describe('DELETE /activities/:slug', function() {
         it('deletes the activity affiliated with the activity slug',
         function(done) {
@@ -112,7 +109,6 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        // Checks that delete will fail w/ nonexistent slug
         it('fails if it receives a nonexistent slug', function(done) {
             request.del(baseUrl + 'activities/naps', function(err, res, body) {
                 var jsonBody = JSON.parse(body);
@@ -154,7 +150,6 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
 
-        // Checks that delete will fail w/ invalid slug
         it('fails if it receives an invalid slug', function(done) {
             request.del(baseUrl + 'activities/!what',
             function(err, res, body) {
