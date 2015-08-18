@@ -71,6 +71,63 @@ Both Chai and Mocha have excellent documentation:
 .. _Chai documentation: http://chaijs.com/
 .. _Chai's expect documentation: http://chaijs.com/api/bdd/
 
+sql-fixtures
+------------
+
+TimeSync has a set of test data stored in ``tests/fixtures`` that is loaded
+before every test run. This test data can be used to test deleting, updating,
+adding, etc. objects from the database.
+
+To reference foreign keys in fixtures, reference them as ``table_name:index``.
+For instance, for a table ``wugs`` that references ``quirks``, if the fixtures
+contain a list of three ``quirks``, and you want to reference the second, you
+can set the ``quirk`` field of the ``wug`` to ``"quirk": "quirks:1"``.
+
+.. warning::
+
+    It's important to note that ``sql-fixtures``'s foreign key resolution
+    doesn't refer to the ID of the object in the database, but instead its index
+    in the zero-indexed list of objects to be added.
+
+For more information, see the `node-sql-fixtures documentation`_.
+
+.. _node-sql-fixtures documentation: http://city41.github.io/node-sql-fixtures/
+
+Using additional fixtures
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Every test is run from within two ``describe()`` statements -- the first being
+the category (``Endpoint``, ``Helper``, etc), and the second the thing being
+tested (``GET wugs/``, ``checkActivity``, etc). Each ``describe()`` can have
+its own ``beforeEach``.
+
+To override the set of fixtures that is being installed for a group of tests,
+add a ``beforeEach`` section to the test's ``describe()`` statement:
+
+ .. code-block:: javascript
+
+    describe('GET /wugs', function() {
+
+        var SqlFixtures = require('sql-fixtures');
+        var fixtureCreator = new SqlFixtures(knex);
+        var testData = require('./fixtures/super_awesome_fixtures');
+
+        beforeEach(function(done) {
+            fixtureCreator.create(testData).then(function() {
+                done();
+            });
+        });
+
+        it('tests the thing', function(done) {
+            // expect the thing
+        });
+    });
+
+Note that the child ``beforeEach`` will be run after the main ``beforeEach``,
+so any tests done inside the ``GET /wugs`` block above will have not only the
+``super_awesome_fixtures`` loaded above but the ``test_data`` fixtures loaded
+by ``tests/test.js``.
+
 Passport
 --------
 
@@ -140,6 +197,7 @@ Testing
 * `Mocha documentation`_
 * `Chai documentation`_
 * `Chai's expect documentation`_
+* `node-sql-fixtures documentation`_
 
 Authentication
 ~~~~~~~~~~~~~~
