@@ -5,12 +5,12 @@ var knexfile = require('../knexfile');
 var db = process.env.DATABASE || 'development';
 
 if (!GLOBAL.knex) {
-    //Load the database (default to development)
-    var knex = require('knex')(knexfile[db]);
+  //Load the database (default to development)
+  var knex = require('knex')(knexfile[db]);
 } else {
-    // use the knex connection initiated from inside the testing
-    // environment
-    var knex = GLOBAL.knex;
+  // use the knex connection initiated from inside the testing
+  // environment
+  var knex = GLOBAL.knex;
 }
 
 var app = express();
@@ -29,11 +29,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser(function(user, done) {
-    done(null, user);
+  done(null, user);
 });
 
 passport.deserializeUser(function(user, done) {
-    done(null, user);
+  done(null, user);
 });
 
 passport.use(localPassport);
@@ -46,5 +46,5 @@ require('./times')(app);
 module.exports = app;
 
 app.listen(process.env.PORT || 8000, function() {
-    console.log('App now listening on %s', process.env.PORT || 8000);
+  console.log('App now listening on %s', process.env.PORT || 8000);
 });

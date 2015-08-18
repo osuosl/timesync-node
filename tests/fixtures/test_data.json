@@ -1,106 +1,106 @@
 
 {
-    "activities":[
-        {
-            "name":"Documentation",
-            "slug":"docs",
-            "id": 1
-        },
-        {
-            "name":"Development",
-            "slug":"dev",
-            "id": 2
-        },
-        {
-            "name":"Systems",
-            "slug":"sys",
-            "id": 3
-        }
-    ],
-   "users":[
-      {
-         "username":"deanj",
-         "id": 1,
-         "active": "false",
-         "password": "$2a$10$nkGN8eZN1DbOahNfv8YgWO790imw7poGcjfik1k0zQ9mFqYqtMY0y"
-      },
-      {
-         "username":"tschuy",
-         "id": 2,
-         "active": "true",
-         "password": "$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W"
+  "activities":[
+    {
+      "name":"Documentation",
+      "slug":"docs",
+      "id": 1
+    },
+    {
+      "name":"Development",
+      "slug":"dev",
+      "id": 2
+    },
+    {
+      "name":"Systems",
+      "slug":"sys",
+      "id": 3
+    }
+  ],
+  "users":[
+    {
+      "username":"deanj",
+      "id": 1,
+      "active": "false",
+      "password": "$2a$10$nkGN8eZN1DbOahNfv8YgWO790imw7poGcjfik1k0zQ9mFqYqtMY0y"
+    },
+    {
+      "username":"tschuy",
+      "id": 2,
+      "active": "true",
+      "password": "$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W"
 
-      }
-   ],
-    "projects":[
-        {
-            "uri":"https:://code.osuosl.org/projects/ganeti-webmgr",
-            "name":"Ganeti Web Manager",
-            "owner":"users:1",
-            "id": 1
-        },
-        {
-            "uri":"https:://code.osuosl.org/projects/pgd",
-            "name":"Protein Geometry Database",
-            "owner":"users:0",
-            "id": 2
-        },
-        {
-            "uri":"https:://github.com/osu-cass/whats-fresh-api",
-            "name":"Whats Fresh",
-            "owner":"users:1",
-            "id": 3
-        }
-    ],
-    "times":[
-        {
-            "duration":12,
-            "user":"users:1",
-            "project":"projects:2",
-            "notes":"",
-            "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
-            "date_worked":"2015-04-19",
-            "created_at":"2015-04-19",
-            "updated_at":null,
-            "id": 1
-        }
-    ],
-    "projectslugs":[
-        {
-            "name": "gwm",
-            "id": 1,
-            "project": 1,
-            "activity": null
-        },
-        {
-            "name": "pgd",
-            "id": 2,
-            "project": 2,
-            "activity": null
-        },
-        {
-            "name": "wf",
-            "id": 3,
-            "project": 3,
-            "activity": null
-        },
-        {
-            "name": "ganeti-webmgr",
-            "id": 8,
-            "project": 1,
-            "activity": null
-        }
-    ],
-    "timesactivities":[
-        {
-            "id": 1,
-            "time": 1,
-            "activity": 1
-        },
-        {
-            "id": 2,
-            "time": 1,
-            "activity": 2
-        }
-    ]
+    }
+  ],
+  "projects":[
+    {
+      "uri":"https:://code.osuosl.org/projects/ganeti-webmgr",
+      "name":"Ganeti Web Manager",
+      "owner":"users:1",
+      "id": 1
+    },
+    {
+      "uri":"https:://code.osuosl.org/projects/pgd",
+      "name":"Protein Geometry Database",
+      "owner":"users:0",
+      "id": 2
+    },
+    {
+      "uri":"https:://github.com/osu-cass/whats-fresh-api",
+      "name":"Whats Fresh",
+      "owner":"users:1",
+      "id": 3
+    }
+  ],
+  "times":[
+    {
+      "duration":12,
+      "user":"users:1",
+      "project":"projects:2",
+      "notes":"",
+      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "date_worked":"2015-04-19",
+      "created_at":"2015-04-19",
+      "updated_at":null,
+      "id": 1
+    }
+  ],
+  "projectslugs":[
+    {
+      "name": "gwm",
+      "id": 1,
+      "project": 1,
+      "activity": null
+    },
+    {
+      "name": "pgd",
+      "id": 2,
+      "project": 2,
+      "activity": null
+    },
+    {
+      "name": "wf",
+      "id": 3,
+      "project": 3,
+      "activity": null
+    },
+    {
+      "name": "ganeti-webmgr",
+      "id": 8,
+      "project": 1,
+      "activity": null
+    }
+  ],
+  "timesactivities":[
+    {
+      "id": 1,
+      "time": 1,
+      "activity": 1
+    },
+    {
+      "id": 2,
+      "time": 1,
+      "activity": 2
+    }
+  ]
 }
