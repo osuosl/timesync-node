@@ -238,7 +238,7 @@ module.exports = function(app) {
 
         // Get project id
         let projectId = knex('projectslugs').select('project').where('name',
-                req.params.slug); 
+                req.params.slug);
 
         // Get times associated with project
         knex('times').where('project', '=', function() {
