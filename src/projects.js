@@ -241,9 +241,7 @@ module.exports = function(app) {
                 req.params.slug);
 
         // Get times associated with project
-        knex('times').where('project', '=', function() {
-            this.table('projects').select('id').where('id', '=', projectId);
-        }).then(function(times) {
+        knex('times').where('project', '=', projectId).then(function(times) {
             // If there are times associated, return an error
             if (times.length > 0) {
                 res.set('Allow', 'GET, POST');
@@ -251,7 +249,7 @@ module.exports = function(app) {
                 return res.status(err.status).send(err);
             // Otherwise delete project
             } else {
-                knex('projects').select('id').where('id', '=', projectId)
+                knex('projects').where('id', '=', projectId)
                 .del().then(function(numObj) {
 
                     /* When deleting something from the table, the number of
