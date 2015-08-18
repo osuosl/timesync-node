@@ -11,7 +11,6 @@ module.exports = function(expect, request, baseUrl) {
                         project: ['wf'],
                         activities: ['docs', 'dev'],
                         notes: '',
-                            //jscs:disable
                         issue_uri: 'https://github.com/osu-cass' +
                             '/whats-fresh-api/issues/56',
                         date_worked: '2015-04-19',
@@ -40,7 +39,6 @@ module.exports = function(expect, request, baseUrl) {
                     project: ['wf'],
                     activities: ['docs', 'dev'],
                     notes: '',
-                        //jscs:disable
                     issue_uri: 'https://github.com/osu-cass/whats-fresh-api' +
                         '/issues/56',
                     date_worked: '2015-04-19',
@@ -114,13 +112,11 @@ module.exports = function(expect, request, baseUrl) {
                 project: ['wf'],
                 activities: ['docs', 'dev'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osu-cass' +
                     '/whats-fresh-api/issues/56',
                 date_worked: '2015-04-19',
                 created_at: '2015-04-19',
                 updated_at: null,
-                //jscs:enable
                 id: 1
             }
         ];
@@ -132,10 +128,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -157,12 +151,10 @@ module.exports = function(expect, request, baseUrl) {
                             project: ['pgd'],
                             activities: ['dev', 'docs'],
                             notes: '',
-                            //jscs:disable
                             issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                             date_worked: '2015-07-30',
                             created_at: createdAt,
                             updated_at: null,
-                            //jscs:enable
                             id: 2
                         }
                     ]);
@@ -182,10 +174,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -218,10 +208,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -254,10 +242,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -290,10 +276,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -325,10 +309,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -360,10 +342,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs', 'activity_!@#'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -396,10 +376,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs', 'dancing'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -432,10 +410,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs', -14],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -468,10 +444,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: 1.414141414,
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -503,10 +477,8 @@ module.exports = function(expect, request, baseUrl) {
                 user: 'tschuy',
                 project: 'pgd',
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -538,10 +510,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'project? we need a project?',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -574,10 +544,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'project-xyz',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -609,10 +577,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: ['Who needs', 'proper types?'],
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -644,10 +610,8 @@ module.exports = function(expect, request, baseUrl) {
                 user: 'tschuy',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -679,10 +643,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'I do my own thing, pal',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -715,10 +677,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 3.14159265,
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -751,9 +711,7 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -775,12 +733,10 @@ module.exports = function(expect, request, baseUrl) {
                             project: ['pgd'],
                             activities: ['dev', 'docs'],
                             notes: '',
-                            //jscs:disable
                             issue_uri: null,
                             date_worked: '2015-07-30',
                             created_at: createdAt,
                             updated_at: null,
-                            //jscs:enable
                             id: 2
                         }
                     ]);
@@ -800,10 +756,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -836,10 +790,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -871,10 +823,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: '2015-07-30'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -906,10 +856,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: 'baaaaaaaad'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -942,10 +890,8 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1',
                 date_worked: 1234
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
@@ -978,9 +924,7 @@ module.exports = function(expect, request, baseUrl) {
                 project: 'pgd',
                 activities: ['dev', 'docs'],
                 notes: '',
-                //jscs:disable
                 issue_uri: 'https://github.com/osuosl/pgd/issues/1'
-                //jscs:enable
             };
 
             var postArg = getPostObject(baseUrl + 'times/', time);
