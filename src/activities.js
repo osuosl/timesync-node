@@ -4,6 +4,7 @@ module.exports = function(app) {
   const knex = app.get('knex');
   const errors = require('./errors');
   const helpers = require('./helpers')(app);
+  const passport = require('passport');
 
   app.get(app.get('version') + '/activities', function(req, res) {
     knex('activities').then(function(activities) {
@@ -76,6 +77,45 @@ module.exports = function(app) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
+  });
+
+    app.post(app.get('version') + '/activities/:slug',
+    function(req, res, next) {
+        passport.authenticate('local', function(autherr, user, info) {
+            if (!user) {
+                let err = errors.errorAuthenticationFailure(info.message);
+                return res.status(err.status).send(err);
+            }
+
+            let obj = req.body.object;
+
+            let validKeys = ['name', 'slug']
+            for (let key in obj) {
+                if (validKeys.indexOf(key) === -1) {
+                    let err = errors.errorBadObjectUnknownField(
+                        'activity', key);
+                    return res.status(err.status).send(err);
+                }
+            }
+
+            let fields = [
+                {name: 'name', type: 'string', required: false},
+                {name: 'slug', type: 'string', required: false},
+            ];
+
+            // Rebase later
+            let validationFailure = helpers.validateFields(obj, fields);
+            if (validationFailure) {
+                let err = errors.errorBadObjectInvalidField(
+                    'activity',
+                    validationFailure.name,
+                    validationFailure.type,
+                    validationFailure.actualType
+                );
+                return res.status(err.status).send(err);
+            }
+        });
     });
   });
+
 };
