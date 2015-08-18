@@ -236,24 +236,23 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
         }
 
-        // delete matching project
-        knex('times').where('project', '=', function() {
-            this.table('projects').select('id').where('id', '=', function() {
-                this.table('projectslugs').select('project').where('name',
-                        req.params.slug);
-            });
-        }).then(function(times) {
+        // Get project id
+        let projectId = knex('projectslugs').select('project').where('name',
+                req.params.slug); 
 
+        // Get times associated with project
+        knex('times').where('project', '=', function() {
+            this.table('projects').select('id').where('id', '=', projectId);
+        }).then(function(times) {
+            // If there are times associated, return an error
             if (times.length > 0) {
                 res.set('Allow', 'GET, POST');
                 let err = errors.errorRequestFailure('project');
                 return res.status(err.status).send(err);
+            // Otherwise delete project
             } else {
-                knex('projects').select('id').where('id', '=',
-                        function() {
-                    this.table('projectslugs').select('project').where('name',
-                            req.params.slug);
-                }).del().then(function(numObj) {
+                knex('projects').select('id').where('id', '=', projectId)
+                .del().then(function(numObj) {
 
                     /* When deleting something from the table, the number of
                        objects deleted is returned. So to confirm that deletion
