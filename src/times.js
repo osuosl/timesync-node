@@ -215,49 +215,36 @@ module.exports = function(app) {
 
             var time = req.body.object;
 
-            // Test duration
-            if (!time.duration) {
-                let err = errors.errorBadObjectMissingField('time', 'duration');
-                return res.status(err.status).send(err);
+            // Test existence and datatypes
+            let badField = helpers.validateFields(time, [
+                {name: 'duration', type: 'number', required: 'true'},
+                {name: 'project', type: 'string', required: 'true'},
+                {name: 'activities', type: 'array', required: 'true'},
+                {name: 'user', type: 'string', required: 'true'},
+                {name: 'issue_uri', type: 'string', required: 'false'},
+                {name: 'date_worked', type: 'string', required: 'true'},
+            ]);
+
+            if (badField) {
+                if (badField.actualType === 'undefined') {
+                    let err = errors.errorBadObjectMissingField('time',
+                                                                badField.name);
+                    return res.status(err.status).send(err);
+                } else {
+                    let err = errors.errorBadObjectInvalidField('time',
+                        badField.name, badField.type, badField.actualType);
+                    return res.status(err.status).send(err);
+                }
             }
 
-            if (typeof time.duration !== 'number') {
-                let err = errors.errorBadObjectInvalidField('time', 'duration',
-                    'positive number', typeof time.duration);
-                return res.status(err.status).send(err);
-            }
-
+            // Test duration value
             if (time.duration < 0) {
                 let err = errors.errorBadObjectInvalidField('time', 'duration',
                     'positive number', 'negative number');
                 return res.status(err.status).send(err);
             }
 
-            //Test existence and type of project
-            if (!time.project) {
-                let err = errors.errorBadObjectMissingField('time', 'project');
-                return res.status(err.status).send(err);
-            }
-
-            if (helpers.getType(time.project) !== 'string') {
-                let err = errors.errorBadObjectInvalidField('time', 'project',
-                    'slug', helpers.getType(time.project));
-                return res.status(err.status).send(err);
-            }
-
-            //Test existence and type of activities
-            if (!time.activities) {
-                let err = errors.errorBadObjectMissingField('time',
-                                                            'activities');
-                return res.status(err.status).send(err);
-            }
-
-            if (helpers.getType(time.activities) !== 'array') {
-                let err = errors.errorBadObjectInvalidField('time',
-                    'activities', 'slugs', helpers.getType(time.activities));
-                return res.status(err.status).send(err);
-            }
-
+            //Test each activity
             for (let activity of time.activities) {
                 if (helpers.getType(activity) !== 'string') {
                     let err = errors.errorBadObjectInvalidField('time',
@@ -267,46 +254,14 @@ module.exports = function(app) {
                 }
             }
 
-            //Test existence and type of user
-            if (!time.user) {
-                let err = errors.errorBadObjectMissingField('time', 'user');
-                return res.status(err.status).send(err);
-            }
-
-            if (helpers.getType(time.user) !== 'string') {
-                let err = errors.errorBadObjectInvalidField('time', 'user',
-                    'username', helpers.getType(time.user));
-                return res.status(err.status).send(err);
-            }
-
-            //Test issue URI
-            if (time.issue_uri &&
-            helpers.getType(time.issue_uri) !== 'string') {
-                let err = errors.errorBadObjectInvalidField('time', 'issue_uri',
-                    'URI', helpers.getType(time.issue_uri));
-                return res.status(err.status).send(err);
-            }
-
+            //Test issue URI value
             if (time.issue_uri && !validUrl.isWebUri(time.issue_uri)) {
                 let err = errors.errorBadObjectInvalidField('time', 'issue_uri',
                     'URI', 'invalid URI ' + time.issue_uri);
                 return res.status(err.status).send(err);
             }
 
-            //Test date worked
-            if (!time.date_worked) {
-                let err = errors.errorBadObjectMissingField('time',
-                                                            'date_worked');
-                return res.status(err.status).send(err);
-            }
-
-            if (helpers.getType(time.date_worked) !== 'string') {
-                let err = errors.errorBadObjectInvalidField('time',
-                    'date_worked', 'ISO-8601 date',
-                    helpers.getType(time.date_worked));
-                return res.status(err.status).send(err);
-            }
-
+            //Test date worked value
             if (!Date.parse(time.date_worked)) {
                 let err = errors.errorBadObjectInvalidField('time',
                     'date_worked', 'ISO-8601 date', time.date_worked);
