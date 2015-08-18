@@ -303,7 +303,7 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedResult = {
                     error: 'Bad object',
                     status: 400,
-                    text: 'Field duration of time should be positive number ' +
+                    text: 'Field duration of time should be number ' +
                         'but was sent as string'
                 };
 
@@ -445,7 +445,7 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedResult = {
                     error: 'Bad object',
                     status: 400,
-                    text: 'Field activities of time should be slugs but was ' +
+                    text: 'Field activities of time should be array but was ' +
                         'sent as number'
                 };
 
@@ -550,8 +550,8 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedResult = {
                     error: 'Bad object',
                     status: 400,
-                    text: 'Field project of time should be slug but was sent ' +
-                        'as array'
+                    text: 'Field project of time should be string but was ' +
+                        'sent as array'
                 };
 
                 expect(body).to.deep.equal(expectedResult);
@@ -656,7 +656,7 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedResult = {
                     error: 'Bad object',
                     status: 400,
-                    text: 'Field issue_uri of time should be URI but ' +
+                    text: 'Field issue_uri of time should be string but ' +
                           'was sent as number'
                 };
 
@@ -777,7 +777,7 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedResult = {
                     error: 'Bad object',
                     status: 400,
-                    text: 'Field user of time should be username but ' +
+                    text: 'Field user of time should be string but ' +
                           'was sent as object'
                 };
 
@@ -883,7 +883,7 @@ module.exports = function(expect, request, baseUrl) {
                 var expectedResult = {
                     error: 'Bad object',
                     status: 400,
-                    text: 'Field date_worked of time should be ISO-8601 date ' +
+                    text: 'Field date_worked of time should be string ' +
                         'but was sent as number'
                 };
 

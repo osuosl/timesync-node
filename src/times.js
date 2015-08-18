@@ -217,12 +217,12 @@ module.exports = function(app) {
 
             // Test existence and datatypes
             let badField = helpers.validateFields(time, [
-                {name: 'duration', type: 'number', required: 'true'},
-                {name: 'project', type: 'string', required: 'true'},
-                {name: 'activities', type: 'array', required: 'true'},
-                {name: 'user', type: 'string', required: 'true'},
-                {name: 'issue_uri', type: 'string', required: 'false'},
-                {name: 'date_worked', type: 'string', required: 'true'},
+                {name: 'duration', type: 'number', required: true},
+                {name: 'project', type: 'string', required: true},
+                {name: 'activities', type: 'array', required: true},
+                {name: 'user', type: 'string', required: true},
+                {name: 'issue_uri', type: 'string', required: false},
+                {name: 'date_worked', type: 'string', required: true},
             ]);
 
             if (badField) {
