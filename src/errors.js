@@ -4,6 +4,7 @@ function createError(status, name, text, values) {
         error: name,
         text: text
     };
+
     if (values) {
         err.values = values;
     }
@@ -98,7 +99,7 @@ module.exports = {
     receivedType) {
         return createError(400, 'Bad object', 'Field ' + fieldName + ' of ' +
             objectType + ' should be ' + expectedType +
-            ' but was received as ' + receivedType);
+            ' but was sent as ' + receivedType);
     },
 
     /*

@@ -1,6 +1,11 @@
+'use strict';
+
 module.exports = function(app) {
     var knex = app.get('knex');
     var errors = require('./errors');
+    var helpers = require('./helpers')(app);
+    var validUrl = require('valid-url');
+    var passport = require('passport');
 
     app.get(app.get('version') + '/times', function(req, res) {
 
@@ -130,12 +135,10 @@ module.exports = function(app) {
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                 });
-
             }).catch(function(error) {
                 var err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
             });
-
         }).catch(function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
@@ -152,7 +155,7 @@ module.exports = function(app) {
         knex('times').where({id: req.params.id}).then(function(timeList) {
             // get the matching time entry
             if (timeList.length === 1) {
-                time = timeList[0];
+                let time = timeList[0];
 
                 knex('users').where({id: time.user}).select('username')
                 .then(function(user) {
@@ -180,17 +183,14 @@ module.exports = function(app) {
                             }
 
                             return res.send(time);
-
                         }).catch(function(error) {
                             var err = errors.errorServerError(error);
                             return res.status(err.status).send(err);
                         });
-
                     }).catch(function(error) {
                         var err = errors.errorServerError(error);
                         return res.status(err.status).send(err);
                     });
-
                 }).catch(function(error) {
                     var err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
@@ -200,10 +200,145 @@ module.exports = function(app) {
                 var err = errors.errorObjectNotFound('time');
                 return res.status(err.status).send(err);
             }
-
         }).catch(function(error) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
+    });
+
+    app.post(app.get('version') + '/times', function(req, res, next) {
+        passport.authenticate('local', function(autherr, user, info) {
+            if (!user) {
+                let err = errors.errorAuthenticationFailure(info.message);
+                return res.status(err.status).send(err);
+            }
+
+            var time = req.body.object;
+
+            // Test existence and datatypes
+            let badField = helpers.validateFields(time, [
+                {name: 'duration', type: 'number', required: true},
+                {name: 'project', type: 'string', required: true},
+                {name: 'activities', type: 'array', required: true},
+                {name: 'user', type: 'string', required: true},
+                {name: 'issue_uri', type: 'string', required: false},
+                {name: 'date_worked', type: 'string', required: true},
+            ]);
+
+            if (badField) {
+                if (badField.actualType === 'undefined') {
+                    let err = errors.errorBadObjectMissingField('time',
+                                                                badField.name);
+                    return res.status(err.status).send(err);
+                } else {
+                    let err = errors.errorBadObjectInvalidField('time',
+                        badField.name, badField.type, badField.actualType);
+                    return res.status(err.status).send(err);
+                }
+            }
+
+            // Test duration value
+            if (time.duration < 0) {
+                let err = errors.errorBadObjectInvalidField('time', 'duration',
+                    'positive number', 'negative number');
+                return res.status(err.status).send(err);
+            }
+
+            // Test validity of project slug
+            if (!helpers.validateSlug(time.project)) {
+                let err = errors.errorBadObjectInvalidField('time', 'project',
+                'slug', 'invalid slug ' + time.project);
+                return res.status(err.status).send(err);
+            }
+
+            //Test each activity
+            for (let activity of time.activities) {
+                if (helpers.getType(activity) !== 'string') {
+                    let err = errors.errorBadObjectInvalidField('time',
+                        'activities', 'slugs', 'array containing at least 1 ' +
+                        helpers.getType(activity));
+                    return res.status(err.status).send(err);
+                } else if (!helpers.validateSlug(activity)) {
+                    let err = errors.errorBadObjectInvalidField('time',
+                        'activities', 'slugs', 'array containing at least 1 ' +
+                        'invalid slug');
+                    return res.status(err.status).send(err);
+                }
+            }
+
+            //Test issue URI value
+            if (time.issue_uri && !validUrl.isWebUri(time.issue_uri)) {
+                let err = errors.errorBadObjectInvalidField('time', 'issue_uri',
+                    'URI', 'invalid URI ' + time.issue_uri);
+                return res.status(err.status).send(err);
+            }
+
+            //Test date worked value
+            if (!Date.parse(time.date_worked)) {
+                let err = errors.errorBadObjectInvalidField('time',
+                    'date_worked', 'ISO-8601 date', time.date_worked);
+                return res.status(err.status).send(err);
+            }
+
+            //Finish checks for user, project, and activity
+            helpers.checkUser(user.username, time.user).then(function(userId) {
+                helpers.checkProject(time.project).then(function(projectId) {
+                    helpers.checkActivities(time.activities)
+                    .then(function(activityIds) {
+
+                        let createdAt = new Date().toISOString()
+                            .substring(0, 10);
+                        let insertion = {
+                            duration: time.duration,
+                            user: userId,
+                            project: projectId,
+                            notes: time.notes,
+                            issue_uri: time.issue_uri,
+                            date_worked: time.date_worked,
+                            created_at: createdAt
+                        };
+
+                        knex('times').insert(insertion).then(function(timeId) {
+
+                            timeId = timeId[0];
+
+                            let insertion = [];
+                            for (let activityId of activityIds) {
+                                insertion.push({
+                                    time: timeId,
+                                    activity: activityId
+                                });
+                            }
+
+                            knex('timesactivities').insert(insertion).then(
+                            function() {
+                                time.id = timeId;
+                                return res.send(JSON.stringify(time));
+                            }).catch(function(error) {
+                                knex('times').del().where({id: timeId})
+                                .then(function() {
+                                    let err = errors.errorServerError(error);
+                                    return res.status(err.status).send(err);
+                                });
+                            });
+                        }).catch(function(error) {
+                            let err = errors.errorServerError(error);
+                            return res.status(err.status).send(err);
+                        });
+                    }).catch(function() {
+                        let err = errors.errorInvalidForeignKey(
+                            'time', 'activities');
+                        return res.status(err.status).send(err);
+                    });
+                }).catch(function() {
+                    let err = errors.errorInvalidForeignKey('time', 'project');
+                    return res.status(err.status).send(err);
+                });
+            }).catch(function() {
+                let err = errors.errorAuthorizationFailure(
+                    user.username, 'create time entries for ' + time.user);
+                return res.status(err.status).send(err);
+            });
+        })(req, res, next);
     });
 };
