@@ -17,6 +17,12 @@
   // Warn when variables are defined but never used.
   "unused": true,
 
+  // Enforce placing 'use strict' at the top function scope
+  "strict": true,
+
+  // Prohibit use of explicitly undeclared variables.
+  "undef": true,
+
   // require curly braces for one-line statements
   "curly": true
 }

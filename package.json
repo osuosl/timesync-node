@@ -12,7 +12,7 @@
     "migrations": "knex migrate:latest",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "linter": "jshint ./src ./tests ./scripts && jscs ./src ./tests ./scripts",
-    "fixtures": "node ./scripts/load_fixtures.js",
+    "fixtures": "node --harmony ./scripts/load_fixtures.js",
     "test": "DATABASE=mocha PORT=8851 DEBUG=true mocha --harmony tests",
     "latte": "sh ./scripts/latte.sh",
     "coverage": "DATABASE=mocha PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",

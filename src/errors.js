@@ -1,3 +1,5 @@
+'use strict';
+
 function createError(status, name, text, values) {
   var err = {
     status: status,

@@ -1,3 +1,5 @@
+'use strict';
+
 var sqlFixtures = require('sql-fixtures');
 var knexfile = require('../knexfile');
 
