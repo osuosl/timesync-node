@@ -847,4 +847,139 @@ module.exports = function(expect, request, baseUrl) {
         });
     });
 
+    describe('DELETE /projects/:slug', function() {
+        it('deletes the desired project if no times are associated with it',
+                function(done) {
+            request.del(baseUrl + 'projects/pgd', function(err, res) {
+                expect(res.statusCode).to.equal(200);
+
+                request.get(baseUrl + 'projects/pgd', function(err, res, body) {
+                    var jsonBody = JSON.parse(body);
+                    var expectedResult = {
+                        status: 404,
+                        error: 'Object not found',
+                        text: 'Nonexistent project'
+                    };
+
+                    expect(jsonBody).to.deep.equal(expectedResult);
+                    expect(res.statusCode).to.equal(404);
+                    done();
+                });
+            });
+        });
+
+        it('Fails if it recieves a project with times associated',
+            function(done) {
+                request.del(baseUrl + 'projects/wf',
+                    function(err, res, body) {
+                        var jsonBody = JSON.parse(body);
+                        var expectedResult = {
+                            status: 405,
+                            error: 'Method not allowed',
+                            text: 'The method specified is not allowed for ' +
+                                'the project identified'
+                        };
+
+                        expect(res.statusCode).to.equal(405);
+                        expect(jsonBody).to.deep.equal(expectedResult);
+                        done();
+                    });
+            });
+
+        it('Fails if it receives an invalid project', function(done) {
+            request.del(baseUrl + 'projects/Not.a-project!',
+                    function(err, res, body) {
+                var jsonBody = JSON.parse(body);
+                var expectedResult = {
+                    status: 400,
+                    error: 'The provided identifier was invalid',
+                    text: 'Expected slug but received Not.a-project!',
+                    values: ['Not.a-project!']
+                };
+
+                request.get(baseUrl + 'projects', function(err, res, body) {
+                    jsonBody = JSON.parse(body);
+                    var expectedResult = [
+                        {
+                            uri: 'https://code.osuosl.org/projects/ganeti-' +
+                                'webmgr',
+                            name: 'Ganeti Web Manager',
+                            slugs: ['gwm', 'ganeti-webmgr'],
+                            owner: 'tschuy',
+                            id: 1
+                        },
+                        {
+                            uri: 'https://code.osuosl.org/projects/pgd',
+                            name: 'Protein Geometry Database',
+                            slugs: ['pgd'],
+                            owner: 'deanj',
+                            id: 2
+                        },
+                        {
+                            uri: 'https://github.com/osu-cass/whats-fresh-api',
+                            name: 'Whats Fresh',
+                            slugs: ['wf'],
+                            owner: 'tschuy',
+                            id: 3
+                        }
+                    ];
+
+                    expect(res.statusCode).to.equal(200);
+                    expect(jsonBody).to.deep.have.same.members(expectedResult);
+                });
+
+                expect(res.statusCode).to.equal(400);
+                expect(jsonBody).to.deep.equal(expectedResult);
+                done();
+            });
+        });
+
+        it('Fails if it receives an non-existent project',
+                function(done) {
+            request.del(baseUrl + 'projects/doesntexist',
+                    function(err, res, body) {
+                var jsonBody = JSON.parse(body);
+                var expectedResult = {
+                    status: 404,
+                    error: 'Object not found',
+                    text: 'Nonexistent slug'
+                };
+
+                request.get(baseUrl + 'projects', function(err, res, body) {
+                    jsonBody = JSON.parse(body);
+                    var expectedResult = [
+                        {
+                            uri: 'https://code.osuosl.org/projects/ganeti-' +
+                                'webmgr',
+                            name: 'Ganeti Web Manager',
+                            slugs: ['gwm', 'ganeti-webmgr'],
+                            owner: 'tschuy',
+                            id: 1
+                        },
+                        {
+                            uri: 'https://code.osuosl.org/projects/pgd',
+                            name: 'Protein Geometry Database',
+                            slugs: ['pgd'],
+                            owner: 'deanj',
+                            id: 2
+                        },
+                        {
+                            uri: 'https://github.com/osu-cass/whats-fresh-api',
+                            name: 'Whats Fresh',
+                            slugs: ['wf'],
+                            owner: 'tschuy',
+                            id: 3
+                        }
+                    ];
+
+                    expect(res.statusCode).to.equal(200);
+                    expect(jsonBody).to.deep.have.same.members(expectedResult);
+                });
+
+                expect(res.statusCode).to.equal(404);
+                expect(jsonBody).to.deep.equal(expectedResult);
+                done();
+            });
+        });
+    });
 };

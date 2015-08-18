@@ -442,4 +442,45 @@ module.exports = function(app) {
             });
         })(req, res, next);
     });
+
+    app.delete(app.get('version') + '/projects/:slug', function(req, res) {
+        if (!helpers.validateSlug(req.params.slug)) {
+            var err = errors.errorInvalidIdentifier('slug', req.params.slug);
+            return res.status(err.status).send(err);
+        }
+
+        // Get project id
+        let projectId = knex('projectslugs').select('project').where('name',
+                req.params.slug);
+
+        // Get times associated with project
+        knex('times').where('project', '=', projectId).then(function(times) {
+            // If there are times associated, return an error
+            if (times.length > 0) {
+                res.set('Allow', 'GET, POST');
+                let err = errors.errorRequestFailure('project');
+                return res.status(err.status).send(err);
+            // Otherwise delete project
+            } else {
+                knex('projects').where('id', '=', projectId)
+                .del().then(function(numObj) {
+
+                    /* When deleting something from the table, the number of
+                       objects deleted is returned. So to confirm that deletion
+                       was successful, make sure that the number returned is at
+                       least one. */
+                    if (numObj >= 1) {
+                        return res.send();
+                    }
+
+                    var err = errors.errorObjectNotFound('slug',
+                            req.params.slug);
+                    return res.status(err.status).send(err);
+                }).catch(function(error) {
+                    var err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
+                });
+            }
+        });
+    });
 };
