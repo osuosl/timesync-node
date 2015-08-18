@@ -244,12 +244,24 @@ module.exports = function(app) {
                 return res.status(err.status).send(err);
             }
 
+            // Test validity of project slug
+            if (!helpers.validateSlug(time.project)) {
+                let err = errors.errorBadObjectInvalidField('time', 'project',
+                'slug', 'invalid slug ' + time.project);
+                return res.status(err.status).send(err);
+            }
+
             //Test each activity
             for (let activity of time.activities) {
                 if (helpers.getType(activity) !== 'string') {
                     let err = errors.errorBadObjectInvalidField('time',
                         'activities', 'slugs', 'array containing at least 1 ' +
                         helpers.getType(activity));
+                    return res.status(err.status).send(err);
+                } else if (!helpers.validateSlug(activity)) {
+                    let err = errors.errorBadObjectInvalidField('time',
+                        'activities', 'slugs', 'array containing at least 1 ' +
+                        'invalid slug');
                     return res.status(err.status).send(err);
                 }
             }

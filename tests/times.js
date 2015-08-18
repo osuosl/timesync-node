@@ -358,6 +358,42 @@ module.exports = function(expect, request, baseUrl) {
                 duration: 20,
                 user: 'tschuy',
                 project: 'pgd',
+                activities: ['dev', 'docs', 'activity_!@#'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'Field activities of time should be slugs but ' +
+                        'was sent as array containing at least 1 invalid slug'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a non-existent activity', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'pgd',
                 activities: ['dev', 'docs', 'dancing'],
                 notes: '',
                 //jscs:disable
@@ -500,6 +536,42 @@ module.exports = function(expect, request, baseUrl) {
                 duration: 20,
                 user: 'tschuy',
                 project: 'project? we need a project?',
+                activities: ['dev', 'docs'],
+                notes: '',
+                //jscs:disable
+                issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+                date_worked: '2015-07-30'
+                //jscs:enable
+            };
+
+            var postArg = getPostObject(baseUrl + 'times/', time);
+
+            request.post(postArg, function(err, res, body) {
+
+                var expectedResult = {
+                    error: 'Bad object',
+                    status: 400,
+                    text: 'Field project of time should be slug but was sent ' +
+                        'as invalid slug project? we need a project?'
+                };
+
+                expect(body).to.deep.equal(expectedResult);
+                expect(res.statusCode).to.equal(400);
+
+                request.get(baseUrl + 'times', function(err, res, body) {
+                    expect(err).to.equal(null);
+                    expect(res.statusCode).to.equal(200);
+                    expect(JSON.parse(body)).to.deep.equal(initialData);
+                    done();
+                });
+            });
+        });
+
+        it('fails with a non-existent project', function(done) {
+            var time = {
+                duration: 20,
+                user: 'tschuy',
+                project: 'project-xyz',
                 activities: ['dev', 'docs'],
                 notes: '',
                 //jscs:disable
