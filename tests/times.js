@@ -1,20 +1,805 @@
-'use strict';
-
 module.exports = function(expect, request, baseUrl) {
   /* GET one of the /times endpoints and check its response against
   what should be returned */
   describe('GET /times', function() {
     it('returns all times in the database', function(done) {
       request.get(baseUrl + 'times', function(err, res, body) {
-        const expectedResults = [
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          },
           {
             duration: 12,
             user: 'tschuy',
-            project: ['wf'],
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          },
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['pgd'],
+            activities: ['sys'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-21',
+            created_at: '2015-04-21',
+            updated_at: null,
+            id: 3
+          },
+          {
+            duration: 12,
+            user: 'patcht',
+            project: ['pgd'],
+            activities: ['dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-22',
+            created_at: '2015-04-22',
+            updated_at: null,
+            id: 4
+          },
+        ];
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user', function() {
+    it('should return all times for a user', function(done) {
+      request.get(baseUrl + 'times?user=deanj', function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
             activities: ['docs', 'dev'],
             notes: '',
-            issue_uri: 'https://github.com/osu-cass' +
-            '/whats-fresh-api/issues/56',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          },
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['pgd'],
+            activities: ['sys'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-21',
+            created_at: '2015-04-21',
+            updated_at: null,
+            id: 3
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?project=:project', function() {
+    it('should return all times for a project', function(done) {
+      request.get(baseUrl + 'times?project=gwm', function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          },
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity', function() {
+    it('should return all times for an activity', function(done) {
+      request.get(baseUrl + 'times?activity=docs', function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          },
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?dateStart=:start', function() {
+    it('should return all times after a date', function(done) {
+      request.get(baseUrl + 'times?dateStart=2015-04-20',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          },
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['pgd'],
+            activities: ['sys'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-21',
+            created_at: '2015-04-21',
+            updated_at: null,
+            id: 3
+          },
+          {
+            duration: 12,
+            user: 'patcht',
+            project: ['pgd'],
+            activities: ['dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-22',
+            created_at: '2015-04-22',
+            updated_at: null,
+            id: 4
+          },
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?dateEnd=:end', function() {
+    it('should return all times before a date', function(done) {
+      request.get(baseUrl + 'times?dateEnd=2015-04-21',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          },
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          },
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['pgd'],
+            activities: ['sys'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-21',
+            created_at: '2015-04-21',
+            updated_at: null,
+            id: 3
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?dateStart=:start&dateEnd=:end', function() {
+    it('should return all times between two dates', function(done) {
+      request.get(baseUrl + 'times?dateStart=2015-04-20' +
+      '&dateEnd=2015-04-21', function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          },
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['pgd'],
+            activities: ['sys'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-21',
+            created_at: '2015-04-21',
+            updated_at: null,
+            id: 3
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user1&user=:user2', function() {
+    it('should return all times for two users', function(done) {
+      request.get(baseUrl + 'times?user=deanj&user=patcht',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          },
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['pgd'],
+            activities: ['sys'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-21',
+            created_at: '2015-04-21',
+            updated_at: null,
+            id: 3
+          },
+          {
+            duration: 12,
+            user: 'patcht',
+            project: ['pgd'],
+            activities: ['dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-22',
+            created_at: '2015-04-22',
+            updated_at: null,
+            id: 4
+          },
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&project=:project', function() {
+    it('should return all times for a user and a project', function(done) {
+      request.get(baseUrl + 'times?user=deanj&project=gwm',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&activity=:activity', function() {
+    it('should return all times for a user and an activity',
+    function(done) {
+      request.get(baseUrl + 'times?user=deanj&activity=docs',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&startDate=:start', function() {
+    it('should return all times for a user after a date', function(done) {
+      request.get(baseUrl + 'times?user=deanj&startDate=2015-04-20',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['pgd'],
+            activities: ['sys'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-21',
+            created_at: '2015-04-21',
+            updated_at: null,
+            id: 3
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&endDate=:end', function() {
+    it('should return all times for a user before a date', function(done) {
+      request.get(baseUrl + 'times?user=tschuy&endDate=2015-04-21',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&startDate=:start&endDate=:end', function() {
+    it('should return all times for a user between two dates',
+    function(done) {
+      request.get(baseUrl + 'times?user=deanj&startDate=2015-04-19' +
+      '&endDate=2015-04-20', function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?project=:project1&project=:project2', function() {
+    it('should return all times for two projects', function(done) {
+      request.get(baseUrl + 'times?project=gwm&project=wf',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          },
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?project=:project&activity=:activity', function() {
+    it('should return all times for a project and an activity',
+    function(done) {
+      request.get(baseUrl + 'times?project=gwm&activity=dev',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?project=:project&startDate=:start', function() {
+    it('should return all times for a project after a date',
+    function(done) {
+      request.get(baseUrl + 'times?project=gwm&startDate=2015-04-20',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?project=:project&endDate=:end', function() {
+    it('should return all times for a project before a date',
+    function(done) {
+      request.get(baseUrl + 'times?project=gwm&endDate=2015-04-20',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          },
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?project=:project&startDate=:start&endDate=:end',
+  function() {
+    it('should return all times for a project between two dates',
+    function(done) {
+      request.get(baseUrl + 'times?project=gwm&startDate=2015-04-19' +
+      '&endDate=2015-04-21', function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
@@ -23,11 +808,371 @@ module.exports = function(expect, request, baseUrl) {
             revision: 1,
             id: 1,
           },
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          }
         ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
 
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
-        expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity1&activity=:activity2', function() {
+    it('should return all times for two activities', function(done) {
+      request.get(baseUrl + 'times?activity=docs&activity=dev',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          },
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          },
+          {
+            duration: 12,
+            user: 'patcht',
+            project: ['pgd'],
+            activities: ['dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-22',
+            created_at: '2015-04-22',
+            updated_at: null,
+            id: 4
+          },
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&startDate=:start', function() {
+    it('should return all times for an activity after a date',
+    function(done) {
+      request.get(baseUrl + 'times?activity=dev&startDate=2015-04-20',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'patcht',
+            project: ['pgd'],
+            activities: ['dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-22',
+            created_at: '2015-04-22',
+            updated_at: null,
+            id: 4
+          },
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&endDate=:end', function() {
+    it('should return all times for an activity before a date',
+    function(done) {
+      request.get(baseUrl + 'times?activity=dev&endDate=2015-04-21',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&startDate=:start&endDate=:end',
+  function() {
+    it('should return all times for an activity between two dates',
+    function(done) {
+      request.get(baseUrl + 'times?activity=dev&startDate=2015-04-19' +
+      '&endDate=2015-04-21', function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&project=:project&activity=:activity&' +
+  'startDate=:start&endDate=:end', function() {
+    it('should return all times for a user, project, and activity ' +
+    'between two dates', function(done) {
+      request.get(baseUrl + 'times?user=tschuy&project=pgd&' +
+      'activity=docs' + '&startDate=2015-04-20&endDate=2015-04-22',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user1&user=:user2&project=:project&' +
+  'activity=:activity&startDate=:start&endDate=:end', function() {
+    it('should return all times for two users, a project, and activity ' +
+    'between two dates', function(done) {
+      request.get(baseUrl + 'times?user=deanj&user=tschuy&project=gwm&' +
+      'activity=dev&startDate=2015-04-19&endDate=2015-04-21',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          },
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            id: 2
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&project=:project1&project=:project2&' +
+  'activity=:activity&startDate=:start&endDate=:end', function() {
+    it('should return all times for a user, two projects, and an ' +
+    'activity between two dates', function(done) {
+      request.get(baseUrl + 'times?user=deanj&project=gwm&project=pgd&' +
+      'activity=docs&startDate=2015-04-19&endDate=2015-04-20',
+      function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&project=:project&activity=:activity1&' +
+  'activity=:activity2&startDate=:start&endDate=:end', function() {
+    it('should return all times for a user, project, and two activities ' +
+    'between two dates', function(done) {
+      request.get(baseUrl + 'times?user=deanj&project=gwm&' +
+      'activity=docs&activity=dev&startDate=2015-04-19&' +
+      'endDate=2015-04-20', function(err, res, body) {
+        var jsonBody = JSON.parse(body);
+        var expectedResults = [
+          {
+            duration: 12,
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs', 'dev'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            id: 1
+          }
+        ];
+
+        expect(jsonBody.length === expectedResults.length);
+        for (var i = 0, len = jsonBody.length; i < len; i++) {
+          expectedResults[i].project.sort();
+          expectedResults[i].activities.sort();
+          jsonBody[i].project.sort();
+          jsonBody[i].activities.sort();
+        }
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
     });
@@ -40,12 +1185,11 @@ module.exports = function(expect, request, baseUrl) {
         const jsonBody = JSON.parse(body);
         const expectedResult = {
           duration: 12,
-          user: 'tschuy',
-          project: ['wf'],
+          user: 'deanj',
+          project: ['gwm', 'ganeti-webmgr'],
           activities: ['docs', 'dev'],
           notes: '',
-          issue_uri: 'https://github.com/osu-cass/whats-fresh-api' +
-          '/issues/56',
+          issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
           date_worked: '2015-04-19',
           created_at: '2015-04-19',
           updated_at: null,
@@ -70,7 +1214,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = {
           error: 'Object not found',
           status: 404,
-          text: 'Nonexistent time',
+          text: 'Nonexistent time'
         };
 
         expect(jsonBody).to.deep.equal(expectedResult);
@@ -82,8 +1226,8 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails with Invalid Identifier error', function(done) {
       request.get(baseUrl + 'times/cat', function(err, res, body) {
-        const jsonBody = JSON.parse(body);
-        const expectedResult = {
+        var jsonBody = JSON.parse(body);
+        var expectedResult = {
           error: 'The provided identifier was invalid',
           status: 400,
           text: 'Expected UUID but received cat',
@@ -107,18 +1251,18 @@ module.exports = function(expect, request, baseUrl) {
           auth: {
             type: 'password',
             username: 'tschuy',
-            password: 'password',
+            password: 'password'
           },
-          object: time,
-        },
+          object: time
+        }
       };
     }
 
-    const initialData = [
+    var initialData = [
       {
         duration: 12,
-        user: 'tschuy',
-        project: ['wf'],
+        user: 'deanj',
+        project: ['gwm', 'ganeti-webmgr'],
         activities: ['docs', 'dev'],
         notes: '',
         issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -130,10 +1274,55 @@ module.exports = function(expect, request, baseUrl) {
         revision: 1,
         id: 1,
       },
+      {
+        duration: 12,
+        user: 'tschuy',
+        project: ['gwm', 'ganeti-webmgr'],
+        activities: ['docs'],
+        notes: '',
+        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        date_worked: '2015-04-20',
+        created_at: '2015-04-20',
+        updated_at: null,
+        deleted_at: null,
+        uuid: '4612079d-daa9-4f27-b28c-25b18828d7c0',
+        revision: 1,
+        id: 2
+      },
+      {
+        duration: 12,
+        user: 'deanj',
+        project: ['pgd'],
+        activities: ['sys'],
+        notes: '',
+        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        date_worked: '2015-04-21',
+        created_at: '2015-04-21',
+        updated_at: null,
+        deleted_at: null,
+        uuid: '35e22684-511f-41e1-86ba-a4fa4e426121',
+        revision: 1,
+        id: 3
+      },
+      {
+        duration: 12,
+        user: 'patcht',
+        project: ['pgd'],
+        activities: ['dev'],
+        notes: '',
+        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        date_worked: '2015-04-22',
+        created_at: '2015-04-22',
+        updated_at: null,
+        deleted_at: null,
+        uuid: 'd260170c-9ddd-47be-9cc9-e3392a67edcc',
+        revision: 1,
+        id: 4
+      },
     ];
 
     it('creates a new time with activities', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
@@ -143,9 +1332,10 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
+
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
 
@@ -155,9 +1345,9 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(body).to.deep.equal(time);
 
-        const createdAt = new Date().toISOString().substring(0, 10);
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          const expectedResults = initialData.concat([
+        createdAt = new Date().toISOString().substring(0, 10);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          var expectedResults = initialData.concat([
             {
               duration: 20,
               user: 'tschuy',
@@ -174,17 +1364,16 @@ module.exports = function(expect, request, baseUrl) {
               id: 2,
             },
           ]);
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          const jsonGetBody = JSON.parse(getBody);
-          expect(jsonGetBody).to.deep.have.same.members(expectedResults);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
           done();
         });
       });
     });
 
     it('fails with a bad password', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
@@ -194,23 +1383,24 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
       postArg.body.auth.password = 'not the real password';
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Authentication failure',
           status: 401,
-          text: 'Incorrect password.',
+          text: 'Incorrect password.'
         };
 
         expect(res.statusCode).to.equal(401);
         expect(body).to.deep.equal(expectedResult);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.deep.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.deep.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
@@ -252,7 +1442,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails with a missing login', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
@@ -262,30 +1452,31 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
       delete postArg.body.auth;
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Authentication failure',
           status: 401,
-          text: 'Missing credentials',
+          text: 'Missing credentials'
         };
 
         expect(res.statusCode).to.equal(401);
         expect(body).to.deep.equal(expectedResult);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.deep.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.deep.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a negative duration', function(done) {
-      const time = {
+      var time = {
         duration: -20,
         user: 'tschuy',
         project: 'gwm',
@@ -295,30 +1486,31 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field duration of time should be positive number ' +
-          'but was sent as negative number',
+          'but was sent as negative number'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-numeric duration', function(done) {
-      const time = {
+      var time = {
         duration: 'twenty',
         user: 'tschuy',
         project: 'gwm',
@@ -328,30 +1520,30 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field duration of time should be number but ' +
-          'was sent as string',
+          text: 'Field duration of time should be number but was sent as string'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a missing duration', function(done) {
-      const time = {
+      var time = {
         user: 'tschuy',
         project: 'gwm',
         activities: ['dev', 'docs'],
@@ -360,29 +1552,30 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'The time is missing a duration',
+          text: 'The time is missing a duration'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a bad activity', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
@@ -392,30 +1585,31 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field activities of time should be slugs but was sent as ' +
-          'array containing at least 1 invalid slug',
+          'array containing at least 1 invalid slug'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-existent activity', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
@@ -425,29 +1619,30 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Invalid foreign key',
           status: 409,
-          text: 'The time does not contain a valid activities reference.',
+          text: 'The time does not contain a valid activities reference.'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(409);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-string activity', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
@@ -457,30 +1652,31 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field activities of time should be slugs but was sent as ' +
-          'array containing at least 1 number',
+          'array containing at least 1 number'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-array activities', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
@@ -490,30 +1686,30 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field activities of time should be array ' +
-          'but was sent as number',
+          text:'Field activities of time should be array but was sent as number'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with missing activities', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
@@ -522,29 +1718,30 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'The time is missing a activities',
+          text: 'The time is missing a activities'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a bad project', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'project? we need a project?',
@@ -554,30 +1751,31 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field project of time should be slug but was sent as ' +
-          'invalid slug project? we need a project?',
+          text:'Field project of time should be slug but was sent as invalid ' +
+          'slug project? we need a project?'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-existent project', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'project-xyz',
@@ -587,29 +1785,30 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Invalid foreign key',
           status: 409,
-          text: 'The time does not contain a valid project reference.',
+          text: 'The time does not contain a valid project reference.'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(409);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-string project', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: ['Who needs', 'proper types?'],
@@ -619,29 +1818,30 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field project of time should be string but was sent as array',
+          text: 'Field project of time should be string but was sent as array'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a missing project', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         activities: ['dev', 'docs'],
@@ -650,106 +1850,109 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'The time is missing a project',
+          text: 'The time is missing a project'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a bad issue URI', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'I do my own thing, pal',
-        date_worked: '2015-07-30',
+        date_worked: '2015-07-30'
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field issue_uri of time should be URI but was sent as ' +
-          'invalid URI I do my own thing, pal',
+          'invalid URI I do my own thing, pal'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-string issue URI', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 3.14159265,
-        date_worked: '2015-07-30',
+        date_worked: '2015-07-30'
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field issue_uri of time should be string but was sent ' +
-          'as number',
+          text:'Field issue_uri of time should be string but was sent as number'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('works with a missing issue URI', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        date_worked: '2015-07-30',
+        date_worked: '2015-07-30'
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
+
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
 
@@ -758,9 +1961,9 @@ module.exports = function(expect, request, baseUrl) {
         time.revision = 1;
         expect(body).to.deep.equal(time);
 
-        const createdAt = new Date().toISOString().substring(0, 10);
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          const expectedResults = initialData.concat([
+        createdAt = new Date().toISOString().substring(0, 10);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          var expectedResults = initialData.concat([
             {
               duration: 20,
               user: 'tschuy',
@@ -777,17 +1980,16 @@ module.exports = function(expect, request, baseUrl) {
               id: 2,
             },
           ]);
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          const jsonGetBody = JSON.parse(getBody);
-          expect(jsonGetBody).to.deep.have.same.members(expectedResults);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
           done();
         });
       });
     });
 
     it('fails with a bad user', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'jenkinsl',
         project: 'gwm',
@@ -797,29 +1999,30 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Authorization failure',
           status: 401,
-          text: 'tschuy is not authorized to create time entries for jenkinsl',
+          text: 'tschuy is not authorized to create time entries for jenkinsl'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(401);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-string user', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: {username: 'tschuy'},
         project: 'gwm',
@@ -829,30 +2032,31 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field user of time should be string but ' +
-          'was sent as object',
+          'was sent as object'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a missing user', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         project: 'gwm',
         activities: ['dev', 'docs'],
@@ -861,29 +2065,30 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'The time is missing a user',
+          text: 'The time is missing a user'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a bad date worked', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
@@ -893,30 +2098,31 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: 'baaaaaaaad',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field date_worked of time should be ISO-8601 date ' +
-          'but was sent as baaaaaaaad',
+          'but was sent as baaaaaaaad'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-string date worked', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
@@ -926,30 +2132,31 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: 1234,
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field date_worked of time should be string ' +
-          'but was sent as number',
+          'but was sent as number'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a missing date worked', function(done) {
-      const time = {
+      var time = {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
@@ -958,22 +2165,23 @@ module.exports = function(expect, request, baseUrl) {
         issue_uri: 'https://github.com/osuosl/gwm/issues/1',
       };
 
-      const postArg = getPostObject(baseUrl + 'times/', time);
+      var postArg = getPostObject(baseUrl + 'times/', time);
 
       request.post(postArg, function(err, res, body) {
-        const expectedResult = {
+
+        var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'The time is missing a date_worked',
+          text: 'The time is missing a date_worked'
         };
 
         expect(body).to.deep.equal(expectedResult);
         expect(res.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
