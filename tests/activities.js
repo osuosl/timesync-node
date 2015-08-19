@@ -29,6 +29,11 @@ module.exports = function(expect, request, baseUrl) {
             slug: 'sys',
             id: 3,
           },
+          {
+            name: 'Meetings',
+            slug: 'meeting',
+            id: 4,
+          },
         ];
 
         expect(err).to.equal(null);
@@ -93,7 +98,7 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('DELETE /activities/:slug', function() {
     it('deletes the activity with the given slug', function(done) {
-      request.del(baseUrl + 'activities/sys', function(delErr, delRes) {
+      request.del(baseUrl + 'activities/meeting', function(delErr, delRes) {
         expect(delErr).to.be.a('null');
         expect(delRes.statusCode).to.equal(200);
 
@@ -144,6 +149,11 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'sys',
               id: 3,
             },
+            {
+              name: 'Meetings',
+              slug: 'meeting',
+              id: 4,
+            },
           ];
 
           expect(getErr).to.be.a('null');
@@ -185,6 +195,11 @@ module.exports = function(expect, request, baseUrl) {
               name: 'Systems',
               slug: 'sys',
               id: 3,
+            },
+            {
+              name: 'Meetings',
+              slug: 'meeting',
+              id: 4,
             },
           ];
 
@@ -228,6 +243,11 @@ module.exports = function(expect, request, baseUrl) {
               name: 'Systems',
               slug: 'sys',
               id: 3,
+            },
+            {
+              name: 'Meetings',
+              slug: 'meeting',
+              id: 4,
             },
           ];
 

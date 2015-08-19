@@ -50,7 +50,7 @@ module.exports = function(app) {
     .where('slug', req.params.slug);
 
     // Check timesactivities to see if an activity (id) is being referenced
-    knex('timesactivities').select('id').where('id', '=', activityId)
+    knex('timesactivities').select('id').where('activity', '=', activityId)
     .then(function(activity) {
       /* If the length of the activity array is greater than 0, then
       the activity id is being referenced by timesactivities */

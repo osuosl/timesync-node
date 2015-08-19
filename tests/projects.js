@@ -35,6 +35,13 @@ module.exports = function(expect, request, baseUrl) {
             owner: 'tschuy',
             id: 3,
           },
+          {
+            uri: 'https://github.com/osuosl/timesync',
+            name: 'Timesync',
+            slugs: ['timesync', 'ts'],
+            owner: 'patcht',
+            id: 4,
+          },
         ];
 
         [expectedResults, jsonBody].forEach(function(list) {
@@ -538,7 +545,7 @@ module.exports = function(expect, request, baseUrl) {
     const project = {
       uri: 'https://github.com/osuosl/timesync-node',
       owner: 'tschuy',
-      slugs: ['ts', 'timesync'],
+      slugs: ['tsn', 'timesync-node'],
       name: 'TimeSync Node',
     };
 
@@ -546,9 +553,9 @@ module.exports = function(expect, request, baseUrl) {
     const newProject = {
       uri: 'https://github.com/osuosl/timesync-node',
       owner: 'tschuy',
-      slugs: ['ts', 'timesync'],
+      slugs: ['tsn', 'timesync-node'],
       name: 'TimeSync Node',
-      id: 4,
+      id: 5,
     };
 
     // the base POST JSON
@@ -582,6 +589,13 @@ module.exports = function(expect, request, baseUrl) {
         slugs: ['wf'],
         owner: 'tschuy',
         id: 3,
+      },
+      {
+        uri: 'https://github.com/osuosl/timesync',
+        name: 'Timesync',
+        slugs: ['timesync', 'ts'],
+        owner: 'patcht',
+        id: 4,
       },
     ];
 
@@ -647,9 +661,9 @@ module.exports = function(expect, request, baseUrl) {
             {
               owner: 'tschuy',
               uri: null,
-              slugs: ['ts', 'timesync'],
+              slugs: ['tsn', 'timesync-node'],
               name: 'TimeSync Node',
-              id: 4,
+              id: 5,
             },
           ]);
 
@@ -913,10 +927,10 @@ module.exports = function(expect, request, baseUrl) {
   describe('DELETE /projects/:slug', function() {
     it('deletes the desired project if no times are associated with it',
     function(done) {
-      request.del(baseUrl + 'projects/pgd', function(err, res) {
+      request.del(baseUrl + 'projects/ts', function(err, res) {
         expect(res.statusCode).to.equal(200);
 
-        request.get(baseUrl + 'projects/pgd', function(getErr, getRes, getBody) {
+        request.get(baseUrl + 'projects/ts', function(getErr, getRes, getBody) {
           const jsonBody = JSON.parse(getBody);
           const expectedResult = {
             status: 404,
@@ -932,7 +946,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('Fails if it recieves a project with times associated', function(done) {
-      request.del(baseUrl + 'projects/wf', function(err, res, body) {
+      request.del(baseUrl + 'projects/pgd', function(err, res, body) {
         const jsonBody = JSON.parse(body);
         const expectedResult = {
           status: 405,
@@ -982,6 +996,13 @@ module.exports = function(expect, request, baseUrl) {
               owner: 'tschuy',
               id: 3,
             },
+            {
+              uri: 'https://github.com/osuosl/timesync',
+              name: 'Timesync',
+              slugs: ['timesync', 'ts'],
+              owner: 'patcht',
+              id: 4,
+            },
           ];
 
           expect(getRes.statusCode).to.equal(200);
@@ -1027,6 +1048,13 @@ module.exports = function(expect, request, baseUrl) {
               slugs: ['wf'],
               owner: 'tschuy',
               id: 3,
+            },
+            {
+              uri: 'https://github.com/osuosl/timesync',
+              name: 'Timesync',
+              slugs: ['timesync', 'ts'],
+              owner: 'patcht',
+              id: 4,
             },
           ];
 
