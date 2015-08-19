@@ -1,10 +1,12 @@
+'use strict';
+
 module.exports = function(expect, request, baseUrl) {
   /* GET one of the /times endpoints and check its response against
   what should be returned */
   describe('GET /times', function() {
     it('returns all times in the database', function(done) {
-      request.get(baseUrl + 'times', function(err, res, body) {
-        var expectedResults = [
+      request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -15,7 +17,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
+            id: 1,
           },
           {
             duration: 12,
@@ -27,7 +29,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
+            id: 2,
           },
           {
             duration: 12,
@@ -39,7 +41,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
-            id: 3
+            id: 3,
           },
           {
             duration: 12,
@@ -51,13 +53,13 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
             updated_at: null,
-            id: 4
+            id: 4,
           },
         ];
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
-        expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
+        expect(JSON.parse(getBody)).to.deep.have.same.members(expectedResults);
         done();
       });
     });
@@ -65,9 +67,9 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('GET /times?user=:user', function() {
     it('should return all times for a user', function(done) {
-      request.get(baseUrl + 'times?user=deanj', function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      request.get(baseUrl + 'times?user=deanj', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -78,7 +80,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
+            id: 1,
           },
           {
             duration: 12,
@@ -90,20 +92,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
-            id: 3
-          }
+            id: 3,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -112,9 +114,9 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('GET /times?project=:project', function() {
     it('should return all times for a project', function(done) {
-      request.get(baseUrl + 'times?project=gwm', function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      request.get(baseUrl + 'times?project=gwm', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -125,7 +127,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
+            id: 1,
           },
           {
             duration: 12,
@@ -137,20 +139,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
-          }
+            id: 2,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -159,9 +161,9 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('GET /times?activity=:activity', function() {
     it('should return all times for an activity', function(done) {
-      request.get(baseUrl + 'times?activity=docs', function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      request.get(baseUrl + 'times?activity=docs', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -172,7 +174,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
+            id: 1,
           },
           {
             duration: 12,
@@ -184,20 +186,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
-          }
+            id: 2,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -207,9 +209,9 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /times?dateStart=:start', function() {
     it('should return all times after a date', function(done) {
       request.get(baseUrl + 'times?dateStart=2015-04-20',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'tschuy',
@@ -220,7 +222,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
+            id: 2,
           },
           {
             duration: 12,
@@ -232,7 +234,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
-            id: 3
+            id: 3,
           },
           {
             duration: 12,
@@ -244,20 +246,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
             updated_at: null,
-            id: 4
+            id: 4,
           },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -267,9 +269,9 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /times?dateEnd=:end', function() {
     it('should return all times before a date', function(done) {
       request.get(baseUrl + 'times?dateEnd=2015-04-21',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -280,7 +282,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
+            id: 1,
           },
           {
             duration: 12,
@@ -292,7 +294,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
+            id: 2,
           },
           {
             duration: 12,
@@ -304,20 +306,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
-            id: 3
-          }
+            id: 3,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -327,9 +329,9 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /times?dateStart=:start&dateEnd=:end', function() {
     it('should return all times between two dates', function(done) {
       request.get(baseUrl + 'times?dateStart=2015-04-20' +
-      '&dateEnd=2015-04-21', function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      '&dateEnd=2015-04-21', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'tschuy',
@@ -340,7 +342,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
+            id: 2,
           },
           {
             duration: 12,
@@ -352,20 +354,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
-            id: 3
-          }
+            id: 3,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -375,9 +377,9 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /times?user=:user1&user=:user2', function() {
     it('should return all times for two users', function(done) {
       request.get(baseUrl + 'times?user=deanj&user=patcht',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -388,7 +390,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
+            id: 1,
           },
           {
             duration: 12,
@@ -400,7 +402,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
-            id: 3
+            id: 3,
           },
           {
             duration: 12,
@@ -412,20 +414,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
             updated_at: null,
-            id: 4
+            id: 4,
           },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -435,9 +437,9 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /times?user=:user&project=:project', function() {
     it('should return all times for a user and a project', function(done) {
       request.get(baseUrl + 'times?user=deanj&project=gwm',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -448,20 +450,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
-          }
+            id: 1,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -472,9 +474,9 @@ module.exports = function(expect, request, baseUrl) {
     it('should return all times for a user and an activity',
     function(done) {
       request.get(baseUrl + 'times?user=deanj&activity=docs',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -485,20 +487,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
-          }
+            id: 1,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -508,9 +510,9 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /times?user=:user&startDate=:start', function() {
     it('should return all times for a user after a date', function(done) {
       request.get(baseUrl + 'times?user=deanj&startDate=2015-04-20',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -521,20 +523,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
-            id: 3
-          }
+            id: 3,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -544,9 +546,9 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /times?user=:user&endDate=:end', function() {
     it('should return all times for a user before a date', function(done) {
       request.get(baseUrl + 'times?user=tschuy&endDate=2015-04-21',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'tschuy',
@@ -557,20 +559,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
-          }
+            id: 2,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -581,9 +583,9 @@ module.exports = function(expect, request, baseUrl) {
     it('should return all times for a user between two dates',
     function(done) {
       request.get(baseUrl + 'times?user=deanj&startDate=2015-04-19' +
-      '&endDate=2015-04-20', function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      '&endDate=2015-04-20', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -594,20 +596,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
-          }
+            id: 1,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -617,9 +619,9 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /times?project=:project1&project=:project2', function() {
     it('should return all times for two projects', function(done) {
       request.get(baseUrl + 'times?project=gwm&project=wf',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -630,7 +632,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
+            id: 1,
           },
           {
             duration: 12,
@@ -642,20 +644,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
-          }
+            id: 2,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -666,9 +668,9 @@ module.exports = function(expect, request, baseUrl) {
     it('should return all times for a project and an activity',
     function(done) {
       request.get(baseUrl + 'times?project=gwm&activity=dev',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -679,20 +681,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
-          }
+            id: 1,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -703,9 +705,9 @@ module.exports = function(expect, request, baseUrl) {
     it('should return all times for a project after a date',
     function(done) {
       request.get(baseUrl + 'times?project=gwm&startDate=2015-04-20',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'tschuy',
@@ -716,20 +718,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
-          }
+            id: 2,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -740,9 +742,9 @@ module.exports = function(expect, request, baseUrl) {
     it('should return all times for a project before a date',
     function(done) {
       request.get(baseUrl + 'times?project=gwm&endDate=2015-04-20',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -753,7 +755,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
+            id: 1,
           },
           {
             duration: 12,
@@ -765,20 +767,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
-          }
+            id: 2,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -790,9 +792,9 @@ module.exports = function(expect, request, baseUrl) {
     it('should return all times for a project between two dates',
     function(done) {
       request.get(baseUrl + 'times?project=gwm&startDate=2015-04-19' +
-      '&endDate=2015-04-21', function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      '&endDate=2015-04-21', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -803,7 +805,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
+            id: 1,
           },
           {
             duration: 12,
@@ -815,20 +817,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
-          }
+            id: 2,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -838,9 +840,9 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /times?activity=:activity1&activity=:activity2', function() {
     it('should return all times for two activities', function(done) {
       request.get(baseUrl + 'times?activity=docs&activity=dev',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -851,7 +853,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
+            id: 1,
           },
           {
             duration: 12,
@@ -863,7 +865,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
+            id: 2,
           },
           {
             duration: 12,
@@ -875,20 +877,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
             updated_at: null,
-            id: 4
+            id: 4,
           },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -899,9 +901,9 @@ module.exports = function(expect, request, baseUrl) {
     it('should return all times for an activity after a date',
     function(done) {
       request.get(baseUrl + 'times?activity=dev&startDate=2015-04-20',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'patcht',
@@ -912,20 +914,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
             updated_at: null,
-            id: 4
+            id: 4,
           },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -936,9 +938,9 @@ module.exports = function(expect, request, baseUrl) {
     it('should return all times for an activity before a date',
     function(done) {
       request.get(baseUrl + 'times?activity=dev&endDate=2015-04-21',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -949,20 +951,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
-          }
+            id: 1,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -974,9 +976,9 @@ module.exports = function(expect, request, baseUrl) {
     it('should return all times for an activity between two dates',
     function(done) {
       request.get(baseUrl + 'times?activity=dev&startDate=2015-04-19' +
-      '&endDate=2015-04-21', function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      '&endDate=2015-04-21', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -987,20 +989,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
-          }
+            id: 1,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -1013,9 +1015,9 @@ module.exports = function(expect, request, baseUrl) {
     'between two dates', function(done) {
       request.get(baseUrl + 'times?user=tschuy&project=pgd&' +
       'activity=docs' + '&startDate=2015-04-20&endDate=2015-04-22',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'tschuy',
@@ -1026,20 +1028,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
-          }
+            id: 2,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -1052,9 +1054,9 @@ module.exports = function(expect, request, baseUrl) {
     'between two dates', function(done) {
       request.get(baseUrl + 'times?user=deanj&user=tschuy&project=gwm&' +
       'activity=dev&startDate=2015-04-19&endDate=2015-04-21',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -1065,7 +1067,7 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
+            id: 1,
           },
           {
             duration: 12,
@@ -1077,20 +1079,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            id: 2
-          }
+            id: 2,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -1103,9 +1105,9 @@ module.exports = function(expect, request, baseUrl) {
     'activity between two dates', function(done) {
       request.get(baseUrl + 'times?user=deanj&project=gwm&project=pgd&' +
       'activity=docs&startDate=2015-04-19&endDate=2015-04-20',
-      function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -1116,20 +1118,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
-          }
+            id: 1,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -1142,9 +1144,9 @@ module.exports = function(expect, request, baseUrl) {
     'between two dates', function(done) {
       request.get(baseUrl + 'times?user=deanj&project=gwm&' +
       'activity=docs&activity=dev&startDate=2015-04-19&' +
-      'endDate=2015-04-20', function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResults = [
+      'endDate=2015-04-20', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
           {
             duration: 12,
             user: 'deanj',
@@ -1155,20 +1157,20 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
-            id: 1
-          }
+            id: 1,
+          },
         ];
 
         expect(jsonBody.length === expectedResults.length);
-        for (var i = 0, len = jsonBody.length; i < len; i++) {
+        for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -1177,9 +1179,9 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('GET /times/:id', function() {
     it('returns times by id', function(done) {
-      request.get(baseUrl + 'times/1', function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResult = {
+      request.get(baseUrl + 'times/1', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResult = {
           duration: 12,
           user: 'deanj',
           project: ['gwm', 'ganeti-webmgr'],
@@ -1189,11 +1191,11 @@ module.exports = function(expect, request, baseUrl) {
           date_worked: '2015-04-19',
           created_at: '2015-04-19',
           updated_at: null,
-          id: 1
+          id: 1,
         };
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
 
         expect(jsonBody).to.deep.equal(expectedResult);
         done();
@@ -1201,33 +1203,33 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('should fail with Object not found error', function(done) {
-      request.get(baseUrl + 'times/404', function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResult = {
+      request.get(baseUrl + 'times/404', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResult = {
           error: 'Object not found',
           status: 404,
-          text: 'Nonexistent time'
+          text: 'Nonexistent time',
         };
 
         expect(jsonBody).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(404);
+        expect(getRes.statusCode).to.equal(404);
 
         done();
       });
     });
 
     it('fails with Invalid Identifier error', function(done) {
-      request.get(baseUrl + 'times/cat', function(err, res, body) {
-        var jsonBody = JSON.parse(body);
-        var expectedResult = {
+      request.get(baseUrl + 'times/cat', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResult = {
           error: 'The provided identifier was invalid',
           status: 400,
           text: 'Expected ID but received cat',
-          values: ['cat']
+          values: ['cat'],
         };
 
         expect(jsonBody).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(getRes.statusCode).to.equal(400);
 
         done();
       });
@@ -1243,14 +1245,14 @@ module.exports = function(expect, request, baseUrl) {
           auth: {
             type: 'password',
             username: 'tschuy',
-            password: 'password'
+            password: 'password',
           },
-          object: time
-        }
+          object: time,
+        },
       };
     }
 
-    var initialData = [
+    const initialData = [
       {
         duration: 12,
         user: 'deanj',
@@ -1261,7 +1263,7 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-04-19',
         created_at: '2015-04-19',
         updated_at: null,
-        id: 1
+        id: 1,
       },
       {
         duration: 12,
@@ -1273,7 +1275,7 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-04-20',
         created_at: '2015-04-20',
         updated_at: null,
-        id: 2
+        id: 2,
       },
       {
         duration: 12,
@@ -1285,7 +1287,7 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-04-21',
         created_at: '2015-04-21',
         updated_at: null,
-        id: 3
+        id: 3,
       },
       {
         duration: 12,
@@ -1297,34 +1299,33 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-04-22',
         created_at: '2015-04-22',
         updated_at: null,
-        id: 4
+        id: 4,
       },
     ];
 
     it('creates a new time with activities', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        expect(postErr).to.equal(null);
+        expect(postRes.statusCode).to.equal(200);
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        time.id = postBody.id;
+        expect(postBody).to.deep.equal(time);
 
-        time.id = body.id;
-        expect(body).to.deep.equal(time);
-
-        createdAt = new Date().toISOString().substring(0, 10);
-        request.get(baseUrl + 'times', function(err, res, body) {
-          var expectedResults = initialData.concat([
+        const createdAt = new Date().toISOString().substring(0, 10);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          const expectedResults = initialData.concat([
             {
               duration: 20,
               user: 'tschuy',
@@ -1335,572 +1336,555 @@ module.exports = function(expect, request, baseUrl) {
               date_worked: '2015-07-30',
               created_at: createdAt,
               updated_at: null,
-              id: 5
-            }
+              id: 5,
+            },
           ]);
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.have.same.members(expectedResults);
           done();
         });
       });
     });
 
     it('fails with a bad password', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
       postArg.body.auth.password = 'not the real password';
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Authentication failure',
           status: 401,
-          text: 'Incorrect password.'
+          text: 'Incorrect password.',
         };
 
-        expect(res.statusCode).to.equal(401);
-        expect(body).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(401);
+        expect(postBody).to.deep.equal(expectedResult);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.deep.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.deep.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a missing login', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
       delete postArg.body.auth;
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Authentication failure',
           status: 401,
-          text: 'Missing credentials'
+          text: 'Missing credentials',
         };
 
-        expect(res.statusCode).to.equal(401);
-        expect(body).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(401);
+        expect(postBody).to.deep.equal(expectedResult);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.deep.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.deep.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a negative duration', function(done) {
-      var time = {
+      const time = {
         duration: -20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field duration of time should be positive number ' +
-          'but was sent as negative number'
+          'but was sent as negative number',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-numeric duration', function(done) {
-      var time = {
+      const time = {
         duration: 'twenty',
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field duration of time should be number but was sent as string'
+          text: 'Field duration of time should be number but was sent as string',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a missing duration', function(done) {
-      var time = {
+      const time = {
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'The time is missing a duration'
+          text: 'The time is missing a duration',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a bad activity', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs', 'activity_!@#'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field activities of time should be slugs but was sent as ' +
-          'array containing at least 1 invalid slug'
+          'array containing at least 1 invalid slug',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-existent activity', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs', 'dancing'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Invalid foreign key',
           status: 409,
-          text: 'The time does not contain a valid activities reference.'
+          text: 'The time does not contain a valid activities reference.',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(409);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(409);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-string activity', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs', -14],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field activities of time should be slugs but was sent as ' +
-          'array containing at least 1 number'
+          'array containing at least 1 number',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-array activities', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: 1.414141414,
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text:'Field activities of time should be array but was sent as number'
+          text: 'Field activities of time should be array but was sent as number',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with missing activities', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'The time is missing a activities'
+          text: 'The time is missing a activities',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a bad project', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'project? we need a project?',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text:'Field project of time should be slug but was sent as invalid ' +
-          'slug project? we need a project?'
+          text: 'Field project of time should be slug but was sent as invalid ' +
+          'slug project? we need a project?',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-existent project', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'project-xyz',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Invalid foreign key',
           status: 409,
-          text: 'The time does not contain a valid project reference.'
+          text: 'The time does not contain a valid project reference.',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(409);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(409);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-string project', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: ['Who needs', 'proper types?'],
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field project of time should be string but was sent as array'
+          text: 'Field project of time should be string but was sent as array',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a missing project', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'The time is missing a project'
+          text: 'The time is missing a project',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a bad issue URI', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'I do my own thing, pal',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field issue_uri of time should be URI but was sent as ' +
-          'invalid URI I do my own thing, pal'
+          'invalid URI I do my own thing, pal',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-string issue URI', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 3.14159265,
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text:'Field issue_uri of time should be string but was sent as number'
+          text: 'Field issue_uri of time should be string but was sent as number',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('works with a missing issue URI', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        expect(postErr).to.equal(null);
+        expect(postRes.statusCode).to.equal(200);
 
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        time.id = postBody.id;
+        expect(postBody).to.deep.equal(time);
 
-        time.id = body.id;
-        expect(body).to.deep.equal(time);
-
-        createdAt = new Date().toISOString().substring(0, 10);
-        request.get(baseUrl + 'times', function(err, res, body) {
-          var expectedResults = initialData.concat([
+        const createdAt = new Date().toISOString().substring(0, 10);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          const expectedResults = initialData.concat([
             {
               duration: 20,
               user: 'tschuy',
@@ -1911,211 +1895,205 @@ module.exports = function(expect, request, baseUrl) {
               date_worked: '2015-07-30',
               created_at: createdAt,
               updated_at: null,
-              id: 5
-            }
+              id: 5,
+            },
           ]);
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.have.same.members(expectedResults);
           done();
         });
       });
     });
 
     it('fails with a bad user', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'jenkinsl',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Authorization failure',
           status: 401,
-          text: 'tschuy is not authorized to create time entries for jenkinsl'
+          text: 'tschuy is not authorized to create time entries for jenkinsl',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(401);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(401);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-string user', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: {username: 'tschuy'},
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field user of time should be string but ' +
-          'was sent as object'
+          'was sent as object',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a missing user', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: '2015-07-30'
+        date_worked: '2015-07-30',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'The time is missing a user'
+          text: 'The time is missing a user',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a bad date worked', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: 'baaaaaaaad'
+        date_worked: 'baaaaaaaad',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field date_worked of time should be ISO-8601 date ' +
-          'but was sent as baaaaaaaad'
+          'but was sent as baaaaaaaad',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a non-string date worked', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/pgd/issues/1',
-        date_worked: 1234
+        date_worked: 1234,
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
           text: 'Field date_worked of time should be string ' +
-          'but was sent as number'
+          'but was sent as number',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
     });
 
     it('fails with a missing date worked', function(done) {
-      var time = {
+      const time = {
         duration: 20,
         user: 'tschuy',
         project: 'pgd',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1'
+        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
       };
 
-      var postArg = getPostObject(baseUrl + 'times/', time);
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-      request.post(postArg, function(err, res, body) {
-
-        var expectedResult = {
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'The time is missing a date_worked'
+          text: 'The time is missing a date_worked',
         };
 
-        expect(body).to.deep.equal(expectedResult);
-        expect(res.statusCode).to.equal(400);
+        expect(postBody).to.deep.equal(expectedResult);
+        expect(postRes.statusCode).to.equal(400);
 
-        request.get(baseUrl + 'times', function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.equal(null);
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
           done();
         });
       });
