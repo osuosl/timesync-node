@@ -77,20 +77,38 @@ module.exports = function(app) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
-  });
+    });
 
-    app.post(app.get('version') + '/activities/:slug',
-    function(req, res, next) {
-        passport.authenticate('local', function(autherr, user, info) {
-            if (!user) {
-                let err = errors.errorAuthenticationFailure(info.message);
+        // get matching activity
+        knex('activities').select().where('slug', '=', req.params.slug)
+        .then(function(activity) {
+            if (activity.length === 0) {
+                var err = errors.errorObjectNotFound('activity');
                 return res.status(err.status).send(err);
             }
 
-            let obj = req.body.object;
+            return res.send(activity[0]);
 
-            let validKeys = ['name', 'slug']
-            for (let key in obj) {
+        }).catch(function(error) {
+            var err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+        });
+    });
+
+    app.post(app.get('version') + '/activities/:slug',
+    function(req, res, next) {
+        /*passport.authenticate('local', function(autherr, user, info) {
+            if (!user) {
+                let err = errors.errorAuthenticationFailure(info.message);
+                return res.status(err.status).send(err);
+            }*/
+
+            let currObj = req.body.object;
+
+            let validKeys = ['name', 'slug'];
+            for (let key in currObj) {
+                // indexOf return -1 if the parameter it not in the array
+                // so this will return true in the slug/name DNE
                 if (validKeys.indexOf(key) === -1) {
                     let err = errors.errorBadObjectUnknownField(
                         'activity', key);
@@ -103,19 +121,66 @@ module.exports = function(app) {
                 {name: 'slug', type: 'string', required: false},
             ];
 
-            // Rebase later
-            let validationFailure = helpers.validateFields(obj, fields);
+            // Rebase later to use this helper function
+            /*let validationFailure = helpers.validateFields(obj, fields);
             if (validationFailure) {
                 let err = errors.errorBadObjectInvalidField(
                     'activity',
                     validationFailure.name,
-                    validationFailure.type,
-                    validationFailure.actualType
+                    validationFailure.type,         // expected type
+                    validationFailure.actualType    // actual type received
                 );
                 return res.status(err.status).send(err);
+            }*/
+
+            // if the user submits a patched name with a length of zero
+            if (currObj.name !== undefined && currObj.name.length === 0) {
+                let err = errors.errorBadObjectInvalidField(
+                    'activity', 'name', 'string', 'empty string');
+                return res.status(err.status).send(err);
             }
-        });
+
+            // if the user submits a patched slug with a length of zero
+            if (currObj.slug !== undefined && currObj.slug.length === 0) {
+                let err = errors.errorBadObjectInvalidField(
+                    'activity', 'slug', 'slug', 'empty string');
+                return res.status(err.status).send(err);
+            }
+
+            if (!helpers.validateSlug(req.params.slug)) {
+                let err = errors.errorInvalidIdentifier('slug', '!._cucco');
+                return res.status(err.status).send(err);
+            }
+
+            knex('activities').where('slug', '=', req.params.slug).first()
+            .then(function() {
+
+                //console.log('Printing the current object');
+                //console.log(currObj);
+
+                let activity = {
+                    name: req.body.object.name || currObj.name,
+                    slug: req.body.object.slug || currObj.slug
+                    //id: req.body.object.id || currObj.id
+                };
+
+                knex('activities').where('slug', '=', req.params.slug)
+                .update(activity).then(function(numObj) {
+
+                    if (numObj >= 1) {
+                        return res.send(activity);
+                    }
+
+                //console.log(req.body.object.name);
+                //console.log(req.body.object.slug);
+                    let err = errors.errorObjectNotFound('activity');
+                    return res.status(err.status).send(err);
+                }).catch(function(error){
+                    let err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
+                });
+            });
+        //});
     });
-  });
 
 };
