@@ -1,9 +1,7 @@
-'use strict';
-
-var helpers;
+let helpers;
 
 module.exports = function(app) {
-  var knex = app.get('knex');
+  const knex = app.get('knex');
   helpers = {
     validateSlug: function(slug) {
       /* matches:
@@ -32,11 +30,11 @@ module.exports = function(app) {
         return true;
       }
 
-      var hasDoubleHyphens = new RegExp('--');
-      var containsLetter = new RegExp('[a-z]+');
+      const hasDoubleHyphens = new RegExp('--');
+      const containsLetter = new RegExp('[a-z]+');
 
       // alphanumeric plus hyphens, but with no external hyphens
-      var alphanumeric = new RegExp('^[a-z0-9]+[a-z0-9-]*[a-z0-9]+$');
+      const alphanumeric = new RegExp('^[a-z0-9]+[a-z0-9-]*[a-z0-9]+$');
 
       return (containsLetter.test(slug) && alphanumeric.test(slug) &&
         !hasDoubleHyphens.test(slug));
@@ -68,8 +66,8 @@ module.exports = function(app) {
       undefined. If false, an undefined field will not raise an error.
       */
 
-      for (let field of fields) {
-        let fieldValue = helpers.getType(object[field.name]);
+      for (const field of fields) {
+        const fieldValue = helpers.getType(object[field.name]);
         if (fieldValue !== field.type) {
           if (object[field.name] === undefined && !field.required) {
             // if the field isn't required, and it's undefined,
@@ -91,7 +89,6 @@ module.exports = function(app) {
       // pass it to resolve(). If an error occurs, pass it to
       // reject().
       return new Promise(function(resolve, reject) {
-
         if (!helpers.validateSlug(slug)) {
           return reject({type: 'invalid', value: slug});
         }
@@ -119,12 +116,10 @@ module.exports = function(app) {
           return 'array';
         } else if (receieved === null) {
           return 'null';
-        } else {
-          return 'object';
         }
-      } else {
-        return typeof receieved;
+        return 'object';
       }
+      return typeof receieved;
     },
 
     checkActivities: function(names) {
@@ -133,17 +128,17 @@ module.exports = function(app) {
           if (names === undefined || names === null) {
             reject({type: 'invalid', value: names});
           } else {
-            var results = slugs.map(function(value) {
+            const results = slugs.map(function(value) {
               return value.slug;
             });
 
-            var unmatched = names.filter(function(value) {
+            const unmatched = names.filter(function(value) {
               if (results.indexOf(value) < 0) {
                 return value;
               }
             });
 
-            var ids = slugs.map(function(value) {
+            const ids = slugs.map(function(value) {
               return value.id;
             });
 
@@ -157,7 +152,7 @@ module.exports = function(app) {
           reject({type: 'database', value: err});
         });
       });
-    }
+    },
   };
 
   return helpers;

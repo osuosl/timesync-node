@@ -2,6 +2,7 @@
   "extends": "airbnb",
   "rules": {
     // rules here take precedence over airbnb's
+    "func-names": 0
   },
   "root": true,
 }
