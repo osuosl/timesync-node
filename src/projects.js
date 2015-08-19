@@ -116,8 +116,7 @@ module.exports = function(app) {
     var slugsSubquery = knex('projects').select('id')
     .where('id', '=', projectSubquery);
 
-    knex('projectslugs')
-    .select('projects.id as id', 'projects.name as name',
+    knex('projectslugs').select('projects.id as id', 'projects.name as name',
     'projects.uri as uri', 'users.username as owner',
     'projectslugs.name as slug')
     .where('projectslugs.project', '=', slugsSubquery)
@@ -131,8 +130,7 @@ module.exports = function(app) {
         the slug, so just create it from the first one
         */
         let project = {id: results[0].id, name: results[0].name,
-          owner: results[0].owner, uri: results[0].uri,
-          slugs: []};
+          owner: results[0].owner, uri: results[0].uri, slugs: []};
 
         for (var i = 0, len = results.length; i < len; i++) {
           // add slugs to project
@@ -202,12 +200,10 @@ module.exports = function(app) {
 
           // if any slugs match the slugs passed to us, error out
           if (slugs.length) {
-            let err = errors.errorSlugsAlreadyExist(
-              slugs.map(function(slug) {
-                return slug.name;
-              })
+            let err = errors.errorSlugsAlreadyExist(slugs.map(function(slug) {
+              return slug.name;
+            }));
 
-            );
             return res.status(err.status).send(err);
           }
 
@@ -226,8 +222,7 @@ module.exports = function(app) {
               return {name: slug, project: project};
             });
 
-            knex('projectslugs')
-            .insert(projectSlugs).then(function() {
+            knex('projectslugs').insert(projectSlugs).then(function() {
               obj.id = project;
               res.send(JSON.stringify(obj));
             });
@@ -312,11 +307,8 @@ module.exports = function(app) {
 
       // also makes the owner field the username so it can be checked, and
       // puts the ownerId into the ownerId field.
-      knex('projects').first().select(
-      'projects.id as id',
-      'projects.name as name',
-      'projects.uri as uri',
-      'users.username as owner',
+      knex('projects').first().select('projects.id as id',
+      'projects.name as name', 'projects.uri as uri', 'users.username as owner',
       'users.id as ownerId')
       .where('projects.id', '=', projectIdQuery)
       .innerJoin('users', 'users.id', 'projects.owner')
@@ -329,8 +321,8 @@ module.exports = function(app) {
           return res.status(err.status).send(err);
         }
 
-        knex('projectslugs')
-        .where('name', 'in', obj.slugs).then(function(slugs) {
+        knex('projectslugs').where('name', 'in', obj.slugs)
+        .then(function(slugs) {
           // slugs contains all of the slugs named by the user that
           // currently exist in the database. This list is used to
           // check that they're not overlapping with existing slugs,
@@ -364,16 +356,15 @@ module.exports = function(app) {
 
           delete project.ownerId;
 
-          knex('projects')
-          .where({id: project.id}).update(project).then(function() {
+          knex('projects').where({id: project.id}).update(project)
+          .then(function() {
             // slugNames contains the list of names of slugs that
             // overlap with what the user submitted.
             let slugNames = slugs.map(function(slug) {
               return slug.name;
             });
 
-            knex('projectslugs')
-            .where({project: project.id})
+            knex('projectslugs').where({project: project.id})
             .then(function(existingSlugs) {
               existingSlugs = existingSlugs.map(function(slug) {
                 return slug.name;

@@ -22,8 +22,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
-        expect(JSON.parse(body)).to.deep.have.same
-        .members(expectedResults);
+        expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
         done();
       });
     });
@@ -112,8 +111,7 @@ module.exports = function(expect, request, baseUrl) {
         project: ['wf'],
         activities: ['docs', 'dev'],
         notes: '',
-        issue_uri: 'https://github.com/osu-cass' +
-        '/whats-fresh-api/issues/56',
+        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
         date_worked: '2015-04-19',
         created_at: '2015-04-19',
         updated_at: null,
@@ -160,8 +158,7 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same
-          .members(expectedResults);
+          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
           done();
         });
       });
@@ -287,8 +284,7 @@ module.exports = function(expect, request, baseUrl) {
         var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field duration of time should be number ' +
-          'but was sent as string'
+          text: 'Field duration of time should be number but was sent as string'
         };
 
         expect(body).to.deep.equal(expectedResult);
@@ -353,8 +349,8 @@ module.exports = function(expect, request, baseUrl) {
         var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field activities of time should be slugs but ' +
-          'was sent as array containing at least 1 invalid slug'
+          text: 'Field activities of time should be slugs but was sent as ' +
+          'array containing at least 1 invalid slug'
         };
 
         expect(body).to.deep.equal(expectedResult);
@@ -387,8 +383,7 @@ module.exports = function(expect, request, baseUrl) {
         var expectedResult = {
           error: 'Invalid foreign key',
           status: 409,
-          text: 'The time does not contain a valid activities ' +
-          'reference.'
+          text: 'The time does not contain a valid activities reference.'
         };
 
         expect(body).to.deep.equal(expectedResult);
@@ -421,8 +416,8 @@ module.exports = function(expect, request, baseUrl) {
         var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field activities of time should be slugs but was ' +
-          'sent as array containing at least 1 number'
+          text: 'Field activities of time should be slugs but was sent as ' +
+          'array containing at least 1 number'
         };
 
         expect(body).to.deep.equal(expectedResult);
@@ -455,8 +450,7 @@ module.exports = function(expect, request, baseUrl) {
         var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field activities of time should be array but was ' +
-          'sent as number'
+          text:'Field activities of time should be array but was sent as number'
         };
 
         expect(body).to.deep.equal(expectedResult);
@@ -521,8 +515,8 @@ module.exports = function(expect, request, baseUrl) {
         var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field project of time should be slug but was sent ' +
-          'as invalid slug project? we need a project?'
+          text:'Field project of time should be slug but was sent as invalid ' +
+          'slug project? we need a project?'
         };
 
         expect(body).to.deep.equal(expectedResult);
@@ -588,8 +582,7 @@ module.exports = function(expect, request, baseUrl) {
         var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field project of time should be string but was ' +
-          'sent as array'
+          text: 'Field project of time should be string but was sent as array'
         };
 
         expect(body).to.deep.equal(expectedResult);
@@ -654,8 +647,8 @@ module.exports = function(expect, request, baseUrl) {
         var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field issue_uri of time should be URI but ' +
-          'was sent as invalid URI I do my own thing, pal'
+          text: 'Field issue_uri of time should be URI but was sent as ' +
+          'invalid URI I do my own thing, pal'
         };
 
         expect(body).to.deep.equal(expectedResult);
@@ -688,8 +681,7 @@ module.exports = function(expect, request, baseUrl) {
         var expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field issue_uri of time should be string but ' +
-          'was sent as number'
+          text:'Field issue_uri of time should be string but was sent as number'
         };
 
         expect(body).to.deep.equal(expectedResult);
@@ -742,8 +734,7 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same
-          .members(expectedResults);
+          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
           done();
         });
       });
@@ -767,8 +758,7 @@ module.exports = function(expect, request, baseUrl) {
         var expectedResult = {
           error: 'Authorization failure',
           status: 401,
-          text: 'tschuy is not authorized to create time ' +
-          'entries for jenkinsl'
+          text: 'tschuy is not authorized to create time entries for jenkinsl'
         };
 
         expect(body).to.deep.equal(expectedResult);

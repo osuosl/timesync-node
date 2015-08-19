@@ -66,8 +66,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('should fail with Invalid Slug error', function(done) {
-      request.get(baseUrl + 'activities/test-!*@',
-      function(err, res, body) {
+      request.get(baseUrl + 'activities/test-!*@', function(err, res, body) {
         var jsonBody = JSON.parse(body);
         var expectedResult = {
           status: 400,
@@ -85,15 +84,13 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('DELETE /activities/:slug', function() {
-    it('deletes the activity affiliated with the activity slug',
-    function(done) {
+    it('deletes the activity with the given slug', function(done) {
       request.del(baseUrl + 'activities/sys', function(err, res) {
         expect(err).to.be.a('null');
         expect(res.statusCode).to.equal(200);
 
         // Checks to see that the activity has been deleted from the db
-        request.get(baseUrl + 'activities/sys',
-        function(err, res, body) {
+        request.get(baseUrl + 'activities/sys', function(err, res, body) {
           var jsonBody = JSON.parse(body);
           var expectedError = {
             status: 404,
@@ -151,8 +148,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails if it receives an invalid slug', function(done) {
-      request.del(baseUrl + 'activities/!what',
-      function(err, res, body) {
+      request.del(baseUrl + 'activities/!what', function(err, res, body) {
         var jsonBody = JSON.parse(body);
         var expectedError = {
           status: 400,
@@ -193,8 +189,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('fails if the activity is referenced by timesactivities',
-    function(done) {
+    it('fails if the activity is referenced by a time', function(done) {
       request.del(baseUrl + 'activities/docs', function(err, res, body) {
         var jsonBody = JSON.parse(body);
         var expectedError = {

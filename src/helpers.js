@@ -38,9 +38,8 @@ module.exports = function(app) {
       // alphanumeric plus hyphens, but with no external hyphens
       var alphanumeric = new RegExp('^[a-z0-9]+[a-z0-9-]*[a-z0-9]+$');
 
-      return (containsLetter.test(slug) &&
-      alphanumeric.test(slug) &&
-      !hasDoubleHyphens.test(slug));
+      return (containsLetter.test(slug) && alphanumeric.test(slug) &&
+        !hasDoubleHyphens.test(slug));
     },
 
     checkUser: function(username, authUser) {
@@ -48,8 +47,8 @@ module.exports = function(app) {
         if (username === authUser) {
           // .first('id') retrieves and resolves the first record
           // from the query - http://knexjs.org/#Builder-first
-          knex('users').first('id')
-          .where('username', username).then(function(user) {
+          knex('users').first('id').where('username', username)
+          .then(function(user) {
             return resolve(user.id);
           });
         } else {
@@ -98,8 +97,8 @@ module.exports = function(app) {
         }
 
         // get project from database
-        knex('projectslugs').select('project')
-        .where('name', slug).then(function(project) {
+        knex('projectslugs').select('project').where('name', slug)
+        .then(function(project) {
           if (project.length === 0) {
             // project doesn't exist -- it could be null, undefined,
             // invalid, etc.
@@ -130,8 +129,7 @@ module.exports = function(app) {
 
     checkActivities: function(names) {
       return new Promise(function(resolve, reject) {
-        knex('activities').where('slug', 'in', names)
-        .then(function(slugs) {
+        knex('activities').where('slug', 'in', names).then(function(slugs) {
           if (names === undefined || names === null) {
             reject({type: 'invalid', value: names});
           } else {

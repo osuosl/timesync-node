@@ -48,9 +48,8 @@ prompt.get(info, function(err, result) {
       .catch(function(err) {
         var errno = err.errno;
         if (errno === 19) {
-          console.log('\nINVALID ENTRY: That username is ' +
-          'already in use, please choose a ' +
-          'different handle\n');
+          console.log('\nINVALID ENTRY: That username is already in use, ' +
+          'please choose a different handle\n');
           process.exit(0);
 
         } else if (errno === 1) {
@@ -66,11 +65,9 @@ prompt.get(info, function(err, result) {
           also printed to the screen. */
 
           console.log('\nSomething went wrong! Check out ' +
-          'https://www.sqlite.org/c3ref/' +
-          'c_abort.html to figure out what ' +
+          'https://www.sqlite.org/c3ref/c_abort.html to figure out what ' +
           'happened.\n');
-          console.log('  Your error number is: ' + err.errno +
-          '\n');
+          console.log('  Your error number is: ' + err.errno + '\n');
         }
       })
       // Exits the process after storing user info in the db.

@@ -158,8 +158,8 @@ module.exports = function(app) {
           time.user = user[0].username;
 
           knex('activities').select('slug').where('id', 'in',
-          knex('timesactivities').select('activity')
-          .where({time: time.id})).then(function(slugs) {
+          knex('timesactivities').select('activity').where({time: time.id}))
+          .then(function(slugs) {
             // and get all matching timeActivities
 
             time.activities = [];
@@ -168,8 +168,7 @@ module.exports = function(app) {
               time.activities.push(slugs[i].slug);
             }
 
-            knex('projectslugs')
-            .where({project: time.project}).select('name')
+            knex('projectslugs').where({project: time.project}).select('name')
             .then(function(slugs) {
               // lastly, set the project
               time.project = [];
@@ -241,48 +240,44 @@ module.exports = function(app) {
 
       // Test validity of project slug
       if (!helpers.validateSlug(time.project)) {
-        let err = errors.errorBadObjectInvalidField('time', 'project',
-        'slug', 'invalid slug ' + time.project);
+        let err = errors.errorBadObjectInvalidField('time', 'project', 'slug',
+        'invalid slug ' + time.project);
         return res.status(err.status).send(err);
       }
 
       //Test each activity
       for (let activity of time.activities) {
         if (helpers.getType(activity) !== 'string') {
-          let err = errors.errorBadObjectInvalidField('time',
-          'activities', 'slugs', 'array containing at least 1 ' +
-          helpers.getType(activity));
+          let err = errors.errorBadObjectInvalidField('time', 'activities',
+          'slugs', 'array containing at least 1 ' + helpers.getType(activity));
           return res.status(err.status).send(err);
         } else if (!helpers.validateSlug(activity)) {
-          let err = errors.errorBadObjectInvalidField('time',
-          'activities', 'slugs', 'array containing at least 1 ' +
-          'invalid slug');
+          let err = errors.errorBadObjectInvalidField('time', 'activities',
+          'slugs', 'array containing at least 1 invalid slug');
           return res.status(err.status).send(err);
         }
       }
 
       //Test issue URI value
       if (time.issue_uri && !validUrl.isWebUri(time.issue_uri)) {
-        let err = errors.errorBadObjectInvalidField('time', 'issue_uri',
-        'URI', 'invalid URI ' + time.issue_uri);
+        let err = errors.errorBadObjectInvalidField('time', 'issue_uri', 'URI',
+        'invalid URI ' + time.issue_uri);
         return res.status(err.status).send(err);
       }
 
       //Test date worked value
       if (!Date.parse(time.date_worked)) {
-        let err = errors.errorBadObjectInvalidField('time',
-        'date_worked', 'ISO-8601 date', time.date_worked);
+        let err = errors.errorBadObjectInvalidField('time', 'date_worked',
+        'ISO-8601 date', time.date_worked);
         return res.status(err.status).send(err);
       }
 
       //Finish checks for user, project, and activity
       helpers.checkUser(user.username, time.user).then(function(userId) {
         helpers.checkProject(time.project).then(function(projectId) {
-          helpers.checkActivities(time.activities)
-          .then(function(activityIds) {
+          helpers.checkActivities(time.activities).then(function(activityIds) {
 
-            let createdAt = new Date().toISOString()
-            .substring(0, 10);
+            let createdAt = new Date().toISOString().substring(0, 10);
             let insertion = {
               duration: time.duration,
               user: userId,
@@ -309,8 +304,7 @@ module.exports = function(app) {
                 time.id = timeId;
                 return res.send(JSON.stringify(time));
               }).catch(function(error) {
-                knex('times').del().where({id: timeId})
-                .then(function() {
+                knex('times').del().where({id: timeId}).then(function() {
                   let err = errors.errorServerError(error);
                   return res.status(err.status).send(err);
                 });

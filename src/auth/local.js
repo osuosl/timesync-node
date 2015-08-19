@@ -20,9 +20,7 @@ module.exports = function(knex) {
             if (res) {
               done(null, user);
             } else {
-              done(null, false, {
-                message: 'Incorrect password.'
-              });
+              done(null, false, { message: 'Incorrect password.' });
             }
           });
         }

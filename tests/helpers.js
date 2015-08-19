@@ -9,8 +9,7 @@ module.exports = function(expect, app) {
     });
     // Later: Include a test that checks if username is admin
     it('Returns false if username !== user', function(done) {
-      helpers.checkUser('notauser', 'tschuy').then()
-      .catch(function(err) {
+      helpers.checkUser('notauser', 'tschuy').then().catch(function(err) {
         expect(err).to.be.an('undefined');
         done();
       });
@@ -161,8 +160,7 @@ module.exports = function(expect, app) {
       done();
     });
 
-    it('returns false for slugs with multiple hyphens in a row',
-    function(done) {
+    it('returns false for slugs with several hyphens in a row', function(done) {
       expect(helpers.validateSlug('a1b2--c3')).to.equal(false);
       done();
     });
@@ -266,8 +264,7 @@ module.exports = function(expect, app) {
     });
 
     it('throws when passed a null slug', function(done) {
-      helpers.checkActivities(null).then()
-      .catch(function(err) {
+      helpers.checkActivities(null).then().catch(function(err) {
         expect(err).to.deep.equal({type: 'invalid', value: null});
         done();
       });

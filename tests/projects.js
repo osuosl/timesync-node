@@ -89,8 +89,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('should fail with Invalid Slug error', function(done) {
-      request.get(baseUrl + 'projects/test-!*@',
-      function(err, res, body) {
+      request.get(baseUrl + 'projects/test-!*@', function(err, res, body) {
         var jsonBody = JSON.parse(body);
         var expectedResult = {
           status: 400,
@@ -265,8 +264,7 @@ module.exports = function(expect, request, baseUrl) {
     //         });
     //     });
 
-    it("doesn't patch a project with bad authentication",
-    function(done) {
+    it("doesn't patch a project with bad authentication", function(done) {
       requestOptions.form = copyJsonObject(postArg);
       requestOptions.form.object = copyJsonObject(patchedProject);
       requestOptions.form.auth.password = 'not correct password';
@@ -653,8 +651,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('fails to create a new project with bad authentication',
-    function(done) {
+    it('fails to create a new project with bad authentication', function(done) {
       requestOptions.form = copyJsonObject(postArg);
       requestOptions.form.object = copyJsonObject(newProject);
       requestOptions.form.auth.password = 'not correct password';
@@ -705,8 +702,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('fails to create a new project with an invalid slug',
-    function(done) {
+    it('fails to create a new project with an invalid slug', function(done) {
       var postInvalidSlug = copyJsonObject(postArg);
       // of these slugs, only 'dog' is valid
       postInvalidSlug.object.slugs = ['$*#*cat', 'dog', ')_!@#mouse'];
@@ -735,8 +731,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('fails to create a new project with an existing slug',
-    function(done) {
+    it('fails to create a new project with an existing slug', function(done) {
       var postExistingSlug = copyJsonObject(postArg);
       postExistingSlug.object.slugs = ['gwm', 'ganeti-webmgr', 'dog'];
       requestOptions.form = postExistingSlug;
@@ -868,10 +863,8 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('Fails if it recieves a project with times associated',
-    function(done) {
-      request.del(baseUrl + 'projects/wf',
-      function(err, res, body) {
+    it('Fails if it recieves a project with times associated', function(done) {
+      request.del(baseUrl + 'projects/wf', function(err, res, body) {
         var jsonBody = JSON.parse(body);
         var expectedResult = {
           status: 405,
@@ -887,8 +880,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('Fails if it receives an invalid project', function(done) {
-      request.del(baseUrl + 'projects/Not.a-project!',
-      function(err, res, body) {
+      request.del(baseUrl + 'projects/Not.a#project', function(err, res, body) {
         var jsonBody = JSON.parse(body);
         var expectedResult = {
           status: 400,
@@ -934,10 +926,8 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('Fails if it receives an non-existent project',
-    function(done) {
-      request.del(baseUrl + 'projects/doesntexist',
-      function(err, res, body) {
+    it('Fails if it receives an non-existent project', function(done) {
+      request.del(baseUrl + 'projects/doesntexist', function(err, res, body) {
         var jsonBody = JSON.parse(body);
         var expectedResult = {
           status: 404,
