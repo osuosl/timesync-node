@@ -15,6 +15,11 @@
       "name":"Systems",
       "slug":"sys",
       "id": 3
+    },
+    {
+      "name":"Meetings",
+      "slug":"meeting",
+      "id":4
     }
   ],
   "users":[
@@ -29,7 +34,12 @@
       "id": 2,
       "active": "true",
       "password": "$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W"
-
+    },
+    {
+      "username":"patcht",
+      "id": 3,
+      "active": "true",
+      "password": "$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W"
     }
   ],
   "projects":[
@@ -50,19 +60,58 @@
       "name":"Whats Fresh",
       "owner":"users:1",
       "id": 3
+    },
+    {
+      "uri":"https:://github.com/osuosl/timesync",
+      "name":"Timesync",
+      "owner":"users:2",
+      "id": 4
     }
   ],
   "times":[
     {
       "duration":12,
-      "user":"users:1",
-      "project":"projects:2",
+      "user":"users:0",
+      "project":"projects:0",
       "notes":"",
       "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
       "date_worked":"2015-04-19",
       "created_at":"2015-04-19",
       "updated_at":null,
       "id": 1
+    },
+    {
+      "duration":12,
+      "user":"users:1",
+      "project":"projects:0",
+      "notes":"",
+      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "date_worked":"2015-04-20",
+      "created_at":"2015-04-20",
+      "updated_at":null,
+      "id": 2
+    },
+    {
+      "duration":12,
+      "user":"users:0",
+      "project":"projects:1",
+      "notes":"",
+      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "date_worked":"2015-04-21",
+      "created_at":"2015-04-21",
+      "updated_at":null,
+      "id": 3
+    },
+    {
+      "duration":12,
+      "user":"users:2",
+      "project":"projects:1",
+      "notes":"",
+      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "date_worked":"2015-04-22",
+      "created_at":"2015-04-22",
+      "updated_at":null,
+      "id": 4
     }
   ],
   "projectslugs":[
@@ -86,8 +135,20 @@
     },
     {
       "name": "ganeti-webmgr",
-      "id": 8,
+      "id": 4,
       "project": 1,
+      "activity": null
+    },
+    {
+      "name": "timesync",
+      "id": 5,
+      "project": 4,
+      "activity": null
+    },
+    {
+      "name": "ts",
+      "id": 6,
+      "project": 4,
       "activity": null
     }
   ],
@@ -100,6 +161,21 @@
     {
       "id": 2,
       "time": 1,
+      "activity": 2
+    },
+    {
+      "id": 3,
+      "time": 2,
+      "activity": 1
+    },
+    {
+      "id": 4,
+      "time": 3,
+      "activity": 3
+    },
+    {
+      "id": 5,
+      "time": 4,
       "activity": 2
     }
   ]
