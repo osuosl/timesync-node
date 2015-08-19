@@ -880,13 +880,13 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('Fails if it receives an invalid project', function(done) {
-      request.del(baseUrl + 'projects/Not.a#project', function(err, res, body) {
+      request.del(baseUrl + 'projects/Not.a!project', function(err, res, body) {
         var jsonBody = JSON.parse(body);
         var expectedResult = {
           status: 400,
           error: 'The provided identifier was invalid',
-          text: 'Expected slug but received Not.a-project!',
-          values: ['Not.a-project!']
+          text: 'Expected slug but received Not.a!project',
+          values: ['Not.a!project']
         };
 
         request.get(baseUrl + 'projects', function(err, res, body) {
