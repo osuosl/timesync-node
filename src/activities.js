@@ -83,31 +83,35 @@ module.exports = function(app) {
   app.post(app.get('version') + '/activities/:slug', function(req, res, next) {
     passport.authenticate('local', function(autherr, user, info) {
       if (!user) {
-        let err = errors.errorAuthenticationFailure(info.message);
+        const err = errors.errorAuthenticationFailure(info.message);
         return res.status(err.status).send(err);
       }
 
-      let currObj = req.body.object;
+      const currObj = req.body.object;
 
-      let validKeys = ['name', 'slug'];
+      const validKeys = ['name', 'slug'];
+
+      /* eslint-disable prefer-const */
       for (let key in currObj) {
+      /* eslint-enable prefer-const */
+
       // indexOf return -1 if the parameter it not in the array
       // so this will return true in the slug/name DNE
         if (validKeys.indexOf(key) === -1) {
-          let err = errors.errorBadObjectUnknownField('activity', key);
+          const err = errors.errorBadObjectUnknownField('activity', key);
           return res.status(err.status).send(err);
         }
       }
 
-      let fields = [
+      const fields = [
         {name: 'name', type: 'string', required: false},
         {name: 'slug', type: 'string', required: false},
       ];
 
       // Rebase later to use this helper function
-      let validationFailure = helpers.validateFields(currObj, fields);
+      const validationFailure = helpers.validateFields(currObj, fields);
       if (validationFailure) {
-        let err = errors.errorBadObjectInvalidField(
+        const err = errors.errorBadObjectInvalidField(
           'activity',
           validationFailure.name,
           validationFailure.type,         // expected type
@@ -118,46 +122,41 @@ module.exports = function(app) {
 
       // if the user submits a patched name with a length of zero
       if (currObj.name !== undefined && currObj.name.length === 0) {
-        let err = errors.errorBadObjectInvalidField(
+        const err = errors.errorBadObjectInvalidField(
           'activity', 'name', 'string', 'empty string');
         return res.status(err.status).send(err);
       }
 
       // if the user submits a patched slug with a length of zero
       if (currObj.slug !== undefined && currObj.slug.length === 0) {
-        let err = errors.errorBadObjectInvalidField(
+        const err = errors.errorBadObjectInvalidField(
           'activity', 'slug', 'slug', 'empty string');
         return res.status(err.status).send(err);
       }
 
       if (!helpers.validateSlug(req.params.slug)) {
-        let err = errors.errorInvalidIdentifier('slug', '!._cucco');
+        const err = errors.errorInvalidIdentifier('slug', '!._cucco');
         return res.status(err.status).send(err);
       }
 
       knex('activities').where('slug', '=', req.params.slug).first()
       .then(function() {
-
-        let activity = {
+        const activity = {
           name: req.body.object.name || currObj.name,
-          slug: req.body.object.slug || currObj.slug
+          slug: req.body.object.slug || currObj.slug,
         };
-
         knex('activities').where('slug', '=', req.params.slug)
         .update(activity).then(function(numObj) {
-
           if (numObj >= 1) {
             return res.send(activity);
           }
-
-          let err = errors.errorObjectNotFound('activity');
+          const err = errors.errorObjectNotFound('activity');
           return res.status(err.status).send(err);
-          }).catch(function(error){
-            let err = errors.errorServerError(error);
-            return res.status(err.status).send(err);
-          });
+        }).catch(function(error) {
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
         });
-      })(req, res, next);
-    });
-
+      });
+    })(req, res, next);
+  });
 };

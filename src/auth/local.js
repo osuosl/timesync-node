@@ -26,7 +26,6 @@ module.exports = function(knex) {
           });
         }
       }).catch(function(err) {
-        console.log(err);
         done(err);
       });
     }
