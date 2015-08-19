@@ -64,6 +64,6 @@
     "requireSemicolons": true,
     "validateLineBreaks": "LF",
     "validateQuoteMarks": { "mark": "'", "escape": true },
-    "validateIndentation": 4,
+    "validateIndentation": 2,
     "maximumLineLength": 80
 }
