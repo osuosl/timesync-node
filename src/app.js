@@ -1,19 +1,22 @@
-//Library requirements
-var express = require('express');
-var bodyParser = require('body-parser');
-var knexfile = require('../knexfile');
-var db = process.env.DATABASE || 'development';
+'use strict';
 
+// Library requirements
+const express = require('express');
+const bodyParser = require('body-parser');
+const knexfile = require('../knexfile');
+const db = process.env.DATABASE || 'development';
+
+let knex;
 if (!GLOBAL.knex) {
-  //Load the database (default to development)
-  var knex = require('knex')(knexfile[db]);
+  // Load the database (default to development)
+  knex = require('knex')(knexfile[db]);
 } else {
   // use the knex connection initiated from inside the testing
   // environment
-  var knex = GLOBAL.knex;
+  knex = GLOBAL.knex;
 }
 
-var app = express();
+const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('knex', knex);
@@ -22,29 +25,31 @@ app.set('knex', knex);
 app.set('version', '/v1');
 
 // Set up authentication
-var passport = require('passport');
-var localPassport = require('./auth/local.js')(knex);
+const passport = require('passport');
+const localPassport = require('./auth/local.js')(knex);
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function serializeCallback(user, done) {
   done(null, user);
 });
 
-passport.deserializeUser(function(user, done) {
+passport.deserializeUser(function deserializeCallback(user, done) {
   done(null, user);
 });
 
 passport.use(localPassport);
 
-//Load local functions
+// Load local functions
 require('./projects')(app);
 require('./activities')(app);
 require('./times')(app);
 
 module.exports = app;
 
-app.listen(process.env.PORT || 8000, function() {
+app.listen(process.env.PORT || 8000, function notifyUser() {
+  /* eslint-disable */
   console.log('App now listening on %s', process.env.PORT || 8000);
+  /* eslint-enable */
 });

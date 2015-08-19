@@ -1,20 +1,22 @@
-var requestBuilder = require('request');
-var expect = require('chai').expect;
-var SqlFixtures = require('sql-fixtures');
+'use strict';
 
-var request = requestBuilder.defaults({encoding: null});
-var testData = require('./fixtures/test_data');
-var knexfile = require('../knexfile');
-var knex = require('knex')(knexfile.mocha);
-var fixtureCreator = new SqlFixtures(knex);
+const requestBuilder = require('request');
+const expect = require('chai').expect;
+const SqlFixtures = require('sql-fixtures');
+
+const request = requestBuilder.defaults({encoding: null});
+const testData = require('./fixtures/test_data');
+const knexfile = require('../knexfile');
+const knex = require('knex')(knexfile.mocha);
+const fixtureCreator = new SqlFixtures(knex);
 
 GLOBAL.knex = knex;
-var app = require('../src/app');
+const app = require('../src/app');
 
-var port = process.env.PORT || 8000;
-var baseUrl = 'http://localhost:' + port + '/v1/';
+const port = process.env.PORT || 8000;
+const baseUrl = 'http://localhost:' + port + '/v1/';
 
-var reloadFixtures = function(done) {
+const reloadFixtures = function(done) {
   // Clear SQLite indexes
   knex.raw('delete from sqlite_sequence').then(function() {
     fixtureCreator.create(testData).then(function() {
@@ -23,7 +25,7 @@ var reloadFixtures = function(done) {
   });
 };
 
-var clearDatabase = (function(done) {
+const clearDatabase = function(done) {
   knex('projects').del().then(function() {
     knex('activities').del().then(function() {
       knex('users').del().then(function() {
@@ -35,10 +37,9 @@ var clearDatabase = (function(done) {
       });
     });
   });
-});
+};
 
 describe('Endpoints', function() {
-
   beforeEach(function(done) {
     knex.migrate.latest().then(function() {
       clearDatabase(function() {
@@ -57,7 +58,6 @@ describe('Errors', function() {
 });
 
 describe('Helpers', function() {
-
   beforeEach(function(done) {
     knex.migrate.latest().then(function() {
       clearDatabase(function() {
@@ -66,7 +66,7 @@ describe('Helpers', function() {
     });
   });
 
-  var localPassport = require('../src/auth/local.js')(knex);
+  const localPassport = require('../src/auth/local.js')(knex);
   require('./login')(expect, localPassport);
   require('./helpers')(expect, app);
 });

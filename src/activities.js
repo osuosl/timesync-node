@@ -1,28 +1,26 @@
 'use strict';
 
 module.exports = function(app) {
-  var knex = app.get('knex');
-  var errors = require('./errors');
-  var helpers = require('./helpers')(app);
+  const knex = app.get('knex');
+  const errors = require('./errors');
+  const helpers = require('./helpers')(app);
 
   app.get(app.get('version') + '/activities', function(req, res) {
-
     knex('activities').then(function(activities) {
       if (activities.length === 0) {
         return res.send([]);
       }
 
       return res.send(activities);
-
     }).catch(function(error) {
-      var err = errors.errorServerError(error);
+      const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });
   });
 
   app.get(app.get('version') + '/activities/:slug', function(req, res) {
     if (errors.isInvalidSlug(req.params.slug)) {
-      var err = errors.errorInvalidIdentifier('slug', req.params.slug);
+      const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
     }
 
@@ -30,26 +28,24 @@ module.exports = function(app) {
     knex('activities').select().where('slug', '=', req.params.slug)
     .then(function(activity) {
       if (activity.length === 0) {
-        var err = errors.errorObjectNotFound('activity');
+        const err = errors.errorObjectNotFound('activity');
         return res.status(err.status).send(err);
       }
 
       return res.send(activity[0]);
-
     }).catch(function(error) {
-      var err = errors.errorServerError(error);
+      const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });
-
   });
 
   app.delete(app.get('version') + '/activities/:slug', function(req, res) {
     if (!helpers.validateSlug(req.params.slug)) {
-      let err = errors.errorInvalidIdentifier('slug', req.params.slug);
+      const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
     }
 
-    let activityId = knex('activities').select('id')
+    const activityId = knex('activities').select('id')
     .where('slug', req.params.slug);
 
     // Check timesactivities to see if an activity (id) is being referenced
@@ -59,7 +55,7 @@ module.exports = function(app) {
       the activity id is being referenced by timesactivities */
       if (activity.length > 0) {
         res.set('Allow', 'GET, POST');
-        let err = errors.errorRequestFailure('activity');
+        const err = errors.errorRequestFailure('activity');
         return res.status(err.status).send(err);
       }
 
@@ -74,10 +70,10 @@ module.exports = function(app) {
           return res.send();
         }
 
-        let err = errors.errorObjectNotFound('slug', req.params.slug);
+        const err = errors.errorObjectNotFound('slug', req.params.slug);
         return res.status(err.status).send(err);
       }).catch(function(error) {
-        let err = errors.errorServerError(error);
+        const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
     });

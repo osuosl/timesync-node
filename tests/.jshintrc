@@ -21,5 +21,11 @@
   "undef": true,
 
   // require curly braces for one-line statements
-  "curly": true
+  "curly": true,
+
+  "predef": [
+    "describe",
+    "it",
+    "beforeEach"
+  ]
 }

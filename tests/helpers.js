@@ -1,5 +1,7 @@
+'use strict';
+
 module.exports = function(expect, app) {
-  var helpers = require('../src/helpers')(app);
+  const helpers = require('../src/helpers')(app);
   describe('checkUser', function() {
     it('Returns user ID if username == user', function(done) {
       helpers.checkUser('tschuy', 'tschuy').then(function(userID) {
@@ -18,20 +20,20 @@ module.exports = function(expect, app) {
 
   describe('validateFields', function() {
     it('returns field when field is missing if required', function(done) {
-      var obj = {string: 'string', array: []};
-      var fields = [
+      const obj = {string: 'string', array: []};
+      const fields = [
         {name: 'string', type: 'string', required: true},
         {name: 'array', type: 'array', required: true},
         {name: 'integer', type: 'number', required: true},
       ];
 
-      var validation = helpers.validateFields(obj, fields);
+      const validation = helpers.validateFields(obj, fields);
 
-      var expectedReturn = {
+      const expectedReturn = {
         name: 'integer',
         type: 'number',
         required: true,
-        actualType: 'undefined'
+        actualType: 'undefined',
       };
 
       expect(validation).to.deep.equal(expectedReturn);
@@ -39,20 +41,20 @@ module.exports = function(expect, app) {
     });
 
     it('returns field if field is of wrong type', function(done) {
-      var obj = {string: 'string', array: [], integer: 'string'};
-      var fields = [
+      const obj = {string: 'string', array: [], integer: 'string'};
+      const fields = [
         {name: 'string', type: 'string', required: true},
         {name: 'array', type: 'array', required: true},
         {name: 'integer', type: 'number', required: true},
       ];
 
-      var validation = helpers.validateFields(obj, fields);
+      const validation = helpers.validateFields(obj, fields);
 
-      var expectedReturn = {
+      const expectedReturn = {
         name: 'integer',
         type: 'number',
         required: true,
-        actualType: 'string'
+        actualType: 'string',
       };
 
       expect(validation).to.deep.equal(expectedReturn);
@@ -60,28 +62,28 @@ module.exports = function(expect, app) {
     });
 
     it('returns nothing when field is missing if not req', function(done) {
-      var obj = {string: 'string', array: []};
-      var fields = [
+      const obj = {string: 'string', array: []};
+      const fields = [
         {name: 'string', type: 'string', required: true},
         {name: 'array', type: 'array', required: true},
         {name: 'integer', type: 'number', required: false},
       ];
 
-      var validation = helpers.validateFields(obj, fields);
+      const validation = helpers.validateFields(obj, fields);
 
       expect(validation).to.be.a('null');
       done();
     });
 
     it('returns nothing when fields are good', function(done) {
-      var obj = {string: 'string', array: [], integer: 1};
-      var fields = [
+      const obj = {string: 'string', array: [], integer: 1};
+      const fields = [
         {name: 'string', type: 'string'},
         {name: 'array', type: 'array'},
         {name: 'integer', type: 'number'},
       ];
 
-      var validation = helpers.validateFields(obj, fields, false);
+      const validation = helpers.validateFields(obj, fields, false);
 
       expect(validation).to.be.a('null');
       done();
@@ -94,7 +96,7 @@ module.exports = function(expect, app) {
       done();
     });
 
-    var properSlug = 'returns true for proper slug ';
+    const properSlug = 'returns true for proper slug ';
     it(properSlug + 'with hyphen', function(done) {
       expect(helpers.validateSlug('kitten-be-cool')).to.equal(true);
       done();
@@ -205,7 +207,6 @@ module.exports = function(expect, app) {
   });
 
   describe('getType', function() {
-
     it('returns "array" for an array', function(done) {
       expect(helpers.getType([])).to.equal('array');
       done();
@@ -257,7 +258,7 @@ module.exports = function(expect, app) {
       .catch(function(err) {
         expect(err).to.deep.equal({
           type: 'nonexistent',
-          value: ['cats', 'dogs']
+          value: ['cats', 'dogs'],
         });
         done();
       });

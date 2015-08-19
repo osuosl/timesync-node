@@ -1,11 +1,11 @@
 'use strict';
 
 module.exports = function(app) {
-  var knex = app.get('knex');
-  var errors = require('./errors');
-  var helpers = require('./helpers')(app);
-  var validUrl = require('valid-url');
-  var passport = require('passport');
+  const knex = app.get('knex');
+  const errors = require('./errors');
+  const helpers = require('./helpers')(app);
+  const validUrl = require('valid-url');
+  const passport = require('passport');
 
   app.get(app.get('version') + '/projects', function(req, res) {
     knex('projects').then(function(projects) {
@@ -15,17 +15,17 @@ module.exports = function(app) {
 
       // only return the project once both
       // users and slugs have finished processing
-      var usersDone = false,
-      slugsDone = false;
+      let usersDone = false;
+      let slugsDone = false;
 
       knex('users').then(function(users) {
-        var idUserMap = {};
-        for (var i = 0, len = users.length; i < len; i++) {
+        const idUserMap = {};
+        for (let i = 0, len = users.length; i < len; i++) {
           // make a map of every user id to their username
           idUserMap[users[i].id] = users[i].username;
         }
 
-        for (i = 0, len = projects.length; i < len; i++) {
+        for (let i = 0, len = projects.length; i < len; i++) {
           // using that user id, get the username and set it
           // to the project owner
           projects[i].owner = idUserMap[projects[i].owner];
@@ -36,16 +36,14 @@ module.exports = function(app) {
         if (slugsDone) {
           return res.send(projects);
         }
-
       }).catch(function(error) {
-        var err = errors.errorServerError(error);
+        const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
 
       knex('projectslugs').then(function(slugs) {
-
-        var idProjectMap = {};
-        for (var i = 0, len = projects.length; i < len; i++) {
+        const idProjectMap = {};
+        for (let i = 0, len = projects.length; i < len; i++) {
           // add slugs field to every project
           projects[i].slugs = [];
           /* make a map of every project id to the whole project
@@ -54,7 +52,7 @@ module.exports = function(app) {
           idProjectMap[projects[i].id] = projects[i];
         }
 
-        for (i = 0, len = slugs.length; i < len; i++) {
+        for (let i = 0, len = slugs.length; i < len; i++) {
           // add slugs to project by project id
           idProjectMap[slugs[i].project].slugs.push(slugs[i].name);
         }
@@ -64,22 +62,19 @@ module.exports = function(app) {
         if (usersDone) {
           return res.send(projects);
         }
-
       }).catch(function(error) {
-        var err = errors.errorServerError(error);
+        const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
-
     }).catch(function(error) {
-      var err = errors.errorServerError(error);
+      const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });
   });
 
   app.get(app.get('version') + '/projects/:slug', function(req, res) {
-
     if (errors.isInvalidSlug(req.params.slug)) {
-      var err = errors.errorInvalidIdentifier('slug', req.params.slug);
+      const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
     }
 
@@ -111,9 +106,9 @@ module.exports = function(app) {
     *                    WHERE name = $slug)
     *               )
     */
-    var projectSubquery = knex('projectslugs').select('project')
+    const projectSubquery = knex('projectslugs').select('project')
     .where('name', req.params.slug);
-    var slugsSubquery = knex('projects').select('id')
+    const slugsSubquery = knex('projects').select('id')
     .where('id', '=', projectSubquery);
 
     knex('projectslugs').select('projects.id as id', 'projects.name as name',
@@ -123,28 +118,26 @@ module.exports = function(app) {
     .innerJoin('projects', 'projectslugs.project', 'projects.id')
     .innerJoin('users', 'users.id', 'projects.owner')
     .then(function(results) {
-
       if (results.length !== 0) {
         /* manually create our project object from
         the results. All results should be the same, save
         the slug, so just create it from the first one
         */
-        let project = {id: results[0].id, name: results[0].name,
+        const project = {id: results[0].id, name: results[0].name,
           owner: results[0].owner, uri: results[0].uri, slugs: []};
 
-        for (var i = 0, len = results.length; i < len; i++) {
+        for (let i = 0, len = results.length; i < len; i++) {
           // add slugs to project
           project.slugs.push(results[i].slug);
         }
 
         res.send(project);
       } else {
-        var err = errors.errorObjectNotFound('project');
+        const err = errors.errorObjectNotFound('project');
         return res.status(err.status).send(err);
       }
-
     }).catch(function(error) {
-      var err = errors.errorServerError(error);
+      const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });
   });
@@ -152,55 +145,53 @@ module.exports = function(app) {
   app.post(app.get('version') + '/projects', function(req, res, next) {
     passport.authenticate('local', function(autherr, user, info) {
       if (!user) {
-        let err = errors.errorAuthenticationFailure(info.message);
+        const err = errors.errorAuthenticationFailure(info.message);
         return res.status(err.status).send(err);
       }
 
-      var obj = req.body.object;
+      const obj = req.body.object;
 
       // run various checks
 
       // check validity of uri syntax
       if (obj.uri && !validUrl.isWebUri(obj.uri)) {
-        let err = errors.errorInvalidIdentifier('uri', obj.uri);
+        const err = errors.errorInvalidIdentifier('uri', obj.uri);
         return res.status(err.status).send(err);
       }
 
       // check existence of slugs
       if (!obj.slugs) {
-        let err = errors.errorBadObjectMissingField('project', 'slug');
+        const err = errors.errorBadObjectMissingField('project', 'slug');
         return res.status(err.status).send(err);
       }
 
       // check existence of name
       if (!obj.name) {
-        let err = errors.errorBadObjectMissingField('project', 'name');
+        const err = errors.errorBadObjectMissingField('project', 'name');
         return res.status(err.status).send(err);
       }
 
       // check validity of slugs
-      var invalidSlugs = obj.slugs.filter(function(slug) {
+      const invalidSlugs = obj.slugs.filter(function(slug) {
         return !helpers.validateSlug(slug);
       });
 
       if (invalidSlugs.length) {
-        let err = errors.errorInvalidIdentifier('slug', invalidSlugs);
+        const err = errors.errorInvalidIdentifier('slug', invalidSlugs);
         return res.status(err.status).send(err);
       }
 
       // check validity of owner -- it must match the submitting user
       // if checkUser fails, the user submitting the request doesn't match
       helpers.checkUser(user.username, obj.owner).then(function(userId) {
-
         // select any slugs that match the ones submitted
         // this is to check that none of the submitted slugs are
         // currently in use.
         knex('projectslugs').where('name', 'in', obj.slugs)
         .then(function(slugs) {
-
           // if any slugs match the slugs passed to us, error out
           if (slugs.length) {
-            let err = errors.errorSlugsAlreadyExist(slugs.map(function(slug) {
+            const err = errors.errorSlugsAlreadyExist(slugs.map(function(slug) {
               return slug.name;
             }));
 
@@ -208,17 +199,17 @@ module.exports = function(app) {
           }
 
           // create object to insert into database
-          var insertion = {
+          const insertion = {
             uri: obj.uri,
             owner: userId,
-            name: obj.name
+            name: obj.name,
           };
 
-          knex('projects').insert(insertion).then(function(project) {
+          knex('projects').insert(insertion).then(function(projects) {
             // project is a list containing the ID of the
             // newly created project
-            project = project[0];
-            var projectSlugs = obj.slugs.map(function(slug) {
+            const project = projects[0];
+            const projectSlugs = obj.slugs.map(function(slug) {
               return {name: slug, project: project};
             });
 
@@ -227,11 +218,10 @@ module.exports = function(app) {
               res.send(JSON.stringify(obj));
             });
           });
-
         });
-      }).catch(function(err) {
+      }).catch(function() {
         // checkUser failed, meaning the user is not authorized
-        err = errors.errorAuthorizationFailure(req.body.auth.username,
+        const err = errors.errorAuthorizationFailure(req.body.auth.username,
           'create objects for ' + obj.owner);
         return res.status(err.status).send(err);
       });
@@ -241,36 +231,38 @@ module.exports = function(app) {
   app.post(app.get('version') + '/projects/:slug', function(req, res, next) {
     passport.authenticate('local', function(autherr, user, info) {
       if (!user) {
-        let err = errors.errorAuthenticationFailure(info.message);
+        const err = errors.errorAuthenticationFailure(info.message);
         return res.status(err.status).send(err);
       }
 
-      let obj = req.body.object;
+      const obj = req.body.object;
 
       // valid keys
-      let validKeys = ['name', 'uri', 'owner', 'slugs'];
+      const validKeys = ['name', 'uri', 'owner', 'slugs'];
+      /* eslint-disable prefer-const */
       for (let key in obj) {
+        /* eslint-enable prefer-const */
         // indexOf returns -1 if the parameter is not in the array,
         // so this returns true if the slug is not in slugNames
         if (validKeys.indexOf(key) === -1) {
-          let err = errors.errorBadObjectUnknownField('project', key);
+          const err = errors.errorBadObjectUnknownField('project', key);
           return res.status(err.status).send(err);
         }
       }
 
       // check string fields
-      let fields = [
+      const fields = [
         {name: 'name', type: 'string', required: false},
         {name: 'uri', type: 'string', required: false},
         {name: 'owner', type: 'string', required: false},
-        {name: 'slugs', type: 'array', required: false}
+        {name: 'slugs', type: 'array', required: false},
       ];
 
       // validateFields takes the object to check fields on,
       // and an array of field names and types
-      let validationFailure = helpers.validateFields(obj, fields);
+      const validationFailure = helpers.validateFields(obj, fields);
       if (validationFailure) {
-        let err = errors.errorBadObjectInvalidField('project',
+        const err = errors.errorBadObjectInvalidField('project',
           validationFailure.name, validationFailure.type,
           validationFailure.actualType);
         return res.status(err.status).send(err);
@@ -278,19 +270,19 @@ module.exports = function(app) {
 
       // check validity of uri syntax
       if (obj.uri && !validUrl.isWebUri(obj.uri)) {
-        let err = errors.errorBadObjectInvalidField('project', 'uri', 'uri',
+        const err = errors.errorBadObjectInvalidField('project', 'uri', 'uri',
           'string');
         return res.status(err.status).send(err);
       }
 
       // check validity of slugs
       if (obj.slugs && obj.slugs.length) {
-        let invalidSlugs = obj.slugs.filter(function(slug) {
+        const invalidSlugs = obj.slugs.filter(function(slug) {
           return !helpers.validateSlug(slug);
         });
 
         if (invalidSlugs.length) {
-          let err = errors.errorBadObjectInvalidField('project', 'slugs',
+          const err = errors.errorBadObjectInvalidField('project', 'slugs',
             'slugs', 'non-slug strings');
           return res.status(err.status).send(err);
         }
@@ -299,7 +291,7 @@ module.exports = function(app) {
       obj.slugs = obj.slugs || [];
 
       // returns the project ID for the project slug
-      let projectIdQuery = knex('projectslugs').select('project')
+      const projectIdQuery = knex('projectslugs').select('project')
       .where('name', req.params.slug);
 
       // retrieves the project from the database, selecting the project
@@ -316,7 +308,7 @@ module.exports = function(app) {
         // project contains all of the information about the project the
         // user is updating
         if (user.username !== project.owner) {
-          let err = errors.errorAuthorizationFailure(req.body.auth.username,
+          const err = errors.errorAuthorizationFailure(req.body.auth.username,
             'create objects for ' + project.owner);
           return res.status(err.status).send(err);
         }
@@ -339,7 +331,7 @@ module.exports = function(app) {
               return slug.name;
             });
 
-            let err = errors.errorSlugsAlreadyExist(overlappingSlugs);
+            const err = errors.errorSlugsAlreadyExist(overlappingSlugs);
             return res.status(err.status).send(err);
           }
 
@@ -360,13 +352,13 @@ module.exports = function(app) {
           .then(function() {
             // slugNames contains the list of names of slugs that
             // overlap with what the user submitted.
-            let slugNames = slugs.map(function(slug) {
+            const slugNames = slugs.map(function(slug) {
               return slug.name;
             });
 
             knex('projectslugs').where({project: project.id})
-            .then(function(existingSlugs) {
-              existingSlugs = existingSlugs.map(function(slug) {
+            .then(function(existingSlugObjs) {
+              const existingSlugs = existingSlugObjs.map(function(slug) {
                 return slug.name;
               });
               // existingSlugs contains a list of all of slugs
@@ -383,7 +375,7 @@ module.exports = function(app) {
 
               // make a list containing all of the slugs that need
               // to be inserted
-              let newSlugs = obj.slugs.filter(function(objSlug) {
+              const newSlugs = obj.slugs.filter(function(objSlug) {
                 if (slugNames.indexOf(objSlug) === -1) {
                   return true;
                 }
@@ -393,7 +385,7 @@ module.exports = function(app) {
 
               // make a list containing creation and
               // deletion promises
-              let slugsPromises = [];
+              const slugsPromises = [];
               if (delSlugs.length) {
                 slugsPromises.push(knex('projectslugs')
                 .where('name', 'in', delSlugs).del());
@@ -414,17 +406,17 @@ module.exports = function(app) {
                 project.owner = user.username;
                 res.send(JSON.stringify(project));
               }).catch(function(error) {
-                var err = errors.errorServerError(error);
+                const err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
               });
             });
           });
         }).catch(function(error) {
-          var err = errors.errorServerError(error);
+          const err = errors.errorServerError(error);
           return res.status(err.status).send(err);
         });
       }).catch(function(error) {
-        var err = errors.errorServerError(error);
+        const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
     })(req, res, next);
@@ -432,12 +424,12 @@ module.exports = function(app) {
 
   app.delete(app.get('version') + '/projects/:slug', function(req, res) {
     if (!helpers.validateSlug(req.params.slug)) {
-      var err = errors.errorInvalidIdentifier('slug', req.params.slug);
+      const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
     }
 
     // Get project id
-    let projectId = knex('projectslugs').select('project').where('name',
+    const projectId = knex('projectslugs').select('project').where('name',
     req.params.slug);
 
     // Get times associated with project
@@ -445,29 +437,28 @@ module.exports = function(app) {
       // If there are times associated, return an error
       if (times.length > 0) {
         res.set('Allow', 'GET, POST');
-        let err = errors.errorRequestFailure('project');
+        const err = errors.errorRequestFailure('project');
         return res.status(err.status).send(err);
         // Otherwise delete project
-      } else {
-        knex('projects').where('id', '=', projectId)
-        .del().then(function(numObj) {
-
-          /* When deleting something from the table, the number of
-          objects deleted is returned. So to confirm that deletion
-          was successful, make sure that the number returned is at
-          least one. */
-          if (numObj >= 1) {
-            return res.send();
-          }
-
-          var err = errors.errorObjectNotFound('slug',
-          req.params.slug);
-          return res.status(err.status).send(err);
-        }).catch(function(error) {
-          var err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
-        });
       }
+
+      knex('projects').where('id', '=', projectId)
+      .del().then(function(numObj) {
+        /* When deleting something from the table, the number of
+        objects deleted is returned. So to confirm that deletion
+        was successful, make sure that the number returned is at
+        least one. */
+        if (numObj >= 1) {
+          return res.send();
+        }
+
+        const err = errors.errorObjectNotFound('slug',
+        req.params.slug);
+        return res.status(err.status).send(err);
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
+      });
     });
   });
 };

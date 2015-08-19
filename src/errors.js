@@ -1,8 +1,10 @@
+'use strict';
+
 function createError(status, name, text, values) {
-  var err = {
+  const err = {
     status: status,
     error: name,
-    text: text
+    text: text,
   };
 
   if (values) {
@@ -40,9 +42,8 @@ module.exports = {
   errorServerError: function(serverError) {
     if (process.env.DEBUG) {
       return createError(500, 'Server error', serverError);
-    } else {
-      return createError(500, 'Server error', 'Unexpected server error.');
     }
+    return createError(500, 'Server error', 'Unexpected server error.');
   },
 
   /*
@@ -112,18 +113,20 @@ module.exports = {
   *    client.
   */
   errorInvalidIdentifier: function(expectedType, receivedIdentifiers) {
-    var message;
+    let message;
+    let identifiers;
     if (!Array.isArray(receivedIdentifiers)) {
       message = 'Expected ' + expectedType + ' but received ' +
       receivedIdentifiers;
-      receivedIdentifiers = [receivedIdentifiers];
+      identifiers = [receivedIdentifiers];
     } else {
       message = 'Expected ' + expectedType + ' but received: ' +
       receivedIdentifiers.join(', ');
+      identifiers = receivedIdentifiers;
     }
 
     return createError(400, 'The provided identifier was invalid', message,
-    receivedIdentifiers);
+    identifiers);
   },
 
   /* Error 6: Authentication failed due to an invalid username. */
@@ -146,7 +149,7 @@ module.exports = {
   but the object being created uses existing slugs.
   */
   errorSlugsAlreadyExist: function(slugs) {
-    var message;
+    let message;
     if (slugs.length === 1) {
       message = 'slug ' + slugs[0] + ' already exists';
     } else {
