@@ -93,7 +93,7 @@ module.exports = function(app) {
             var err = errors.errorServerError(error);
             return res.status(err.status).send(err);
         });
-    });
+  });
 
     app.post(app.get('version') + '/activities/:slug',
     function(req, res, next) {
@@ -182,5 +182,5 @@ module.exports = function(app) {
             });
         //});
     });
-
+  //});
 };

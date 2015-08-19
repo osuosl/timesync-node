@@ -239,7 +239,6 @@ module.exports = function(expect, request, baseUrl) {
         });
       });
     });
-
   });
 
     describe('POST /activities/:slug', function() {
@@ -610,5 +609,4 @@ module.exports = function(expect, request, baseUrl) {
             });
         });
     });
-
 };
