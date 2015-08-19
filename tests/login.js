@@ -1,10 +1,8 @@
-var chai = require('chai');
+const chai = require('chai');
 chai.use(require('chai-passport-strategy'));
 
 module.exports = function(expect, localPassport) {
-
   describe('Password-based login', function() {
-
     it('returns user for good user/pass', function(done) {
       chai.passport.use(localPassport).success(function(user) {
         // Called when passport successfully logs in
@@ -17,7 +15,6 @@ module.exports = function(expect, localPassport) {
         req.body.auth.username = 'tschuy';
         req.body.auth.password = 'password';
       }).authenticate();
-
     });
 
     it('returns invalid username message for bad user', function(done) {
