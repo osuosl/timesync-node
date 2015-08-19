@@ -206,9 +206,9 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?dateStart=:start', function() {
+  describe('GET /times?start=:start', function() {
     it('returns all times after a date', function(done) {
-      request.get(baseUrl + 'times?dateStart=2015-04-20',
+      request.get(baseUrl + 'times?start=2015-04-20',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
@@ -266,9 +266,9 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?dateEnd=:end', function() {
+  describe('GET /times?end=:end', function() {
     it('returns all times before a date', function(done) {
-      request.get(baseUrl + 'times?dateEnd=2015-04-21',
+      request.get(baseUrl + 'times?end=2015-04-21',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
@@ -326,10 +326,10 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?dateStart=:start&dateEnd=:end', function() {
+  describe('GET /times?start=:start&end=:end', function() {
     it('returns all times between two dates', function(done) {
-      request.get(baseUrl + 'times?dateStart=2015-04-20' +
-      '&dateEnd=2015-04-21', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?start=2015-04-20' +
+      '&end=2015-04-21', function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
           {
