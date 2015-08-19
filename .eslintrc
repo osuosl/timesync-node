@@ -1,0 +1,7 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    // rules here take precedence over airbnb's
+  },
+  "root": true,
+}

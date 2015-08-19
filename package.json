@@ -7,16 +7,16 @@
     "doc": "docs"
   },
   "scripts": {
-    "start": "node --harmony ./src/app.js",
-    "devel": "nodemon --harmony ./src/app.js",
+    "start": "node --harmony --use_strict ./src/app.js",
+    "devel": "nodemon --harmony --use_strict ./src/app.js",
     "migrations": "knex migrate:latest",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
-    "linter": "jshint ./src ./tests ./scripts && jscs ./src ./tests ./scripts",
-    "fixtures": "node --harmony ./scripts/load_fixtures.js",
-    "test": "DATABASE=mocha PORT=8851 DEBUG=true mocha --harmony tests",
+    "linter": "jshint ./src ./tests ./scripts && eslint ./src ./tests ./scripts",
+    "fixtures": "node --harmony --use_strict ./scripts/load_fixtures.js",
+    "test": "DATABASE=mocha PORT=8851 DEBUG=true mocha --harmony --use_strict tests",
     "latte": "sh ./scripts/latte.sh",
-    "coverage": "DATABASE=mocha PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
-    "create-account": "node ./scripts/create-account.js"
+    "coverage": "DATABASE=mocha PORT=8851 DEBUG=true node --harmony --use_strict ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
+    "create-account": "node --harmony --use_strict ./scripts/create-account.js"
   },
   "repository": {
     "type": "git",
@@ -32,8 +32,12 @@
     "url": "https://github.com/osuosl/timesync-node/issues"
   },
   "dependencies": {
+    "babel-eslint": "^4.0.10",
     "bcrypt": "^0.8.4",
     "body-parser": "^1.12.3",
+    "eslint": "^1.2.0",
+    "eslint-config-airbnb": "0.0.7",
+    "eslint-plugin-react": "^3.2.3",
     "express": "^4.12.3",
     "knex": "^0.8.6",
     "passport": "^0.2.2",
@@ -46,7 +50,6 @@
     "chai": "^3.2.0",
     "chai-passport-strategy": "^0.2.0",
     "istanbul": "^0.3.17",
-    "jscs": "^1.13.1",
     "jshint": "^2.8.0",
     "mocha": "^2.2.4",
     "nodemon": "^1.4.0",

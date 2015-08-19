@@ -1,10 +1,9 @@
-'use strict';
+const sqlFixtures = require('sql-fixtures');
+const knexfile = require('../knexfile');
 
-var sqlFixtures = require('sql-fixtures');
-var knexfile = require('../knexfile');
+const testData = require('../tests/fixtures/test_data');
 
-var testData = require('../tests/fixtures/test_data');
-
-sqlFixtures.create(knexfile.development, testData).then(function() {
-  process.exit(0);
-});
+sqlFixtures.create(knexfile.development, testData).then(function quit() {
+    process.exit(0);
+  }
+);
