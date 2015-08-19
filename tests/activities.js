@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(expect, request, baseUrl) {
   /* GET one of the /activities endpoints and check its response against
   what should be returned */

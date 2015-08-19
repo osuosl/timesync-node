@@ -1,3 +1,5 @@
+'use strict';
+
 const errors = require('../src/errors');
 
 module.exports = function(expect) {

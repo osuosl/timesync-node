@@ -1,3 +1,5 @@
+'use strict';
+
 const requestBuilder = require('request');
 const expect = require('chai').expect;
 const SqlFixtures = require('sql-fixtures');

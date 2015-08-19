@@ -1,3 +1,5 @@
+'use strict';
+
 let helpers;
 
 module.exports = function(app) {
@@ -66,7 +68,9 @@ module.exports = function(app) {
       undefined. If false, an undefined field will not raise an error.
       */
 
-      for (const field of fields) {
+      /* eslint-disable prefer-const */
+      for (let field of fields) {
+        /* eslint-enable prefer-const */
         const fieldValue = helpers.getType(object[field.name]);
         if (fieldValue !== field.type) {
           if (object[field.name] === undefined && !field.required) {

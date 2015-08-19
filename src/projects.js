@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(app) {
   const knex = app.get('knex');
   const errors = require('./errors');
@@ -237,7 +239,9 @@ module.exports = function(app) {
 
       // valid keys
       const validKeys = ['name', 'uri', 'owner', 'slugs'];
-      for (const key in obj) {
+      /* eslint-disable prefer-const */
+      for (let key in obj) {
+        /* eslint-enable prefer-const */
         // indexOf returns -1 if the parameter is not in the array,
         // so this returns true if the slug is not in slugNames
         if (validKeys.indexOf(key) === -1) {

@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(app) {
   const knex = app.get('knex');
   const errors = require('./errors');
@@ -237,7 +239,9 @@ module.exports = function(app) {
       }
 
       // Test each activity
-      for (const activity of time.activities) {
+      /* eslint-disable prefer-const */
+      for (let activity of time.activities) {
+        /* eslint-enable prefer-const */
         if (helpers.getType(activity) !== 'string') {
           const err = errors.errorBadObjectInvalidField('time', 'activities',
           'slugs', 'array containing at least 1 ' + helpers.getType(activity));
@@ -282,7 +286,9 @@ module.exports = function(app) {
               const timeId = timeIds[0];
 
               const taInsertion = [];
-              for (const activityId of activityIds) {
+              /* eslint-disable prefer-const */
+              for (let activityId of activityIds) {
+                /* eslint-enable prefer-const */
                 taInsertion.push({
                   time: timeId,
                   activity: activityId,

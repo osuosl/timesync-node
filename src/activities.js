@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(app) {
   const knex = app.get('knex');
   const errors = require('./errors');

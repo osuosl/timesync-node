@@ -7,16 +7,16 @@
     "doc": "docs"
   },
   "scripts": {
-    "start": "node --harmony --use_strict ./src/app.js",
-    "devel": "nodemon --harmony --use_strict ./src/app.js",
+    "start": "node --harmony ./src/app.js",
+    "devel": "nodemon --harmony ./src/app.js",
     "migrations": "knex migrate:latest",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "linter": "jshint ./src ./tests ./scripts && eslint ./src ./tests ./scripts",
-    "fixtures": "node --harmony --use_strict ./scripts/load_fixtures.js",
-    "test": "DATABASE=mocha PORT=8851 DEBUG=true mocha --harmony --use_strict tests",
+    "fixtures": "node --harmony ./scripts/load_fixtures.js",
+    "test": "DATABASE=mocha PORT=8851 DEBUG=true mocha --harmony tests",
     "latte": "sh ./scripts/latte.sh",
-    "coverage": "DATABASE=mocha PORT=8851 DEBUG=true node --harmony --use_strict ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
-    "create-account": "node --harmony --use_strict ./scripts/create-account.js"
+    "coverage": "DATABASE=mocha PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
+    "create-account": "node --harmony ./scripts/create-account.js"
   },
   "repository": {
     "type": "git",

@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(expect, app) {
   const helpers = require('../src/helpers')(app);
   describe('checkUser', function() {

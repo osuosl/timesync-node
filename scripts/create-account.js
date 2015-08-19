@@ -1,3 +1,5 @@
+'use strict';
+
 // To start the script, run 'npm run create-account'
 
 // Library requirements

@@ -2,7 +2,11 @@
   "extends": "airbnb",
   "rules": {
     // rules here take precedence over airbnb's
-    "func-names": 0
+    "func-names": 0,
+    "strict": [2, "global"]
+  },
+  "ecmaFeatures": {
+    "modules": false
   },
   "root": true,
 }

@@ -1,3 +1,5 @@
+'use strict';
+
 function copyJsonObject(obj) {
   // This allows us to change object properties
   // without effecting other tests
