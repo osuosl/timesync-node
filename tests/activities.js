@@ -242,7 +242,7 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('POST /activities/:slug', function() {
-    // Attempt at patching
+    // Updated activity
     const patchedActivity = {
       name: 'TimeSync Documentation',
       slug: 'dev-docs',
@@ -255,18 +255,19 @@ module.exports = function(expect, request, baseUrl) {
       id: 1,
     };
 
-    // Assigning the fields of patchedActivity to variables
+    // Only name is updated
     const patchedName = {
       name: patchedActivity.name,
       slug: originalActivity.slug,
     };
 
+    // Only slug is updated
     const patchedSlug = {
       name: originalActivity.name,
       slug: patchedActivity.slug,
     };
 
-    // Bad object
+    // Both activity field invalid strings
     const badActivity = {
       name: '',
       slug: '',
@@ -305,13 +306,14 @@ module.exports = function(expect, request, baseUrl) {
         const jsonBody = JSON.parse(getBody);
 
         expect(jsonBody).to.deep.equal(originalActivity);
+
         done();
       });
     }
 
     it('successfully updates the activity', function(done) {
       requestOptions.body = postArg;
-      requestOptions.body.object = copyJsonObject(patchedActivity);
+      requestOptions.body.object = patchedActivity;
 
       request.post(requestOptions, function(err, res, body) {
         expect(err).to.be.a('null');
@@ -332,6 +334,7 @@ module.exports = function(expect, request, baseUrl) {
           const jsonBody = JSON.parse(getBody);
 
           expect(jsonBody).to.deep.equal(expectedResult);
+
           done();
         });
       });
@@ -358,6 +361,7 @@ module.exports = function(expect, request, baseUrl) {
           const jsonBody = JSON.parse(getBody);
 
           expect(jsonBody).to.deep.equal(expectedResult);
+
           done();
         });
       });
@@ -384,6 +388,7 @@ module.exports = function(expect, request, baseUrl) {
           const jsonBody = JSON.parse(getBody);
 
           expect(jsonBody).to.deep.equal(expectedResult);
+
           done();
         });
       });
@@ -428,10 +433,9 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    // Complete patch of activity object with invalid name field
     it('fails to update activity if name is invalid type', function(done) {
       requestOptions.body = postArg;
-      requestOptions.body.object = copyJsonObject(originalActivity);
+      requestOptions.body.object = copyJsonObject(patchedActivity);
       delete requestOptions.body.object.id;
       requestOptions.body.object.name = ['timesync', 'documentation'];
 
@@ -452,7 +456,7 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails to update activity if slug is invalid type', function(done) {
       requestOptions.body = postArg;
-      requestOptions.body.object = copyJsonObject(originalActivity);
+      requestOptions.body.object = copyJsonObject(patchedActivity);
       delete requestOptions.body.object.id;
       requestOptions.body.object.slug = ['docs', 'api'];
 
@@ -501,7 +505,7 @@ module.exports = function(expect, request, baseUrl) {
           error: 'Object not found',
           text: 'Nonexistent activity',
         };
-        // Checking that the post attempt fails
+
         expect(body).to.deep.equal(expectedError);
         expect(res.statusCode).to.equal(404);
 
@@ -521,6 +525,7 @@ module.exports = function(expect, request, baseUrl) {
           text: 'Expected slug but received !._cucco',
           values: ['!._cucco'],
         };
+
         expect(body).to.deep.equal(expectedError);
         expect(res.statusCode).to.equal(400);
 

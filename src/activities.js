@@ -95,8 +95,8 @@ module.exports = function(app) {
       for (let key in currObj) {
       /* eslint-enable prefer-const */
 
-      // indexOf return -1 if the parameter it not in the array
-      // so this will return true in the slug/name DNE
+      // indexOf returns -1 if the parameter it not in the array
+      // so this will return true if the slug/name DNE
         if (validKeys.indexOf(key) === -1) {
           const err = errors.errorBadObjectUnknownField('activity', key);
           return res.status(err.status).send(err);
@@ -108,7 +108,6 @@ module.exports = function(app) {
         {name: 'slug', type: 'string', required: false},
       ];
 
-      // Rebase later to use this helper function
       const validationFailure = helpers.validateFields(currObj, fields);
       if (validationFailure) {
         const err = errors.errorBadObjectInvalidField(
@@ -120,20 +119,21 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
       }
 
-      // if the user submits a patched name with a length of zero
+      // checks non-empty string was sent to update name
       if (currObj.name !== undefined && currObj.name.length === 0) {
         const err = errors.errorBadObjectInvalidField(
           'activity', 'name', 'string', 'empty string');
         return res.status(err.status).send(err);
       }
 
-      // if the user submits a patched slug with a length of zero
+      // checks non-empty string was sent to update slug
       if (currObj.slug !== undefined && currObj.slug.length === 0) {
         const err = errors.errorBadObjectInvalidField(
           'activity', 'slug', 'slug', 'empty string');
         return res.status(err.status).send(err);
       }
 
+      // checks for valid slugs
       if (!helpers.validateSlug(req.params.slug)) {
         const err = errors.errorInvalidIdentifier('slug', '!._cucco');
         return res.status(err.status).send(err);
@@ -141,6 +141,11 @@ module.exports = function(app) {
 
       knex('activities').where('slug', '=', req.params.slug).first()
       .then(function() {
+        /* req.body.object.name = updated name
+           currObj.name = name remains unchanged
+
+           req.body.object.slug = updated slug
+           currObj.slug = slug remains unchanged */
         const activity = {
           name: req.body.object.name || currObj.name,
           slug: req.body.object.slug || currObj.slug,

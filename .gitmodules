@@ -1,3 +1,3 @@
-[submodule "timesync"]
-	path = timesync
+[submodule "timesync-api"]
+	path = timesync-api
 	url = git@github.com:osuosl/timesync.git
