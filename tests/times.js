@@ -110,6 +110,22 @@ module.exports = function(expect, request, baseUrl) {
         done();
       });
     });
+
+    it('returns an error for a non-existent user', function(done) {
+      request.get(baseUrl + 'times?user=fakeuser', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter user contained invalid value "fakeuser"',
+        };
+
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
   });
 
   describe('GET /times?project=:project', function() {
@@ -157,6 +173,22 @@ module.exports = function(expect, request, baseUrl) {
         done();
       });
     });
+
+    it('returns an error for a non-existent project', function(done) {
+      request.get(baseUrl + 'times?project=notreal', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter project contained invalid value "notreal"',
+        };
+
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
   });
 
   describe('GET /times?activity=:activity', function() {
@@ -200,6 +232,22 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.equal(null);
         expect(getRes.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+
+    it('returns an error for a non-existent activity', function(done) {
+      request.get(baseUrl + 'times?activity=falsch', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter activity contained invalid value "falsch"',
+        };
+
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(400);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
@@ -264,6 +312,38 @@ module.exports = function(expect, request, baseUrl) {
         done();
       });
     });
+
+    it('returns an error for an invalid start date', function(done) {
+      request.get(baseUrl + 'times?start=faux', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter start contained invalid value "faux"',
+        };
+
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+
+    it('returns an error for a future start date', function(done) {
+      request.get(baseUrl + 'times?user=2105-04-19', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter start contained invalid value "2015-04-19"',
+        };
+
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
   });
 
   describe('GET /times?end=:end', function() {
@@ -324,6 +404,22 @@ module.exports = function(expect, request, baseUrl) {
         done();
       });
     });
+
+    it('returns an error for an invalid end date', function(done) {
+      request.get(baseUrl + 'times?end=namaak', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter end contained invalid value "namaak"',
+        };
+
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
   });
 
   describe('GET /times?start=:start&end=:end', function() {
@@ -369,6 +465,24 @@ module.exports = function(expect, request, baseUrl) {
         expect(getErr).to.equal(null);
         expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
+        done();
+      });
+    });
+
+    it('returns an error for a start date after an end date', function(done) {
+      request.get(baseUrl + 'times?start=2015-04-21&end=2015-04-19', function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(400);
+
+        expect(jsonBody.status).to.equal(400);
+        expect(jsonBody.error).to.equal('Bad Query Value');
+
+        expect([
+          'Parameter end contained invalid value "2015-04-19"',
+          'Parameter start contained invalid value "2015-04-21"',
+        ]).to.include.members(jsonBody.text);
         done();
       });
     });
