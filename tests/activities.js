@@ -544,7 +544,7 @@ module.exports = function(expect, request, baseUrl) {
       {
         'name': 'Documentation',
         'slug': 'docs',
-        'id' : 1,
+        'id': 1,
       },
       {
         'name': 'Development',
@@ -565,7 +565,7 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     function checkListEndpoint(done, newActivityItem) {
-      request.get(baseUrl + 'projects', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'activities', function(getErr, getRes, getBody) {
         // the projects/ endpoint should now have one more project
         let expectedGetResults;
         if (newActivityItem) {
@@ -619,7 +619,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedError = {
           status: 400,
           error: 'Bad object',
-          text: 'Field slug of activity should be slug but received ' +
+          text: 'Field slug of activity should be slug but was sent as ' +
           'non-slug string',
         };
 
@@ -632,7 +632,7 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails to create a new activity with an existing slug', function(done) {
       const postExistingSlug = copyJsonObject(postArg);
-      postExistingSlug.object.slugs = 'dev';
+      postExistingSlug.object.slug = 'dev';
       requestOptions.form = postExistingSlug;
 
       request.post(requestOptions, function(err, res, body) {
@@ -652,7 +652,7 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails to create a new activity with no slug', function(done) {
       const postNoSlug = copyJsonObject(postArg);
-      delete postNoSlug.object.slugs;
+      delete postNoSlug.object.slug;
       requestOptions.form = postNoSlug;
 
       request.post(requestOptions, function(err, res, body) {
