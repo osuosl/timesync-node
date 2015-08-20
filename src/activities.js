@@ -135,7 +135,7 @@ module.exports = function(app) {
 
       // checks for valid slugs
       if (!helpers.validateSlug(req.params.slug)) {
-        const err = errors.errorInvalidIdentifier('slug', '!._cucco');
+        const err = errors.errorInvalidIdentifier('slug', req.params.slug);
         return res.status(err.status).send(err);
       }
 
