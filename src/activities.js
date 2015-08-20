@@ -139,20 +139,23 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
       }
 
-      knex('activities').where('slug', '=', req.params.slug).first()
-      .then(function() {
+      knex('activities').first().select('activities.name as name',
+      'activities.slug as slug', 'activities.id as id')
+      .where('slug', '=', req.params.slug).then(function(obj) {
         /* req.body.object.name = updated name
            currObj.name = name remains unchanged
 
            req.body.object.slug = updated slug
            currObj.slug = slug remains unchanged */
         const activity = {
-          name: req.body.object.name || currObj.name,
-          slug: req.body.object.slug || currObj.slug,
+          name: req.body.object.name || obj.name,
+          slug: req.body.object.slug || obj.slug,
         };
+
         knex('activities').where('slug', '=', req.params.slug)
         .update(activity).then(function(numObj) {
           if (numObj >= 1) {
+            activity.id = obj.id;
             return res.send(activity);
           }
           const err = errors.errorObjectNotFound('activity');

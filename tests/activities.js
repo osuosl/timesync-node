@@ -242,46 +242,29 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('POST /activities/:slug', function() {
-    // Updated activity
     const patchedActivity = {
       name: 'TimeSync Documentation',
       slug: 'dev-docs',
     };
 
-    // Control that the updated activity is being compared to
     const originalActivity =  {
       name: 'Documentation',
       slug: 'docs',
       id: 1,
     };
 
-    // Only name is updated
-    const patchedName = {
-      name: patchedActivity.name,
-      slug: originalActivity.slug,
-    };
+    const patchedName = { name: patchedActivity.name };
 
-    // Only slug is updated
-    const patchedSlug = {
-      name: originalActivity.name,
-      slug: patchedActivity.slug,
-    };
+    const patchedSlug = { slug: patchedActivity.slug };
 
-    // Both activity field invalid strings
     const badActivity = {
       name: '',
       slug: '',
     };
 
-    const badPatchedName = {
-      name: badActivity.name,
-      slug: originalActivity.slug,
-    };
+    const badPatchedName = { name: badActivity.name };
 
-    const badPatchedSlug = {
-      name: originalActivity.name,
-      slug: badActivity.slug,
-    };
+    const badPatchedSlug = { slug: badActivity.slug };
 
     // Base POST JSON
     const postArg = {
@@ -323,7 +306,7 @@ module.exports = function(expect, request, baseUrl) {
         expectedResult.name = patchedActivity.name;
         expectedResult.slug = patchedActivity.slug;
 
-        expect(body).to.deep.equal(patchedActivity);
+        expect(body).to.deep.equal(expectedResult);
 
         // Checking that the activity has been properly updated
         request.get(baseUrl + 'activities/dev-docs',
@@ -351,7 +334,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.name = patchedName.name;
 
-        expect(body).to.deep.equal(patchedName);
+        expect(body).to.deep.equal(expectedResult);
 
         request.get(baseUrl + 'activities/docs',
         function(getErr, getRes, getBody) {
@@ -378,7 +361,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.slug = patchedSlug.slug;
 
-        expect(body).to.deep.equal(patchedSlug);
+        expect(body).to.deep.equal(expectedResult);
 
         request.get(baseUrl + 'activities/dev-docs',
         function(getErr, getRes, getBody) {
