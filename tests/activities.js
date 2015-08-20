@@ -2,7 +2,7 @@
 
 function copyJsonObject(obj) {
   // This allows us to change object properties
-  // without effecting other tests
+  // without affecting other tests
   return JSON.parse(JSON.stringify(obj));
 }
 
@@ -513,6 +513,206 @@ module.exports = function(expect, request, baseUrl) {
         expect(res.statusCode).to.equal(400);
 
         checkGetReq(done);
+      });
+    });
+  });
+
+  describe('POST /activities', function() {
+    // the activity object to attempt to add
+    const activity = {
+      slug: 'chef',
+      name: 'Chef',
+    };
+
+    // the project as added to the database
+    const newActivity = {
+      slug: 'chef',
+      name: 'Chef',
+      id: 4,
+    };
+
+    // the base POST JSON
+    const postArg = {
+      auth: {
+        username: 'tschuy',
+        password: 'password',
+      },
+      object: activity,
+    };
+
+    const initialActivities = [
+      {
+        'name': 'Documentation',
+        'slug': 'docs',
+        'id' : 1,
+      },
+      {
+        'name': 'Development',
+        'slug': 'dev',
+        'id': 2,
+      },
+      {
+        'name': 'Systems',
+        'slug': 'sys',
+        'id': 3,
+      },
+    ];
+
+    const requestOptions = {
+      url: baseUrl + 'activities/',
+      json: true,
+      method: 'POST',
+    };
+
+    function checkListEndpoint(done, newActivityItem) {
+      request.get(baseUrl + 'projects', function(getErr, getRes, getBody) {
+        // the projects/ endpoint should now have one more project
+        let expectedGetResults;
+        if (newActivityItem) {
+          expectedGetResults = initialActivities.concat([newActivityItem]);
+        } else {
+          expectedGetResults = initialActivities;
+        }
+
+        expect(getErr).to.be.a('null');
+        expect(getRes.statusCode).to.equal(200);
+
+        expect(JSON.parse(getBody))
+        .to.have.same.deep.members(expectedGetResults);
+        done();
+      });
+    }
+
+    it('successfully creates a new activity', function(done) {
+      requestOptions.form = postArg;
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(err).to.be.a('null');
+        expect(res.statusCode).to.equal(200);
+        expect(body).to.deep.equal(newActivity);
+
+        checkListEndpoint(done, newActivity);
+      });
+    });
+
+    it('fails to create a new activity with bad auth', function(done) {
+      requestOptions.form = copyJsonObject(postArg);
+      requestOptions.form.object = copyJsonObject(newActivity);
+      requestOptions.form.auth.password = 'not correct password';
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(res.statusCode).to.equal(401);
+
+        expect(body.error).to.equal('Authentication failure');
+        expect(body.text).to.equal('Incorrect password.');
+
+        checkListEndpoint(done);
+      });
+    });
+
+    it('fails to create a new activity with an invalid slug', function(done) {
+      const postInvalidSlug = copyJsonObject(postArg);
+      postInvalidSlug.object.slug = '$*#*cat';
+      requestOptions.form = postInvalidSlug;
+
+      request.post(requestOptions, function(err, res, body) {
+        const expectedError = {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field slug of activity should be slug but received ' +
+          'non-slug string',
+        };
+
+        expect(body).to.deep.equal(expectedError);
+        expect(res.statusCode).to.equal(400);
+
+        checkListEndpoint(done);
+      });
+    });
+
+    it('fails to create a new activity with an existing slug', function(done) {
+      const postExistingSlug = copyJsonObject(postArg);
+      postExistingSlug.object.slugs = 'dev';
+      requestOptions.form = postExistingSlug;
+
+      request.post(requestOptions, function(err, res, body) {
+        const expectedError = {
+          status: 409,
+          error: 'The slug provided already exists',
+          text: 'slug dev already exists',
+          values: ['dev'],
+        };
+
+        expect(body).to.deep.equal(expectedError);
+        expect(res.statusCode).to.equal(409);
+
+        checkListEndpoint(done);
+      });
+    });
+
+    it('fails to create a new activity with no slug', function(done) {
+      const postNoSlug = copyJsonObject(postArg);
+      delete postNoSlug.object.slugs;
+      requestOptions.form = postNoSlug;
+
+      request.post(requestOptions, function(err, res, body) {
+        const expectedError = {
+          status: 400,
+          error: 'Bad object',
+          text: 'The activity is missing a slug',
+        };
+
+        expect(body).to.deep.equal(expectedError);
+        expect(res.statusCode).to.equal(400);
+
+        checkListEndpoint(done);
+      });
+    });
+
+    it('fails to create a new activity with no name', function(done) {
+      const postNoName = copyJsonObject(postArg);
+      delete postNoName.object.name;
+      requestOptions.form = postNoName;
+
+      request.post(requestOptions, function(err, res, body) {
+        const expectedError = {
+          status: 400,
+          error: 'Bad object',
+          text: 'The activity is missing a name',
+        };
+
+        expect(body).to.deep.equal(expectedError);
+        expect(res.statusCode).to.equal(400);
+
+        checkListEndpoint(done);
+      });
+    });
+
+    it('fails to create an activity with bad name datatype', function(done) {
+      requestOptions.form = copyJsonObject(postArg);
+      requestOptions.form.object.name = ['test'];
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(body.error).to.equal('Bad object');
+        expect(res.statusCode).to.equal(400);
+        expect(body.text).to.equal('Field name of' +
+        ' activity should be string but was sent as array');
+
+        checkListEndpoint(done);
+      });
+    });
+
+    it('fails to create an activity with bad slug datatype', function(done) {
+      requestOptions.form = copyJsonObject(postArg);
+      requestOptions.form.object.slug = ['test'];
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(body.error).to.equal('Bad object');
+        expect(res.statusCode).to.equal(400);
+        expect(body.text).to.equal('Field slug of' +
+        ' activity should be string but was sent as array');
+
+        checkListEndpoint(done);
       });
     });
   });

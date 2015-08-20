@@ -167,4 +167,8 @@ module.exports = function(app) {
       });
     })(req, res, next);
   });
+
+  app.post(app.get('version') + '/activities', function(req, res) {
+    res.send('hello');
+  });
 };
