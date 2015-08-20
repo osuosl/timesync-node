@@ -152,11 +152,17 @@ module.exports = function(app) {
       const obj = req.body.object;
 
       // run various checks
-
-      // check validity of uri syntax
-      if (obj.uri && !validUrl.isWebUri(obj.uri)) {
-        const err = errors.errorInvalidIdentifier('uri', obj.uri);
-        return res.status(err.status).send(err);
+      // valid keys
+      const validKeys = ['name', 'uri', 'owner', 'slugs'];
+      /* eslint-disable prefer-const */
+      for (let key in obj) {
+        /* eslint-enable prefer-const */
+        // indexOf returns -1 if the parameter is not in the array,
+        // so this returns true if the slug is not in slugNames
+        if (validKeys.indexOf(key) === -1) {
+          const err = errors.errorBadObjectUnknownField('project', key);
+          return res.status(err.status).send(err);
+        }
       }
 
       // check existence of slugs
@@ -168,6 +174,30 @@ module.exports = function(app) {
       // check existence of name
       if (!obj.name) {
         const err = errors.errorBadObjectMissingField('project', 'name');
+        return res.status(err.status).send(err);
+      }
+
+      // check field types
+      const fields = [
+        {name: 'name', type: 'string', required: true},
+        {name: 'uri', type: 'string', required: false},
+        {name: 'owner', type: 'string', required: true},
+        {name: 'slugs', type: 'array', required: true},
+      ];
+
+      // validateFields takes the object to check fields on,
+      // and an array of field names and types
+      const validationFailure = helpers.validateFields(obj, fields);
+      if (validationFailure) {
+        const err = errors.errorBadObjectInvalidField('project',
+          validationFailure.name, validationFailure.type,
+          validationFailure.actualType);
+        return res.status(err.status).send(err);
+      }
+
+      // check validity of uri syntax
+      if (obj.uri && !validUrl.isWebUri(obj.uri)) {
+        const err = errors.errorInvalidIdentifier('uri', obj.uri);
         return res.status(err.status).send(err);
       }
 
