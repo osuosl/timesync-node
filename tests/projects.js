@@ -591,6 +591,18 @@ module.exports = function(expect, request, baseUrl) {
       method: 'POST',
     };
 
+    function checkListEndpoint(done) {
+      request.get(baseUrl + 'projects', function(getErr, getRes, getBody) {
+        expect(getErr).to.be.a('null');
+        expect(getRes.statusCode).to.equal(200);
+
+        const jsonGetBody = JSON.parse(getBody);
+        // the projects/ list shouldn't have changed
+        expect(jsonGetBody).to.deep.have.same.members(initialProjects);
+        done();
+      });
+    }
+
     it('successfully creates a new project with slugs', function(done) {
       requestOptions.form = postArg;
 
@@ -682,9 +694,9 @@ module.exports = function(expect, request, baseUrl) {
       request.post(requestOptions, function(err, res, body) {
         const expectedError = {
           status: 400,
-          error: 'The provided identifier was invalid',
-          text: "Expected uri but received Ceci n'est pas un url",
-          values: ["Ceci n'est pas un url"],
+          error: 'Bad object',
+          text: 'Field uri of project should be uri but was sent as ' +
+          'non-uri string',
         };
 
         expect(body).to.deep.equal(expectedError);
@@ -711,9 +723,9 @@ module.exports = function(expect, request, baseUrl) {
       request.post(requestOptions, function(err, res, body) {
         const expectedError = {
           status: 400,
-          error: 'The provided identifier was invalid',
-          text: 'Expected slug but received: $*#*cat, )_!@#mouse',
-          values: ['$*#*cat', ')_!@#mouse'],
+          error: 'Bad object',
+          text: 'Field slugs of project should be slugs but was sent as ' +
+          'non-slug strings',
         };
 
         expect(body).to.deep.equal(expectedError);
@@ -838,6 +850,62 @@ module.exports = function(expect, request, baseUrl) {
           expect(jsonGetBody).to.deep.have.same.members(initialProjects);
           done();
         });
+      });
+    });
+
+    it('fails to create a project with bad owner datatype', function(done) {
+      requestOptions.form = copyJsonObject(postArg);
+      requestOptions.form.object.owner = ['test'];
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(body.error).to.equal('Bad object');
+        expect(res.statusCode).to.equal(400);
+        expect(body.text).to.equal('Field owner of' +
+        ' project should be string but was sent as array');
+
+        checkListEndpoint(done);
+      });
+    });
+
+    it('fails to create a project with bad slugs datatype', function(done) {
+      requestOptions.form = copyJsonObject(postArg);
+      requestOptions.form.object.slugs = 'test';
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(body.error).to.equal('Bad object');
+        expect(res.statusCode).to.equal(400);
+        expect(body.text).to.equal('Field slugs of' +
+        ' project should be array but was sent as string');
+
+        checkListEndpoint(done);
+      });
+    });
+
+    it('fails to create a project with bad name datatype', function(done) {
+      requestOptions.form = copyJsonObject(postArg);
+      requestOptions.form.object.name = ['test'];
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(body.error).to.equal('Bad object');
+        expect(res.statusCode).to.equal(400);
+        expect(body.text).to.equal('Field name of' +
+        ' project should be string but was sent as array');
+
+        checkListEndpoint(done);
+      });
+    });
+
+    it('fails to create a project with bad uri datatype', function(done) {
+      requestOptions.form = copyJsonObject(postArg);
+      requestOptions.form.object.uri = ['test'];
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(body.error).to.equal('Bad object');
+        expect(res.statusCode).to.equal(400);
+        expect(body.text).to.equal('Field uri of' +
+        ' project should be string but was sent as array');
+
+        checkListEndpoint(done);
       });
     });
   });
