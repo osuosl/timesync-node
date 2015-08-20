@@ -1,5 +1,11 @@
 'use strict';
 
+function copyJsonObject(obj) {
+  // This allows us to change object properties
+  // without effecting other tests
+  return JSON.parse(JSON.stringify(obj));
+}
+
 module.exports = function(expect, request, baseUrl) {
   /* GET one of the /activities endpoints and check its response against
   what should be returned */
@@ -231,6 +237,282 @@ module.exports = function(expect, request, baseUrl) {
 
           done();
         });
+      });
+    });
+  });
+
+  describe('POST /activities/:slug', function() {
+    const patchedActivity = {
+      name: 'TimeSync Documentation',
+      slug: 'dev-docs',
+    };
+
+    const originalActivity =  {
+      name: 'Documentation',
+      slug: 'docs',
+      id: 1,
+    };
+
+    const patchedName = { name: patchedActivity.name };
+
+    const patchedSlug = { slug: patchedActivity.slug };
+
+    const badActivity = {
+      name: '',
+      slug: '',
+    };
+
+    const badPatchedName = { name: badActivity.name };
+
+    const badPatchedSlug = { slug: badActivity.slug };
+
+    // Base POST JSON
+    const postArg = {
+      auth: {
+        username: 'tschuy',
+        password: 'password',
+      },
+    };
+
+    const requestOptions = {
+      url: baseUrl + 'activities/docs',
+      json: true,
+    };
+
+    // Performs get request to check whether the db's been changed
+    function checkGetReq(done) {
+      request.get(baseUrl + 'activities/docs',
+      function(getErr, getRes, getBody) {
+        expect(getErr).to.be.a('null');
+        expect(getRes.statusCode).to.equal(200);
+
+        const jsonBody = JSON.parse(getBody);
+
+        expect(jsonBody).to.deep.equal(originalActivity);
+
+        done();
+      });
+    }
+
+    it('successfully updates the activity', function(done) {
+      requestOptions.body = postArg;
+      requestOptions.body.object = patchedActivity;
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(err).to.be.a('null');
+        expect(res.statusCode).to.equal(200);
+
+        const expectedResult = copyJsonObject(originalActivity);
+        expectedResult.name = patchedActivity.name;
+        expectedResult.slug = patchedActivity.slug;
+
+        expect(body).to.deep.equal(expectedResult);
+
+        // Checking that the activity has been properly updated
+        request.get(baseUrl + 'activities/dev-docs',
+        function(getErr, getRes, getBody) {
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+
+          const jsonBody = JSON.parse(getBody);
+
+          expect(jsonBody).to.deep.equal(expectedResult);
+
+          done();
+        });
+      });
+    });
+
+    it('successfully updates the activity name', function(done) {
+      requestOptions.body = postArg;
+      requestOptions.body.object = patchedName;
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(err).to.be.a('null');
+        expect(res.statusCode).to.equal(200);
+
+        const expectedResult = copyJsonObject(originalActivity);
+        expectedResult.name = patchedName.name;
+
+        expect(body).to.deep.equal(expectedResult);
+
+        request.get(baseUrl + 'activities/docs',
+        function(getErr, getRes, getBody) {
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+
+          const jsonBody = JSON.parse(getBody);
+
+          expect(jsonBody).to.deep.equal(expectedResult);
+
+          done();
+        });
+      });
+    });
+
+    it('successfully updates the activity slug', function(done) {
+      requestOptions.body = postArg;
+      requestOptions.body.object = patchedSlug;
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(err).to.be.a('null');
+        expect(res.statusCode).to.equal(200);
+
+        const expectedResult = copyJsonObject(originalActivity);
+        expectedResult.slug = patchedSlug.slug;
+
+        expect(body).to.deep.equal(expectedResult);
+
+        request.get(baseUrl + 'activities/dev-docs',
+        function(getErr, getRes, getBody) {
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+
+          const jsonBody = JSON.parse(getBody);
+
+          expect(jsonBody).to.deep.equal(expectedResult);
+
+          done();
+        });
+      });
+    });
+
+    // Returns an error 400 - errorBadObjectInvalidRield
+    it('fails to update an activity to have no name', function(done) {
+      requestOptions.body = postArg;
+      requestOptions.body.object = badPatchedName;
+
+      request.post(requestOptions, function(err, res, body) {
+        const expectedError = {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field name of activity should be string but was sent as ' +
+                'empty string',
+        };
+
+        expect(body).to.deep.equal(expectedError);
+        expect(res.statusCode).to.equal(400);
+
+        checkGetReq(done);
+      });
+    });
+
+    it('fails to update an activity to have no slug', function(done) {
+      requestOptions.body = postArg;
+      requestOptions.body.object = badPatchedSlug;
+
+      request.post(requestOptions, function(err, res, body) {
+        const expectedError = {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field slug of activity should be slug but was sent as ' +
+                'empty string',
+        };
+
+        expect(body).to.deep.equal(expectedError);
+        expect(res.statusCode).to.equal(400);
+
+        checkGetReq(done);
+      });
+    });
+
+    it('fails to update activity if name is invalid type', function(done) {
+      requestOptions.body = postArg;
+      requestOptions.body.object = copyJsonObject(patchedActivity);
+      delete requestOptions.body.object.id;
+      requestOptions.body.object.name = ['timesync', 'documentation'];
+
+      request.post(requestOptions, function(err, res, body) {
+        const expectedError = {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field name of activity should be string but was sent as ' +
+                'array',
+        };
+
+        expect(body).to.deep.equal(expectedError);
+        expect(res.statusCode).to.equal(400);
+
+        checkGetReq(done);
+      });
+    });
+
+    it('fails to update activity if slug is invalid type', function(done) {
+      requestOptions.body = postArg;
+      requestOptions.body.object = copyJsonObject(patchedActivity);
+      delete requestOptions.body.object.id;
+      requestOptions.body.object.slug = ['docs', 'api'];
+
+      request.post(requestOptions, function(err, res, body) {
+        const expectedError = {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field slug of activity should be string but was sent as ' +
+                'array',
+        };
+
+        expect(body).to.deep.equal(expectedError);
+        expect(res.statusCode).to.equal(400);
+
+        checkGetReq(done);
+      });
+    });
+
+    it('fails to update an activity with bad authentication', function(done) {
+      requestOptions.body = copyJsonObject(postArg);
+      requestOptions.body.object = copyJsonObject(patchedActivity);
+      requestOptions.body.auth.password = 'drowssap';
+
+      request.post(requestOptions, function(err, res, body) {
+        const expectedError = {
+          status: 401,
+          error: 'Authentication failure',
+          text: 'Incorrect password.',
+        };
+
+        expect(body).deep.equal(expectedError);
+        expect(res.statusCode).to.equal(401);
+
+        checkGetReq(done);
+      });
+    });
+
+    it('fails to update when given a nonexistent slug', function(done) {
+      requestOptions.body = postArg;
+      requestOptions.body.object = copyJsonObject(patchedActivity);
+      requestOptions.url = baseUrl + 'activities/doge';
+
+      request.post(requestOptions, function(err, res, body) {
+        const expectedError = {
+          status: 404,
+          error: 'Object not found',
+          text: 'Nonexistent activity',
+        };
+
+        expect(body).to.deep.equal(expectedError);
+        expect(res.statusCode).to.equal(404);
+
+        checkGetReq(done);
+      });
+    });
+
+    it('fails to update when given an invalid slug', function(done) {
+      requestOptions.body = postArg;
+      requestOptions.body.object = copyJsonObject(patchedActivity);
+      requestOptions.url = baseUrl + 'activities/!._cucco';
+
+      request.post(requestOptions, function(err, res, body) {
+        const expectedError = {
+          status: 400,
+          error: 'The provided identifier was invalid',
+          text: 'Expected slug but received !._cucco',
+          values: ['!._cucco'],
+        };
+
+        expect(body).to.deep.equal(expectedError);
+        expect(res.statusCode).to.equal(400);
+
+        checkGetReq(done);
       });
     });
   });
