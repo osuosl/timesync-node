@@ -96,7 +96,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -159,7 +159,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -222,7 +222,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -298,7 +298,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -390,7 +390,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -454,7 +454,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -532,7 +532,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -568,7 +568,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -605,7 +605,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -641,7 +641,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -677,7 +677,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -714,7 +714,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -762,7 +762,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -799,7 +799,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -836,7 +836,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -885,7 +885,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -935,7 +935,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -995,7 +995,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -1032,7 +1032,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -1069,7 +1069,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -1107,7 +1107,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -1146,7 +1146,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -1197,7 +1197,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -1236,7 +1236,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
@@ -1275,7 +1275,7 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
-        expect(jsonBody.length === expectedResults.length);
+        expect(jsonBody.length).to.equal(expectedResults.length);
         for (let i = 0, len = jsonBody.length; i < len; i++) {
           expectedResults[i].project.sort();
           expectedResults[i].activities.sort();
