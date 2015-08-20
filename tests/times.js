@@ -621,9 +621,9 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?user=:user&startDate=:start', function() {
+  describe('GET /times?user=:user&start=:start', function() {
     it('returns all times for a user after a date', function(done) {
-      request.get(baseUrl + 'times?user=deanj&startDate=2015-04-20',
+      request.get(baseUrl + 'times?user=deanj&start=2015-04-20',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
@@ -657,9 +657,9 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?user=:user&endDate=:end', function() {
+  describe('GET /times?user=:user&end=:end', function() {
     it('returns all times for a user before a date', function(done) {
-      request.get(baseUrl + 'times?user=tschuy&endDate=2015-04-21',
+      request.get(baseUrl + 'times?user=tschuy&end=2015-04-21',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
@@ -693,11 +693,11 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?user=:user&startDate=:start&endDate=:end', function() {
+  describe('GET /times?user=:user&start=:start&end=:end', function() {
     it('returns all times for a user between two dates',
     function(done) {
-      request.get(baseUrl + 'times?user=deanj&startDate=2015-04-19' +
-      '&endDate=2015-04-20', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?user=deanj&start=2015-04-19' +
+      '&end=2015-04-20', function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
           {
@@ -815,10 +815,10 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?project=:project&startDate=:start', function() {
+  describe('GET /times?project=:project&start=:start', function() {
     it('returns all times for a project after a date',
     function(done) {
-      request.get(baseUrl + 'times?project=gwm&startDate=2015-04-20',
+      request.get(baseUrl + 'times?project=gwm&start=2015-04-20',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
@@ -852,10 +852,10 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?project=:project&endDate=:end', function() {
+  describe('GET /times?project=:project&end=:end', function() {
     it('returns all times for a project before a date',
     function(done) {
-      request.get(baseUrl + 'times?project=gwm&endDate=2015-04-20',
+      request.get(baseUrl + 'times?project=gwm&end=2015-04-20',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
@@ -901,12 +901,12 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?project=:project&startDate=:start&endDate=:end',
+  describe('GET /times?project=:project&start=:start&end=:end',
   function() {
     it('returns all times for a project between two dates',
     function(done) {
-      request.get(baseUrl + 'times?project=gwm&startDate=2015-04-19' +
-      '&endDate=2015-04-21', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?project=gwm&start=2015-04-19' +
+      '&end=2015-04-21', function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
           {
@@ -1014,10 +1014,10 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?activity=:activity&startDate=:start', function() {
+  describe('GET /times?activity=:activity&start=:start', function() {
     it('returns all times for an activity after a date',
     function(done) {
-      request.get(baseUrl + 'times?activity=dev&startDate=2015-04-20',
+      request.get(baseUrl + 'times?activity=dev&start=2015-04-20',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
@@ -1051,10 +1051,10 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?activity=:activity&endDate=:end', function() {
+  describe('GET /times?activity=:activity&end=:end', function() {
     it('returns all times for an activity before a date',
     function(done) {
-      request.get(baseUrl + 'times?activity=dev&endDate=2015-04-21',
+      request.get(baseUrl + 'times?activity=dev&end=2015-04-21',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
@@ -1088,12 +1088,12 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?activity=:activity&startDate=:start&endDate=:end',
+  describe('GET /times?activity=:activity&start=:start&end=:end',
   function() {
     it('returns all times for an activity between two dates',
     function(done) {
-      request.get(baseUrl + 'times?activity=dev&startDate=2015-04-19' +
-      '&endDate=2015-04-21', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?activity=dev&start=2015-04-19' +
+      '&end=2015-04-21', function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
           {
@@ -1127,11 +1127,11 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('GET /times?user=:user&project=:project&activity=:activity&' +
-  'startDate=:start&endDate=:end', function() {
+  'start=:start&end=:end', function() {
     it('returns all times for a user, project, and activity ' +
     'between two dates', function(done) {
       request.get(baseUrl + 'times?user=tschuy&project=pgd&' +
-      'activity=docs' + '&startDate=2015-04-20&endDate=2015-04-22',
+      'activity=docs' + '&start=2015-04-20&end=2015-04-22',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
@@ -1166,11 +1166,11 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('GET /times?user=:user1&user=:user2&project=:project&' +
-  'activity=:activity&startDate=:start&endDate=:end', function() {
+  'activity=:activity&start=:start&end=:end', function() {
     it('returns all times for two users, a project, and activity ' +
     'between two dates', function(done) {
       request.get(baseUrl + 'times?user=deanj&user=tschuy&project=gwm&' +
-      'activity=dev&startDate=2015-04-19&endDate=2015-04-21',
+      'activity=dev&start=2015-04-19&end=2015-04-21',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
@@ -1217,11 +1217,11 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('GET /times?user=:user&project=:project1&project=:project2&' +
-  'activity=:activity&startDate=:start&endDate=:end', function() {
+  'activity=:activity&start=:start&end=:end', function() {
     it('returns all times for a user, two projects, and an ' +
     'activity between two dates', function(done) {
       request.get(baseUrl + 'times?user=deanj&project=gwm&project=pgd&' +
-      'activity=docs&startDate=2015-04-19&endDate=2015-04-20',
+      'activity=docs&start=2015-04-19&end=2015-04-20',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
@@ -1256,12 +1256,12 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('GET /times?user=:user&project=:project&activity=:activity1&' +
-  'activity=:activity2&startDate=:start&endDate=:end', function() {
+  'activity=:activity2&start=:start&end=:end', function() {
     it('returns all times for a user, project, and two activities ' +
     'between two dates', function(done) {
       request.get(baseUrl + 'times?user=deanj&project=gwm&' +
-      'activity=docs&activity=dev&startDate=2015-04-19&' +
-      'endDate=2015-04-20', function(getErr, getRes, getBody) {
+      'activity=docs&activity=dev&start=2015-04-19&' +
+      'end=2015-04-20', function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
           {
