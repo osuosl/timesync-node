@@ -197,7 +197,8 @@ module.exports = function(app) {
 
       // check validity of uri syntax
       if (obj.uri && !validUrl.isWebUri(obj.uri)) {
-        const err = errors.errorInvalidIdentifier('uri', obj.uri);
+        const err = errors.errorBadObjectInvalidField('project', 'uri', 'uri',
+        'non-uri string');
         return res.status(err.status).send(err);
       }
 
@@ -207,7 +208,8 @@ module.exports = function(app) {
       });
 
       if (invalidSlugs.length) {
-        const err = errors.errorInvalidIdentifier('slug', invalidSlugs);
+        const err = errors.errorBadObjectInvalidField('project', 'slugs',
+        'slugs', 'non-slug strings');
         return res.status(err.status).send(err);
       }
 

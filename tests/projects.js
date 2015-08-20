@@ -694,9 +694,9 @@ module.exports = function(expect, request, baseUrl) {
       request.post(requestOptions, function(err, res, body) {
         const expectedError = {
           status: 400,
-          error: 'The provided identifier was invalid',
-          text: "Expected uri but received Ceci n'est pas un url",
-          values: ["Ceci n'est pas un url"],
+          error: 'Bad object',
+          text: 'Field uri of project should be uri but was sent as ' +
+          'non-uri string',
         };
 
         expect(body).to.deep.equal(expectedError);
@@ -723,9 +723,9 @@ module.exports = function(expect, request, baseUrl) {
       request.post(requestOptions, function(err, res, body) {
         const expectedError = {
           status: 400,
-          error: 'The provided identifier was invalid',
-          text: 'Expected slug but received: $*#*cat, )_!@#mouse',
-          values: ['$*#*cat', ')_!@#mouse'],
+          error: 'Bad object',
+          text: 'Field slugs of project should be slugs but was sent as ' +
+          'non-slug strings',
         };
 
         expect(body).to.deep.equal(expectedError);
