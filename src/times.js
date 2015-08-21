@@ -8,43 +8,108 @@ module.exports = function(app) {
   const passport = require('passport');
 
   app.get(app.get('version') + '/times', function(req, res) {
-    knex('times').then(function(times) {
-      if (times.length === 0) {
-        return res.send([]);
+    let activitiesList = req.query.activity;
+    if (typeof activitiesList === 'string') {
+      activitiesList = [activitiesList];
+    }
+
+    let activitiesQ = knex('activities');
+    if (activitiesList !== undefined) {
+      activitiesQ = activitiesQ.whereIn('slug', activitiesList);
+    }
+
+    activitiesQ.then(function(activities) {
+      let timesActivitiesQ = knex('timesactivities');
+      const activityIds = activities.map(
+        function(activity) {
+          return activity.id;
+        }
+      )
+      if (activitiesList !== undefined) {
+        timesActivitiesQ = timesActivitiesQ.whereIn('activity', activityIds);
       }
 
-      let usersDone = false;
-      let activitiesDone = false;
-      let projectsDone = false;
-
-      knex('users').select('id', 'username').then(function(users) {
-        const idUserMap = {};
-        for (let i = 0, len = users.length; i < len; i++) {
-          // make a map of every user id to their username
-          idUserMap[users[i].id] = users[i].username;
+      timesActivitiesQ.then(function(timesActivities) {
+        let timesQ = knex('times');
+        if (activitiesList !== undefined) {
+          const validTimesActivities = timesActivities.filter(function(ta) {
+            return activityIds.indexOf(ta.activity) !== -1;
+          });
+          timesQ = timesQ.whereIn('id', validTimesActivities.map(function(ta) {
+            return ta.time;
+          }));
         }
 
-        for (let i = 0, len = times.length; i < len; i++) {
-          // using that user id, get the username and set it
-          // to the time user
-          times[i].user = idUserMap[times[i].user];
-        }
+        let activitiesDone = false;
+        let projectsDone = false;
+        let usersDone = false;
 
-        // processing finished. Return if others are also finished
-        usersDone = true;
-        if (activitiesDone && projectsDone) {
-          return res.send(times);
-        }
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
-      });
-
-      knex('timesactivities').then(function(timesActivities) {
-        knex('activities').then(function(activities) {
-          if (activities.length === 0) {
+        timesQ.then(function(times) {
+          if (times.length === 0) {
             return res.send([]);
           }
+
+          knex('users').select('id', 'username').then(function(users) {
+            const idUserMap = {};
+            for (let i = 0, len = users.length; i < len; i++) {
+              // make a map of every user id to their username
+              idUserMap[users[i].id] = users[i].username;
+            }
+
+            for (let i = 0, len = times.length; i < len; i++) {
+              // using that user id, get the username and set it
+              // to the time user
+              times[i].user = idUserMap[times[i].user];
+            }
+
+            // processing finished. Return if others are also finished
+            usersDone = true;
+            if (activitiesDone && projectsDone) {
+              return res.send(times);
+            }
+          }).catch(function(error) {
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+          });
+
+          knex('projects').then(function(projects) {
+            if (projects.length === 0) {
+              return res.send([]);
+            }
+
+            knex('projectslugs').then(function(slugs) {
+              const idProjectMap = {};
+              for (let i = 0, len = projects.length; i < len; i++) {
+                projects[i].slugs = [];
+                // make a map of every project id to the project object
+                idProjectMap[projects[i].id] = projects[i];
+              }
+
+              for (let i = 0, len = slugs.length; i < len; i++) {
+                // add every slug to its relevant project
+                idProjectMap[slugs[i].project].slugs.push(slugs[i].name);
+              }
+
+              for (let i = 0, len = times.length; i < len; i++) {
+                // set the project field of the time entry to
+                // the list of slugs
+                times[i].project = idProjectMap[times[i].project]
+                .slugs;
+              }
+
+              // processing finished. Return if others are also finished
+              projectsDone = true;
+              if (activitiesDone && usersDone) {
+                res.send(times);
+              }
+            }).catch(function(error) {
+              const err = errors.errorServerError(error);
+              return res.status(err.status).send(err);
+            });
+          }).catch(function(error) {
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+          });
 
           // create a map of times to activities
           // contents: for each time entry, a list
@@ -83,52 +148,7 @@ module.exports = function(app) {
           if (usersDone && projectsDone) {
             return res.send(times);
           }
-        }).catch(function(error) {
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
         });
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
-      });
-
-      knex('projects').then(function(projects) {
-        if (projects.length === 0) {
-          return res.send([]);
-        }
-
-        knex('projectslugs').then(function(slugs) {
-          const idProjectMap = {};
-          for (let i = 0, len = projects.length; i < len; i++) {
-            projects[i].slugs = [];
-            // make a map of every project id to the project object
-            idProjectMap[projects[i].id] = projects[i];
-          }
-
-          for (let i = 0, len = slugs.length; i < len; i++) {
-            // add every slug to its relevant project
-            idProjectMap[slugs[i].project].slugs.push(slugs[i].name);
-          }
-
-          for (let i = 0, len = times.length; i < len; i++) {
-            // set the project field of the time entry to
-            // the list of slugs
-            times[i].project = idProjectMap[times[i].project]
-            .slugs;
-          }
-
-          // processing finished. Return if others are also finished
-          projectsDone = true;
-          if (activitiesDone && usersDone) {
-            res.send(times);
-          }
-        }).catch(function(error) {
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
-        });
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
       });
     }).catch(function(error) {
       const err = errors.errorServerError(error);

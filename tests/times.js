@@ -232,6 +232,8 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.equal(null);
         expect(getRes.statusCode).to.equal(200);
+        console.log(jsonBody);
+        console.log(expectedResults);
         expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
