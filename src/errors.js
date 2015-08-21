@@ -182,4 +182,16 @@ module.exports = {
     'is not allowed for the ' + objectType + ' identified');
   },
 
+  /*
+  * Error 11: Bad query value. Used when a user attempts to query a time with
+  * a bad parameter.
+  *
+  * param delete (string): The name of the requested field
+  * param value (string): The invalid query obtained from the user -
+  *   contain this in double quotes
+  */
+  errorBadQueryValue: function(key, value) {
+    return createError(400, 'Parameter ' + key + ' contained invalid ' +
+    'value ' + value);
+  },
 };
