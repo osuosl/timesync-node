@@ -333,4 +333,126 @@ module.exports = function(app) {
       });
     })(req, res, next);
   });
+
+  // Patch times
+  app.post(app.get('version') + '/times/:id', function(req, res, next) {
+    //console.log(req);
+    passport.authenticate('local', function(autherr, user, info) {
+      if (!user) {
+        //console.log('here?');
+        let err = errors.errorAuthenticationFailure(info.message);
+        return res.status(err.status).send(err);
+      }
+
+      //console.log('there?');
+      var obj = req.body.object;
+      //var id = req.params.id;
+      console.log(req.body.object);
+      //console.log('Object:', obj);
+
+      // Test existence and datatypes
+      let fields = [
+        {name: 'duration', type: 'number', required: false},
+        {name: 'project', type: 'string', required: false},
+        {name: 'activities', type: 'array', required: false},
+        {name: 'user', type: 'string', required: false},
+        {name: 'issue_uri', type: 'string', required: false},
+        {name: 'date_worked', type: 'string', required: false},
+      ];
+
+      //console.log(obj);
+      let validationFailure = helpers.validateFields(obj, fields);
+      if (validationFailure) {
+        let err = errors.errorBadObjectInvalidField('time',
+          validationFailure.name, validationFailure.type,
+          validationFailure.actualType);
+        //console.log(obj, validationFailure);
+        return res.status(err.status).send(err);
+      }
+
+      // Test duration value
+      //console.log(obj, 'Duration:', obj.duration/*obj['duration']*/);
+      if (obj['duration'] < 0) {
+        let err = errors.errorBadObjectInvalidField('time', 'duration',
+        'positive number', 'negative number');
+        //console.log(err)
+        return res.status(err.status).send(err);
+      } else if (helpers.getType(obj['duration']) === 'object') {
+        let err = errors.errorBadObjectInvalidField('time', 'duration',
+        'number', 'object');
+        //console.log(err)
+        return res.status(err.status).send(err);
+      }
+
+      //Test each activity
+      if (obj.activities != undefined) {
+        for (let activity of obj.activities) {
+          //console.log('Activity:', activity);
+          if (activity && helpers.getType(activity) !== 'string') {
+            let err = errors.errorBadObjectInvalidField('time', 'activities',
+            'slugs', 'array containing at least 1 ' + helpers.getType(activity));
+            return res.status(err.status).send(err);
+          } else if (activity && !helpers.validateSlug(activity)) {
+            let err = errors.errorBadObjectInvalidField('time', 'activities',
+            'slugs', 'array containing at least 1 invalid slug');
+            return res.status(err.status).send(err);
+          }
+        }
+      }
+
+      //Test issue URI value
+      //console.log('Issue URI:', time.issue_uri);
+      if (obj.issue_uri && !validUrl.isWebUri(obj.issue_uri)) {
+        let err = errors.errorBadObjectInvalidField('time', 'issue_uri', 'URI',
+        'invalid URI ' + time.issue_uri);
+        return res.status(err.status).send(err);
+      }
+
+      //Test date worked value
+      //console.log('Date worked:', time.date_worked);
+      if (obj.date_worked && !Date.parse(obj.date_worked)) {
+        let err = errors.errorBadObjectInvalidField('time', 'date_worked',
+        'ISO-8601 date', time.date_worked);
+        return res.status(err.status).send(err);
+      }
+
+      //Finish checks for user, project, and activity
+      //console.log('User:', obj.user);
+      if (obj.user && helpers.checkUser(user.username, obj.user)) {
+        let err = errors.errorAuthorizationFailure(user.username,
+          'create time entries for ' + obj.user);
+        return res.status(err.status).send(err);
+      }
+
+      //console.log('Project:', time.project);
+      if (obj.project && !helpers.checkProject(obj.project)) {
+        let err = errors.errorInvalidForeignKey('time', 'project');
+        return res.status(err.status).send(err);
+      }
+
+      //console.log('Activities:', time.time.activities);
+      if (obj.activities && !helpers.checkActivities(obj.activities)) {
+        let err = errors.errorInvalidForeignKey('time', 'activities');
+        return res.status(err.status).send(err);
+      }
+
+      // retrieves the time from the database
+      
+      knex('times').where({id: req.params.id}).then(function(time) {
+        if (user.username !== time.owner) {
+          let err = errors.errorAuthorizationFailure(req.body.auth.username,
+            'create objects for ' + time.owner);
+          return res.status(err.status).send(err);
+        }
+
+
+        let insertion = {};
+
+        if (obj.duration) {
+            insertion.duration = obj.duration;
+        }
+
+      });
+    })(req, res, next);
+  });
 };
