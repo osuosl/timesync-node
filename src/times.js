@@ -170,6 +170,21 @@ module.exports = function(app) {
     });
   });
 
+  app.get(app.get('versions') + '/times?user=:user', function(req, res) {
+    knex('times').where('user', req.params.user).then(function(times) {
+      if (times.length === 0) {
+        const err = //ERROR? Does a new one need to be created?
+        return res.status(err.status).send(err);
+      }
+
+      //let usersDone = false;
+      //let activitiesDone = false;
+      //let projectsDone = false;
+
+      
+    });
+  });
+
   app.get(app.get('version') + '/times/:id', function(req, res) {
     if (isNaN(req.params.id)) { // isNaN can check if a string is a number
       const err = errors.errorInvalidIdentifier('ID', req.params.id);
