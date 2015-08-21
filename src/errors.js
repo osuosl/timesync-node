@@ -198,8 +198,8 @@ module.exports = {
   * param queryValue (string): The invalid query obtained from the user -
   *   contain this in double quotes
   */
-  errorBadQueryValue: function(fieldName, queryValue) {
-    return createError(400, 'Parameter ' + fieldName + ' contained invalid ' +
-    'value "' + queryValue + '"');
+  errorBadQueryValue: function(key, value) {
+    return createError(400, 'Parameter ' + key + ' contained invalid ' +
+    'value "' + value + '"');
   },
 };
