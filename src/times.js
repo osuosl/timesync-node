@@ -14,6 +14,39 @@ module.exports = function(app) {
       activitiesList = [activitiesList];
     }
 
+    let usersList = req.query.user;
+    if (typeof user === 'string') {
+      usersList = [usersList];
+    }
+
+    let userQuery = knex('users');
+    if (usersList !== undefined) {
+      //userQuery = userQuery.select('id').whereIn('username', usersList);
+      userQuery = userQuery.whereIn('username', usersList);
+    }
+
+    userQuery.then(function(users) {
+      //console.log(userId);
+      let timesQ = knex('times');
+      if (usersList !== undefined) {
+        timesQ = timesQ.whereIn('user', users.map(function(userObj) {
+          return userObj.id;
+        }));
+      }
+
+    /*let usersDone = false;
+    let activitiesDone = false;
+    let projectsDone = false;
+
+    timesQ.then(function(times) {
+      if (times.length === 0) {
+        return res.send([]);
+      }*/
+
+      //let usersDone = false;
+      //let activitiesDone = false;
+      //let projectsDone = false;
+
     // select all activities, no matter what
     // activities other than those specified are needed in case the time entries
     // have other activities as well
@@ -39,6 +72,15 @@ module.exports = function(app) {
 
       selectedActivities = selectedActivities.map(function(activity) {
         return activity.id;
+        // processing finished. Return if others are also finished
+        usersDone = true;
+        if (activitiesDone && projectsDone) {
+          console.log(res.send(times));
+          return res.send(times);
+        }
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
       });
 
       // select all timesactivities
@@ -164,12 +206,54 @@ module.exports = function(app) {
             return res.send(times);
           }
         });
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
+      });
+
+      knex('projects').then(function(projects) {
+        if (projects.length === 0) {
+          return res.send([]);
+        }
+
+        knex('projectslugs').then(function(slugs) {
+          const idProjectMap = {};
+          for (let i = 0, len = projects.length; i < len; i++) {
+            projects[i].slugs = [];
+            // make a map of every project id to the project object
+            idProjectMap[projects[i].id] = projects[i];
+          }
+
+          for (let i = 0, len = slugs.length; i < len; i++) {
+            // add every slug to its relevant project
+            idProjectMap[slugs[i].project].slugs.push(slugs[i].name);
+          }
+
+          for (let i = 0, len = times.length; i < len; i++) {
+            // set the project field of the time entry to
+            // the list of slugs
+            times[i].project = idProjectMap[times[i].project]
+            .slugs;
+          }
+
+          // processing finished. Return if others are also finished
+          projectsDone = true;
+          if (activitiesDone && usersDone) {
+            //console.log(times);
+            res.send(times);
+          }
+        }).catch(function(error) {
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
+        });
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
       });
     }).catch(function(error) {
       const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });
-  });
 
   app.get(app.get('version') + '/times/:uuid', function(req, res) {
     if (!helpers.validateUUID(req.params.uuid)) {
