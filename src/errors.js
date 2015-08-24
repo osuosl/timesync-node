@@ -191,7 +191,7 @@ module.exports = {
   *   contain this in double quotes
   */
   errorBadQueryValue: function(key, value) {
-    return createError(400, 'Parameter ' + key + ' contained invalid ' +
-    'value ' + value);
+    return createError(400, 'Bad Query Value', 'Parameter ' + key +
+    ' contained invalid value ' + value);
   },
 };
