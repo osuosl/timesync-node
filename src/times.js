@@ -84,6 +84,57 @@ module.exports = function(app) {
           }));
         }
 
+          if (req.query.start) {
+            let start;
+            if (typeof req.query.start === 'string') {
+              start = req.query.start;
+            } else if (helpers.getType(req.query.start) === 'array') {
+              start = req.query.start[0];
+            } else {
+              const err = errors.errorBadQueryValue('start', req.query.start);
+              return res.status(err.status).send(err);
+            }
+
+            const startInt = Date.parse(start);
+
+            if (!startInt || startInt > Date.now()) {
+              const err = errors.errorBadQueryValue('start', req.query.start);
+              return res.status(err.status).send(err);
+            }
+
+            timesQ = timesQ.andWhere('date_worked', '>=', startInt);
+          }
+
+          if (req.query.end) {
+            let end;
+            if (typeof req.query.end === 'string') {
+              end = req.query.end;
+            } else if (helpers.getType(req.query.end) === 'array') {
+              end = req.query.end[0];
+            } else {
+              const err = errors.errorBadQueryValue('end', req.query.end);
+              return res.status(err.status).send(err);
+            }
+
+            const endInt = Date.parse(end);
+
+            if (!endInt) {
+              const err = errors.errorBadQueryValue('end', req.query.end);
+              return res.status(err.status).send(err);
+            }
+
+            if (req.query.start) {
+              const startInt = Date.parse(req.query.start);
+
+              if (startInt >= endInt) {
+                const err = errors.errorBadQueryValue('end', req.query.end);
+                return res.status(err.status).send(err);
+              }
+            }
+
+            timesQ = timesQ.andWhere('date_worked', '<=', endInt);
+          }
+
           let activitiesDone = false;
           let projectsDone = false;
           let usersDone = false;
