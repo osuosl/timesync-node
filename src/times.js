@@ -17,6 +17,7 @@ module.exports = function(app) {
     // activities other than those specified are needed in case the time entries
     // have other activities as well
     knex('activities').then(function(activities) {
+      let selectedActivities = activities;
       if (activitiesList !== undefined) {
         const activitySlugs = activities.map(function(activity) {
           return activity.slug;
@@ -29,10 +30,7 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
           }
         }
-      }
 
-      let selectedActivities = activities;
-      if (activitiesList !== undefined) {
         selectedActivities = selectedActivities.filter(function(activity) {
           return activitiesList.indexOf(activity.slug) !== -1;
         });
