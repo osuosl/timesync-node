@@ -179,18 +179,6 @@ module.exports = function(app) {
 
       const validKeys = ['name', 'slug'];
 
-      // check existence of slug
-      if (!obj.slug) {
-        const err = errors.errorBadObjectMissingField('activity', 'slug');
-        return res.status(err.status).send(err);
-      }
-
-      // check existence of name
-      if (!obj.name) {
-        const err = errors.errorBadObjectMissingField('activity', 'name');
-        return res.status(err.status).send(err);
-      }
-
       /* eslint-disable prefer-const */
       for (let key in obj) {
       /* eslint-enable prefer-const */
@@ -207,6 +195,15 @@ module.exports = function(app) {
         {name: 'name', type: 'string', required: true},
         {name: 'slug', type: 'string', required: true},
       ];
+
+      /* eslint-disable prefer-const */
+      for (let field of fields) {
+      /* eslint-enable prefer-const */
+        if (!obj[field.name]) {
+          const err = errors.errorBadObjectMissingField('activity', field.name);
+          return res.status(err.status).send(err);
+        }
+      }
 
       const validationFailure = helpers.validateFields(obj, fields);
       if (validationFailure) {
