@@ -180,7 +180,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResults = {
           status: 400,
           error: 'Bad Query Value',
-          text: 'Parameter project contained invalid value "notreal"',
+          text: 'Parameter project contained invalid value notreal',
         };
 
         expect(getErr).to.be.a('null');
@@ -319,7 +319,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResults = {
           status: 400,
           error: 'Bad Query Value',
-          text: 'Parameter start contained invalid value "faux"',
+          text: 'Parameter start contained invalid value faux',
         };
 
         expect(getErr).to.be.a('null');
@@ -335,7 +335,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResults = {
           status: 400,
           error: 'Bad Query Value',
-          text: 'Parameter start contained invalid value 2015-04-19',
+          text: 'Parameter start contained invalid value 2105-04-19',
         };
 
         expect(getErr).to.be.a('null');
@@ -411,7 +411,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResults = {
           status: 400,
           error: 'Bad Query Value',
-          text: 'Parameter end contained invalid value "namaak"',
+          text: 'Parameter end contained invalid value namaak',
         };
 
         expect(getErr).to.be.a('null');
@@ -480,9 +480,9 @@ module.exports = function(expect, request, baseUrl) {
         expect(jsonBody.error).to.equal('Bad Query Value');
 
         expect([
-          'Parameter end contained invalid value "2015-04-19"',
-          'Parameter start contained invalid value "2015-04-21"',
-        ]).to.include.members(jsonBody.text);
+          'Parameter end contained invalid value 2015-04-19',
+          'Parameter start contained invalid value 2015-04-21',
+        ]).to.include.members([jsonBody.text]);
         done();
       });
     });
