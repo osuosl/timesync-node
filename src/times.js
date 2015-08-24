@@ -17,9 +17,18 @@ module.exports = function(app) {
     // activities other than those specified are needed in case the time entries
     // have other activities as well
     knex('activities').then(function(activities) {
-      if (activities.length === 0) {
-        const err = errors.errorBadQueryValue('activity', activitiesList);
-        return res.status(err.status).send(err);
+      if (activitiesList !== undefined) {
+        const activitySlugs = activities.map(function(activity) {
+          return activity.slug;
+        });
+        /* eslint-disable prefer-const */
+        for (let activity of activitiesList) {
+          /* eslint-enable prefer-const */
+          if (activitySlugs.indexOf(activity) === -1) {
+            const err = errors.errorBadQueryValue('activity', activity);
+            return res.status(err.status).send(err);
+          }
+        }
       }
 
       let selectedActivities = activities;

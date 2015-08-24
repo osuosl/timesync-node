@@ -243,12 +243,12 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResults = {
           status: 400,
           error: 'Bad Query Value',
-          text: 'Parameter activity contained invalid value "falsch"',
+          text: 'Parameter activity contained invalid value falsch',
         };
 
         expect(getErr).to.equal(null);
         expect(getRes.statusCode).to.equal(400);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
