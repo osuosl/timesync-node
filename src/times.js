@@ -14,27 +14,34 @@ module.exports = function(app) {
       activitiesList = [activitiesList];
     }
 
-    let activitiesQ = knex('activities');
-    if (activitiesList !== undefined) {
-      activitiesQ = activitiesQ.whereIn('slug', activitiesList);
-    }
-
-    activitiesQ.then(function(activities) {
-      let timesActivitiesQ = knex('timesactivities');
-      const activityIds = activities.map(
-        function(activity) {
-          return activity.id;
-        }
-      )
-      if (activitiesList !== undefined) {
-        timesActivitiesQ = timesActivitiesQ.whereIn('activity', activityIds);
+    // select all activities, no matter what
+    // activities other than those specified are needed in case the time entries
+    // have other activities as well
+    knex('activities').then(function(activities) {
+      if (activities.length === 0) {
+        const err = errors.errorBadQueryValue('activity', activitiesList);
+        return res.status(err.status).send(err);
       }
 
-      timesActivitiesQ.then(function(timesActivities) {
+      let selectedActivities = activities;
+      if (activitiesList !== undefined) {
+        selectedActivities = selectedActivities.filter(function(activity) {
+          return activitiesList.indexOf(activity.slug) !== -1;
+        });
+      }
+
+      selectedActivities = selectedActivities.map(function(activity) {
+        return activity.id;
+      });
+
+      // select all timesactivities
+      // this can't be limited by the activities the user selected in case
+      // a time entry has multiple activities
+      knex('timesactivities').then(function(timesActivities) {
         let timesQ = knex('times');
         if (activitiesList !== undefined) {
           const validTimesActivities = timesActivities.filter(function(ta) {
-            return activityIds.indexOf(ta.activity) !== -1;
+            return selectedActivities.indexOf(ta.activity) !== -1;
           });
           timesQ = timesQ.whereIn('id', validTimesActivities.map(function(ta) {
             return ta.time;
