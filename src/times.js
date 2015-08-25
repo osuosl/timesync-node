@@ -14,37 +14,35 @@ module.exports = function(app) {
     }
 
     let usersList = req.query.user;
-    if (typeof user === 'string') {
+    if (typeof usersList === 'string') {
       usersList = [usersList];
     }
 
     let userQuery = knex('users');
     if (usersList !== undefined) {
-      //userQuery = userQuery.select('id').whereIn('username', usersList);
       userQuery = userQuery.whereIn('username', usersList);
     }
 
-    userQuery.then(function(users) {
-      //console.log(userId);
+    userQuery.then(function(userObj) {
       let timesQ = knex('times');
       if (usersList !== undefined) {
-        timesQ = timesQ.whereIn('user', users.map(function(userObj) {
-          return userObj.id;
+          const usernames = userObj.map(function(user) {
+          return user.username;
+        });
+        /* eslint-disable prefer-const */
+        for (let user of usersList) {
+        /* eslint-enable prefer-const */
+          if (usernames.indexOf(user) === -1) {
+            const err = errors.errorBadQueryValue('user', usersList);
+            return res.status(err.status).send(err);
+          }
+        }
+
+        timesQ = timesQ.whereIn('user', userObj.map(function(userObjQ) {
+          return userObjQ.id;
         }));
       }
-
-    /*let usersDone = false;
-    let activitiesDone = false;
-    let projectsDone = false;
-
-    timesQ.then(function(times) {
-      if (times.length === 0) {
-        return res.send([]);
-      }*/
-
-      //let usersDone = false;
-      //let activitiesDone = false;
-      //let projectsDone = false;
+    });
 
     // select all activities, no matter what
     // activities other than those specified are needed in case the time entries
@@ -71,17 +69,8 @@ module.exports = function(app) {
 
       selectedActivities = selectedActivities.map(function(activity) {
         return activity.id;
-        // processing finished. Return if others are also finished
-        usersDone = true;
-        if (activitiesDone && projectsDone) {
-          console.log(res.send(times));
-          return res.send(times);
-        }
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
       });
-
+ 
       // select all timesactivities
       // this can't be limited by the activities the user selected in case
       // a time entry has multiple activities
@@ -170,123 +159,46 @@ module.exports = function(app) {
           // create a map of times to activities
           // contents: for each time entry, a list
           const timeActivityMap = {};
-          for (let i = 0, len = timesActivities.length; i < len; i++) {
+            for (let i = 0, len = timesActivities.length; i < len; i++) {
             // if we've not added the current time entry to the
             // map, add it now
-            if (timeActivityMap[timesActivities[i].time] === undefined) {
-              timeActivityMap[timesActivities[i].time] = [];
-            }
+              if (timeActivityMap[timesActivities[i].time] === undefined) {
+                timeActivityMap[timesActivities[i].time] = [];
+              }
 
-            for (let j = 0, length = activities.length; j < length; j++) {
-              if (activities[j].id === timesActivities[i].activity) {
-                /* if the activity matches the timeActivity,
-                add it to the timeActivityMap's list
-                of activities */
-                timeActivityMap[timesActivities[i].time]
-                .push(activities[j].slug);
-                break;
+              for (let j = 0, length = activities.length; j < length; j++) {
+                if (activities[j].id === timesActivities[i].activity) {
+                  /* if the activity matches the timeActivity,
+                  add it to the timeActivityMap's list
+                  of activities */
+                  timeActivityMap[timesActivities[i].time]
+                  .push(activities[j].slug);
+                  break;
+                }
               }
             }
-          }
 
-          for (let i = 0, len = times.length; i < len; i++) {
-            if (times[i].activities === undefined) {
-              times[i].activities = [];
+            for (let i = 0, len = times.length; i < len; i++) {
+              if (times[i].activities === undefined) {
+                times[i].activities = [];
+              }
+
+              // set the time's activities to the list generated
+              // above
+              times[i].activities = timeActivityMap[times[i].id];
             }
 
-            // set the time's activities to the list generated
-            // above
-            times[i].activities = timeActivityMap[times[i].id];
-          }
-
-          // processing finished. Return if others are also finished
-          activitiesDone = true;
+        // processing finished. Return if others are also finished
+        activitiesDone = true;
           if (usersDone && projectsDone) {
             return res.send(times);
           }
         });
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
-      });
-
-      knex('projects').then(function(projects) {
-        if (projects.length === 0) {
-          return res.send([]);
-        }
-
-        knex('projectslugs').then(function(slugs) {
-          const idProjectMap = {};
-          for (let i = 0, len = projects.length; i < len; i++) {
-            projects[i].slugs = [];
-            // make a map of every project id to the project object
-            idProjectMap[projects[i].id] = projects[i];
-          }
-
-          for (let i = 0, len = slugs.length; i < len; i++) {
-            // add every slug to its relevant project
-            idProjectMap[slugs[i].project].slugs.push(slugs[i].name);
-          }
-
-          for (let i = 0, len = times.length; i < len; i++) {
-            // set the project field of the time entry to
-            // the list of slugs
-            times[i].project = idProjectMap[times[i].project]
-            .slugs;
-          }
-
-          // processing finished. Return if others are also finished
-          projectsDone = true;
-          if (activitiesDone && usersDone) {
-            //console.log(times);
-            res.send(times);
-          }
-        }).catch(function(error) {
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
-        });
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
       });
     }).catch(function(error) {
       const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });
-
-    });
-
-    // CHECK OUT EVAN'S BRANCH TO UNDERSTAND HOW THIS SHOULD BE STRUCTURED
-    // NPM RUN DEVEL + POSTMAN to query get requests and see how they work
-
-    // Get user(s) matching the query parameter 
-    /*knex('users').select('id').where('user', '=', req.query.user)
-    .then(function(users) {
-      
-      let listOfUsers = [];
-
-      if (users.length) {
-        for (let i = 0, len = users.length; i < len; i++) {
-          listOfUsers.push(i);
-        }
-        return listOfUsers;
-        console.log(listOfUsers);
-
-        knex('times').select().where('user', 'in', listOfUsers)
-        .then(function(times) {
-          return res.send(times);
-        }).catch(function(error) {
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
-        });
-      } else {
-        const err = errors.errorBadQueryValue('user', req.params.user);
-        return res.status(err.status).send(err);
-      }
-    }).catch(function(error) {
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
-    });*/
   });
 
   app.get(app.get('version') + '/times/:id', function(req, res) {
