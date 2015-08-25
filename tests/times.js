@@ -189,7 +189,7 @@ module.exports = function(expect, request, baseUrl) {
         done();
       });
     });
-  });
+  }); */
 
   describe('GET /times?activity=:activity', function() {
     it('returns all times for an activity', function(done) {
@@ -254,7 +254,7 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?start=:start', function() {
+  /* describe('GET /times?start=:start', function() {
     it('returns all times after a date', function(done) {
       request.get(baseUrl + 'times?start=2015-04-20',
       function(getErr, getRes, getBody) {
@@ -582,7 +582,7 @@ module.exports = function(expect, request, baseUrl) {
         done();
       });
     });
-  });
+  }); */
 
   describe('GET /times?user=:user&activity=:activity', function() {
     it('returns all times for a user and an activity',
@@ -621,7 +621,7 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?user=:user&start=:start', function() {
+  /* describe('GET /times?user=:user&start=:start', function() {
     it('returns all times for a user after a date', function(done) {
       request.get(baseUrl + 'times?user=deanj&start=2015-04-20',
       function(getErr, getRes, getBody) {
@@ -949,7 +949,7 @@ module.exports = function(expect, request, baseUrl) {
         done();
       });
     });
-  });
+  }); */
 
   describe('GET /times?activity=:activity1&activity=:activity2', function() {
     it('returns all times for two activities', function(done) {
@@ -1011,7 +1011,7 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?activity=:activity&start=:start', function() {
+  /* describe('GET /times?activity=:activity&start=:start', function() {
     it('returns all times for an activity after a date',
     function(done) {
       request.get(baseUrl + 'times?activity=dev&start=2015-04-20',
