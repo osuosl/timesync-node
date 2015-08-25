@@ -103,6 +103,7 @@ module.exports = function(expect, request, baseUrl) {
           jsonBody[i].project.sort();
           jsonBody[i].activities.sort();
         }
+
         expect(getErr).to.equal(null);
         expect(getRes.statusCode).to.equal(200);
         expect(jsonBody).to.deep.have.same.members(expectedResults);

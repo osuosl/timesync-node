@@ -34,11 +34,13 @@ module.exports = function(app) {
         for (let user of usersList) {
         /* eslint-enable prefer-const */
           if (usernames.indexOf(user) === -1) {
+            /* indexOf returns a -1 if the item does not exist in the array
+               So, if the username is invalid, return a BadQueryValue error */
             const err = errors.errorBadQueryValue('user', usersList);
             return res.status(err.status).send(err);
           }
         }
-
+        // Map username to its user id, select time entries that match user id
         timesQ = timesQ.whereIn('user', userObj.map(function(userObjQ) {
           return userObjQ.id;
         }));
