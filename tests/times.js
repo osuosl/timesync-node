@@ -118,17 +118,16 @@ module.exports = function(expect, request, baseUrl) {
           error: 'Bad Query Value',
           text: 'Parameter user contained invalid value fakeuser',
         };
-        //console.log(jsonBody);
 
         expect(getErr).to.equal(null);
         expect(getRes.statusCode).to.equal(400);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
   });
 
-  /*describe('GET /times?project=:project', function() {
+  /* describe('GET /times?project=:project', function() {
     it('returns all times for a project', function(done) {
       request.get(baseUrl + 'times?project=gwm', function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
@@ -486,7 +485,7 @@ module.exports = function(expect, request, baseUrl) {
         done();
       });
     });
-  });
+  }); */
 
   describe('GET /times?user=:user1&user=:user2', function() {
     it('returns all times for two users', function(done) {
@@ -548,7 +547,7 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times?user=:user&project=:project', function() {
+  /* describe('GET /times?user=:user&project=:project', function() {
     it('returns all times for a user and a project', function(done) {
       request.get(baseUrl + 'times?user=deanj&project=gwm',
       function(getErr, getRes, getBody) {
@@ -1292,7 +1291,7 @@ module.exports = function(expect, request, baseUrl) {
         done();
       });
     });
-  });*/
+  }); */
 
   describe('GET /times/:uuid', function() {
     it('returns times by uuid', function(done) {
