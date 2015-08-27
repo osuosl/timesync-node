@@ -84,6 +84,10 @@ module.exports = function(app) {
           }));
         }
 
+          let activitiesDone = false;
+          let projectsDone = false;
+          let usersDone = false;
+
           timesQ.then(function(times) {
             if (times.length === 0) {
               return res.send([]);
