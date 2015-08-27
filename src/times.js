@@ -76,33 +76,23 @@ module.exports = function(app) {
         if (activitiesList !== undefined) {
           const validTimesActivities = timesActivities.filter(function(ta) {
             return selectedActivities.indexOf(ta.activity) !== -1;
+          });
+
+          timesQ = timesQ.whereIn('id',
+          validTimesActivities.map(function(ta) {
+            return ta.time;
+          }));
         }
-
-        selectedActivities = selectedActivities.map(function(activity) {
-          return activity.id;
-        });
-
-        // select all timesactivities
-        // this can't be limited by the activities the user selected in case
-        // a time entry has multiple activities
-        knex('timesactivities').then(function(timesActivities) {
-          if (activitiesList !== undefined) {
-            const validTimesActivities = timesActivities.filter(function(ta) {
-              return selectedActivities.indexOf(ta.activity) !== -1;
-            });
-            timesQ = timesQ.whereIn('id',
-            validTimesActivities.map(function(ta) {
-              return ta.time;
-            }));
-          }
-
-          let activitiesDone = false;
-          let projectsDone = false;
-          let usersDone = false;
 
           timesQ.then(function(times) {
             if (times.length === 0) {
               return res.send([]);
+            }
+
+            /* eslint-disable prefer-const */
+            for (let time of times) {
+            /* eslint-enable prefer-const */
+              time.date_worked = new Date(time.date_worked).toISOString().substring(0, 10);
             }
 
             knex('users').select('id', 'username').then(function(users) {
@@ -222,6 +212,7 @@ module.exports = function(app) {
     .orderBy('revision', 'desc').then(function(time) {
       // get the matching time entry
       if (time) {
+        time.date_worked = new Date(time.date_worked).toISOString().substring(0, 10);
         knex('users').where({id: time.user}).select('username')
         .then(function(user) {
           // set its user
@@ -357,7 +348,7 @@ module.exports = function(app) {
               project: projectId,
               notes: time.notes,
               issue_uri: time.issue_uri,
-              date_worked: time.date_worked,
+              date_worked: new Date(time.date_worked).getTime(),
               created_at: createdAt,
               uuid: time.uuid,
               revision: 1,

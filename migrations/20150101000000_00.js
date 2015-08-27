@@ -22,10 +22,10 @@ exports.up = function(knex) {
     table.integer('project').references('id').inTable('projects').notNullable();
     table.string('notes');
     table.string('issue_uri');
-    table.integer('date_worked');
-    table.integer('created_at').notNullable();
-    table.integer('updated_at').defaultTo(null);
-    table.integer('deleted_at').defaultTo(null);
+    table.bigInteger('date_worked');
+    table.bigInteger('created_at').notNullable();
+    table.bigInteger('updated_at').defaultTo(null);
+    table.bigInteger('deleted_at').defaultTo(null);
     table.uuid('uuid');
     table.integer('revision').defaultTo(1);
   }).createTable('activities', function(table) {
