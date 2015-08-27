@@ -95,14 +95,14 @@ module.exports = function(app) {
               return res.status(err.status).send(err);
             }
 
-            const startInt = Date.parse(start);
+            const startDate = new Date(start);
 
-            if (!startInt || startInt > Date.now()) {
+            if (!startDate || !startDate.getTime() || startDate.getTime() > Date.now()) {
               const err = errors.errorBadQueryValue('start', req.query.start);
               return res.status(err.status).send(err);
             }
 
-            timesQ = timesQ.andWhere('date_worked', '>=', startInt);
+            timesQ = timesQ.andWhere('date_worked', '>', startDate.getTime());
           }
 
           if (req.query.end) {
@@ -116,9 +116,9 @@ module.exports = function(app) {
               return res.status(err.status).send(err);
             }
 
-            const endInt = Date.parse(end);
+            const endDate = new Date(end);
 
-            if (!endInt) {
+            if (!endDate || !endDate.getTime()) {
               const err = errors.errorBadQueryValue('end', req.query.end);
               return res.status(err.status).send(err);
             }
@@ -126,20 +126,24 @@ module.exports = function(app) {
             if (req.query.start) {
               const startInt = Date.parse(req.query.start);
 
-              if (startInt >= endInt) {
+              if (startInt >= endDate.getTime()) {
                 const err = errors.errorBadQueryValue('end', req.query.end);
                 return res.status(err.status).send(err);
               }
             }
 
-            timesQ = timesQ.andWhere('date_worked', '<=', endInt);
+            timesQ = timesQ.andWhere('date_worked', '<', endDate.getTime());
           }
+
+          console.log(timesQ.toString());
 
           let activitiesDone = false;
           let projectsDone = false;
           let usersDone = false;
 
           timesQ.then(function(times) {
+            console.log(times.length);
+
             if (times.length === 0) {
               return res.send([]);
             }

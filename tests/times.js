@@ -59,7 +59,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(JSON.parse(getBody)).to.deep.have.same.members(expectedResults);
+        expect(JSON.parse(getBody)).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -106,7 +106,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -169,7 +169,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -232,7 +232,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -308,7 +308,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -400,7 +400,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -464,7 +464,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -542,7 +542,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -578,7 +578,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -615,7 +615,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -651,7 +651,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -687,7 +687,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -724,7 +724,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -772,7 +772,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -809,7 +809,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -846,7 +846,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -895,7 +895,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -948,7 +948,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -1008,7 +1008,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -1045,7 +1045,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -1082,7 +1082,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -1120,7 +1120,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -1159,7 +1159,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -1210,7 +1210,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -1249,7 +1249,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -1288,7 +1288,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResults);
         done();
       });
     });
@@ -1481,7 +1481,7 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.have.same.members(expectedResults);
+          expect(JSON.parse(getBody)).to.deep.equal(expectedResults);
           done();
         });
       });
@@ -2080,7 +2080,7 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.have.same.members(expectedResults);
+          expect(JSON.parse(getBody)).to.deep.equal(expectedResults);
           done();
         });
       });
