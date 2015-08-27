@@ -39,7 +39,7 @@ exports.up = function(knex) {
     table.integer('user').references('id').inTable('users').notNullable();
     table.boolean('manager');
     table.boolean('member');
-    table.boolean('viewer');
+    table.boolean('spectator');
   });
 };
 
