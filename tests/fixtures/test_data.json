@@ -128,7 +128,6 @@
   ],
   "userroles":[
     {
-      "id": 1,
       "project":"projects:1",
       "user":"users:0",
       "manager": true,
@@ -136,7 +135,6 @@
       "spectator": true
     },
     {
-      "id": 2,
       "project":"projects:0",
       "user":"users:1",
       "manager": true,
@@ -144,7 +142,6 @@
       "spectator": true
     },
     {
-      "id": 3,
       "project":"projects:2",
       "user":"users:0",
       "manager": false,
@@ -152,7 +149,6 @@
       "spectator": true
     },
     {
-      "id": 4,
       "project":"projects:1",
       "user":"users:2",
       "manager": false,
@@ -160,7 +156,6 @@
       "spectator": true
     },
     {
-      "id": 5,
       "project":"projects:0",
       "user":"users:3",
       "manager": false,
@@ -168,7 +163,6 @@
       "spectator": true
     },
     {
-      "id": 6,
       "project":"projects:1",
       "user":"users:4",
       "manager": false,
@@ -176,7 +170,6 @@
       "spectator": true
     },
     {
-      "id": 7,
       "project":"projects:2",
       "user":"users:5",
       "manager": false,
@@ -184,7 +177,6 @@
       "spectator": false
     },
     {
-      "id": 8,
       "project":"projects:0",
       "user":"users:4",
       "manager": false,

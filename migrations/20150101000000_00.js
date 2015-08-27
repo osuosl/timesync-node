@@ -37,9 +37,9 @@ exports.up = function(knex) {
     table.increments('id').primary();
     table.integer('project').references('id').inTable('projects').notNullable();
     table.integer('user').references('id').inTable('users').notNullable();
-    table.boolean('manager');
-    table.boolean('member');
-    table.boolean('spectator');
+    table.boolean('manager').defaultTo(false);
+    table.boolean('member').defaultTo(false);
+    table.boolean('spectator').defaultTo(false);
   });
 };
 
