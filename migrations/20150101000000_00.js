@@ -33,6 +33,13 @@ exports.up = function(knex) {
     table.integer('time').references('id').inTable('times').notNullable();
     table.integer('activity').references('id')
       .inTable('activities').notNullable();
+  }).createTable('userroles', function(table) {
+    table.increments('id').primary();
+    table.integer('project').references('id').inTable('projects').notNullable();
+    table.integer('user').references('id').inTable('users').notNullable();
+    table.boolean('manager');
+    table.boolean('member');
+    table.boolean('viewer');
   });
 };
 
