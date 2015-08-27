@@ -86,13 +86,15 @@ module.exports = function(app) {
             }));
           }
 
-          let activitiesDone = false;
-          let projectsDone = false;
-          let usersDone = false;
-
           timesQ.then(function(times) {
             if (times.length === 0) {
               return res.send([]);
+            }
+
+            /* eslint-disable prefer-const */
+            for (let time of times) {
+            /* eslint-enable prefer-const */
+              time.date_worked = new Date(time.date_worked).toISOString().substring(0, 10);
             }
 
             knex('users').select('id', 'username').then(function(users) {
@@ -213,6 +215,8 @@ module.exports = function(app) {
       // get the matching time entry
       if (timeList.length === 1) {
         const time = timeList[0];
+
+        time.date_worked = new Date(time.date_worked).toISOString().substring(0, 10);
 
         knex('users').where({id: time.user}).select('username')
         .then(function(user) {
@@ -345,7 +349,7 @@ module.exports = function(app) {
               project: projectId,
               notes: time.notes,
               issue_uri: time.issue_uri,
-              date_worked: time.date_worked,
+              date_worked: new Date(time.date_worked).getTime(),
               created_at: createdAt,
             };
 
