@@ -4,7 +4,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const knexfile = require('../knexfile');
-const db = process.env.DATABASE || 'development';
+const db = process.env.NODE_ENV || 'development';
 
 let knex;
 if (!GLOBAL.knex) {

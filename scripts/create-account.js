@@ -6,7 +6,7 @@
 const prompt = require('prompt');
 const bcrypt = require('bcrypt');
 const knexfile = require('../knexfile');
-const db = process.env.DATABASE || 'development';
+const db = process.env.NODE_ENV || 'development';
 
 // Load the database (default = development)
 const knex = require('knex')(knexfile[db]);

@@ -1,7 +1,12 @@
 'use strict';
 
 exports.up = function(knex) {
-  return knex.schema.createTable('projects', function(table) {
+  return knex.schema.createTable('users', function(table) {
+    table.increments('id').primary();
+    table.string('username').unique().notNullable();
+    table.string('active').defaultTo(true);
+    table.string('password')
+  }).createTable('projects', function(table) {
     table.increments('id').primary();
     table.string('name').notNullable();
     table.string('uri');
@@ -19,11 +24,6 @@ exports.up = function(knex) {
     table.increments('id').primary();
     table.string('name').unique().notNullable();
     table.string('slug').unique().notNullable();
-  }).createTable('users', function(table) {
-    table.increments('id').primary();
-    table.string('username').unique().notNullable();
-    table.string('active').defaultTo(true);
-    table.string('password');
   }).createTable('projectslugs', function(table) {
     table.increments('id').primary();
     table.string('name').unique().notNullable();

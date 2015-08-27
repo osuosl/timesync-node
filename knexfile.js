@@ -11,5 +11,10 @@ module.exports = {
     connection: {
       filename: ':memory:'
     }
-  }
+  },
+
+  production: {
+    client: 'pg',
+    connection: process.env.PG_CONNECTION_STRING
+  },
 };
