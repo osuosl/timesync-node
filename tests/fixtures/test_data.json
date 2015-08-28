@@ -69,38 +69,38 @@
     {
       "name": "gwm",
       "id": 1,
-      "project": 1,
+      "project": "projects:0",
       "activity": null
     },
     {
       "name": "pgd",
       "id": 2,
-      "project": 2,
+      "project": "projects:1",
       "activity": null
     },
     {
       "name": "wf",
       "id": 3,
-      "project": 3,
+      "project": "projects:2",
       "activity": null
     },
     {
       "name": "ganeti-webmgr",
       "id": 8,
-      "project": 1,
+      "project": "projects:0",
       "activity": null
     }
   ],
   "timesactivities":[
     {
       "id": 1,
-      "time": 1,
-      "activity": 1
+      "time": "times:0",
+      "activity": "activities:0"
     },
     {
       "id": 2,
-      "time": 1,
-      "activity": 2
+      "time": "times:0",
+      "activity": "activities:1"
     }
   ]
 }

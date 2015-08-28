@@ -64,6 +64,30 @@ Some other commands have been made available through TimeSync's
     * ``npm run linter``: run the jshint Javascript linter
     * ``npm run fixtures``: install a set of test fixtures
 
+Databases
+---------
+
+TimeSync supports multiple kinds of database connections. For testing, it uses a
+``SQLite`` database in-memory, for development, it uses a ``SQLite`` database on
+the filesystem, and in production, it uses a ``PostgreSQL`` database. Since it's
+not a good idea to use a totally different database server without testing it
+first, it's a good idea to make sure your changes work on Postgres as well.
+
+To use the Postgres database, first set your ``NODE_ENV`` to ``production``::
+
+    $ export NODE_ENV="production"
+
+Then, set the ``PG_CONNECTION_STRING`` environment variable to a Postgres
+connection string, which looks something like this::
+
+    $ export PG_CONNECTION_STIRNG="postgres://username:password@server:port/db_name"
+
+For instance, if you're running an instance of Postgres locally with the
+username and password ``timesync`` accessing the database ``timesync``, the
+string should look like this::
+
+    postgres://timesync:timesync@localhost:5432/timesync
+
 Testing
 -------
 

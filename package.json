@@ -13,9 +13,9 @@
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "linter": "jshint ./src ./tests ./scripts && eslint ./src ./tests ./scripts",
     "fixtures": "node --harmony ./scripts/load_fixtures.js",
-    "test": "DATABASE=mocha PORT=8851 DEBUG=true mocha --harmony tests",
+    "test": "NODE_ENV=mocha PORT=8851 DEBUG=true mocha --harmony tests",
     "latte": "sh ./scripts/latte.sh",
-    "coverage": "DATABASE=mocha PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
+    "coverage": "NODE_ENV=mocha PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
     "create-account": "node --harmony ./scripts/create-account.js"
   },
   "repository": {
@@ -42,6 +42,7 @@
     "knex": "^0.8.6",
     "passport": "^0.3.0",
     "passport-local": "^1.0.0",
+    "pg": "^4.4.1",
     "prompt": "^0.2.14",
     "sqlite3": "^3.0.8",
     "valid-url": "^1.0.9"
