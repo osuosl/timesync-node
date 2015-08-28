@@ -102,7 +102,7 @@ module.exports = function(app) {
               return res.status(err.status).send(err);
             }
 
-            timesQ = timesQ.andWhere('date_worked', '>', startDate.getTime());
+            timesQ = timesQ.andWhere('date_worked', '>=', startDate.getTime());
           }
 
           if (req.query.end) {
@@ -132,18 +132,14 @@ module.exports = function(app) {
               }
             }
 
-            timesQ = timesQ.andWhere('date_worked', '<', endDate.getTime());
+            timesQ = timesQ.andWhere('date_worked', '<=', endDate.getTime());
           }
-
-          console.log(timesQ.toString());
 
           let activitiesDone = false;
           let projectsDone = false;
           let usersDone = false;
 
           timesQ.then(function(times) {
-            console.log(times.length);
-
             if (times.length === 0) {
               return res.send([]);
             }
