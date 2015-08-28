@@ -96,6 +96,11 @@ module.exports = function(app) {
               return res.status(err.status).send(err);
             }
 
+            if (!/\d{4}-\d{2}-\d{2}/.test(start)) {
+              const err = errors.errorBadQueryValue('start', req.query.start);
+              return res.status(err.status).send(err);
+            }
+
             const startDate = new Date(start);
 
             if (!startDate || !startDate.getTime() || startDate.getTime() > Date.now()) {
@@ -119,6 +124,11 @@ module.exports = function(app) {
             }
 
             const endDate = new Date(end);
+
+            if (!/\d{4}-\d{2}-\d{2}/.test(end)) {
+              const err = errors.errorBadQueryValue('start', req.query.start);
+              return res.status(err.status).send(err);
+            }
 
             if (!endDate || !endDate.getTime()) {
               const err = errors.errorBadQueryValue('end', req.query.end);
