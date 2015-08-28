@@ -4,69 +4,69 @@
     {
       "name":"Documentation",
       "slug":"docs",
-      "id": 1,
+      "id": 1
     },
     {
       "name":"Development",
       "slug":"dev",
-      "id": 2,
+      "id": 2
     },
     {
       "name":"Systems",
       "slug":"sys",
-      "id": 3,
+      "id": 3
     },
     {
       "name":"Meetings",
       "slug":"meeting",
-      "id":4,
-    },
+      "id":4
+    }
   ],
   "users":[
     {
       "username":"deanj",
       "id": 1,
       "active": "false",
-      "password": "$2a$10$nkGN8eZN1DbOahNfv8YgWO790imw7poGcjfik1k0zQ9mFqYqtMY0y",
+      "password": "$2a$10$nkGN8eZN1DbOahNfv8YgWO790imw7poGcjfik1k0zQ9mFqYqtMY0y"
     },
     {
       "username":"tschuy",
       "id": 2,
       "active": "true",
-      "password": "$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W",
+      "password": "$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W"
     },
     {
       "username":"patcht",
       "id": 3,
       "active": "true",
-      "password": "$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W",
-    },
+      "password": "$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W"
+    }
   ],
   "projects":[
     {
       "uri":"https:://code.osuosl.org/projects/ganeti-webmgr",
       "name":"Ganeti Web Manager",
       "owner":"users:1",
-      "id": 1,
+      "id": 1
     },
     {
       "uri":"https:://code.osuosl.org/projects/pgd",
       "name":"Protein Geometry Database",
       "owner":"users:0",
-      "id": 2,
+      "id": 2
     },
     {
       "uri":"https:://github.com/osu-cass/whats-fresh-api",
       "name":"Whats Fresh",
       "owner":"users:1",
-      "id": 3,
+      "id": 3
     },
     {
       "uri":"https:://github.com/osuosl/timesync",
       "name":"Timesync",
       "owner":"users:2",
-      "id": 4,
-    },
+      "id": 4
+    }
   ],
   "times":[
     {
@@ -75,10 +75,10 @@
       "project":"projects:0",
       "notes":"",
       "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
-      "date_worked":"2015-04-19",
-      "created_at":"2015-04-19",
+      "date_worked":1429401600000,
+      "created_at":1429401600000,
       "updated_at":null,
-      "id": 1,
+      "id": 1
     },
     {
       "duration":12,
@@ -86,10 +86,10 @@
       "project":"projects:0",
       "notes":"",
       "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
-      "date_worked":"2015-04-20",
-      "created_at":"2015-04-20",
+      "date_worked":1429488000000,
+      "created_at":1429488000000,
       "updated_at":null,
-      "id": 2,
+      "id": 2
     },
     {
       "duration":12,
@@ -97,10 +97,10 @@
       "project":"projects:1",
       "notes":"",
       "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
-      "date_worked":"2015-04-21",
-      "created_at":"2015-04-21",
+      "date_worked":1429574400000,
+      "created_at":1429574400000,
       "updated_at":null,
-      "id": 3,
+      "id": 3
     },
     {
       "duration":12,
@@ -108,49 +108,49 @@
       "project":"projects:1",
       "notes":"",
       "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
-      "date_worked":"2015-04-22",
-      "created_at":"2015-04-22",
+      "date_worked":1429660800000,
+      "created_at":1429660800000,
       "updated_at":null,
-      "id": 4,
-    },
+      "id": 4
+    }
   ],
   "projectslugs":[
     {
       "name": "gwm",
       "id": 1,
       "project": "projects:0",
-      "activity": null,
+      "activity": null
     },
     {
       "name": "pgd",
       "id": 2,
       "project": "projects:1",
-      "activity": null,
+      "activity": null
     },
     {
       "name": "wf",
       "id": 3,
       "project": "projects:2",
-      "activity": null,
+      "activity": null
     },
     {
       "name": "ganeti-webmgr",
       "project": "projects:0",
       "id": 4,
-      "activity": null,
+      "activity": null
     },
     {
       "name": "timesync",
       "id": 5,
       "project": "projects:3",
-      "activity": null,
+      "activity": null
     },
     {
       "name": "ts",
       "id": 6,
       "project": "projects:3",
-      "activity": null,
-    },
+      "activity": null
+    }
   ],
   "timesactivities":[
     {
@@ -161,22 +161,22 @@
     {
       "id": 2,
       "time": "times:0",
-      "activity": "activities:1",
+      "activity": "activities:1"
     },
     {
       "id": 3,
       "time": "times:1",
-      "activity": "activities:0",
+      "activity": "activities:0"
     },
     {
       "id": 4,
       "time": "times:2",
-      "activity": "activities:2",
+      "activity": "activities:2"
     },
     {
       "id": 5,
       "time": "times:3",
-      "activity": "activities:1",
-    },
+      "activity": "activities:1"
+    }
   ]
 }

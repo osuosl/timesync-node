@@ -548,7 +548,7 @@ module.exports = function(expect, request, baseUrl) {
     const newActivity = {
       slug: 'chef',
       name: 'Chef',
-      id: 4,
+      id: 5,
     };
 
     // the base POST JSON
@@ -575,6 +575,11 @@ module.exports = function(expect, request, baseUrl) {
         'name': 'Systems',
         'slug': 'sys',
         'id': 3,
+      },
+      {
+        'name': 'Meetings',
+        'slug': 'meeting',
+        'id': 4,
       },
     ];
 

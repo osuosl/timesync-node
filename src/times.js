@@ -95,6 +95,18 @@ module.exports = function(app) {
               return res.send([]);
             }
 
+            /* eslint-disable prefer-const */
+            for (let time of times) {
+            /* eslint-enable prefer-const */
+              time.date_worked = new Date(time.date_worked).toISOString().substring(0, 10);
+              time.created_at = new Date(time.created_at).toISOString().substring(0, 10);
+              if (time.updated_at) {
+                time.updated_at = new Date(time.updated_at).toISOString().substring(0, 10);
+              } else {
+                time.updated_at = null;
+              }
+            }
+
             knex('users').select('id', 'username').then(function(users) {
               const idUserMap = {};
               for (let i = 0, len = users.length; i < len; i++) {
@@ -214,6 +226,14 @@ module.exports = function(app) {
       if (timeList.length === 1) {
         const time = timeList[0];
 
+        time.date_worked = new Date(time.date_worked).toISOString().substring(0, 10);
+        time.created_at = new Date(time.created_at).toISOString().substring(0, 10);
+        if (time.updated_at) {
+          time.updated_at = new Date(time.updated_at).toISOString().substring(0, 10);
+        } else {
+          time.updated_at = null;
+        }
+
         knex('users').where({id: time.user}).select('username')
         .then(function(user) {
           // set its user
@@ -328,7 +348,7 @@ module.exports = function(app) {
       }
 
       // Test date worked value
-      if (!Date.parse(time.date_worked)) {
+      if (!/\d{4}-\d{2}-\d{2}/.test(time.date_worked) || !Date.parse(time.date_worked)) {
         const err = errors.errorBadObjectInvalidField('time', 'date_worked',
         'ISO-8601 date', time.date_worked);
         return res.status(err.status).send(err);
@@ -338,15 +358,14 @@ module.exports = function(app) {
       helpers.checkUser(user.username, time.user).then(function(userId) {
         helpers.checkProject(time.project).then(function(projectId) {
           helpers.checkActivities(time.activities).then(function(activityIds) {
-            const createdAt = new Date().toISOString().substring(0, 10);
             const insertion = {
               duration: time.duration,
               user: userId,
               project: projectId,
               notes: time.notes,
               issue_uri: time.issue_uri,
-              date_worked: time.date_worked,
-              created_at: createdAt,
+              date_worked: new Date(time.date_worked).getTime(),
+              created_at: Date.now(),
             };
 
             knex('times').insert(insertion).then(function(timeIds) {
