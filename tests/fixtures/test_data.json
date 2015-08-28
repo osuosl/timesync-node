@@ -21,15 +21,38 @@
     {
       "username":"deanj",
       "id": 1,
-      "active": "false",
-      "password": "$2a$10$nkGN8eZN1DbOahNfv8YgWO790imw7poGcjfik1k0zQ9mFqYqtMY0y"
+      "active": false,
+      "password":"$2a$10$nkGN8eZN1DbOahNfv8YgWO790imw7poGcjfik1k0zQ9mFqYqtMY0y"
     },
     {
       "username":"tschuy",
       "id": 2,
-      "active": "true",
-      "password": "$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W"
-
+      "active": true,
+      "password":"$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W"
+    },
+    {
+      "username":"patcht",
+      "id": 3,
+      "active": true,
+      "password":"$2a$10$eU9ej31KNqyPL/YntxDU8eRCYygrWWAxFfp0wpMiy4hKRKUDiB0bC"
+    },
+    {
+      "username":"mrsj",
+      "id": 4,
+      "active": true,
+      "password":"$2a$10$BLrzGN3kDPFirmRVzSZp1OzoYsvJl4.nmhS37WkOGxpUQEPQCTos6"
+    },
+    {
+      "username":"thai",
+      "id": 5,
+      "active": true,
+      "password":"$2a$10$MYmVTpfL16asa4oUyubtu.XdEIWPUGmsJN6J.dQMptHCJhVM4Zkfq"
+    },
+    {
+      "username":"MaraJade",
+      "id": 6,
+      "active": true,
+      "password":"$2a$10$76JkCW6LQjHUZBtcdwS/fePNlMzqZ5xbRpCBk9Fbife./BMsyAiVK"
     }
   ],
   "projects":[
@@ -67,25 +90,25 @@
   ],
   "projectslugs":[
     {
-      "name": "gwm",
+      "name":"gwm",
       "id": 1,
       "project": "projects:0",
       "activity": null
     },
     {
-      "name": "pgd",
+      "name":"pgd",
       "id": 2,
       "project": "projects:1",
       "activity": null
     },
     {
-      "name": "wf",
+      "name":"wf",
       "id": 3,
       "project": "projects:2",
       "activity": null
     },
     {
-      "name": "ganeti-webmgr",
+      "name":"ganeti-webmgr",
       "id": 8,
       "project": "projects:0",
       "activity": null
@@ -101,6 +124,50 @@
       "id": 2,
       "time": "times:0",
       "activity": "activities:1"
+    }
+  ],
+  "userroles":[
+    {
+      "project":"projects:1",
+      "user":"users:0",
+      "manager": true,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:0",
+      "user":"users:1",
+      "manager": true,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:2",
+      "user":"users:0",
+      "manager": false,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:1",
+      "user":"users:2",
+      "manager": false,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:0",
+      "user":"users:3",
+      "manager": false,
+      "member": false,
+      "spectator": true
+    },
+    {
+      "project":"projects:2",
+      "user":"users:4",
+      "manager": false,
+      "member": false,
+      "spectator": true
     }
   ]
 }
