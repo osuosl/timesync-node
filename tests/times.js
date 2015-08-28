@@ -1577,7 +1577,7 @@ module.exports = function(expect, request, baseUrl) {
         };
 
         expect(postRes.statusCode).to.equal(401);
-        expect(postBody).to.deep.have.same.members(expectedResult);
+        expect(postBody).to.deep.equal(expectedResult);
 
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.be.a('null');
