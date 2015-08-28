@@ -98,7 +98,11 @@ module.exports = function(app) {
             /* eslint-enable prefer-const */
               time.date_worked = new Date(time.date_worked).toISOString().substring(0, 10);
               time.created_at = new Date(time.created_at).toISOString().substring(0, 10);
-              time.updated_at = new Date(time.updated_at).toISOString().substring(0, 10);
+              if (time.updated_at) {
+                time.updated_at = new Date(time.updated_at).toISOString().substring(0, 10);
+              } else {
+                time.updated_at = null;
+              }
             }
 
             knex('users').select('id', 'username').then(function(users) {
@@ -220,7 +224,11 @@ module.exports = function(app) {
       if (time) {
         time.date_worked = new Date(time.date_worked).toISOString().substring(0, 10);
         time.created_at = new Date(time.created_at).toISOString().substring(0, 10);
-        time.updated_at = new Date(time.updated_at).toISOString().substring(0, 10);
+        if (time.updated_at) {
+          time.updated_at = new Date(time.updated_at).toISOString().substring(0, 10);
+        } else {
+          time.updated_at = null;
+        }
         knex('users').where({id: time.user}).select('username')
         .then(function(user) {
           // set its user
@@ -327,9 +335,9 @@ module.exports = function(app) {
               'URI', 'invalid URI ' + time.issue_uri);
       return res.status(err.status).send(err);
     }
-    
+
     // Test date worked value
-    if (!/\d{4}-\d{2}-\d{4}/.test(time.date_worked) || !Date.parse(time.date_worked)) {
+    if (!/\d{4}-\d{2}-\d{2}/.test(time.date_worked) || !Date.parse(time.date_worked)) {
       const err = errors.errorBadObjectInvalidField('time', 'date_worked',
       'ISO-8601 date', time.date_worked);
       return res.status(err.status).send(err);

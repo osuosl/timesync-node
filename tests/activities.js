@@ -662,6 +662,11 @@ module.exports = function(expect, request, baseUrl) {
         revision: 1,
         id: 3,
       },
+      {
+        'name': 'Meetings',
+        'slug': 'meeting',
+        'id': 4,
+      },
     ];
 
     const requestOptions = {

@@ -16,7 +16,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
           {
@@ -28,7 +28,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
           {
@@ -40,7 +40,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 3,
           },
           {
@@ -52,7 +52,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 4,
           },
         ];
@@ -79,7 +79,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
           {
@@ -91,7 +91,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 3,
           },
         ];
@@ -142,7 +142,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
           {
@@ -154,7 +154,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
         ];
@@ -205,7 +205,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
           {
@@ -217,7 +217,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
         ];
@@ -269,7 +269,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
           {
@@ -281,7 +281,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 3,
           },
           {
@@ -293,7 +293,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 4,
           },
         ];
@@ -330,12 +330,12 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('returns an error for a future start date', function(done) {
-      request.get(baseUrl + 'times?user=2105-04-19', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?start=2105-04-19', function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = {
           status: 400,
           error: 'Bad Query Value',
-          text: 'Parameter start contained invalid value "2015-04-19"',
+          text: 'Parameter start contained invalid value 2015-04-19',
         };
 
         expect(getErr).to.equal(null);
@@ -361,7 +361,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
           {
@@ -373,7 +373,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
           {
@@ -385,7 +385,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 3,
           },
         ];
@@ -437,7 +437,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
           {
@@ -449,7 +449,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 3,
           },
         ];
@@ -503,7 +503,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
           {
@@ -515,7 +515,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 3,
           },
           {
@@ -527,7 +527,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 4,
           },
         ];
@@ -563,7 +563,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
         ];
@@ -600,7 +600,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
         ];
@@ -636,7 +636,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 3,
           },
         ];
@@ -672,7 +672,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
         ];
@@ -709,7 +709,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
         ];
@@ -745,7 +745,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
           {
@@ -757,7 +757,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
         ];
@@ -794,7 +794,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
         ];
@@ -831,7 +831,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
         ];
@@ -868,7 +868,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
           {
@@ -880,7 +880,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
         ];
@@ -933,7 +933,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
         ];
@@ -969,7 +969,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
           {
@@ -981,7 +981,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
           {
@@ -993,7 +993,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 4,
           },
         ];
@@ -1030,7 +1030,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 4,
           },
         ];
@@ -1067,7 +1067,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
         ];
@@ -1105,7 +1105,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
         ];
@@ -1144,7 +1144,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
         ];
@@ -1183,7 +1183,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
           {
@@ -1195,7 +1195,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 2,
           },
         ];
@@ -1234,7 +1234,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
         ];
@@ -1273,7 +1273,7 @@ module.exports = function(expect, request, baseUrl) {
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
-            updated_at: '1969-12-31',
+            updated_at: null,
             id: 1,
           },
         ];

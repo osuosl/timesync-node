@@ -27,7 +27,6 @@
       "revision": 1,
       "deleted_at": null,
       "updated_at": null
-    }
     },
     {
       "name":"Meetings",
@@ -37,7 +36,7 @@
       "revision": 1,
       "deleted_at": null,
       "updated_at": null
-    },
+    }
   ],
   "users":[
     {
@@ -117,7 +116,7 @@
       "revision": 1,
       "deleted_at": null,
       "updated_at": null
-    },
+    }
   ],
   "times":[
     {
@@ -128,7 +127,7 @@
       "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
       "date_worked":1429401600000,
       "created_at":1429401600000,
-      "updated_at":-1,
+      "updated_at": null,
       "id": 1,
       "uuid": "32764929-1bea-4a17-8c8a-22d7fb144941",
       "revision": 1,
@@ -142,7 +141,7 @@
       "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
       "date_worked":1429488000000,
       "created_at":1429488000000,
-      "updated_at":-1,
+      "updated_at": null,
       "id": 2,
       "uuid": "e0326905-ef25-46a0-bacd-4391155aca4a",
       "revision": 1,
@@ -156,7 +155,7 @@
       "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
       "date_worked":1429574400000,
       "created_at":1429574400000,
-      "updated_at":-1,
+      "updated_at": null,
       "id": 3,
       "uuid": "4bfd7dcf-3fda-4488-a530-60b65d9e77a9",
       "revision": 1,
@@ -170,7 +169,7 @@
       "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
       "date_worked":1429660800000,
       "created_at":1429660800000,
-      "updated_at":-1,
+      "updated_at": null,
       "id": 4,
       "uuid": "d24c191f-305c-4646-824d-433bbd86fcec",
       "revision": 1,
@@ -182,38 +181,38 @@
       "name":"gwm",
       "id": 1,
       "project": "projects:0",
-      "activity": null,
+      "activity": null
     },
     {
       "name":"pgd",
       "id": 2,
       "project": "projects:1",
-      "activity": null,
+      "activity": null
     },
     {
       "name":"wf",
       "id": 3,
       "project": "projects:2",
-      "activity": null,
+      "activity": null
     },
     {
       "name": "ganeti-webmgr",
       "project": "projects:0",
       "id": 4,
-      "activity": null,
+      "activity": null
     },
     {
       "name": "timesync",
       "id": 5,
       "project": "projects:3",
-      "activity": null,
+      "activity": null
     },
     {
       "name": "ts",
       "id": 6,
       "project": "projects:3",
-      "activity": null,
-    },
+      "activity": null
+    }
   ],
   "timesactivities":[
     {
@@ -224,17 +223,17 @@
     {
       "id": 2,
       "time": "times:0",
-      "activity": "activities:1",
+      "activity": "activities:1"
     },
     {
       "id": 3,
       "time": "times:1",
-      "activity": "activities:0",
+      "activity": "activities:0"
     },
     {
       "id": 4,
       "time": "times:2",
-      "activity": "activities:2",
+      "activity": "activities:2"
     },
     {
       "id": 5,
