@@ -97,6 +97,8 @@ module.exports = function(app) {
             for (let time of times) {
             /* eslint-enable prefer-const */
               time.date_worked = new Date(time.date_worked).toISOString().substring(0, 10);
+              time.created_at = new Date(time.created_at).toISOString().substring(0, 10);
+              time.updated_at = new Date(time.updated_at).toISOString().substring(0, 10);
             }
 
             knex('users').select('id', 'username').then(function(users) {
@@ -217,6 +219,8 @@ module.exports = function(app) {
       // get the matching time entry
       if (time) {
         time.date_worked = new Date(time.date_worked).toISOString().substring(0, 10);
+        time.created_at = new Date(time.created_at).toISOString().substring(0, 10);
+        time.updated_at = new Date(time.updated_at).toISOString().substring(0, 10);
         knex('users').where({id: time.user}).select('username')
         .then(function(user) {
           // set its user
@@ -345,7 +349,6 @@ module.exports = function(app) {
           .then(function(activityIds) {
             time.uuid = uuid.v4();
             time.revision = 1;
-            const createdAt = new Date().toISOString().substring(0, 10);
             const insertion = {
               duration: time.duration,
               user: userId,
@@ -353,7 +356,7 @@ module.exports = function(app) {
               notes: time.notes,
               issue_uri: time.issue_uri,
               date_worked: new Date(time.date_worked).getTime(),
-              created_at: createdAt,
+              created_at: Date.now(),
               uuid: time.uuid,
               revision: 1,
             };
