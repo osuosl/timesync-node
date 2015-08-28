@@ -88,7 +88,8 @@ module.exports = function(app) {
             let start;
             if (typeof req.query.start === 'string') {
               start = req.query.start;
-            } else if (helpers.getType(req.query.start) === 'array') {
+            } else if (helpers.getType(req.query.start) === 'array' &&
+                       helpers.getType(req.query.start[0]) === 'string') {
               start = req.query.start[0];
             } else {
               const err = errors.errorBadQueryValue('start', req.query.start);
@@ -109,7 +110,8 @@ module.exports = function(app) {
             let end;
             if (typeof req.query.end === 'string') {
               end = req.query.end;
-            } else if (helpers.getType(req.query.end) === 'array') {
+            } else if (helpers.getType(req.query.end) === 'array' &&
+                       helpers.getType(req.query.end[0]) === 'string') {
               end = req.query.end[0];
             } else {
               const err = errors.errorBadQueryValue('end', req.query.end);
