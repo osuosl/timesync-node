@@ -270,46 +270,56 @@ module.exports = function(app) {
       // Finish checks for user, project, and activity
       helpers.checkUser(user.username, time.user).then(function(userId) {
         helpers.checkProject(time.project).then(function(projectId) {
-          helpers.checkActivities(time.activities).then(function(activityIds) {
-            const createdAt = new Date().toISOString().substring(0, 10);
-            const insertion = {
-              duration: time.duration,
-              user: userId,
-              project: projectId,
-              notes: time.notes,
-              issue_uri: time.issue_uri,
-              date_worked: time.date_worked,
-              created_at: createdAt,
-            };
+          knex('userroles').where({user: userId, project: projectId}).then(function(roles) {
+            if (roles.length === 0 || roles[0].member === false) {
+              const err = errors.errorAuthorizationFailure(user.username,
+                'create time entries for project ' + time.project + '.');
+              return res.status(err.status).send(err);
+            }
+            helpers.checkActivities(time.activities).then(function(activityIds) {
+              const createdAt = new Date().toISOString().substring(0, 10);
+              const insertion = {
+                duration: time.duration,
+                user: userId,
+                project: projectId,
+                notes: time.notes,
+                issue_uri: time.issue_uri,
+                date_worked: time.date_worked,
+                created_at: createdAt,
+              };
 
-            knex('times').insert(insertion).then(function(timeIds) {
-              const timeId = timeIds[0];
+              knex('times').insert(insertion).then(function(timeIds) {
+                const timeId = timeIds[0];
 
-              const taInsertion = [];
-              /* eslint-disable prefer-const */
-              for (let activityId of activityIds) {
-                /* eslint-enable prefer-const */
-                taInsertion.push({
-                  time: timeId,
-                  activity: activityId,
+                const taInsertion = [];
+                /* eslint-disable prefer-const */
+                for (let activityId of activityIds) {
+                  /* eslint-enable prefer-const */
+                  taInsertion.push({
+                    time: timeId,
+                    activity: activityId,
+                  });
+                }
+
+                knex('timesactivities').insert(taInsertion).then(function() {
+                  time.id = timeId;
+                  return res.send(JSON.stringify(time));
+                }).catch(function(error) {
+                  knex('times').del().where({id: timeId}).then(function() {
+                    const err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
+                  });
                 });
-              }
-
-              knex('timesactivities').insert(taInsertion).then(function() {
-                time.id = timeId;
-                return res.send(JSON.stringify(time));
               }).catch(function(error) {
-                knex('times').del().where({id: timeId}).then(function() {
-                  const err = errors.errorServerError(error);
-                  return res.status(err.status).send(err);
-                });
+                const err = errors.errorServerError(error);
+                return res.status(err.status).send(err);
               });
-            }).catch(function(error) {
-              const err = errors.errorServerError(error);
+            }).catch(function() {
+              const err = errors.errorInvalidForeignKey('time', 'activities');
               return res.status(err.status).send(err);
             });
-          }).catch(function() {
-            const err = errors.errorInvalidForeignKey('time', 'activities');
+          }).catch(function(error) {
+            const err = errors.errorServerError(error);
             return res.status(err.status).send(err);
           });
         }).catch(function() {
