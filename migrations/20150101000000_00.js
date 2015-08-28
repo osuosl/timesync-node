@@ -5,7 +5,7 @@ exports.up = function(knex) {
     table.increments('id').primary();
     table.string('username').unique().notNullable();
     table.string('active').defaultTo(true);
-    table.string('password')
+    table.string('password');
   }).createTable('projects', function(table) {
     table.increments('id').primary();
     table.string('name').notNullable();
@@ -20,7 +20,7 @@ exports.up = function(knex) {
     table.string('issue_uri');
     table.bigInteger('date_worked').notNullable();
     table.bigInteger('created_at').notNullable();
-    table.bigInteger('updated_at').defaultTo(-1);
+    table.bigInteger('updated_at');
   }).createTable('activities', function(table) {
     table.increments('id').primary();
     table.string('name').unique().notNullable();
