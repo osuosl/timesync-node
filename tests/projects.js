@@ -281,6 +281,24 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    /*it("doesn't patch a project with invalid permissions", function(done) {
+      requestOptions.form = copyJsonObject(postArg);
+      requestOptions.form.object = copyJsonObject(patchedProject);
+      requestOptions.form.auth.username = 'patcht';
+      requestOptions.form.auth.password = 'drowssap';
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(res.statusCode).to.equal(401);
+
+        expect(body.error).to.equal('Authorization failure');
+        expect(body.text).to.equal('patcht is not authorized to patch' + 
+          'this project');
+
+        const expectedResults = copyJsonObject(originalProject);
+        checkListEndpoint(done, expectedResults);
+      });
+    });*/
+
     it("doesn't patch a project with bad uri, name, slugs, and owner",
     function(done) {
       requestOptions.form = copyJsonObject(postArg);
