@@ -59,7 +59,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-        expect(JSON.parse(getBody)).to.have.same.members(expectedResults);
+        expect(JSON.parse(getBody)).to.deep.have.same.members(expectedResults);
         done();
       });
     });
@@ -1455,7 +1455,7 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.have.same.members(expectedResults);
+          expect(JSON.parse(getBody)).to.deep.have.same.members(expectedResults);
           done();
         });
       });
@@ -1488,7 +1488,7 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.have.same.members(initialData);
+          expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
           done();
         });
       });
@@ -1682,7 +1682,7 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.have.same.members(initialData);
+          expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
           done();
         });
       });
@@ -2014,7 +2014,7 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.have.same.members(expectedResults);
+          expect(JSON.parse(getBody)).to.deep.have.same.members(expectedResults);
           done();
         });
       });
