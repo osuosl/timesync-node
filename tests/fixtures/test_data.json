@@ -163,25 +163,10 @@
       "spectator": true
     },
     {
-      "project":"projects:1",
+      "project":"projects:2",
       "user":"users:4",
       "manager": false,
       "member": false,
       "spectator": true
-    },
-    {
-      "project":"projects:2",
-      "user":"users:5",
-      "manager": false,
-      "member": false,
-      "spectator": false
-    },
-    {
-      "project":"projects:0",
-      "user":"users:4",
-      "manager": false,
-      "member": false,
-      "spectator": false
     }
-  ]
-}
+]

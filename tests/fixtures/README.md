@@ -24,7 +24,7 @@ projects.
   - Spectator of: GWM
 
 5) thai's password is ``passing``
-  - Spectator of: PGD
+  - Spectator of: WF
 
 6) MaraJade's password is ``wording``
   - Currently assigned no permissions to any projects
