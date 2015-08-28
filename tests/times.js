@@ -125,10 +125,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -147,10 +147,10 @@ module.exports = function(expect, request, baseUrl) {
             {
               duration: 20,
               user: 'tschuy',
-              project: ['pgd'],
+              project: ['gwm', 'ganeti-webmgr'],
               activities: ['dev', 'docs'],
               notes: '',
-              issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+              issue_uri: 'https://github.com/osuosl/gwm/issues/1',
               date_worked: '2015-07-30',
               created_at: createdAt,
               updated_at: null,
@@ -170,10 +170,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -199,14 +199,49 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it("fails when user isn't member of project", function(done) {
+      const time = {
+        duration: 20,
+        user: 'thai',
+        project: 'gwm',
+        activities: ['dev', 'docs'],
+        notes: '',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+        date_worked: '2015-07-30',
+      };
+
+      const postArg = getPostObject(baseUrl + 'times/', time);
+      postArg.body.auth.password = 'passing';
+      postArg.body.auth.username = 'thai';
+
+      request.post(postArg, function(err, res, body) {
+        const expectedResult = {
+          error: 'Authorization failure',
+          status: 401,
+          text: 'thai is not authorized to create time entries for project ' +
+          'gwm.',
+        };
+
+        expect(res.statusCode).to.equal(401);
+        expect(body).to.deep.equal(expectedResult);
+
+        request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+          done();
+        });
+      });
+    });
+
     it('fails with a missing login', function(done) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -236,10 +271,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: -20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -269,10 +304,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 'twenty',
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -301,10 +336,10 @@ module.exports = function(expect, request, baseUrl) {
     it('fails with a missing duration', function(done) {
       const time = {
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -333,10 +368,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs', 'activity_!@#'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -366,10 +401,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs', 'dancing'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -398,10 +433,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs', -14],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -431,10 +466,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: 1.414141414,
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -464,9 +499,9 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -498,7 +533,7 @@ module.exports = function(expect, request, baseUrl) {
         project: 'project? we need a project?',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -531,7 +566,7 @@ module.exports = function(expect, request, baseUrl) {
         project: 'project-xyz',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -563,7 +598,7 @@ module.exports = function(expect, request, baseUrl) {
         project: ['Who needs', 'proper types?'],
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -594,7 +629,7 @@ module.exports = function(expect, request, baseUrl) {
         user: 'tschuy',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -623,7 +658,7 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 'I do my own thing, pal',
@@ -656,7 +691,7 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
         issue_uri: 3.14159265,
@@ -689,7 +724,7 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
         date_worked: '2015-07-30',
@@ -710,7 +745,7 @@ module.exports = function(expect, request, baseUrl) {
             {
               duration: 20,
               user: 'tschuy',
-              project: ['pgd'],
+              project: ['gwm', 'ganeti-webmgr'],
               activities: ['dev', 'docs'],
               notes: '',
               issue_uri: null,
@@ -733,10 +768,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'jenkinsl',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -765,10 +800,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: {username: 'tschuy'},
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -797,10 +832,10 @@ module.exports = function(expect, request, baseUrl) {
     it('fails with a missing user', function(done) {
       const time = {
         duration: 20,
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: '2015-07-30',
       };
 
@@ -829,10 +864,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: 'baaaaaaaad',
       };
 
@@ -862,10 +897,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
         date_worked: 1234,
       };
 
@@ -895,10 +930,10 @@ module.exports = function(expect, request, baseUrl) {
       const time = {
         duration: 20,
         user: 'tschuy',
-        project: 'pgd',
+        project: 'gwm',
         activities: ['dev', 'docs'],
         notes: '',
-        issue_uri: 'https://github.com/osuosl/pgd/issues/1',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
       };
 
       const postArg = getPostObject(baseUrl + 'times/', time);
