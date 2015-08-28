@@ -281,11 +281,11 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    /*it("doesn't patch a project with invalid permissions", function(done) {
+    it("doesn't patch a project with invalid permissions", function(done) {
       requestOptions.form = copyJsonObject(postArg);
-      requestOptions.form.object = copyJsonObject(patchedProject);
       requestOptions.form.auth.username = 'patcht';
       requestOptions.form.auth.password = 'drowssap';
+      requestOptions.form.object = copyJsonObject(patchedProject);
 
       request.post(requestOptions, function(err, res, body) {
         expect(res.statusCode).to.equal(401);
@@ -297,7 +297,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResults = copyJsonObject(originalProject);
         checkListEndpoint(done, expectedResults);
       });
-    });*/
+    });
 
     it("doesn't patch a project with bad uri, name, slugs, and owner",
     function(done) {
@@ -342,7 +342,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it("doesn't patch a project with a different owner", function(done) {
+    /*it("doesn't patch a project with a different owner", function(done) {
       requestOptions.form = copyJsonObject(postArg);
       requestOptions.form.auth.username = 'deanj';
       requestOptions.form.auth.password = 'pass';
@@ -358,7 +358,7 @@ module.exports = function(expect, request, baseUrl) {
 
         checkListEndpoint(done, expectedResults);
       });
-    });
+    });*/
 
     it("doesn't patch a project with only bad slugs", function(done) {
       requestOptions.form = copyJsonObject(postArg);

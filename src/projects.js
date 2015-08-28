@@ -339,11 +339,11 @@ module.exports = function(app) {
       .then(function(project) {
         // project contains all of the information about the project the
         // user is updating
-        if (user.username !== project.owner) {
+        /*if (user.username !== project.owner) {
           const err = errors.errorAuthorizationFailure(req.body.auth.username,
             'create objects for ' + project.owner);
           return res.status(err.status).send(err);
-        }
+        }*/
 
         knex('projectslugs').where('name', 'in', obj.slugs)
         .then(function(slugs) {
