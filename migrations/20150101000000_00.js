@@ -18,8 +18,9 @@ exports.up = function(knex) {
     table.integer('project').references('id').inTable('projects').notNullable();
     table.string('notes');
     table.string('issue_uri');
-    table.bigInteger('date_worked');
-    table.timestamps();
+    table.bigInteger('date_worked').notNullable();
+    table.bigInteger('created_at').notNullable();
+    table.bigInteger('updated_at').defaultTo(-1);
   }).createTable('activities', function(table) {
     table.increments('id').primary();
     table.string('name').unique().notNullable();
