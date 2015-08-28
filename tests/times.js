@@ -1672,7 +1672,7 @@ module.exports = function(expect, request, baseUrl) {
           text: 'The time is missing a duration',
         };
 
-        expect(postBody).to.equal(expectedResult);
+        expect(postBody).to.deep.equal(expectedResult);
         expect(postRes.statusCode).to.equal(400);
 
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
