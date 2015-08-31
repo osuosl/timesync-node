@@ -86,6 +86,69 @@ module.exports = function(app) {
             }));
           }
 
+          if (req.query.start) {
+            let start;
+            if (typeof req.query.start === 'string') {
+              start = req.query.start;
+            } else if (helpers.getType(req.query.start) === 'array' &&
+                       helpers.getType(req.query.start[0]) === 'string') {
+              start = req.query.start[0];
+            } else {
+              const err = errors.errorBadQueryValue('start', req.query.start);
+              return res.status(err.status).send(err);
+            }
+
+            if (!/\d{4}-\d{2}-\d{2}/.test(start)) {
+              const err = errors.errorBadQueryValue('start', req.query.start);
+              return res.status(err.status).send(err);
+            }
+
+            const startDate = new Date(start);
+
+            if (!startDate || !startDate.getTime() || startDate.getTime() > Date.now()) {
+              const err = errors.errorBadQueryValue('start', req.query.start);
+              return res.status(err.status).send(err);
+            }
+
+            timesQ = timesQ.andWhere('date_worked', '>=', startDate.getTime());
+          }
+
+          if (req.query.end) {
+            let end;
+            if (typeof req.query.end === 'string') {
+              end = req.query.end;
+            } else if (helpers.getType(req.query.end) === 'array' &&
+                       helpers.getType(req.query.end[0]) === 'string') {
+              end = req.query.end[0];
+            } else {
+              const err = errors.errorBadQueryValue('end', req.query.end);
+              return res.status(err.status).send(err);
+            }
+
+            const endDate = new Date(end);
+
+            if (!/\d{4}-\d{2}-\d{2}/.test(end)) {
+              const err = errors.errorBadQueryValue('start', req.query.start);
+              return res.status(err.status).send(err);
+            }
+
+            if (!endDate || !endDate.getTime()) {
+              const err = errors.errorBadQueryValue('end', req.query.end);
+              return res.status(err.status).send(err);
+            }
+
+            if (req.query.start) {
+              const startInt = Date.parse(req.query.start);
+
+              if (startInt >= endDate.getTime()) {
+                const err = errors.errorBadQueryValue('end', req.query.end);
+                return res.status(err.status).send(err);
+              }
+            }
+
+            timesQ = timesQ.andWhere('date_worked', '<=', endDate.getTime());
+          }
+
           let activitiesDone = false;
           let projectsDone = false;
           let usersDone = false;
