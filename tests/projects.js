@@ -126,7 +126,7 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const patchedProjectName = {name: patchedProject.name};
-    // const patchedProjectOwner = {owner: patchedProject.owner};
+    const patchedProjectOwner = {owner: patchedProject.owner};
     const patchedProjectUri = {uri: patchedProject.uri};
     const patchedProjectSlugs = {slugs: patchedProject.slugs};
 
@@ -178,6 +178,8 @@ module.exports = function(expect, request, baseUrl) {
 
       request.post(requestOptions, function(err, res, body) {
         expect(err).to.be.a('null');
+        console.log(res.statusCode);
+        console.log(res.body);
         expect(res.statusCode).to.equal(200);
 
         // Set expected results to the new state of the project gwm
@@ -200,6 +202,8 @@ module.exports = function(expect, request, baseUrl) {
 
       request.post(requestOptions, function(err, res, body) {
         expect(err).to.be.a('null');
+        console.log(res.statusCode);
+        console.log(res.body);
         expect(res.statusCode).to.equal(200);
 
         const expectedResults = copyJsonObject(originalProject);
@@ -217,6 +221,7 @@ module.exports = function(expect, request, baseUrl) {
 
       request.post(requestOptions, function(err, res, body) {
         expect(err).to.be.a('null');
+        console.log(res.statusCode);
         expect(res.statusCode).to.equal(200);
 
         const expectedResults = copyJsonObject(originalProject);
@@ -234,6 +239,7 @@ module.exports = function(expect, request, baseUrl) {
 
       request.post(requestOptions, function(err, res, body) {
         expect(err).to.be.a('null');
+        console.log(res.statusCode);
         expect(res.statusCode).to.equal(200);
 
         const expectedResults = copyJsonObject(originalProject);
@@ -288,10 +294,11 @@ module.exports = function(expect, request, baseUrl) {
       requestOptions.form.object = copyJsonObject(patchedProject);
 
       request.post(requestOptions, function(err, res, body) {
+        console.log(res.statusCode);
         expect(res.statusCode).to.equal(401);
 
         expect(body.error).to.equal('Authorization failure');
-        expect(body.text).to.equal('patcht is not authorized to patch' +
+        expect(body.text).to.equal('patcht is not authorized to patch ' +
           originalProject.name);
 
         const expectedResults = copyJsonObject(originalProject);
