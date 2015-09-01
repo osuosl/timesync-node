@@ -2,6 +2,8 @@ node_modules/
 *.sqlite3
 npm-debug.log
 .*.swp
+.*.swo
+.*.swn
 docs/build/
 jsreport/
 coverage/
