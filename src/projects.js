@@ -332,124 +332,127 @@ module.exports = function(app) {
       // also makes the owner field the username so it can be checked, and
       // puts the ownerId into the ownerId field.
       knex('projects').first().select('projects.id as id',
-      'projects.name as name', 'projects.uri as uri', 'users.username as owner',
-      'users.id as ownerId')
+      'projects.name as name', 'projects.uri as uri',
+      'users.username as owner', 'users.id as ownerId')
       .where('projects.id', '=', projectIdQuery)
       .innerJoin('users', 'users.id', 'projects.owner')
       .then(function(project) {
         // project contains all of the information about the project the
         // user is updating
-        if (user.username !== project.owner) {
-          const err = errors.errorAuthorizationFailure(req.body.auth.username,
-            'create objects for ' + project.owner);
-          return res.status(err.status).send(err);
-        }
 
-        knex('projectslugs').where('name', 'in', obj.slugs)
-        .then(function(slugs) {
-          // slugs contains all of the slugs named by the user that
-          // currently exist in the database. This list is used to
-          // check that they're not overlapping with existing slugs,
-          // and to calculate which slugs need to be added.
-
-          // final check: do any of the slugs POSTed to this
-          // endpoint already belong to some other project?
-          let overlappingSlugs = slugs.filter(function(slug) {
-            return slug.project !== project.id;
-          });
-
-          if (overlappingSlugs.length) {
-            overlappingSlugs = overlappingSlugs.map(function(slug) {
-              return slug.name;
-            });
-
-            const err = errors.errorSlugsAlreadyExist(overlappingSlugs);
+        // access userroles, check if user is participating in project
+        knex('userroles').where({user: user.id, project: project.id})
+        .then(function(roles) {
+          if (roles.length === 0 || roles[0].manager === false) {
+            const err = errors.errorAuthorizationFailure(user.username,
+              'make changes to ' + project.name);
             return res.status(err.status).send(err);
           }
 
-          // all checks have passed
+          knex('projectslugs').where('name', 'in', obj.slugs)
+          .then(function(slugs) {
+            // slugs contains all of the slugs named by the user that
+            // currently exist in the database. This list is used to
+            // check that they're not overlapping with existing slugs,
+            // and to calculate which slugs need to be added.
 
-          // modify the project object gotten from the database
-          // and then reinsert it into the database
+            // final check: do any of the slugs POSTed to this
+            // endpoint already belong to some other project?
 
-          // when using knex.update() I have better luck updating
-          // the entire object, even fields that aren't changed
-          project.uri = obj.uri || project.uri;
-          project.owner = project.ownerId;
-          project.name = obj.name || project.name;
-
-          delete project.ownerId;
-
-          knex('projects').where({id: project.id}).update(project)
-          .then(function() {
-            // slugNames contains the list of names of slugs that
-            // overlap with what the user submitted.
-            const slugNames = slugs.map(function(slug) {
-              return slug.name;
+            let overlappingSlugs = slugs.filter(function(slug) {
+              return slug.project !== project.id;
             });
 
-            knex('projectslugs').where({project: project.id})
-            .then(function(existingSlugObjs) {
-              const existingSlugs = existingSlugObjs.map(function(slug) {
+            if (overlappingSlugs.length) {
+              overlappingSlugs = overlappingSlugs.map(function(slug) {
                 return slug.name;
               });
-              // existingSlugs contains a list of all of slugs
-              // that already belong to the project, by name
 
-              // get list of slugs that is no longer in POST
-              // request
-              let delSlugs = [];
-              if (obj.slugs.length) {
-                delSlugs = existingSlugs.filter(function(slug) {
-                  return obj.slugs.indexOf(slug) === -1;
-                });
-              }
+              const err = errors.errorSlugsAlreadyExist(overlappingSlugs);
+              return res.status(err.status).send(err);
+            }
+            // all checks have passed
 
-              // make a list containing all of the slugs that need
-              // to be inserted
-              const newSlugs = obj.slugs.filter(function(objSlug) {
-                if (slugNames.indexOf(objSlug) === -1) {
-                  return true;
-                }
-              }).map(function(newSlug) {
-                return {name: newSlug, project: project.id};
+            // modify the project object gotten from the database
+            // and then reinsert it into the database
+
+            // when using knex.update() I have better luck updating
+            // the entire object, even fields that aren't changed
+            project.uri = obj.uri || project.uri;
+            project.owner = project.ownerId;
+            project.name = obj.name || project.name;
+
+            delete project.ownerId;
+
+            knex('projects').where({id: project.id}).update(project)
+            .then(function() {
+              // slugNames contains the list of names of slugs that
+              // overlap with what the user submitted.
+              const slugNames = slugs.map(function(slug) {
+                return slug.name;
               });
 
-              // make a list containing creation and
-              // deletion promises
-              const slugsPromises = [];
-              if (delSlugs.length) {
-                slugsPromises.push(knex('projectslugs')
-                .where('name', 'in', delSlugs).del());
-              }
+              knex('projectslugs').where({project: project.id})
+              .then(function(existingSlugObjs) {
+                const existingSlugs = existingSlugObjs.map(function(slug) {
+                  return slug.name;
+                });
+                // existingSlugs contains a list of all of slugs
+                // that already belong to the project, by name
 
-              if (newSlugs.length) {
-                slugsPromises.push(knex('projectslugs')
-                .insert(newSlugs));
-              }
-
-              Promise.all(slugsPromises).then(function() {
+                // get list of slugs that is no longer in POST
+                // request
+                let delSlugs = [];
                 if (obj.slugs.length) {
-                  project.slugs = obj.slugs;
-                } else {
-                  project.slugs = existingSlugs;
+                  delSlugs = existingSlugs.filter(function(slug) {
+                    return obj.slugs.indexOf(slug) === -1;
+                  });
                 }
 
-                project.owner = user.username;
-                res.send(JSON.stringify(project));
-              }).catch(function(error) {
-                const err = errors.errorServerError(error);
-                return res.status(err.status).send(err);
+                // make a list containing all of the slugs that need
+                // to be inserted
+                const newSlugs = obj.slugs.filter(function(objSlug) {
+                  if (slugNames.indexOf(objSlug) === -1) {
+                    return true;
+                  }
+                }).map(function(newSlug) {
+                  return {name: newSlug, project: project.id};
+                });
+
+                // make a list containing creation and
+                // deletion promises
+                const slugsPromises = [];
+                if (delSlugs.length) {
+                  slugsPromises.push(knex('projectslugs')
+                  .where('name', 'in', delSlugs).del());
+                }
+                if (newSlugs.length) {
+                  slugsPromises.push(knex('projectslugs').insert(newSlugs));
+                }
+
+                Promise.all(slugsPromises).then(function() {
+                  if (obj.slugs.length) {
+                    project.slugs = obj.slugs;
+                  } else {
+                    project.slugs = existingSlugs;
+                  }
+
+                  project.owner = user.username;
+                  res.send(JSON.stringify(project));
+                }).catch(function(error) {
+                  const err = errors.errorServerError(error);
+                  return res.status(err.status).send(err);
+                });
               });
             });
+          }).catch(function(error) {
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
           });
         }).catch(function(error) {
           const err = errors.errorServerError(error);
           return res.status(err.status).send(err);
         });
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
       });
     })(req, res, next);
   });

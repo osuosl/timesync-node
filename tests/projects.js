@@ -281,6 +281,24 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it("doesn't patch a project with invalid permissions", function(done) {
+      requestOptions.form = copyJsonObject(postArg);
+      requestOptions.form.auth.username = 'patcht';
+      requestOptions.form.auth.password = 'drowssap';
+      requestOptions.form.object = copyJsonObject(patchedProject);
+
+      request.post(requestOptions, function(err, res, body) {
+        expect(res.statusCode).to.equal(401);
+
+        expect(body.error).to.equal('Authorization failure');
+        expect(body.text).to.equal('patcht is not authorized to make changes' +
+          ' to ' + originalProject.name);
+
+        const expectedResults = copyJsonObject(originalProject);
+        checkListEndpoint(done, expectedResults);
+      });
+    });
+
     it("doesn't patch a project with bad uri, name, slugs, and owner",
     function(done) {
       requestOptions.form = copyJsonObject(postArg);
@@ -317,24 +335,6 @@ module.exports = function(expect, request, baseUrl) {
         expect(res.statusCode).to.equal(400);
         expect(body.text).to.equal('Field uri of project' +
         ' should be string but was sent as array');
-
-        const expectedResults = copyJsonObject(originalProject);
-
-        checkListEndpoint(done, expectedResults);
-      });
-    });
-
-    it("doesn't patch a project with a different owner", function(done) {
-      requestOptions.form = copyJsonObject(postArg);
-      requestOptions.form.auth.username = 'deanj';
-      requestOptions.form.auth.password = 'pass';
-      requestOptions.form.object = copyJsonObject(patchedProject);
-
-      request.post(requestOptions, function(err, res, body) {
-        expect(body.error).to.equal('Authorization failure');
-        expect(res.statusCode).to.equal(401);
-        expect(body.text).to.equal('deanj is not authorized to ' +
-        'create objects for tschuy');
 
         const expectedResults = copyJsonObject(originalProject);
 
