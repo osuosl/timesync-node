@@ -336,19 +336,22 @@ module.exports = function(app) {
 
   // Patch times
   app.post(app.get('version') + '/times/:id', function(req, res, next) {
-    //console.log(req);
+    //console.log('1');
+    Array.prototype.diff = function(a) {
+      return this.filter(function(i) {return a.indexOf(i) < 0;});
+    };
+    //console.log('2');
     passport.authenticate('local', function(autherr, user, info) {
       if (!user) {
-        //console.log('here?');
         let err = errors.errorAuthenticationFailure(info.message);
         return res.status(err.status).send(err);
       }
 
-      //console.log('there?');
+      //console.log('3');
       var obj = req.body.object;
-      //var id = req.params.id;
-      console.log(req.body.object);
-      //console.log('Object:', obj);
+      if (obj.duration !== undefined) {
+        obj.duration = Number(obj.duration);
+      }
 
       // Test existence and datatypes
       let fields = [
@@ -360,39 +363,46 @@ module.exports = function(app) {
         {name: 'date_worked', type: 'string', required: false},
       ];
 
-      //console.log(obj);
+      //console.log('4');
       let validationFailure = helpers.validateFields(obj, fields);
       if (validationFailure) {
         let err = errors.errorBadObjectInvalidField('time',
           validationFailure.name, validationFailure.type,
           validationFailure.actualType);
-        //console.log(obj, validationFailure);
         return res.status(err.status).send(err);
       }
 
+      //console.log('5');
       // Test duration value
-      //console.log(obj, 'Duration:', obj.duration/*obj['duration']*/);
-      if (obj['duration'] < 0) {
+      if (obj.duration !== undefined && obj.duration < 0) {
         let err = errors.errorBadObjectInvalidField('time', 'duration',
-        'positive number', 'negative number');
-        //console.log(err)
+        'positive integer', 'negative integer');
         return res.status(err.status).send(err);
-      } else if (helpers.getType(obj['duration']) === 'object') {
+      } else if (obj.duration !== undefined && helpers.getType(obj.duration) === 'object') {
         let err = errors.errorBadObjectInvalidField('time', 'duration',
         'number', 'object');
-        //console.log(err)
+        return res.status(err.status).send(err);
+      } else if (obj.duration !== undefined && isNaN(obj.duration)) {
+        let err = errors.errorBadObjectInvalidField('time', 'duration',
+        'number', 'object');
         return res.status(err.status).send(err);
       }
 
+      //console.log('6');
       //Test each activity
-      if (obj.activities != undefined) {
+      if (obj.activities !== undefined) {
         for (let activity of obj.activities) {
-          //console.log('Activity:', activity);
-          if (activity && helpers.getType(activity) !== 'string') {
+          if (!helpers.checkActivities(activity)){
+            console.log('1');
+            let err = errors.errorInvalidForeignKey('time', 'activity');
+            return res.status(err.status.send(err));
+          } else if (helpers.getType(activity) !== 'string') {
+            console.log('2');
             let err = errors.errorBadObjectInvalidField('time', 'activities',
             'slugs', 'array containing at least 1 ' + helpers.getType(activity));
             return res.status(err.status).send(err);
-          } else if (activity && !helpers.validateSlug(activity)) {
+          } else if (!helpers.validateSlug(activity)) {
+            console.log('3');
             let err = errors.errorBadObjectInvalidField('time', 'activities',
             'slugs', 'array containing at least 1 invalid slug');
             return res.status(err.status).send(err);
@@ -400,58 +410,178 @@ module.exports = function(app) {
         }
       }
 
+      //console.log('7');
       //Test issue URI value
-      //console.log('Issue URI:', time.issue_uri);
-      if (obj.issue_uri && !validUrl.isWebUri(obj.issue_uri)) {
+      if (obj.issue_uri !== undefined && !validUrl.isWebUri(obj.issue_uri)) {
         let err = errors.errorBadObjectInvalidField('time', 'issue_uri', 'URI',
-        'invalid URI ' + time.issue_uri);
+        'invalid URI ' + obj.issue_uri);
         return res.status(err.status).send(err);
       }
 
+      //console.log('8');
       //Test date worked value
-      //console.log('Date worked:', time.date_worked);
-      if (obj.date_worked && !Date.parse(obj.date_worked)) {
+      console.log(obj.date_worked);
+      if (obj.date_worked !== undefined && !Date.parse(obj.date_worked)) {
         let err = errors.errorBadObjectInvalidField('time', 'date_worked',
-        'ISO-8601 date', time.date_worked);
+        'ISO-8601 date', obj.date_worked);
         return res.status(err.status).send(err);
       }
 
+      if (obj.notes !== undefined && helpers.getType(obj.notes) !== 'string') {
+        let err = errors.errorBadObjectInvalidField('time', 'notes', 
+        'string', helpers.getType(obj.notes));
+        return res.status(err.status).send(err);
+      }
+
+      if (obj.key !== undefined) {
+        let err = errors.errorBadObjectUnknownField('time', 'key');
+        return res.status(err.status).send(err);
+      }
+
+      //console.log('9');
       //Finish checks for user, project, and activity
-      //console.log('User:', obj.user);
-      if (obj.user && helpers.checkUser(user.username, obj.user)) {
-        let err = errors.errorAuthorizationFailure(user.username,
-          'create time entries for ' + obj.user);
-        return res.status(err.status).send(err);
+      /*
+      if (obj.user !== undefined) {
+        knex('users').where('username', '=', obj.user).then(function (dohicky) {
+          if (dohicky.length < 1) {
+            let err = errors.errorInvalidForeignKey('time', 'user');
+            //console.log(user, err);
+            return res.status(err.status).send(err);
+          }
+        });
+      }
+      */
+
+      /*
+      console.log(obj.project, helpers.checkProject(obj.project));
+      helpers.checkProject(obj.project).then(function (whatever) {
+        console.log(whatever);
+      });
+      */
+
+      if (obj.project !== undefined) {
+        //console.log(obj.project);
+        helpers.checkProject(obj.project).then(function(project) {
+          return;
+        }).catch(function() {
+          let err = errors.errorInvalidForeignKey('time', 'project');
+          return res.status(err.status).send(err);
+        });
       }
 
-      //console.log('Project:', time.project);
-      if (obj.project && !helpers.checkProject(obj.project)) {
-        let err = errors.errorInvalidForeignKey('time', 'project');
-        return res.status(err.status).send(err);
+      /*
+      //console.log('10');
+      if (obj.activities !== undefined) {
+        helpers.checkActivities(obj.activities).then(function() {
+          return;
+        }).catch(function() {
+          let err = errors.errorInvalidForeignKey('time', 'activities');
+          return res.status(err.status).send(err);
+        });
       }
+      */
 
-      //console.log('Activities:', time.time.activities);
-      if (obj.activities && !helpers.checkActivities(obj.activities)) {
-        let err = errors.errorInvalidForeignKey('time', 'activities');
-        return res.status(err.status).send(err);
-      }
 
+      //console.log('11');
       // retrieves the time from the database
       
-      knex('times').where({id: req.params.id}).then(function(time) {
-        if (user.username !== time.owner) {
-          let err = errors.errorAuthorizationFailure(req.body.auth.username,
-            'create objects for ' + time.owner);
+      knex('times').select('times.duration as duration', 'times.user as user',
+              'times.project as project', 'times.notes as notes',
+              'times.issue_uri as issue_uri',
+              'times.date_worked as date_worked',
+              'times.created_at as created_at',
+              'times.updated_at as updated_at', 'times.id as id',
+              'users.username as owner')
+          .where('times.id', '=', req.params.id).innerJoin('users', 'users.id',
+                  'times.user')
+          .then(function(time) {
+        //console.log('12');
+        if (user.username !== time[0].owner) {
+          let err = errors.errorAuthorizationFailure(user.username,
+            'create objects for ' + time[0].owner);
           return res.status(err.status).send(err);
         }
 
+        //console.log('13');
+        knex('users').select('id').where('username', '=', obj.user).then(function (userId) {
+          //console.log('14');
+          var activityIds;
+          if (obj.activities !== undefined) {
+            helpers.checkActivities(obj.activities).then(function (aIds) {
+              activityIds = aIds;
+            });
+          }
 
-        let insertion = {};
+          //console.log('15');
+          if (userId[0] !== undefined) {
+            time[0].user = userId[0].id;
+          } else {
+            time[0].user = time[0].user;
+          }
+          //console.log('16');
+          knex('projectslugs').select('project').where('name', '=', obj.project).then(function (projectId) {
+            //console.log('17');
+            if (projectId[0] !== undefined) {
+              time[0].project = projectId[0].project;
+            } else {
+              time[0].project = time[0].project;
+            }
+            //console.log('18');
+            time[0].duration = obj.duration || time[0].duration;
+            time[0].notes = obj.notes || time[0].notes;
+            time[0].issue_uri = obj.issue_uri || time[0].issue_uri;
+            time[0].date_worked = obj.date_worked || time[0].date_worked;
+            time[0].created_at = obj.created_at || time[0].created_at;
+            time[0].updated_at = new Date().toISOString().substring(0,10);
+            delete time[0].owner;
 
-        if (obj.duration) {
-            insertion.duration = obj.duration;
-        }
+            //console.log('19');
+            knex('times').where({id: time[0].id}).update(time[0]).then(function (thingy) {
+              //console.log('20');
+              //console.log(time);
+              res.send(time);
+              //console.log('21');
+              if (activityIds !== undefined) {
+                knex('timesactivities').where('time', '=', time[0].id).then(function (tas) {
+                  //console.log('22');
+                  var taIds = [];
+                  for (let ta of tas) {
+                    taIds.push(ta.activity);
+                  }
 
+                  //console.log('23');
+                  var unmatchedTas = taIds.diff(activityIds);
+                  var unmatchedActivities = activityIds.diff(taIds);
+
+                  //console.log('24');
+                  var taInsertion = [];
+                  for (let activityId of unmatchedActivities) {
+                    taInsertion.push({
+                      time: time[0].id,
+                      activity: activityId,
+                    });
+                  }
+
+                  //console.log('25');
+                  knex('timesactivities').where('id', 'in', unmatchedTas).del().then(function (thingy) {
+                    //console.log('26');
+                    knex('timesactivities').insert(taInsertion).then(function () {
+                      //console.log('27');
+                      return;
+                    });
+                  });
+                  knex('times').select('created_at').where('id', '=', time[0].id).del().then(function () {
+                    //console.log('28');
+                    knex('times').select('updated_at').where('id', '=', time[0].id).del().then(function () {
+                      //console.log('29');
+                      return;
+                    });
+                  });
+                });
+              }
+            });
+          });
+        });
       });
     })(req, res, next);
   });
