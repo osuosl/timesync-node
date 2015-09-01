@@ -326,49 +326,31 @@ module.exports = function(app) {
       const projectIdQuery = knex('projectslugs').select('project')
       .where('name', req.params.slug);
 
-      //const userId = knex('users').select('id')
-      //.where('id', '=', projectIdQuery);
-
-      const projectQuery = knex('projects').select('name')
-      .where('id', '=', projectIdQuery);
-      // retrieves the project from the database, selecting the project
-      // where its ID matches the slug's project (the projectIdQuery).
-
-      // also makes the owner field the username so it can be checked, and
-      // puts the ownerId into the ownerId field.
+      // grab the project's name
       knex('projects').first('name').where('id', '=', projectIdQuery)
       .then(function(projectName) {
-
+        // access userroles table and check if the user is participating in
+        // the project
         knex('userroles').where({user: user.id, project: projectIdQuery})
-        .then(function(authed) {
-          if (authed.length === 0 || authed[0].member === false) {
-            const err = errors.errorAuthorizationFailure(user.username, 'patch '
-              + projectName.name);
-              return res.status(err.status).send(err);
-            }
+        .then(function(roles) {
+          if (roles.length === 0 || roles[0].manager === false) {
+            const err = errors.errorAuthorizationFailure(user.username,
+              'patch ' + projectName.name);
+            return res.status(err.status).send(err);
+          }
+          // retrieves the project from the database, selecting the project
+          // where its ID matches the slug's project (the projectIdQuery).
 
+          // also makes the owner field the username so it can be checked, and
+          // puts the ownerId into the ownerId field.
           knex('projects').first().select('projects.id as id',
           'projects.name as name', 'projects.uri as uri',
-          'users.username as owner')
+          'users.username as owner', 'users.id as ownerId')
           .where('projects.id', '=', projectIdQuery)
           .innerJoin('users', 'users.id', 'projects.owner')
           .then(function(project) {
             // project contains all of the information about the project the
             // user is updating
-            /* if (user.username !== project.owner) {
-              const err = errors.errorAuthorizationFailure(req.body.auth.username,
-                'create objects for ' + project.owner);
-              return res.status(err.status).send(err);
-            } */
-            //console.log(project);
-
-            /*knex('userroles').where({user: user.id, project: project.id})
-            .then(function(authed) {
-              if (authed.length === 0 || authed[0].member === false) {
-                const err = errors.errorAuthorizationFailure(user.username, 'patch' +
-                  project.name);
-                return res.status(err.status).send(err);
-              }*/
 
             knex('projectslugs').where('name', 'in', obj.slugs)
             .then(function(slugs) {
@@ -379,6 +361,7 @@ module.exports = function(app) {
 
               // final check: do any of the slugs POSTed to this
               // endpoint already belong to some other project?
+
               let overlappingSlugs = slugs.filter(function(slug) {
                 return slug.project !== project.id;
               });
@@ -391,7 +374,6 @@ module.exports = function(app) {
                 const err = errors.errorSlugsAlreadyExist(overlappingSlugs);
                 return res.status(err.status).send(err);
               }
-
               // all checks have passed
 
               // modify the project object gotten from the database
@@ -400,10 +382,10 @@ module.exports = function(app) {
               // when using knex.update() I have better luck updating
               // the entire object, even fields that aren't changed
               project.uri = obj.uri || project.uri;
-              //project.owner = project.ownerId;
+              project.owner = project.ownerId;
               project.name = obj.name || project.name;
 
-              //delete project.ownerId;
+              delete project.ownerId;
 
               knex('projects').where({id: project.id}).update(project)
               .then(function() {
@@ -458,7 +440,7 @@ module.exports = function(app) {
                       project.slugs = existingSlugs;
                     }
 
-                    // project.owner = user.username;
+                    project.owner = user.username;
                     res.send(JSON.stringify(project));
                   }).catch(function(error) {
                     const err = errors.errorServerError(error);

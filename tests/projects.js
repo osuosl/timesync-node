@@ -126,7 +126,7 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const patchedProjectName = {name: patchedProject.name};
-    const patchedProjectOwner = {owner: patchedProject.owner};
+    // const patchedProjectOwner = {owner: patchedProject.owner};
     const patchedProjectUri = {uri: patchedProject.uri};
     const patchedProjectSlugs = {slugs: patchedProject.slugs};
 
@@ -178,8 +178,6 @@ module.exports = function(expect, request, baseUrl) {
 
       request.post(requestOptions, function(err, res, body) {
         expect(err).to.be.a('null');
-        console.log(res.statusCode);
-        console.log(res.body);
         expect(res.statusCode).to.equal(200);
 
         // Set expected results to the new state of the project gwm
@@ -202,8 +200,6 @@ module.exports = function(expect, request, baseUrl) {
 
       request.post(requestOptions, function(err, res, body) {
         expect(err).to.be.a('null');
-        console.log(res.statusCode);
-        console.log(res.body);
         expect(res.statusCode).to.equal(200);
 
         const expectedResults = copyJsonObject(originalProject);
@@ -221,7 +217,6 @@ module.exports = function(expect, request, baseUrl) {
 
       request.post(requestOptions, function(err, res, body) {
         expect(err).to.be.a('null');
-        console.log(res.statusCode);
         expect(res.statusCode).to.equal(200);
 
         const expectedResults = copyJsonObject(originalProject);
@@ -239,7 +234,6 @@ module.exports = function(expect, request, baseUrl) {
 
       request.post(requestOptions, function(err, res, body) {
         expect(err).to.be.a('null');
-        console.log(res.statusCode);
         expect(res.statusCode).to.equal(200);
 
         const expectedResults = copyJsonObject(originalProject);
@@ -294,7 +288,6 @@ module.exports = function(expect, request, baseUrl) {
       requestOptions.form.object = copyJsonObject(patchedProject);
 
       request.post(requestOptions, function(err, res, body) {
-        console.log(res.statusCode);
         expect(res.statusCode).to.equal(401);
 
         expect(body.error).to.equal('Authorization failure');
@@ -348,24 +341,6 @@ module.exports = function(expect, request, baseUrl) {
         checkListEndpoint(done, expectedResults);
       });
     });
-
-    /*it("doesn't patch a project with a different owner", function(done) {
-      requestOptions.form = copyJsonObject(postArg);
-      requestOptions.form.auth.username = 'deanj';
-      requestOptions.form.auth.password = 'pass';
-      requestOptions.form.object = copyJsonObject(patchedProject);
-
-      request.post(requestOptions, function(err, res, body) {
-        expect(body.error).to.equal('Authorization failure');
-        expect(res.statusCode).to.equal(401);
-        expect(body.text).to.equal('deanj is not authorized to ' +
-        'create objects for tschuy');
-
-        const expectedResults = copyJsonObject(originalProject);
-
-        checkListEndpoint(done, expectedResults);
-      });
-    });*/
 
     it("doesn't patch a project with only bad slugs", function(done) {
       requestOptions.form = copyJsonObject(postArg);
