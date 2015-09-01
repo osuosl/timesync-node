@@ -200,9 +200,12 @@ The url argument to ``get`` and ``del`` is a string. ``postData`` is an object w
 following fields:
 
 * ``uri``: a string to the uri of the resource
+
 * ``body``: a JSON object to be serialized and sent as the request body
+
 * ``json``: For TimeSync, should always be true. Note that this will cause the ``body``
 argument of the callback to be a JSON object, not a Buffer or String.
+
 * ``auth``: an object with string fields ``username``, ``password``, and ``type`` (see Passport).
 
 The callback function will be called when the request is finished, with the following
@@ -211,9 +214,11 @@ arguments:
 * ``error`` which represents a connection error, which should never happen in a
 test and therefore should always be expected to be ``null`` (note that this does *not*
 represent a response with a 4xx or 5xx status code)
+
 * ``response`` which is a Node
 `http.IncomingMessage object <https://nodejs.org/api/http.html#http_http_incomingmessage>`_
 (relevant properties are ``headers`` and ``statusCode``)
+
 * ``body`` which is either a Buffer object (which can be converted to a JSON object with
 ``JSON.parse()``) on GET and DELETE requests, or a JSON object on POST requests.
 
