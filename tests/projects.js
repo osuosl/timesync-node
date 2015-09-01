@@ -291,8 +291,8 @@ module.exports = function(expect, request, baseUrl) {
         expect(res.statusCode).to.equal(401);
 
         expect(body.error).to.equal('Authorization failure');
-        expect(body.text).to.equal('patcht is not authorized to patch ' +
-          originalProject.name);
+        expect(body.text).to.equal('patcht is not authorized to make changes' +
+          ' to ' + originalProject.name);
 
         const expectedResults = copyJsonObject(originalProject);
         checkListEndpoint(done, expectedResults);
