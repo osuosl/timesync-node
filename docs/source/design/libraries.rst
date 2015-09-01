@@ -186,7 +186,7 @@ RequestJS
 ---------
 
 Request is a small and simple library designed to allow a Node app to make http calls.
-In timesync, it is used by our endpoint tests to make http calls to our testing instance.
+In TimeSync, it is used by our endpoint tests to make http calls to our testing instance.
 To use it, simply ``require('request')`` to get a pointer to the library, and make one
 of three calls:
 
@@ -201,7 +201,7 @@ following fields:
 
 * uri: a string to the uri of the resource
 * body: a JSON object to be serialized and sent as the request body
-* json: For timesync, should always be true. Note that this will cause the ``body``
+* json: For TimeSync, should always be true. Note that this will cause the ``body``
 argument of the callback to be a JSON object, not a Buffer or String.
 * auth: an object with string fields ``username``, ``password``, and ``type`` (see Passport).
 
