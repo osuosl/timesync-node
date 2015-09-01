@@ -199,11 +199,11 @@ of three calls:
 The url argument to ``get`` and ``del`` is a string. ``postData`` is an object with the
 following fields:
 
-* uri: a string to the uri of the resource
-* body: a JSON object to be serialized and sent as the request body
-* json: For TimeSync, should always be true. Note that this will cause the ``body``
+* ``uri``: a string to the uri of the resource
+* ``body``: a JSON object to be serialized and sent as the request body
+* ``json``: For TimeSync, should always be true. Note that this will cause the ``body``
 argument of the callback to be a JSON object, not a Buffer or String.
-* auth: an object with string fields ``username``, ``password``, and ``type`` (see Passport).
+* ``auth``: an object with string fields ``username``, ``password``, and ``type`` (see Passport).
 
 The callback function will be called when the request is finished, with the following
 arguments:
