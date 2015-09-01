@@ -206,13 +206,16 @@ argument of the callback to be a JSON object, not a Buffer or String.
 * auth: an object with string fields ``username``, ``password``, and ``type`` (see Passport).
 
 The callback function will be called when the request is finished, with the following
-arguments: ``error`` which represents a connection error, which should never happen in a
+arguments:
+
+* ``error`` which represents a connection error, which should never happen in a
 test and therefore should always be expected to be ``null`` (note that this does *not*
-represent a response with a 4xx or 5xx status code); ``response`` which is a Node
+represent a response with a 4xx or 5xx status code)
+* ``response`` which is a Node
 `http.IncomingMessage object <https://nodejs.org/api/http.html#http_http_incomingmessage>`_
-(relevant properties are ``headers`` and ``statusCode``); and ``body`` which is either a
-Buffer object (which can be converted to a JSON object with ``JSON.parse()``) on GET and
-DELETE requests, or a JSON object on POST requests.
+(relevant properties are ``headers`` and ``statusCode``)
+* ``body`` which is either a Buffer object (which can be converted to a JSON object with
+``JSON.parse()``) on GET and DELETE requests, or a JSON object on POST requests.
 
 .. _Request GitHub: https://github.com/request/request
 
