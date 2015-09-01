@@ -182,6 +182,37 @@ In pseudocode, a LocalStrategy might look something like this:
       });
     });
 
+RequestJS
+---------
+
+Request is a small and simple library designed to allow a Node app to make http calls.
+In TimeSync, it is used by our endpoint tests to make http calls to our testing instance.
+To use it, simply ``require('request')`` to get a pointer to the library, and make one
+of three calls:
+
+.. code-block:: javascript
+
+    request.get(url, function(error, response, body) {});
+    request.post(postData, function(error, response, body) {});
+    request.del(url, function(error, response, body) {});
+
+The url argument to ``get`` and ``del`` is a string. ``postData`` is an object with the
+following fields:
+
+* ``uri``: a string to the uri of the resource
+* ``body``: a JSON object to be serialized and sent as the request body
+* ``json``: For TimeSync, should always be true. Note that this will cause the ``body`` argument of the callback to be a JSON object, not a Buffer or String.
+* ``auth``: an object with string fields ``username``, ``password``, and ``type`` (see Passport).
+
+The callback function will be called when the request is finished, with the following
+arguments:
+
+* ``error`` which represents a connection error, which should never happen in a test and therefore should always be expected to be ``null`` (note that this does *not* represent a response with a 4xx or 5xx status code)
+* ``response`` which is a Node `http.IncomingMessage object <https://nodejs.org/api/http.html#http_http_incomingmessage>`_ (relevant properties are ``headers`` and ``statusCode``)
+* ``body`` which is either a Buffer object (which can be converted to a JSON object with ``JSON.parse()``) on GET and DELETE requests, or a JSON object on POST requests.
+
+.. _Request GitHub: https://github.com/request/request
+
 External Resources
 ------------------
 
@@ -203,3 +234,8 @@ Authentication
 ~~~~~~~~~~~~~~
 * `Passport documentation`_
 * `Passport homepage`_
+
+RequestJS
+~~~~~~~~~
+
+* `Request GitHub`_
