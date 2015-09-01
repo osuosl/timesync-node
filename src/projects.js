@@ -341,7 +341,7 @@ module.exports = function(app) {
         // user is updating
 
         // access userroles, check if user is participating in project
-        knex('userroles').where({user: user.id, project: projectIdQuery})
+        knex('userroles').where({user: user.id, project: project.id})
         .then(function(roles) {
           if (roles.length === 0 || roles[0].manager === false) {
             const err = errors.errorAuthorizationFailure(user.username,
