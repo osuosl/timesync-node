@@ -4,6 +4,14 @@ module.exports = {
     connection: {
       filename: './dev.sqlite3'
     }
+    /*client: 'pg',
+    connection: {
+      //filename: './dev.sqlite3'
+      host: '172.17.42.1',
+      port: '5432',
+      user: 'thai',
+      password: 'password1'
+    }*/
   },
 
   mocha: {
@@ -11,6 +19,13 @@ module.exports = {
     connection: {
       filename: ':memory:'
     }
+    /*client: 'pg',
+    connection: {
+      host: '172.17.42.1',
+      port: '5432',
+      user: 'thai',
+      password: 'password1'
+    }*/
   },
 
   production: {
