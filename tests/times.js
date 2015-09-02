@@ -1092,7 +1092,7 @@ module.exports = function(expect, request, baseUrl) {
       var expectedResults = copyJsonObject(patchedTime);
       expectedResults.id = originalTime.id;
       expectedResults.project = ['pgd'];
-      var error = undefined;
+      var error;
       var statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1106,7 +1106,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.duration = patchedTime.duration;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      var error = undefined;
+      var error;
       var statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1122,7 +1122,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.user = patchedTime.user;
-      var error = undefined;
+      var error;
       var statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1135,7 +1135,7 @@ module.exports = function(expect, request, baseUrl) {
       var expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['pgd'];
       expectedResults.updated_at = updatedAt;
-      var error = undefined;
+      var error;
       var statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1149,7 +1149,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.activities = patchedTime.activities;
-      var error = undefined;
+      var error;
       var statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1163,7 +1163,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.notes = patchedTime.notes;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      var error = undefined;
+      var error;
       var statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1181,7 +1181,7 @@ module.exports = function(expect, request, baseUrl) {
       // jscs:enable
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      var error = undefined;
+      var error;
       var statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1199,7 +1199,7 @@ module.exports = function(expect, request, baseUrl) {
       // jscs:enable
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      var error = undefined;
+      var error;
       var statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
