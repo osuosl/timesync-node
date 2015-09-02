@@ -347,12 +347,14 @@ module.exports = function(app) {
 
       var obj = req.body.object;
 
+      //Test duration value
       if (obj.duration !== undefined && helpers.getType(obj.duration) == 'object') {
         let err = errors.errorBadObjectInvalidField('time', 'duration',
         'number', 'object');
         return res.status(err.status).send(err);
       }
 
+      //Duration always ends up a string for some reason
       if (obj.duration !== undefined) {
         obj.duration = Number(obj.duration);
       }
@@ -367,6 +369,7 @@ module.exports = function(app) {
         {name: 'date_worked', type: 'string', required: false},
       ];
 
+      //Test fields
       let validationFailure = helpers.validateFields(obj, fields);
       if (validationFailure) {
         let err = errors.errorBadObjectInvalidField('time',
@@ -375,6 +378,7 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
       }
 
+      //Test duration value again
       if (obj.duration !== undefined && obj.duration < 0) {
         let err = errors.errorBadObjectInvalidField('time', 'duration',
         'positive integer', 'negative integer');
@@ -404,19 +408,20 @@ module.exports = function(app) {
       }
 
       //Test date worked value
-      console.log(Date.parse(obj.date_worked));
       if (obj.date_worked !== undefined && !Date.parse(obj.date_worked)) {
         let err = errors.errorBadObjectInvalidField('time', 'date_worked',
         'ISO-8601 date', obj.date_worked);
         return res.status(err.status).send(err);
       }
 
+      //Test notes value
       if (obj.notes !== undefined && helpers.getType(obj.notes) !== 'string') {
         let err = errors.errorBadObjectInvalidField('time', 'notes', 
         'string', helpers.getType(obj.notes));
         return res.status(err.status).send(err);
       }
 
+      //I think this isn't necessary but there's a test for it
       if (obj.key !== undefined) {
         let err = errors.errorBadObjectUnknownField('time', 'key');
         return res.status(err.status).send(err);
@@ -440,7 +445,6 @@ module.exports = function(app) {
         }
 
         let username = obj.user || time[0].owner;
-        //knex('users').select('id').where('username', '=', obj.user).then(function (userId) {
         helpers.checkUser(username, username).then(function(userId) {
           if (userId !== undefined) {
             time[0].user = userId;
@@ -508,7 +512,6 @@ module.exports = function(app) {
                   }
                 }).catch(function() {
                   let err = errors.errorInvalidForeignKey('time', 'activities');
-                  //console.log(err);
                   return res.status(err.status).send(err);
                 }).catch(function(error) {
                   const err = errors.errorServerError(error);
@@ -524,7 +527,6 @@ module.exports = function(app) {
             });
           }).catch(function() {
             let err = errors.errorInvalidForeignKey('time', 'project');
-            //console.log(err);
             return res.status(err.status).send(err);
           }).catch(function(error) {
             const err = errors.errorServerError(error);
@@ -532,7 +534,6 @@ module.exports = function(app) {
           });
         }).catch(function(error) {
           const err = errors.errorInvalidForeignKey('time', 'user');
-          //console.log(err);
           return res.status(err.status).send(err);
         });
       }).catch(function(error) {
