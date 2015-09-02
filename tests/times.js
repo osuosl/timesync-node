@@ -1091,7 +1091,7 @@ module.exports = function(expect, request, baseUrl) {
       var postObj = copyJsonObject(patchedTime);
       var expectedResults = copyJsonObject(patchedTime);
       expectedResults.id = originalTime.id;
-      expectedResults.project = ['pgd']
+      expectedResults.project = ['pgd'];
       var error = undefined;
       var statusCode = 200;
 
@@ -1599,7 +1599,7 @@ module.exports = function(expect, request, baseUrl) {
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
-    })
+    });
 
     // The following test a valid datatype being sent to /times/:id, but
     // the data being sent is incorrect, either a bad slug or some other
