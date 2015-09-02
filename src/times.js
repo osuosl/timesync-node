@@ -494,8 +494,8 @@ module.exports = function(app) {
                         });
                       }
 
-                      knex('timesactivities').where('id', 'in', unmatchedTas).del().then(function(thingy) {
-                        knex('timesactivities').insert(taInsertion).then(function(thingy2) {
+                      knex('timesactivities').where('id', 'in', unmatchedTas).del().then(function() {
+                        knex('timesactivities').insert(taInsertion).then(function() {
                           return res.send(time);
                         }).catch(function(error) {
                           const err = errors.errorServerError(error);
@@ -658,7 +658,7 @@ module.exports = function(app) {
           }
 
           let projectName = obj.project || time[0].projectName;
-          helpers.checkProject(projectName).then(function(checkedProject) {
+          helpers.checkProject(projectName).then(function() {
             knex('projectslugs').select('project').where('name', '=', obj.project).then(function (projectId) {
               if (projectId[0] !== undefined) {
                 time[0].project = projectId[0].project;
@@ -675,7 +675,7 @@ module.exports = function(app) {
               delete time[0].projectName;
 
 
-              knex('times').where({id: time[0].id}).update(time[0]).then(function (thingy) {
+              knex('times').where({id: time[0].id}).update(time[0]).then(function () {
                 if (!obj.activities) {
                   return res.send(time);
                 }
@@ -700,7 +700,7 @@ module.exports = function(app) {
                       }
 
                       knex('timesactivities').where('id', 'in', unmatchedTas).del().then(function() {
-                        knex('timesactivities').insert(taInsertion).then(function(thingy2) {
+                        knex('timesactivities').insert(taInsertion).then(function() {
                           return res.send(time);
                         }).catch(function(error) {
                           const err = errors.errorServerError(error);
