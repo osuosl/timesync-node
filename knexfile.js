@@ -1,31 +1,31 @@
 module.exports = {
   development: {
-    client: 'sqlite3',
+    /*client: 'sqlite3',
     connection: {
       filename: './dev.sqlite3'
-    }
-    /*client: 'pg',
+    }*/
+    client: 'pg',
     connection: {
       //filename: './dev.sqlite3'
       host: '172.17.42.1',
       port: '5432',
       user: 'thai',
       password: 'password1'
-    }*/
+    }
   },
 
   mocha: {
-    client: 'sqlite3',
+    /*client: 'sqlite3',
     connection: {
       filename: ':memory:'
-    }
-    /*client: 'pg',
+    }*/
+    client: 'pg',
     connection: {
       host: '172.17.42.1',
       port: '5432',
       user: 'thai',
       password: 'password1'
-    }*/
+    }
   },
 
   production: {
