@@ -49,7 +49,11 @@ module.exports = function(app) {
           // from the query - http://knexjs.org/#Builder-first
           knex('users').first('id').where('username', username)
           .then(function(user) {
-            return resolve(user.id);
+            if (user !== undefined) {
+              return resolve(user.id);
+            } else {
+              return reject();
+            }
           });
         } else {
           return reject();

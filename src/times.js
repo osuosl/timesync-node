@@ -336,19 +336,23 @@ module.exports = function(app) {
 
   // Patch times
   app.post(app.get('version') + '/times/:id', function(req, res, next) {
-    //console.log('1');
     Array.prototype.diff = function(a) {
       return this.filter(function(i) {return a.indexOf(i) < 0;});
     };
-    //console.log('2');
     passport.authenticate('local', function(autherr, user, info) {
       if (!user) {
         let err = errors.errorAuthenticationFailure(info.message);
         return res.status(err.status).send(err);
       }
 
-      //console.log('3');
       var obj = req.body.object;
+
+      if (obj.duration !== undefined && helpers.getType(obj.duration) == 'object') {
+        let err = errors.errorBadObjectInvalidField('time', 'duration',
+        'number', 'object');
+        return res.status(err.status).send(err);
+      }
+
       if (obj.duration !== undefined) {
         obj.duration = Number(obj.duration);
       }
@@ -363,7 +367,6 @@ module.exports = function(app) {
         {name: 'date_worked', type: 'string', required: false},
       ];
 
-      //console.log('4');
       let validationFailure = helpers.validateFields(obj, fields);
       if (validationFailure) {
         let err = errors.errorBadObjectInvalidField('time',
@@ -372,33 +375,20 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
       }
 
-      //console.log('5');
-      // Test duration value
       if (obj.duration !== undefined && obj.duration < 0) {
         let err = errors.errorBadObjectInvalidField('time', 'duration',
         'positive integer', 'negative integer');
         return res.status(err.status).send(err);
-      } else if (obj.duration !== undefined && helpers.getType(obj.duration) === 'object') {
-        let err = errors.errorBadObjectInvalidField('time', 'duration',
-        'number', 'object');
-        return res.status(err.status).send(err);
-      } else if (obj.duration !== undefined && isNaN(obj.duration)) {
-        let err = errors.errorBadObjectInvalidField('time', 'duration',
-        'number', 'object');
-        return res.status(err.status).send(err);
-      }
+      } 
 
-      //console.log('6');
       //Test each activity
       if (obj.activities !== undefined) {
         for (let activity of obj.activities) {
           if (helpers.getType(activity) !== 'string') {
-            //console.log('2');
             let err = errors.errorBadObjectInvalidField('time', 'activities',
             'slugs', 'array containing at least 1 ' + helpers.getType(activity));
             return res.status(err.status).send(err);
           } else if (!helpers.validateSlug(activity)) {
-            //console.log('3');
             let err = errors.errorBadObjectInvalidField('time', 'activities',
             'slugs', 'array containing at least 1 invalid slug');
             return res.status(err.status).send(err);
@@ -406,7 +396,6 @@ module.exports = function(app) {
         }
       }
 
-      //console.log('7');
       //Test issue URI value
       if (obj.issue_uri !== undefined && !validUrl.isWebUri(obj.issue_uri)) {
         let err = errors.errorBadObjectInvalidField('time', 'issue_uri', 'URI',
@@ -414,9 +403,8 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
       }
 
-      //console.log('8');
       //Test date worked value
-      //console.log(obj.date_worked);
+      console.log(Date.parse(obj.date_worked));
       if (obj.date_worked !== undefined && !Date.parse(obj.date_worked)) {
         let err = errors.errorBadObjectInvalidField('time', 'date_worked',
         'ISO-8601 date', obj.date_worked);
@@ -434,28 +422,6 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
       }
 
-      //console.log('9');
-      //Finish checks for user, project, and activity
-      /*
-      if (obj.user !== undefined) {
-        knex('users').where('username', '=', obj.user).then(function (dohicky) {
-          if (dohicky.length < 1) {
-            let err = errors.errorInvalidForeignKey('time', 'user');
-            //console.log(user, err);
-            return res.status(err.status).send(err);
-          }
-        });
-      }
-      */
-
-      /*
-      console.log(obj.project, helpers.checkProject(obj.project));
-      helpers.checkProject(obj.project).then(function (whatever) {
-        console.log(whatever);
-      });
-      */
-
-      //console.log('11');
       // retrieves the time from the database
       knex('times').select('times.duration as duration', 'times.user as user',
               'times.project as project', 'times.notes as notes',
@@ -467,35 +433,30 @@ module.exports = function(app) {
           .where('times.id', '=', req.params.id).innerJoin('users', 'users.id',
                   'times.user').innerJoin('projectslugs', 'projectslugs.id', 'times.project')
           .then(function(time) {
-        //console.log('12');
-        //console.log(time);
         if (user.username !== time[0].owner) {
           let err = errors.errorAuthorizationFailure(user.username,
             'create objects for ' + time[0].owner);
           return res.status(err.status).send(err);
         }
 
-        //console.log('13');
-        knex('users').select('id').where('username', '=', obj.user).then(function (userId) {
-          //console.log('15');
-          if (userId[0] !== undefined) {
-            time[0].user = userId[0].id;
+        let username = obj.user || time[0].owner;
+        //knex('users').select('id').where('username', '=', obj.user).then(function (userId) {
+        helpers.checkUser(username, username).then(function(userId) {
+          if (userId !== undefined) {
+            time[0].user = userId;
           } else {
             time[0].user = time[0].user;
           }
-          //console.log('16');
 
           let projectName = obj.project || time[0].projectName;
           helpers.checkProject(projectName).then(function(checkedProject) {
             knex('projectslugs').select('project').where('name', '=', obj.project).then(function (projectId) {
-              //console.log('17');
               if (projectId[0] !== undefined) {
                 time[0].project = projectId[0].project;
               } else {
                 time[0].project = time[0].project;
               }
 
-              //console.log('18');
               time[0].duration = obj.duration || time[0].duration;
               time[0].notes = obj.notes || time[0].notes;
               time[0].issue_uri = obj.issue_uri || time[0].issue_uri;
@@ -504,27 +465,23 @@ module.exports = function(app) {
               delete time[0].owner;
               delete time[0].projectName;
 
-              //console.log('19');
+
               knex('times').where({id: time[0].id}).update(time[0]).then(function (thingy) {
-                //console.log('20');
-                res.send(time);
-                //console.log('21');
-                console.log(obj.activities);
+                if (!obj.activities) {
+                  return res.send(time);
+                }
+
                 helpers.checkActivities(obj.activities).then(function(activityIds) {
-                  console.log(activityIds)
                   if (activityIds !== undefined) {
                     knex('timesactivities').where('time', '=', time[0].id).then(function (tas) {
-                      //console.log('22');
                       var taIds = [];
                       for (let ta of tas) {
                         taIds.push(ta.activity);
                       }
 
-                      //console.log('23');
                       var unmatchedTas = taIds.diff(activityIds);
                       var unmatchedActivities = activityIds.diff(taIds);
 
-                      //console.log('24');
                       var taInsertion = [];
                       for (let activityId of unmatchedActivities) {
                         taInsertion.push({
@@ -532,32 +489,55 @@ module.exports = function(app) {
                           activity: activityId,
                         });
                       }
-                      //console.log(taInsertion);
 
-                      //console.log('25');
                       knex('timesactivities').where('id', 'in', unmatchedTas).del().then(function(thingy) {
-                        //console.log('26');
                         knex('timesactivities').insert(taInsertion).then(function(thingy2) {
-                          //console.log('27');
-                          //console.log(thingy2);
-                          return;
+                          return res.send(time);
+                        }).catch(function(error) {
+                          const err = errors.errorServerError(error);
+                          return res.status(err.status).send(err);
                         });
+                      }).catch(function(error) {
+                        const err = errors.errorServerError(error);
+                        return res.status(err.status).send(err);
                       });
+                    }).catch(function(error) {
+                      const err = errors.errorServerError(error);
+                      return res.status(err.status).send(err);
                     });
                   }
                 }).catch(function() {
                   let err = errors.errorInvalidForeignKey('time', 'activities');
                   //console.log(err);
                   return res.status(err.status).send(err);
+                }).catch(function(error) {
+                  const err = errors.errorServerError(error);
+                  return res.status(err.status).send(err);
                 });
+              }).catch(function(error) {
+                const err = errors.errorServerError(error);
+                return res.status(err.status).send(err);
               });
+            }).catch(function(error) {
+              const err = errors.errorServerError(error);
+              return res.status(err.status).send(err);
             });
           }).catch(function() {
             let err = errors.errorInvalidForeignKey('time', 'project');
             //console.log(err);
             return res.status(err.status).send(err);
+          }).catch(function(error) {
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
           });
+        }).catch(function(error) {
+          const err = errors.errorInvalidForeignKey('time', 'user');
+          //console.log(err);
+          return res.status(err.status).send(err);
         });
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
       });
     })(req, res, next);
   });

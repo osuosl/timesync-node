@@ -1213,6 +1213,7 @@ module.exports = function(expect, request, baseUrl) {
        function(done) {
       postObj = copyJsonObject(invalidTimeDataType);
       expectedResults = copyJsonObject(originalTime);
+      expectedResults.project = ['wf'];
       error = 'Bad object';
       statusCode = 400;
       postBody = [
@@ -1693,14 +1694,13 @@ module.exports = function(expect, request, baseUrl) {
       postObj = {project: invalidTimeValue.project2};
       expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
-      error = 'Bad object';
-      statusCode = 400;
+      error = 'Invalid foreign key';
+      statusCode = 409;
       postBody = [
       {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field project of time should be project but was sent as ' +
-            'date.'
+        status: 409,
+        error: 'Invalid foreign key',
+        text: 'The time does not contain a valid project reference.'
       }];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1754,7 +1754,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid issue_uri',
        function(done) {
       // jscs:disable
-      postObj = {user: invalidTimeValue.issue_uri};
+      postObj = {issue_uri: invalidTimeValue.issue_uri};
       // jscs:enable
       expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
@@ -1764,8 +1764,8 @@ module.exports = function(expect, request, baseUrl) {
       {
         status: 400,
         error: 'Bad object',
-        text: 'Field issue_uri of time should be uri but was sent ' +
-            'as string.'
+        text: 'Field issue_uri of time should be URI but was sent ' +
+            'as invalid URI git@github.com:osuosl'
       }];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1776,7 +1776,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid date_worked',
        function(done) {
       // jscs:disable
-      postObj = {user: invalidTimeValue.date_worked};
+      postObj = {date_worked: invalidTimeValue.date_worked};
       // jscs:enable
       expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
