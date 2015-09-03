@@ -1091,7 +1091,7 @@ module.exports = function(expect, request, baseUrl) {
       const expectedResults = copyJsonObject(patchedTime);
       expectedResults.id = originalTime.id;
       expectedResults.project = ['pgd'];
-      const error;
+      let error;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1105,7 +1105,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.duration = patchedTime.duration;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      const error;
+      let error;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1121,7 +1121,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.user = patchedTime.user;
-      const error;
+      let error;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1134,7 +1134,7 @@ module.exports = function(expect, request, baseUrl) {
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['pgd'];
       expectedResults.updated_at = updatedAt;
-      const error;
+      let error;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1148,7 +1148,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.activities = patchedTime.activities;
-      const error;
+      let error;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1162,7 +1162,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.notes = patchedTime.notes;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      const error;
+      let error;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1180,7 +1180,7 @@ module.exports = function(expect, request, baseUrl) {
       // jscs:enable
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      const error;
+      let error;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1198,7 +1198,7 @@ module.exports = function(expect, request, baseUrl) {
       // jscs:enable
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      const error;
+      let error;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
@@ -1212,51 +1212,52 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = copyJsonObject(invalidTimeDataType);
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
-      const error = 'Bad object';
+      let error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field duration of time should be ' +
-            'number but was sent as object'
-      },
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field user of time should be ' +
-            'string but was sent as object'
-      },
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field project of time should be ' +
-            'string but was sent as object'
-      },
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field activities of time should be ' +
-            'array but was sent as object'
-      },
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field notes of time should be ' +
-            'string but was sent as object'
-      },
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field issue_uri of time should be ' +
-            'string but was sent as object'
-      },
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field date_worked of time should be ' +
-            'string but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field duration of time should be ' +
+              'number but was sent as object',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field user of time should be ' +
+              'string but was sent as object',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field project of time should be ' +
+              'string but was sent as object',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field activities of time should be ' +
+              'array but was sent as object',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field notes of time should be ' +
+              'string but was sent as object',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field issue_uri of time should be ' +
+              'string but was sent as object',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field date_worked of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1268,15 +1269,16 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = {duration: invalidTimeDataType.duration};
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
-      const error = 'Bad object';
+      let error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field duration of time should be ' +
-            'number but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field duration of time should be ' +
+              'number but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1293,12 +1295,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field user of time should be ' +
-            'string but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field user of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1313,12 +1316,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field project of time should be ' +
-            'string but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field project of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1333,12 +1337,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field activities of time should be ' +
-            'array but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field activities of time should be ' +
+              'array but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1353,12 +1358,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field notes of time should be ' +
-            'string but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field notes of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1375,12 +1381,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field issue_uri of time should be ' +
-            'string but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field issue_uri of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1397,12 +1404,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field date_worked of time should be ' +
-            'string but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field date_worked of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1414,14 +1422,15 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = {key: invalidTimeDataType.key};
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
-      const error = 'Bad object';
+      let error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'time does not have a key field',
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'time does not have a key field',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1437,12 +1446,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field duration of time should be ' +
-            'number but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field duration of time should be ' +
+              'number but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1460,12 +1470,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field user of time should be ' +
-            'string but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field user of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1481,12 +1492,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field project of time should be ' +
-            'string but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field project of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1502,12 +1514,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field activities of time should be ' +
-            'array but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field activities of time should be ' +
+              'array but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1523,12 +1536,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field notes of time should be ' +
-            'string but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field notes of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1546,12 +1560,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field issue_uri of time should be ' +
-            'string but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field issue_uri of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1569,12 +1584,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field date_worked of time should be ' +
-            'string but was sent as object'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field date_worked of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1590,11 +1606,12 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'time does not have a key field'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'time does not have a key field',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1615,12 +1632,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field duration of time should be positive integer but ' +
-            'was sent as negative integer'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field duration of time should be positive integer but ' +
+              'was sent as negative integer',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1635,11 +1653,12 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Invalid foreign key';
       const statusCode = 409;
       const postBody = [
-      {
-        status: 409,
-        error: 'Invalid foreign key',
-        text: 'The time does not contain a valid user reference.'
-      }];
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The time does not contain a valid user reference.',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1652,7 +1671,7 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = {user: invalidTimeValue.user2};
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
-      const error = 'Bad object';
+      let error = 'Bad object';
       const statusCode = 400;
       const postBody = [
       {
@@ -1676,11 +1695,12 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Invalid foreign key';
       const statusCode = 409;
       const postBody = [
-      {
-        status: 409,
-        error: 'Invalid foreign key',
-        text: 'The time does not contain a valid project reference.'
-      }];
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The time does not contain a valid project reference.',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1695,11 +1715,12 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Invalid foreign key';
       const statusCode = 409;
       const postBody = [
-      {
-        status: 409,
-        error: 'Invalid foreign key',
-        text: 'The time does not contain a valid project reference.'
-      }];
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The time does not contain a valid project reference.',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
@@ -1712,7 +1733,7 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = {activities: invalidTimeValue.activities1};
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
-      const error = 'Invalid foreign key';
+      let error = 'Invalid foreign key';
       const statusCode = 409;
       const postBody = [
       {
@@ -1733,7 +1754,7 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = {user: invalidTimeValue.activities2};
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
-      const error = 'Bad object';
+      let error = 'Bad object';
       const statusCode = 400;
       const postBody = [
       {
@@ -1759,12 +1780,13 @@ module.exports = function(expect, request, baseUrl) {
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field issue_uri of time should be URI but was sent ' +
-            'as invalid URI git@github.com:osuosl'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field issue_uri of time should be URI but was sent ' +
+              'as invalid URI git@github.com:osuosl',
+        },
+      ];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
               statusCode, postBody);
@@ -1779,7 +1801,7 @@ module.exports = function(expect, request, baseUrl) {
       // jscs:enable
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
-      const error = 'Bad object';
+      let error = 'Bad object';
       const statusCode = 400;
       const postBody = [
       {

@@ -51,9 +51,8 @@ module.exports = function(app) {
           .then(function(user) {
             if (user !== undefined) {
               return resolve(user.id);
-            } else {
-              return reject();
             }
+            return reject();
           });
         } else {
           return reject();
