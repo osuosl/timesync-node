@@ -387,7 +387,9 @@ module.exports = function(app) {
 
       // Test each activity
       if (obj.activities !== undefined) {
+        /* eslint-disable prefer-const */
         for (let activity of obj.activities) {
+          /* eslint-enable prefer-const */
           if (helpers.getType(activity) !== 'string') {
             const err = errors.errorBadObjectInvalidField('time', 'activities',
             'slugs', 'array containing at least 1 ' + helpers.getType(activity));
@@ -479,7 +481,9 @@ module.exports = function(app) {
                   if (activityIds !== undefined) {
                     knex('timesactivities').where('time', '=', time[0].id).then(function(tas) {
                       const taIds = [];
+                      /* eslint-disable prefer-const */
                       for (let ta of tas) {
+                        /* eslint-enable prefer-const */
                         taIds.push(ta.activity);
                       }
 
@@ -487,7 +491,9 @@ module.exports = function(app) {
                       const unmatchedActivities = activityIds.diff(taIds);
 
                       const taInsertion = [];
+                      /* eslint-disable prefer-const */
                       for (let activityId of unmatchedActivities) {
+                        /* eslint-enable prefer-const */
                         taInsertion.push({
                           time: time[0].id,
                           activity: activityId,

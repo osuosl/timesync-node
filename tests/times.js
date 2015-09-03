@@ -1121,10 +1121,9 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.user = patchedTime.user;
-      let error;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, postObj, expectedResults, undefined,
                  statusCode);
     });
 
@@ -1134,10 +1133,9 @@ module.exports = function(expect, request, baseUrl) {
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['pgd'];
       expectedResults.updated_at = updatedAt;
-      let error;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, postObj, expectedResults, undefined,
                  statusCode);
     });
 
@@ -1148,10 +1146,9 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.activities = patchedTime.activities;
-      let error;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, postObj, expectedResults, undefined,
                  statusCode);
     });
 
@@ -1162,10 +1159,9 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.notes = patchedTime.notes;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      let error;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, postObj, expectedResults, undefined,
                  statusCode);
     });
 
@@ -1180,10 +1176,9 @@ module.exports = function(expect, request, baseUrl) {
       // jscs:enable
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      let error;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, postObj, expectedResults, undefined,
                  statusCode);
     });
 
@@ -1198,10 +1193,9 @@ module.exports = function(expect, request, baseUrl) {
       // jscs:enable
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      let error;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, postObj, expectedResults, undefined,
                  statusCode);
     });
 
@@ -1212,7 +1206,7 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = copyJsonObject(invalidTimeDataType);
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
-      let error = 'Bad object';
+      const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
         {
@@ -1269,7 +1263,7 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = {duration: invalidTimeDataType.duration};
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
-      let error = 'Bad object';
+      const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
         {
@@ -1422,7 +1416,7 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = {key: invalidTimeDataType.key};
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
-      let error = 'Bad object';
+      const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
         {
