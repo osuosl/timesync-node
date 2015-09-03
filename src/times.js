@@ -383,7 +383,7 @@ module.exports = function(app) {
         const err = errors.errorBadObjectInvalidField('time', 'duration',
         'positive integer', 'negative integer');
         return res.status(err.status).send(err);
-      } 
+      }
 
       // Test each activity
       if (obj.activities !== undefined) {
