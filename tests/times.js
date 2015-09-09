@@ -966,13 +966,11 @@ module.exports = function(expect, request, baseUrl) {
       project: 'wf',
       notes: '',
       activities: ['docs', 'dev'],
-      // jscs:disable
       issue_uri:
          'https://github.com/osu-cass/whats-fresh-api/issues/56',
       date_worked: '2015-04-19',
       created_at: '2015-04-19',
       updated_at: null,
-      // jscs:enable
       id: 1,
     };
 
@@ -985,12 +983,10 @@ module.exports = function(expect, request, baseUrl) {
       project: 'pgd',
       activities: ['docs', 'sys'],
       notes: 'Now this is a note',
-      // jscs:disable
       issue_uri: 'https://github.com/osuosl/pgd/pull/19',
       date_worked: '2015-04-28',
       created_at: '2015-04-19',
       updated_at: updatedAt,
-      // jscs:enable
     };
 
     // Sends invalid data to the /times/:id endpoint
@@ -1000,10 +996,8 @@ module.exports = function(expect, request, baseUrl) {
       project: {thisIs: 'the wrong datatype'},
       activities: {thisIs: 'the wrong datatype'},
       notes: {thisIs: 'the wrong datatype'},
-      // jscs:disable
       issue_uri: {thisIs: 'the wrong datatype'},
       date_worked: {thisIs: 'the wrong datatype'},
-      // jscs:enable
       key: 'this is a string',
     };
 
@@ -1016,10 +1010,8 @@ module.exports = function(expect, request, baseUrl) {
       project2: 'invalid_project_slug',
       activities1: ['valid-slug-one', 'valid-slug-two'],
       activities2: ['1_invalid_slug', '2_invalid_slug'],
-      // jscs:disable
       issue_uri: 'git@github.com:osuosl',
       date_worked: 'April 29, 1995',
-      // jscs:enable
     };
 
     const postArg = {
@@ -1167,13 +1159,9 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests valid issue_uri field
     it('successfully patches time with valid issue_uri', function(done) {
-      // jscs:disable
       const postObj = {issue_uri: patchedTime.issue_uri};
-      // jscs:enable
       const expectedResults = copyJsonObject(originalTime);
-      // jscs:disable
       expectedResults.issue_uri = patchedTime.issue_uri;
-      // jscs:enable
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       const statusCode = 200;
@@ -1184,13 +1172,9 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests valid date_worked field
     it('successfully patches time with valid date_worked', function(done) {
-      // jscs:disable
       const postObj = {date_worked: patchedTime.date_worked};
-      // jscs:enable
       const expectedResults = copyJsonObject(originalTime);
-      // jscs:disable
       expectedResults.date_worked = patchedTime.date_worked;
-      // jscs:enable
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       const statusCode = 200;
@@ -1367,9 +1351,7 @@ module.exports = function(expect, request, baseUrl) {
     // Tests invalid issue_uri field
     it('unsuccessfully patches time with just invalid issue_uri datatype',
        function(done) {
-      // jscs:disable
       const postObj = {issue_uri: invalidTimeDataType.issue_uri};
-      // jscs:enable
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
@@ -1390,9 +1372,7 @@ module.exports = function(expect, request, baseUrl) {
     // Tests invalid date_worked field
     it('unsuccessfully patches time with just invalid date_worked datatype',
        function(done) {
-      // jscs:disable
       const postObj = {date_worked: invalidTimeDataType.date_worked};
-      // jscs:enable
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
@@ -1546,9 +1526,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with an invalid issue_uri datatype',
       function(done) {
       const postObj = copyJsonObject(originalTime);
-      // jscs:disable
       postObj.issue_uri = invalidTimeDataType.issue_uri;
-      // jscs:enable
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
@@ -1570,9 +1548,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with an invalid date_worked datatype',
       function(done) {
       const postObj = copyJsonObject(originalTime);
-      // jscs:disable
       postObj.date_worked = invalidTimeDataType.date_worked;
-      // jscs:enable
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
@@ -1766,9 +1742,7 @@ module.exports = function(expect, request, baseUrl) {
     // Test bad issue uri (formatting)
     it('unsuccessfully patches time with just invalid issue_uri',
        function(done) {
-      // jscs:disable
       const postObj = {issue_uri: invalidTimeValue.issue_uri};
-      // jscs:enable
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
@@ -1790,9 +1764,7 @@ module.exports = function(expect, request, baseUrl) {
     /*
     it('unsuccessfully patches time with just invalid date_worked',
        function(done) {
-      // jscs:disable
       const postObj = {date_worked: invalidTimeValue.date_worked};
-      // jscs:enable
       const expectedResults = copyJsonObject(originalTime);
       expectedResults.project = ['wf'];
       let error = 'Bad object';
