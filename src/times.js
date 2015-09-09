@@ -336,9 +336,6 @@ module.exports = function(app) {
 
   // Patch times
   app.post(app.get('version') + '/times/:id', function(req, res, next) {
-    Array.prototype.diff = function(a) {
-      return this.filter(function(i) {return a.indexOf(i) < 0; });
-    };
     passport.authenticate('local', function(autherr, user, info) {
       if (!user) {
         const err = errors.errorAuthenticationFailure(info.message);
@@ -487,8 +484,12 @@ module.exports = function(app) {
                         taIds.push(ta.activity);
                       }
 
-                      const unmatchedTas = taIds.diff(activityIds);
-                      const unmatchedActivities = activityIds.diff(taIds);
+                      const unmatchedTas = taIds.filter(function() {
+                        return taIds.indexOf(activityIds) < 0;
+                      });
+                      const unmatchedActivities = activityIds.filter(function() {
+                        return activityIds.indexOf(taIds) < 0;
+                      });
 
                       const taInsertion = [];
                       /* eslint-disable prefer-const */
