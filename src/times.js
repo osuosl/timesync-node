@@ -255,8 +255,8 @@ module.exports = function(app) {
 
       // Test issue URI value
       if (time.issue_uri && !validUrl.isWebUri(time.issue_uri)) {
-        const err = errors.errorBadObjectInvalidField('time', 'issue_uri', 'URI',
-        'invalid URI ' + time.issue_uri);
+        const err = errors.errorBadObjectInvalidField('time', 'issue_uri',
+                'URI', 'invalid URI ' + time.issue_uri);
         return res.status(err.status).send(err);
       }
 
@@ -270,13 +270,15 @@ module.exports = function(app) {
       // Finish checks for user, project, and activity
       helpers.checkUser(user.username, time.user).then(function(userId) {
         helpers.checkProject(time.project).then(function(projectId) {
-          knex('userroles').where({user: userId, project: projectId}).then(function(roles) {
+          knex('userroles').where({user: userId, project: projectId})
+          .then(function(roles) {
             if (roles.length === 0 || roles[0].member === false) {
               const err = errors.errorAuthorizationFailure(user.username,
                 'create time entries for project ' + time.project + '.');
               return res.status(err.status).send(err);
             }
-            helpers.checkActivities(time.activities).then(function(activityIds) {
+            helpers.checkActivities(time.activities)
+            .then(function(activityIds) {
               const createdAt = new Date().toISOString().substring(0, 10);
               const insertion = {
                 duration: time.duration,
@@ -345,7 +347,8 @@ module.exports = function(app) {
       const obj = req.body.object;
 
       // Test duration value
-      if (obj.duration !== undefined && helpers.getType(obj.duration) === 'object') {
+      if (obj.duration !== undefined &&
+              helpers.getType(obj.duration) === 'object') {
         const err = errors.errorBadObjectInvalidField('time', 'duration',
         'number', 'object');
         return res.status(err.status).send(err);
@@ -389,7 +392,8 @@ module.exports = function(app) {
           /* eslint-enable prefer-const */
           if (helpers.getType(activity) !== 'string') {
             const err = errors.errorBadObjectInvalidField('time', 'activities',
-            'slugs', 'array containing at least 1 ' + helpers.getType(activity));
+            'slugs', 'array containing at least 1 ' +
+            helpers.getType(activity));
             return res.status(err.status).send(err);
           } else if (!helpers.validateSlug(activity)) {
             const err = errors.errorBadObjectInvalidField('time', 'activities',
@@ -400,9 +404,10 @@ module.exports = function(app) {
       }
 
       // Test issue URI value
-      if (obj.issue_uri !== undefined && !validUrl.isWebUri(obj.issue_uri)) {
-        const err = errors.errorBadObjectInvalidField('time', 'issue_uri', 'URI',
-        'invalid URI ' + obj.issue_uri);
+      if (obj.issue_uri !== undefined &&
+              !validUrl.isWebUri(obj.issue_uri)) {
+        const err = errors.errorBadObjectInvalidField('time', 'issue_uri',
+                'URI', 'invalid URI ' + obj.issue_uri);
         return res.status(err.status).send(err);
       }
 
@@ -435,7 +440,8 @@ module.exports = function(app) {
               'times.updated_at as updated_at', 'times.id as id',
               'users.username as owner', 'projectslugs.name as projectName')
           .where('times.id', '=', req.params.id).innerJoin('users', 'users.id',
-                  'times.user').innerJoin('projectslugs', 'projectslugs.id', 'times.project')
+                  'times.user').innerJoin('projectslugs', 'projectslugs.id',
+                  'times.project')
           .then(function(time) {
         if (user.username !== time[0].owner) {
           const err = errors.errorAuthorizationFailure(user.username,
@@ -453,7 +459,8 @@ module.exports = function(app) {
 
           const projectName = obj.project || time[0].projectName;
           helpers.checkProject(projectName).then(function() {
-            knex('projectslugs').select('project').where('name', '=', obj.project).then(function(projectId) {
+            knex('projectslugs').select('project').where('name', '=',
+                    obj.project).then(function(projectId) {
               if (projectId[0] !== undefined) {
                 time[0].project = projectId[0].project;
               } else {
@@ -468,15 +475,17 @@ module.exports = function(app) {
               delete time[0].owner;
               delete time[0].projectName;
 
-
-              knex('times').where({id: time[0].id}).update(time[0]).then(function() {
+              knex('times').where({id: time[0].id}).update(time[0])
+              .then(function() {
                 if (!obj.activities) {
                   return res.send(time);
                 }
 
-                helpers.checkActivities(obj.activities).then(function(activityIds) {
+                helpers.checkActivities(obj.activities)
+                .then(function(activityIds) {
                   if (activityIds !== undefined) {
-                    knex('timesactivities').where('time', '=', time[0].id).then(function(tas) {
+                    knex('timesactivities').where('time', '=', time[0].id)
+                    .then(function(tas) {
                       const taIds = [];
                       /* eslint-disable prefer-const */
                       for (let ta of tas) {
@@ -487,7 +496,8 @@ module.exports = function(app) {
                       const unmatchedTas = taIds.filter(function() {
                         return taIds.indexOf(activityIds) < 0;
                       });
-                      const unmatchedActivities = activityIds.filter(function() {
+                      const unmatchedActivities = activityIds
+                      .filter(function() {
                         return activityIds.indexOf(taIds) < 0;
                       });
 
@@ -501,8 +511,10 @@ module.exports = function(app) {
                         });
                       }
 
-                      knex('timesactivities').where('id', 'in', unmatchedTas).del().then(function() {
-                        knex('timesactivities').insert(taInsertion).then(function() {
+                      knex('timesactivities').where('id', 'in', unmatchedTas)
+                      .del().then(function() {
+                        knex('timesactivities').insert(taInsertion)
+                        .then(function() {
                           return res.send(time);
                         }).catch(function(error) {
                           const err = errors.errorServerError(error);
@@ -518,7 +530,8 @@ module.exports = function(app) {
                     });
                   }
                 }).catch(function() {
-                  const err = errors.errorInvalidForeignKey('time', 'activities');
+                  const err = errors.errorInvalidForeignKey('time',
+                          'activities');
                   return res.status(err.status).send(err);
                 }).catch(function(error) {
                   const err = errors.errorServerError(error);
