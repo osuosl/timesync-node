@@ -367,7 +367,25 @@ module.exports = function(app) {
         {name: 'user', type: 'string', required: false},
         {name: 'issue_uri', type: 'string', required: false},
         {name: 'date_worked', type: 'string', required: false},
+        {name: 'notes', type: 'string', required: false},
       ];
+
+      const fieldNames = fields.map(function(field) {
+        return field.name;
+      });
+
+      fieldNames.push('created_at');
+      fieldNames.push('updated_at');
+      fieldNames.push('id');
+
+      /* eslint-disable prefer-const */
+      for (let field in obj) {
+      /* eslint-enable prefer-const */
+        if (fieldNames.indexOf(field) < 0) {
+          const err = errors.errorBadObjectUnknownField('time', field);
+          return res.status(err.status).send(err);
+        }
+      }
 
       // Test fields
       const validationFailure = helpers.validateFields(obj, fields);
@@ -425,12 +443,6 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
       }
 
-      // I think this isn't necessary but there's a test for it
-      if (obj.key !== undefined) {
-        const err = errors.errorBadObjectUnknownField('time', 'key');
-        return res.status(err.status).send(err);
-      }
-
       // retrieves the time from the database
       knex('times').select('times.duration as duration', 'times.user as user',
               'times.project as project', 'times.notes as notes',
@@ -458,68 +470,57 @@ module.exports = function(app) {
           }
 
           const projectName = obj.project || time[0].projectName;
-          helpers.checkProject(projectName).then(function() {
-            knex('projectslugs').select('project').where('name', '=',
-                    obj.project).then(function(projectId) {
-              if (projectId[0] !== undefined) {
-                time[0].project = projectId[0].project;
-              } else {
-                time[0].project = time[0].project;
+          helpers.checkProject(projectName).then(function(projectId) {
+            time[0].project = projectId || time[0].project;
+            time[0].duration = obj.duration || time[0].duration;
+            time[0].notes = obj.notes || time[0].notes;
+            time[0].issue_uri = obj.issue_uri || time[0].issue_uri;
+            time[0].date_worked = obj.date_worked || time[0].date_worked;
+            time[0].updated_at = new Date().toISOString().substring(0, 10);
+            delete time[0].owner;
+            delete time[0].projectName;
+
+            knex('times').where({id: time[0].id}).update(time[0])
+            .then(function() {
+              if (!obj.activities) {
+                return res.send(time);
               }
 
-              time[0].duration = obj.duration || time[0].duration;
-              time[0].notes = obj.notes || time[0].notes;
-              time[0].issue_uri = obj.issue_uri || time[0].issue_uri;
-              time[0].date_worked = obj.date_worked || time[0].date_worked;
-              time[0].updated_at = new Date().toISOString().substring(0, 10);
-              delete time[0].owner;
-              delete time[0].projectName;
+              helpers.checkActivities(obj.activities)
+              .then(function(activityIds) {
+                if (activityIds !== undefined) {
+                  knex('timesactivities').where('time', '=', time[0].id)
+                  .then(function(tas) {
+                    const taIds = [];
+                    /* eslint-disable prefer-const */
+                    for (let ta of tas) {
+                      /* eslint-enable prefer-const */
+                      taIds.push(ta.activity);
+                    }
 
-              knex('times').where({id: time[0].id}).update(time[0])
-              .then(function() {
-                if (!obj.activities) {
-                  return res.send(time);
-                }
+                    const unmatchedTas = taIds.filter(function() {
+                      return taIds.indexOf(activityIds) < 0;
+                    });
+                    const unmatchedActivities = activityIds
+                    .filter(function() {
+                      return activityIds.indexOf(taIds) < 0;
+                    });
 
-                helpers.checkActivities(obj.activities)
-                .then(function(activityIds) {
-                  if (activityIds !== undefined) {
-                    knex('timesactivities').where('time', '=', time[0].id)
-                    .then(function(tas) {
-                      const taIds = [];
-                      /* eslint-disable prefer-const */
-                      for (let ta of tas) {
-                        /* eslint-enable prefer-const */
-                        taIds.push(ta.activity);
-                      }
-
-                      const unmatchedTas = taIds.filter(function() {
-                        return taIds.indexOf(activityIds) < 0;
+                    const taInsertion = [];
+                    /* eslint-disable prefer-const */
+                    for (let activityId of unmatchedActivities) {
+                      /* eslint-enable prefer-const */
+                      taInsertion.push({
+                        time: time[0].id,
+                        activity: activityId,
                       });
-                      const unmatchedActivities = activityIds
-                      .filter(function() {
-                        return activityIds.indexOf(taIds) < 0;
-                      });
+                    }
 
-                      const taInsertion = [];
-                      /* eslint-disable prefer-const */
-                      for (let activityId of unmatchedActivities) {
-                        /* eslint-enable prefer-const */
-                        taInsertion.push({
-                          time: time[0].id,
-                          activity: activityId,
-                        });
-                      }
-
-                      knex('timesactivities').where('id', 'in', unmatchedTas)
-                      .del().then(function() {
-                        knex('timesactivities').insert(taInsertion)
-                        .then(function() {
-                          return res.send(time);
-                        }).catch(function(error) {
-                          const err = errors.errorServerError(error);
-                          return res.status(err.status).send(err);
-                        });
+                    knex('timesactivities').where('id', 'in', unmatchedTas)
+                    .del().then(function() {
+                      knex('timesactivities').insert(taInsertion)
+                      .then(function() {
+                        return res.send(time);
                       }).catch(function(error) {
                         const err = errors.errorServerError(error);
                         return res.status(err.status).send(err);
@@ -528,15 +529,15 @@ module.exports = function(app) {
                       const err = errors.errorServerError(error);
                       return res.status(err.status).send(err);
                     });
-                  }
-                }).catch(function() {
-                  const err = errors.errorInvalidForeignKey('time',
-                          'activities');
-                  return res.status(err.status).send(err);
-                }).catch(function(error) {
-                  const err = errors.errorServerError(error);
-                  return res.status(err.status).send(err);
-                });
+                  }).catch(function(error) {
+                    const err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
+                  });
+                }
+              }).catch(function() {
+                const err = errors.errorInvalidForeignKey('time',
+                        'activities');
+                return res.status(err.status).send(err);
               }).catch(function(error) {
                 const err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
