@@ -7,7 +7,7 @@ exports.up = function(knex) {
     table.boolean('active').defaultTo(true);
     table.string('password')
   }).createTable('projects', function(table) {
-    table.increments('id').primary();
+    table.increments('id').primary(); //.onDelete('CASCADE');
     table.string('name').notNullable();
     table.string('uri');
     table.integer('owner').references('id').inTable('users').notNullable();
@@ -25,9 +25,9 @@ exports.up = function(knex) {
     table.string('name').unique().notNullable();
     table.string('slug').unique().notNullable();
   }).createTable('projectslugs', function(table) {
-    table.increments('id').primary();
+    table.increments('id').primary(); //.onDelete('CASCADE');
     table.string('name').unique().notNullable();
-    table.integer('project').references('id').inTable('projects').notNullable();
+    table.integer('project').references('id').inTable('projects').onDelete('cascade').notNullable(); //.onDelete('cascade').onUpdate('cascade');
   }).createTable('timesactivities', function(table) {
     table.increments('id').primary();
     table.integer('time').references('id').inTable('times').notNullable();
@@ -35,7 +35,7 @@ exports.up = function(knex) {
       .inTable('activities').notNullable();
   }).createTable('userroles', function(table) {
     table.increments('id').primary();
-    table.integer('project').references('id').inTable('projects').notNullable();
+    table.integer('project').references('id').inTable('projects').onDelete('cascade').notNullable(); //.onDelete('cascade');
     table.integer('user').references('id').inTable('users').notNullable();
     table.boolean('manager').defaultTo(false);
     table.boolean('member').defaultTo(false);

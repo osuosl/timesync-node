@@ -476,24 +476,27 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
         // Otherwise delete project
       }
+      console.log(req.params.slug);
 
-      knex('projects').where('id', '=', projectId)
-      .del().then(function(numObj) {
-        /* When deleting something from the table, the number of
-        objects deleted is returned. So to confirm that deletion
-        was successful, make sure that the number returned is at
-        least one. */
-        if (numObj >= 1) {
-          return res.send();
-        }
+      //knex('projectslugs').where('name', req.params.slug).del().then(function() {
+        knex('projects').where('id', '=', projectId)
+        .del().then(function(numObj) {
+          /* When deleting something from the table, the number of
+          objects deleted is returned. So to confirm that deletion
+          was successful, make sure that the number returned is at
+          least one. */
+          if (numObj >= 1) {
+            return res.send();
+          }
 
-        const err = errors.errorObjectNotFound('slug',
-        req.params.slug);
-        return res.status(err.status).send(err);
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
-      });
+          const err = errors.errorObjectNotFound('slug',
+          req.params.slug);
+          return res.status(err.status).send(err);
+        }).catch(function(error) {
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
+        });
+     //});
     });
   });
 };

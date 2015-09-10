@@ -752,8 +752,8 @@ module.exports = function(expect, request, baseUrl) {
         const expectedError = {
           status: 409,
           error: 'The slug provided already exists',
-          text: 'slugs ganeti-webmgr, gwm already exist',
-          values: ['ganeti-webmgr', 'gwm'],
+          text: 'slugs gwm, ganeti-webmgr already exist',
+          values: ['gwm', 'ganeti-webmgr'],
         };
 
         expect(body).to.deep.equal(expectedError);

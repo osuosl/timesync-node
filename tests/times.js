@@ -21,10 +21,16 @@ module.exports = function(expect, request, baseUrl) {
             id: 1,
           },
         ];
+        
+        //body.created_at = body.created_at.slice(0, 10);
+        // chopping off the end of the date...
+        const jsonBody = JSON.parse(body);
+        jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+        jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
 
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
-        expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
     });
@@ -34,6 +40,11 @@ module.exports = function(expect, request, baseUrl) {
     it('returns times by id', function(done) {
       request.get(baseUrl + 'times/1', function(err, res, body) {
         const jsonBody = JSON.parse(body);
+        jsonBody.created_at = jsonBody.created_at.slice(0, 10);
+        jsonBody.date_worked = jsonBody.date_worked.slice(0, 10);
+
+        //jsonBody.created_at = new Date().toISOString().slice(0,10);
+
         const expectedResult = {
           duration: 12,
           user: 'tschuy',
@@ -51,6 +62,7 @@ module.exports = function(expect, request, baseUrl) {
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
 
+        //console.log(jsonBody.date_worked);
         expect(jsonBody).to.deep.equal(expectedResult);
         done();
       });
@@ -132,13 +144,20 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
+      //baseUrl = 'http://localhost:5432/v1/';
       const postArg = getPostObject(baseUrl + 'times/', time);
-
+      console.log(postArg);
+      //console.log(time);
       request.post(postArg, function(err, res, body) {
+        console.log('a');
         expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
+        console.log('b');
+        //console.log(res.body);
+        //expect(res.statusCode).to.equal(200);
 
         time.id = body.id;
+        console.log(time.id);
+
         expect(body).to.deep.equal(time);
 
         const createdAt = new Date().toISOString().substring(0, 10);
@@ -193,7 +212,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.deep.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -228,7 +252,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -261,7 +290,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.deep.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -294,7 +328,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -327,7 +366,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -358,7 +402,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+          
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -391,7 +440,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -423,7 +477,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -456,7 +515,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+          
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -489,7 +553,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -520,7 +589,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -553,7 +627,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -585,7 +664,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -617,7 +701,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -648,7 +737,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -681,7 +775,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -714,7 +813,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -732,9 +836,14 @@ module.exports = function(expect, request, baseUrl) {
 
       const postArg = getPostObject(baseUrl + 'times/', time);
 
+      console.log('1');
       request.post(postArg, function(err, res, body) {
+        console.log('2');
         expect(err).to.equal(null);
+        console.log(err);
+        console.log(res.body);
         expect(res.statusCode).to.equal(200);
+        console.log('3');
 
         time.id = body.id;
         expect(body).to.deep.equal(time);
@@ -790,7 +899,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -823,7 +937,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -854,7 +973,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -887,7 +1011,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -920,7 +1049,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -951,7 +1085,12 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
