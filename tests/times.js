@@ -144,15 +144,13 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      //baseUrl = 'http://localhost:5432/v1/';
+      //baseUrl = 'http://172.17.42.1:5432/v1/';
       const postArg = getPostObject(baseUrl + 'times/', time);
-      console.log(postArg);
-      //console.log(time);
       request.post(postArg, function(err, res, body) {
         console.log('a');
         expect(err).to.equal(null);
         console.log('b');
-        //console.log(res.body);
+        console.log(res.body);
         //expect(res.statusCode).to.equal(200);
 
         time.id = body.id;
