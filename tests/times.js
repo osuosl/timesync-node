@@ -24,9 +24,14 @@ module.exports = function(expect, request, baseUrl) {
           },
         ];
 
+        // chopping off the end of the date
+        const jsonBody = JSON.parse(body);
+        jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
+        jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
-        expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.have.same.members(expectedResults);
         done();
       });
     });
@@ -36,6 +41,9 @@ module.exports = function(expect, request, baseUrl) {
     it('returns times by id', function(done) {
       request.get(baseUrl + 'times/1', function(err, res, body) {
         const jsonBody = JSON.parse(body);
+        jsonBody.created_at = jsonBody.created_at.slice(0, 10);
+        jsonBody.date_worked = jsonBody.date_worked.slice(0, 10);
+
         const expectedResult = {
           duration: 12,
           user: 'tschuy',
@@ -139,10 +147,8 @@ module.exports = function(expect, request, baseUrl) {
       };
 
       const postArg = getPostObject(baseUrl + 'times/', time);
-
       request.post(postArg, function(err, res, body) {
         expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
 
         time.id = body.id;
 
@@ -155,7 +161,7 @@ module.exports = function(expect, request, baseUrl) {
               duration: 20,
               user: 'tschuy',
               project: ['gwm', 'ganeti-webmgr'],
-              activities: ['dev', 'docs'],
+              activities: ['docs', 'dev'],
               notes: '',
               issue_uri: 'https://github.com/osuosl/gwm/issues/1',
               date_worked: '2015-07-30',
@@ -168,7 +174,15 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
+
           const jsonGetBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonGetBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonGetBody[i].created_at = jsonGetBody[i].created_at.slice(0, 10);
+            jsonGetBody[i].date_worked = jsonGetBody[i].date_worked.slice(0, 10);
+          }
+
           expect(jsonGetBody).to.deep.have.same.members(expectedResults);
           done();
         });
@@ -202,7 +216,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.deep.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -237,7 +260,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -270,7 +302,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.deep.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -303,7 +344,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -336,7 +386,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -367,7 +426,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -400,7 +468,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -432,7 +509,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -465,7 +551,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -498,7 +593,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -529,7 +633,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -562,7 +675,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -594,7 +716,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -626,7 +757,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -657,7 +797,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -690,7 +839,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -723,7 +881,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -755,7 +922,7 @@ module.exports = function(expect, request, baseUrl) {
               duration: 20,
               user: 'tschuy',
               project: ['gwm', 'ganeti-webmgr'],
-              activities: ['dev', 'docs'],
+              activities: ['docs', 'dev'],
               notes: '',
               issue_uri: null,
               date_worked: '2015-07-30',
@@ -768,7 +935,15 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
+
           const jsonGetBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonGetBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonGetBody[i].created_at = jsonGetBody[i].created_at.slice(0, 10);
+            jsonGetBody[i].date_worked = jsonGetBody[i].date_worked.slice(0, 10);
+          }
+
           expect(jsonGetBody).to.deep.have.same.members(expectedResults);
           done();
         });
@@ -801,7 +976,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -834,7 +1018,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -865,7 +1058,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -898,7 +1100,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -931,7 +1142,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -962,7 +1182,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.equal(initialData);
+
+          const jsonBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });

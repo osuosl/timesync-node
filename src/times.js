@@ -277,6 +277,7 @@ module.exports = function(app) {
                 'create time entries for project ' + time.project + '.');
               return res.status(err.status).send(err);
             }
+
             helpers.checkActivities(time.activities)
             .then(function(activityIds) {
               const createdAt = new Date().toISOString().substring(0, 10);
@@ -290,7 +291,8 @@ module.exports = function(app) {
                 created_at: createdAt,
               };
 
-              knex('times').insert(insertion).then(function(timeIds) {
+              knex('times').insert(insertion).returning('id').
+              then(function(timeIds) {
                 const timeId = timeIds[0];
 
                 const taInsertion = [];
