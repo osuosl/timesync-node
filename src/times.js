@@ -374,10 +374,6 @@ module.exports = function(app) {
         return field.name;
       });
 
-      fieldNames.push('created_at');
-      fieldNames.push('updated_at');
-      fieldNames.push('id');
-
       /* eslint-disable prefer-const */
       for (let field in obj) {
       /* eslint-enable prefer-const */
@@ -488,43 +484,38 @@ module.exports = function(app) {
 
               helpers.checkActivities(obj.activities)
               .then(function(activityIds) {
-                if (activityIds !== undefined) {
-                  knex('timesactivities').where('time', '=', time[0].id)
-                  .then(function(tas) {
-                    const taIds = [];
-                    /* eslint-disable prefer-const */
-                    for (let ta of tas) {
-                      /* eslint-enable prefer-const */
-                      taIds.push(ta.activity);
-                    }
+                knex('timesactivities').where('time', '=', time[0].id)
+                .then(function(tas) {
+                  const taIds = [];
+                  /* eslint-disable prefer-const */
+                  for (let ta of tas) {
+                    /* eslint-enable prefer-const */
+                    taIds.push(ta.activity);
+                  }
 
-                    const unmatchedTas = taIds.filter(function() {
-                      return taIds.indexOf(activityIds) < 0;
+                  const unmatchedTas = taIds.filter(function() {
+                    return taIds.indexOf(activityIds) < 0;
+                  });
+                  const unmatchedActivities = activityIds
+                  .filter(function() {
+                    return activityIds.indexOf(taIds) < 0;
+                  });
+
+                  const taInsertion = [];
+                  /* eslint-disable prefer-const */
+                  for (let activityId of unmatchedActivities) {
+                    /* eslint-enable prefer-const */
+                    taInsertion.push({
+                      time: time[0].id,
+                      activity: activityId,
                     });
-                    const unmatchedActivities = activityIds
-                    .filter(function() {
-                      return activityIds.indexOf(taIds) < 0;
-                    });
+                  }
 
-                    const taInsertion = [];
-                    /* eslint-disable prefer-const */
-                    for (let activityId of unmatchedActivities) {
-                      /* eslint-enable prefer-const */
-                      taInsertion.push({
-                        time: time[0].id,
-                        activity: activityId,
-                      });
-                    }
-
-                    knex('timesactivities').where('id', 'in', unmatchedTas)
-                    .del().then(function() {
-                      knex('timesactivities').insert(taInsertion)
-                      .then(function() {
-                        return res.send(time);
-                      }).catch(function(error) {
-                        const err = errors.errorServerError(error);
-                        return res.status(err.status).send(err);
-                      });
+                  knex('timesactivities').where('id', 'in', unmatchedTas)
+                  .del().then(function() {
+                    knex('timesactivities').insert(taInsertion)
+                    .then(function() {
+                      return res.send(time);
                     }).catch(function(error) {
                       const err = errors.errorServerError(error);
                       return res.status(err.status).send(err);
@@ -533,7 +524,10 @@ module.exports = function(app) {
                     const err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                   });
-                }
+                }).catch(function(error) {
+                  const err = errors.errorServerError(error);
+                  return res.status(err.status).send(err);
+                });
               }).catch(function() {
                 const err = errors.errorInvalidForeignKey('time',
                         'activities');

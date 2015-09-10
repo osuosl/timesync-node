@@ -960,7 +960,18 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('POST /times/:id', function() {
     // The database's entry for `Whats Fresh`'s time entry
-    const originalTime = {
+    const postOriginalTime = {
+      duration: 12,
+      user: 'tschuy',
+      project: 'wf',
+      notes: '',
+      activities: ['docs', 'dev'],
+      issue_uri:
+         'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-19',
+    };
+
+    const getOriginalTime = {
       duration: 12,
       user: 'tschuy',
       project: 'wf',
@@ -977,7 +988,17 @@ module.exports = function(expect, request, baseUrl) {
     // A completely patched version of the above time entry
     // Only contains valid patch elements.
     const updatedAt = new Date().toISOString().substring(0, 10);
-    const patchedTime = {
+    const postPatchedTime = {
+      duration: 15,
+      user: 'deanj',
+      project: 'pgd',
+      activities: ['docs', 'sys'],
+      notes: 'Now this is a note',
+      issue_uri: 'https://github.com/osuosl/pgd/pull/19',
+      date_worked: '2015-04-28',
+    };
+
+    const getPatchedTime = {
       duration: 15,
       user: 'deanj',
       project: 'pgd',
@@ -1079,9 +1100,9 @@ module.exports = function(expect, request, baseUrl) {
     // Tests all valid fields
     it('succesfully patches time with valid duration, user, project,' +
        ' activity notes, issue_uri, and date_worked', function(done) {
-      const postObj = copyJsonObject(patchedTime);
-      const expectedResults = copyJsonObject(patchedTime);
-      expectedResults.id = originalTime.id;
+      const postObj = copyJsonObject(postPatchedTime);
+      const expectedResults = copyJsonObject(getPatchedTime);
+      expectedResults.id = getOriginalTime.id;
       expectedResults.project = ['pgd'];
       let error;
       const statusCode = 200;
@@ -1092,9 +1113,9 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests valid duration field
     it('successfully patches time with valid duration', function(done) {
-      const postObj = {duration: patchedTime.duration};
-      const expectedResults = copyJsonObject(originalTime);
-      expectedResults.duration = patchedTime.duration;
+      const postObj = {duration: postPatchedTime.duration};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.duration = postPatchedTime.duration;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       let error;
@@ -1108,11 +1129,11 @@ module.exports = function(expect, request, baseUrl) {
     // This test's functionality will be implemented at a later date
     // (after the rest of the /time/:id functionality is implemented)
     it('successfully patches time with valid user', function(done) {
-      const postObj = {user: patchedTime.user};
-      const expectedResults = copyJsonObject(originalTime);
+      const postObj = {user: postPatchedTime.user};
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      expectedResults.user = patchedTime.user;
+      expectedResults.user = postPatchedTime.user;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
@@ -1121,8 +1142,8 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests valid project field
     it('successfully patches time with valid project', function(done) {
-      const postObj = {project: patchedTime.project};
-      const expectedResults = copyJsonObject(originalTime);
+      const postObj = {project: postPatchedTime.project};
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['pgd'];
       expectedResults.updated_at = updatedAt;
       const statusCode = 200;
@@ -1133,11 +1154,11 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests valid activities field
     it('successfully patches time with valid activities', function(done) {
-      const postObj = {activities: patchedTime.activities};
-      const expectedResults = copyJsonObject(originalTime);
+      const postObj = {activities: postPatchedTime.activities};
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
-      expectedResults.activities = patchedTime.activities;
+      expectedResults.activities = postPatchedTime.activities;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
@@ -1146,9 +1167,9 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests valid notes field
     it('successfully patches time with valid notes', function(done) {
-      const postObj = {notes: patchedTime.notes};
-      const expectedResults = copyJsonObject(originalTime);
-      expectedResults.notes = patchedTime.notes;
+      const postObj = {notes: postPatchedTime.notes};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.notes = postPatchedTime.notes;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       const statusCode = 200;
@@ -1159,9 +1180,9 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests valid issue_uri field
     it('successfully patches time with valid issue_uri', function(done) {
-      const postObj = {issue_uri: patchedTime.issue_uri};
-      const expectedResults = copyJsonObject(originalTime);
-      expectedResults.issue_uri = patchedTime.issue_uri;
+      const postObj = {issue_uri: postPatchedTime.issue_uri};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.issue_uri = postPatchedTime.issue_uri;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       const statusCode = 200;
@@ -1172,9 +1193,9 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests valid date_worked field
     it('successfully patches time with valid date_worked', function(done) {
-      const postObj = {date_worked: patchedTime.date_worked};
-      const expectedResults = copyJsonObject(originalTime);
-      expectedResults.date_worked = patchedTime.date_worked;
+      const postObj = {date_worked: postPatchedTime.date_worked};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.date_worked = postPatchedTime.date_worked;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       const statusCode = 200;
@@ -1188,7 +1209,7 @@ module.exports = function(expect, request, baseUrl) {
        ' activity notes, issue_uri, and date_worked dattype',
        function(done) {
       const postObj = copyJsonObject(invalidTimeDataType);
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1245,7 +1266,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid duration datatype',
        function(done) {
       const postObj = {duration: invalidTimeDataType.duration};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1268,7 +1289,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid user datatype',
        function(done) {
       const postObj = {user: invalidTimeDataType.user};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1289,7 +1310,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid project datatype',
        function(done) {
       const postObj = {project: invalidTimeDataType.project};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1310,7 +1331,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid activites datatype',
        function(done) {
       const postObj = {activities: invalidTimeDataType.activities};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1331,7 +1352,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid notes datatype',
        function(done) {
       const postObj = {notes: invalidTimeDataType.notes};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1352,7 +1373,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid issue_uri datatype',
        function(done) {
       const postObj = {issue_uri: invalidTimeDataType.issue_uri};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1373,7 +1394,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid date_worked datatype',
        function(done) {
       const postObj = {date_worked: invalidTimeDataType.date_worked};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1394,7 +1415,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid key datatype',
        function(done) {
       const postObj = {key: invalidTimeDataType.key};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1413,9 +1434,9 @@ module.exports = function(expect, request, baseUrl) {
     // Tests all valid fields except invalid duration
     it('unsuccessfully patches time with an invalid duration datatype',
        function(done) {
-      const postObj = copyJsonObject(originalTime);
+      const postObj = copyJsonObject(postOriginalTime);
       postObj.duration = invalidTimeDataType.duration;
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1437,9 +1458,9 @@ module.exports = function(expect, request, baseUrl) {
     // (after the rest of the /time/:id functionality is implemented)
     it('unsuccessfully patches time with an invalid user datatype',
        function(done) {
-      const postObj = copyJsonObject(originalTime);
+      const postObj = copyJsonObject(postOriginalTime);
       postObj.user = invalidTimeDataType.user;
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1459,9 +1480,9 @@ module.exports = function(expect, request, baseUrl) {
     // Tests all valid fields except invalid project
     it('unsuccessfully patches time with an invalid project datatype',
        function(done) {
-      const postObj = copyJsonObject(originalTime);
+      const postObj = copyJsonObject(postOriginalTime);
       postObj.project = invalidTimeDataType.project;
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1481,9 +1502,9 @@ module.exports = function(expect, request, baseUrl) {
     // Tests all valid fields except invalid activities
     it('unsuccessfully patches time with an invalid activities datatype',
        function(done) {
-      const postObj = copyJsonObject(originalTime);
+      const postObj = copyJsonObject(postOriginalTime);
       postObj.activities = invalidTimeDataType.activities;
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1503,9 +1524,9 @@ module.exports = function(expect, request, baseUrl) {
     // Tests all valid fields except invalid notes
     it('unsuccessfully patches time with an invalid notes datatype',
       function(done) {
-      const postObj = copyJsonObject(originalTime);
+      const postObj = copyJsonObject(postOriginalTime);
       postObj.notes = invalidTimeDataType.notes;
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1525,9 +1546,9 @@ module.exports = function(expect, request, baseUrl) {
     // Tests all valid fields except invalid issue_uri
     it('unsuccessfully patches time with an invalid issue_uri datatype',
       function(done) {
-      const postObj = copyJsonObject(originalTime);
+      const postObj = copyJsonObject(postOriginalTime);
       postObj.issue_uri = invalidTimeDataType.issue_uri;
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1547,9 +1568,9 @@ module.exports = function(expect, request, baseUrl) {
     // Tests all valid fields except invalid date_worked
     it('unsuccessfully patches time with an invalid date_worked datatype',
       function(done) {
-      const postObj = copyJsonObject(originalTime);
+      const postObj = copyJsonObject(postOriginalTime);
       postObj.date_worked = invalidTimeDataType.date_worked;
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1569,9 +1590,9 @@ module.exports = function(expect, request, baseUrl) {
     // Tests all valid fields except invalid key
     it('unsuccessfully patches time with an invalid key datatype',
       function(done) {
-      const postObj = copyJsonObject(originalTime);
+      const postObj = copyJsonObject(postOriginalTime);
       postObj.key = invalidTimeDataType.key;
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1597,7 +1618,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid duration identifier',
        function(done) {
       const postObj = {duration: invalidTimeValue.duration};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
@@ -1618,7 +1639,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid user foreign key',
        function(done) {
       const postObj = {user: invalidTimeValue.user1};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Invalid foreign key';
       const statusCode = 409;
@@ -1660,7 +1681,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid project foreign key',
        function(done) {
       const postObj = {project: invalidTimeValue.project1};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Invalid foreign key';
       const statusCode = 409;
@@ -1680,7 +1701,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid project string',
        function(done) {
       const postObj = {project: invalidTimeValue.project2};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Invalid foreign key';
       const statusCode = 409;
@@ -1743,7 +1764,7 @@ module.exports = function(expect, request, baseUrl) {
     it('unsuccessfully patches time with just invalid issue_uri',
        function(done) {
       const postObj = {issue_uri: invalidTimeValue.issue_uri};
-      const expectedResults = copyJsonObject(originalTime);
+      const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
