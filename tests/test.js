@@ -29,9 +29,11 @@ const clearDatabase = function(done) {
   knex.raw('TRUNCATE projects CASCADE').then(function() {
     knex.raw('TRUNCATE activities CASCADE').then(function() {
       knex.raw('TRUNCATE users CASCADE').then(function() {
-        knex.raw('TRUNCATE times CASCADE').then(function() {
+        knex.raw('TRUNCATE times RESTART IDENTITY CASCADE').then(function() {
           knex.raw('TRUNCATE projectslugs CASCADE').then(function() {
-            knex.raw('TRUNCATE timesactivities CASCADE').then(done);
+            knex.raw('TRUNCATE userroles RESTART IDENTITY CASCADE').then(function() {
+              knex.raw('TRUNCATE timesactivities CASCADE').then(done);
+            });
           });
         });
       });

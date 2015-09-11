@@ -242,14 +242,11 @@ module.exports = function(app) {
       /* eslint-disable prefer-const */
       for (let activity of time.activities) {
         /* eslint-enable prefer-const */
-        console.log('I');
         if (helpers.getType(activity) !== 'string') {
-          console.log('II');
           const err = errors.errorBadObjectInvalidField('time', 'activities',
           'slugs', 'array containing at least 1 ' + helpers.getType(activity));
           return res.status(err.status).send(err);
         } else if (!helpers.validateSlug(activity)) {
-          console.log('III');
           const err = errors.errorBadObjectInvalidField('time', 'activities',
           'slugs', 'array containing at least 1 invalid slug');
           return res.status(err.status).send(err);
@@ -280,7 +277,6 @@ module.exports = function(app) {
               return res.status(err.status).send(err);
             }
             helpers.checkActivities(time.activities).then(function(activityIds) {
-              console.log('IV');
               const createdAt = new Date().toISOString().substring(0, 10);
               const insertion = {
                 duration: time.duration,
@@ -292,42 +288,31 @@ module.exports = function(app) {
                 created_at: createdAt,
               };
 
-              console.log(activityIds);
-              console.log('V');
-              knex('times').insert(insertion).then(function(timeIds) {
-                console.log(insertion);
-                console.log('abc');
-                console.log(timeIds);
+              console.log('Start');
+              knex('times').insert(insertion).returning('id').then(function(timeIds) {
                 const timeId = timeIds[0];
 
-                console.log(timeId);
                 const taInsertion = [];
                 /* eslint-disable prefer-const */
                 for (let activityId of activityIds) {
                   /* eslint-enable prefer-const */
-                  console.log('def');
                   taInsertion.push({
                     time: timeId,
                     activity: activityId,
                   });
                 }
 
-                console.log('ghi');
-                console.log(taInsertion);
                 knex('timesactivities').insert(taInsertion).then(function() {
-                  console.log('jkl');
                   time.id = timeId;
-                  console.log('check');
                   return res.send(JSON.stringify(time));
                 }).catch(function(error) {
-                  console.log('VI');
                   knex('times').del().where({id: timeId}).then(function() {
                     const err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                   });
                 });
               }).catch(function(error) {
-                console.log('VII');
+                console.log('End');
                 const err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
               });

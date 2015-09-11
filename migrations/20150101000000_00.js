@@ -2,17 +2,17 @@
 
 exports.up = function(knex) {
   return knex.schema.createTable('users', function(table) {
-    table.increments('id').primary();
+    table.serial('id').primary();
     table.string('username').unique().notNullable();
     table.boolean('active').defaultTo(true);
     table.string('password')
   }).createTable('projects', function(table) {
-    table.increments('id').primary(); //.onDelete('CASCADE');
+    table.serial('id').primary(); //.onDelete('CASCADE');
     table.string('name').notNullable();
     table.string('uri');
     table.integer('owner').references('id').inTable('users').notNullable();
   }).createTable('times', function(table) {
-    table.increments('id').primary();
+    table.serial('id').primary();
     table.integer('duration').notNullable();
     table.integer('user').references('id').inTable('users').notNullable();
     table.integer('project').references('id').inTable('projects').notNullable();
@@ -21,21 +21,21 @@ exports.up = function(knex) {
     table.timestamp('date_worked');
     table.timestamps();
   }).createTable('activities', function(table) {
-    table.increments('id').primary();
+    table.serial('id').primary();
     table.string('name').unique().notNullable();
     table.string('slug').unique().notNullable();
   }).createTable('projectslugs', function(table) {
-    table.increments('id').primary(); //.onDelete('CASCADE');
+    table.serial('id').primary(); //.onDelete('CASCADE');
     table.string('name').unique().notNullable();
-    table.integer('project').references('id').inTable('projects').onDelete('cascade').notNullable(); //.onDelete('cascade').onUpdate('cascade');
+    table.integer('project').references('id').inTable('projects').notNullable(); //.onDelete('cascade');
   }).createTable('timesactivities', function(table) {
-    table.increments('id').primary();
+    table.serial('id').primary();
     table.integer('time').references('id').inTable('times').notNullable();
     table.integer('activity').references('id')
       .inTable('activities').notNullable();
   }).createTable('userroles', function(table) {
-    table.increments('id').primary();
-    table.integer('project').references('id').inTable('projects').onDelete('cascade').notNullable(); //.onDelete('cascade');
+    table.serial('id').primary();
+    table.integer('project').references('id').inTable('projects').notNullable(); //.onDelete('cascade');
     table.integer('user').references('id').inTable('users').notNullable();
     table.boolean('manager').defaultTo(false);
     table.boolean('member').defaultTo(false);

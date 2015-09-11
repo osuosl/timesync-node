@@ -144,17 +144,11 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-07-30',
       };
 
-      //baseUrl = 'http://172.17.42.1:5432/v1/';
       const postArg = getPostObject(baseUrl + 'times/', time);
       request.post(postArg, function(err, res, body) {
-        console.log('a');
         expect(err).to.equal(null);
-        console.log('b');
-        console.log(res.body);
-        //expect(res.statusCode).to.equal(200);
 
         time.id = body.id;
-        console.log(time.id);
 
         expect(body).to.deep.equal(time);
 
@@ -176,7 +170,15 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
+          
           const jsonGetBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonGetBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonGetBody[i].created_at = jsonGetBody[i].created_at.slice(0, 10);
+            jsonGetBody[i].date_worked = jsonGetBody[i].date_worked.slice(0, 10);
+          }
+
           expect(jsonGetBody).to.deep.have.same.members(expectedResults);
           done();
         });
