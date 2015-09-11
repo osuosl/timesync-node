@@ -7,7 +7,7 @@ module.exports = function(knex) {
     server: {
       url: process.env.TIMESYNC_LDAP_URL,
       searchBase: process.env.TIMESYNC_LDAP_SEARCH_BASE,
-      searchFilter: 'uid={{username}}',
+      searchFilter: '(uid={{username}})',
     },
     usernameField: 'auth[username]',
     passwordField: 'auth[password]',
