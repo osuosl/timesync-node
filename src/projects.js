@@ -143,7 +143,7 @@ module.exports = function(app) {
   });
 
   app.post(app.get('version') + '/projects', function(req, res, next) {
-    passport.authenticate('local', function(autherr, user, info) {
+    let processPost = function(autherr, user, info) {
       if (!user) {
         const err = errors.errorAuthenticationFailure(info.message);
         return res.status(err.status).send(err);
@@ -253,11 +253,25 @@ module.exports = function(app) {
         });
       }).catch(function() {
         // checkUser failed, meaning the user is not authorized
-        const err = errors.errorAuthorizationFailure(req.body.auth.username,
+        const err = errors.errorAuthenticationTypeFailure(req.body.auth.username,
           'create objects for ' + obj.owner);
         return res.status(err.status).send(err);
       });
-    })(req, res, next);
+    };
+
+    let authType;
+    if (req.body.auth.type === 'password') {
+      authType = 'local';
+    } else if (req.body.auth.type === 'ldap') {
+      authType = 'ldapauth';
+    }
+
+    if (app.get('strategies').indexOf(authType) < 0) {
+      const err = errors.errorAuthorizationTypeFailure(req.body.auth.type);
+      return res.status(err.status).send(err);
+    }
+
+    passport.authenticate(authType, processPost)(req, res, next);
   });
 
   app.post(app.get('version') + '/projects/:slug', function(req, res, next) {

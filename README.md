@@ -115,3 +115,18 @@ $ cd timesync-api
 [timesync-api]$ make html
 [timesync-api]$ <browser> build/html/index.html
 ```
+
+Authentication
+--------------
+
+To use password-based authentication, set the environment variable
+``TIMESYNC_LOCAL`` to 1.
+
+To use LDAP authentication, there are three environment variables that need to
+be set:
+
+1. ``TIMESYNC_LDAP``: set this to 1 to enable LDAP
+2. ``TIMESYNC_LDAP_URL``: the URL of the LDAP server to connect to, ex.
+  ``ldaps://ldap.osuosl.org``.
+3. ``TIMESYNC_LDAP_SEARCH_BASE``: ex. the search that should be used to
+  authenticate, ex. ``ou=People,dc=osuosl,dc=org``
