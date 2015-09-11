@@ -148,6 +148,7 @@ module.exports = function(expect, request, baseUrl) {
       auth: {
         username: 'tschuy',
         password: 'password',
+        type: 'password',
       },
     };
 
@@ -916,9 +917,8 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       request.del(baseUrl + 'projects/pgd', function(err, res) {
         expect(res.statusCode).to.equal(200);
-
         request.get(baseUrl + 'projects/pgd', function(getErr, getRes,
-                    getBody) {
+            getBody) {
           const jsonBody = JSON.parse(getBody);
           const expectedResult = {
             status: 404,
