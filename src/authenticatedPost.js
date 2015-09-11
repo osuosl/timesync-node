@@ -5,6 +5,19 @@ const passport = require('passport');
 module.exports = function(app, path, callback) {
   app.post(path, function(req, res, next) {
     let authType;
+
+    if (!req.body.auth) {
+      const err = errors.errorAuthenticationFailure(
+        'Missing credentials');
+      return res.status(err.status).send(err);
+    }
+
+    if (!req.body.auth.type) {
+      const err = errors.errorAuthenticationFailure(
+        'Authentication type required');
+      return res.status(err.status).send(err);
+    }
+
     if (req.body.auth.type === 'password') {
       authType = 'local';
     } else if (req.body.auth.type === 'ldap') {
