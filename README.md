@@ -16,7 +16,7 @@ To start a local instance running on port 8000, just run:
 
 ```
 $ npm install
-$ npm run devel
+$ TIMESYNC_LOCAL=1 npm run devel
 ```
 
 ``npm run devel`` is a convenience that will automatically restart the server
@@ -48,7 +48,7 @@ $ npm run fixtures
 Next, run the application:
 
 ```
-$ npm start
+$ TIMESYNC_LOCAL=1 npm start
 ```
 
 Then, in another terminal, make a request to the application with curl.
