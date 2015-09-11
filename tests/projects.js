@@ -916,7 +916,8 @@ module.exports = function(expect, request, baseUrl) {
       request.del(baseUrl + 'projects/pgd', function(err, res) {
         expect(res.statusCode).to.equal(200);
 
-        request.get(baseUrl + 'projects/pgd', function(getErr, getRes, getBody) {
+        request.get(baseUrl + 'projects/pgd', function(getErr, getRes,
+                    getBody) {
           const jsonBody = JSON.parse(getBody);
           const expectedResult = {
             status: 404,

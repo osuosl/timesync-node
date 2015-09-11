@@ -255,8 +255,8 @@ module.exports = function(app) {
 
       // Test issue URI value
       if (time.issue_uri && !validUrl.isWebUri(time.issue_uri)) {
-        const err = errors.errorBadObjectInvalidField('time', 'issue_uri', 'URI',
-        'invalid URI ' + time.issue_uri);
+        const err = errors.errorBadObjectInvalidField('time', 'issue_uri',
+                'URI', 'invalid URI ' + time.issue_uri);
         return res.status(err.status).send(err);
       }
 
@@ -270,13 +270,15 @@ module.exports = function(app) {
       // Finish checks for user, project, and activity
       helpers.checkUser(user.username, time.user).then(function(userId) {
         helpers.checkProject(time.project).then(function(projectId) {
-          knex('userroles').where({user: userId, project: projectId}).then(function(roles) {
+          knex('userroles').where({user: userId, project: projectId})
+          .then(function(roles) {
             if (roles.length === 0 || roles[0].member === false) {
               const err = errors.errorAuthorizationFailure(user.username,
                 'create time entries for project ' + time.project + '.');
               return res.status(err.status).send(err);
             }
-            helpers.checkActivities(time.activities).then(function(activityIds) {
+            helpers.checkActivities(time.activities)
+            .then(function(activityIds) {
               const createdAt = new Date().toISOString().substring(0, 10);
               const insertion = {
                 duration: time.duration,
@@ -329,6 +331,228 @@ module.exports = function(app) {
       }).catch(function() {
         const err = errors.errorAuthorizationFailure(user.username,
           'create time entries for ' + time.user);
+        return res.status(err.status).send(err);
+      });
+    })(req, res, next);
+  });
+
+  // Patch times
+  app.post(app.get('version') + '/times/:id', function(req, res, next) {
+    passport.authenticate('local', function(autherr, user, info) {
+      if (!user) {
+        const err = errors.errorAuthenticationFailure(info.message);
+        return res.status(err.status).send(err);
+      }
+
+      const obj = req.body.object;
+
+      // Test duration value
+      if (obj.duration !== undefined &&
+              helpers.getType(obj.duration) === 'object') {
+        const err = errors.errorBadObjectInvalidField('time', 'duration',
+        'number', 'object');
+        return res.status(err.status).send(err);
+      }
+
+      // Duration always ends up a string for some reason
+      if (obj.duration !== undefined) {
+        obj.duration = Number(obj.duration);
+      }
+
+      // Test existence and datatypes
+      const fields = [
+        {name: 'duration', type: 'number', required: false},
+        {name: 'project', type: 'string', required: false},
+        {name: 'activities', type: 'array', required: false},
+        {name: 'user', type: 'string', required: false},
+        {name: 'issue_uri', type: 'string', required: false},
+        {name: 'date_worked', type: 'string', required: false},
+        {name: 'notes', type: 'string', required: false},
+      ];
+
+      const fieldNames = fields.map(function(field) {
+        return field.name;
+      });
+
+      /* eslint-disable prefer-const */
+      for (let field in obj) {
+      /* eslint-enable prefer-const */
+        if (fieldNames.indexOf(field) < 0) {
+          const err = errors.errorBadObjectUnknownField('time', field);
+          return res.status(err.status).send(err);
+        }
+      }
+
+      // Test fields
+      const validationFailure = helpers.validateFields(obj, fields);
+      if (validationFailure) {
+        const err = errors.errorBadObjectInvalidField('time',
+          validationFailure.name, validationFailure.type,
+          validationFailure.actualType);
+        return res.status(err.status).send(err);
+      }
+
+      // Test duration value again
+      if (obj.duration !== undefined && obj.duration < 0) {
+        const err = errors.errorBadObjectInvalidField('time', 'duration',
+        'positive integer', 'negative integer');
+        return res.status(err.status).send(err);
+      }
+
+      // Test each activity
+      if (obj.activities !== undefined) {
+        /* eslint-disable prefer-const */
+        for (let activity of obj.activities) {
+          /* eslint-enable prefer-const */
+          if (helpers.getType(activity) !== 'string') {
+            const err = errors.errorBadObjectInvalidField('time', 'activities',
+            'slugs', 'array containing at least 1 ' +
+            helpers.getType(activity));
+            return res.status(err.status).send(err);
+          } else if (!helpers.validateSlug(activity)) {
+            const err = errors.errorBadObjectInvalidField('time', 'activities',
+            'slugs', 'array containing at least 1 invalid slug');
+            return res.status(err.status).send(err);
+          }
+        }
+      }
+
+      // Test issue URI value
+      if (obj.issue_uri !== undefined &&
+              !validUrl.isWebUri(obj.issue_uri)) {
+        const err = errors.errorBadObjectInvalidField('time', 'issue_uri',
+                'URI', 'invalid URI ' + obj.issue_uri);
+        return res.status(err.status).send(err);
+      }
+
+      // Test date worked value
+      if (obj.date_worked !== undefined && !Date.parse(obj.date_worked)) {
+        const err = errors.errorBadObjectInvalidField('time', 'date_worked',
+        'ISO-8601 date', obj.date_worked);
+        return res.status(err.status).send(err);
+      }
+
+      // Test notes value
+      if (obj.notes !== undefined && helpers.getType(obj.notes) !== 'string') {
+        const err = errors.errorBadObjectInvalidField('time', 'notes',
+        'string', helpers.getType(obj.notes));
+        return res.status(err.status).send(err);
+      }
+
+      // retrieves the time from the database
+      knex('times').select('times.duration as duration', 'times.user as user',
+              'times.project as project', 'times.notes as notes',
+              'times.issue_uri as issue_uri',
+              'times.date_worked as date_worked',
+              'times.created_at as created_at',
+              'times.updated_at as updated_at', 'times.id as id',
+              'users.username as owner', 'projectslugs.name as projectName')
+          .where('times.id', '=', req.params.id).innerJoin('users', 'users.id',
+                  'times.user').innerJoin('projectslugs', 'projectslugs.id',
+                  'times.project')
+          .then(function(time) {
+        if (user.username !== time[0].owner) {
+          const err = errors.errorAuthorizationFailure(user.username,
+            'create objects for ' + time[0].owner);
+          return res.status(err.status).send(err);
+        }
+
+        const username = obj.user || time[0].owner;
+        helpers.checkUser(username, username).then(function(userId) {
+          if (userId !== undefined) {
+            time[0].user = userId;
+          } else {
+            time[0].user = time[0].user;
+          }
+
+          const projectName = obj.project || time[0].projectName;
+          helpers.checkProject(projectName).then(function(projectId) {
+            time[0].project = projectId || time[0].project;
+            time[0].duration = obj.duration || time[0].duration;
+            time[0].notes = obj.notes || time[0].notes;
+            time[0].issue_uri = obj.issue_uri || time[0].issue_uri;
+            time[0].date_worked = obj.date_worked || time[0].date_worked;
+            time[0].updated_at = new Date().toISOString().substring(0, 10);
+            delete time[0].owner;
+            delete time[0].projectName;
+
+            knex('times').where({id: time[0].id}).update(time[0])
+            .then(function() {
+              if (!obj.activities) {
+                return res.send(time);
+              }
+
+              helpers.checkActivities(obj.activities)
+              .then(function(activityIds) {
+                knex('timesactivities').where('time', '=', time[0].id)
+                .then(function(tas) {
+                  const taIds = [];
+                  /* eslint-disable prefer-const */
+                  for (let ta of tas) {
+                    /* eslint-enable prefer-const */
+                    taIds.push(ta.activity);
+                  }
+
+                  const unmatchedTas = taIds.filter(function() {
+                    return taIds.indexOf(activityIds) < 0;
+                  });
+                  const unmatchedActivities = activityIds
+                  .filter(function() {
+                    return activityIds.indexOf(taIds) < 0;
+                  });
+
+                  const taInsertion = [];
+                  /* eslint-disable prefer-const */
+                  for (let activityId of unmatchedActivities) {
+                    /* eslint-enable prefer-const */
+                    taInsertion.push({
+                      time: time[0].id,
+                      activity: activityId,
+                    });
+                  }
+
+                  knex('timesactivities').where('id', 'in', unmatchedTas)
+                  .del().then(function() {
+                    knex('timesactivities').insert(taInsertion)
+                    .then(function() {
+                      return res.send(time);
+                    }).catch(function(error) {
+                      const err = errors.errorServerError(error);
+                      return res.status(err.status).send(err);
+                    });
+                  }).catch(function(error) {
+                    const err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
+                  });
+                }).catch(function(error) {
+                  const err = errors.errorServerError(error);
+                  return res.status(err.status).send(err);
+                });
+              }).catch(function() {
+                const err = errors.errorInvalidForeignKey('time',
+                        'activities');
+                return res.status(err.status).send(err);
+              }).catch(function(error) {
+                const err = errors.errorServerError(error);
+                return res.status(err.status).send(err);
+              });
+            }).catch(function(error) {
+              const err = errors.errorServerError(error);
+              return res.status(err.status).send(err);
+            });
+          }).catch(function() {
+            const err = errors.errorInvalidForeignKey('time', 'project');
+            return res.status(err.status).send(err);
+          }).catch(function(error) {
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+          });
+        }).catch(function() {
+          const err = errors.errorInvalidForeignKey('time', 'user');
+          return res.status(err.status).send(err);
+        });
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
     })(req, res, next);

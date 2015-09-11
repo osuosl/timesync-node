@@ -957,4 +957,850 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
   });
+
+  describe('POST /times/:id', function() {
+    // The database's entry for `Whats Fresh`'s time entry
+    const postOriginalTime = {
+      duration: 12,
+      user: 'tschuy',
+      project: 'wf',
+      notes: '',
+      activities: ['docs', 'dev'],
+      issue_uri:
+         'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-19',
+    };
+
+    const getOriginalTime = {
+      duration: 12,
+      user: 'tschuy',
+      project: 'wf',
+      notes: '',
+      activities: ['docs', 'dev'],
+      issue_uri:
+         'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-19',
+      created_at: '2015-04-19',
+      updated_at: null,
+      id: 1,
+    };
+
+    // A completely patched version of the above time entry
+    // Only contains valid patch elements.
+    const updatedAt = new Date().toISOString().substring(0, 10);
+    const postPatchedTime = {
+      duration: 15,
+      user: 'deanj',
+      project: 'pgd',
+      activities: ['docs', 'sys'],
+      notes: 'Now this is a note',
+      issue_uri: 'https://github.com/osuosl/pgd/pull/19',
+      date_worked: '2015-04-28',
+    };
+
+    const getPatchedTime = {
+      duration: 15,
+      user: 'deanj',
+      project: 'pgd',
+      activities: ['docs', 'sys'],
+      notes: 'Now this is a note',
+      issue_uri: 'https://github.com/osuosl/pgd/pull/19',
+      date_worked: '2015-04-28',
+      created_at: '2015-04-19',
+      updated_at: updatedAt,
+    };
+
+    // Sends invalid data to the /times/:id endpoint
+    const invalidTimeDataType = {
+      duration: {thisIs: 'the wrong datatype'},
+      user: {thisIs: 'the wrong datatype'},
+      project: {thisIs: 'the wrong datatype'},
+      activities: {thisIs: 'the wrong datatype'},
+      notes: {thisIs: 'the wrong datatype'},
+      issue_uri: {thisIs: 'the wrong datatype'},
+      date_worked: {thisIs: 'the wrong datatype'},
+      key: 'this is a string',
+    };
+
+    // Sends invalid data to the /times/:id endpoint
+    const invalidTimeValue = {
+      duration: -1,
+      user1: 'validusername',
+      user2: 'invalid-us]ername',
+      project1: 'valid-project-slug',
+      project2: 'invalid_project_slug',
+      activities1: ['valid-slug-one', 'valid-slug-two'],
+      activities2: ['1_invalid_slug', '2_invalid_slug'],
+      issue_uri: 'git@github.com:osuosl',
+      date_worked: 'April 29, 1995',
+    };
+
+    const postArg = {
+      auth: {
+        username: 'tschuy',
+        password: 'password',
+      },
+    };
+
+    const requestOptions = {
+      url: baseUrl + 'times/1',
+      json: true,
+    };
+
+    function copyJsonObject(obj) {
+      // This allows us to change object properties
+      // without effecting other tests
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    /*
+     * Okay so here's the deal.
+     * This endpoint has ~26 tests, which are honestly just 3 tests
+     * repeated 7 or 8 times (with a few exceptions).
+     * This function in theory gets rid of a lot of the repeated code in
+     * the tests.
+     * Without this function you would see this exact code pretty 26
+     * times over.
+     */
+    function checkPostToEndpoint(done,
+                  postObj,
+                  expectedResults,
+                  error,
+                  statusCode,
+                  postBodies) {
+      postArg.object = postObj;
+      requestOptions.form = postArg;
+
+      // make a given post request
+      // check the error
+      // check the statusCode
+      // Also check the body of the request
+      request.post(requestOptions, function(err, res, body) {
+        expect(body.error).to.equal(error);
+        expect(res.statusCode).to.equal(statusCode);
+
+        if (postBodies !== undefined) {
+          // Is the recieved body within the array of expected bodies
+          expect(body).to.deep.equal(postBodies[0]);
+        }
+
+        // Always checks for valid get request
+        // err is always 'null'
+        // res.statusCode is always 200
+        // body always equals expectedresults
+        request.get(requestOptions.url, function(err0, res0, body0) {
+          expect(body0.error).to.equal(undefined);
+          expect(res0.statusCode).to.equal(200);
+          expect(JSON.parse(body0)).to.deep.equal(expectedResults);
+          done();
+        });
+      });
+    }
+
+    // Tests all valid fields
+    it('succesfully patches time with valid duration, user, project,' +
+       ' activity notes, issue_uri, and date_worked', function(done) {
+      const postObj = copyJsonObject(postPatchedTime);
+      const expectedResults = copyJsonObject(getPatchedTime);
+      expectedResults.id = getOriginalTime.id;
+      expectedResults.project = ['pgd'];
+      let error;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode);
+    });
+
+    // Tests valid duration field
+    it('successfully patches time with valid duration', function(done) {
+      const postObj = {duration: postPatchedTime.duration};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.duration = postPatchedTime.duration;
+      expectedResults.project = ['wf'];
+      expectedResults.updated_at = updatedAt;
+      let error;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode);
+    });
+
+    // Tests valid user field
+    // This test's functionality will be implemented at a later date
+    // (after the rest of the /time/:id functionality is implemented)
+    it('successfully patches time with valid user', function(done) {
+      const postObj = {user: postPatchedTime.user};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      expectedResults.updated_at = updatedAt;
+      expectedResults.user = postPatchedTime.user;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, postObj, expectedResults, undefined,
+                 statusCode);
+    });
+
+    // Tests valid project field
+    it('successfully patches time with valid project', function(done) {
+      const postObj = {project: postPatchedTime.project};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['pgd'];
+      expectedResults.updated_at = updatedAt;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, postObj, expectedResults, undefined,
+                 statusCode);
+    });
+
+    // Tests valid activities field
+    it('successfully patches time with valid activities', function(done) {
+      const postObj = {activities: postPatchedTime.activities};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      expectedResults.updated_at = updatedAt;
+      expectedResults.activities = postPatchedTime.activities;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, postObj, expectedResults, undefined,
+                 statusCode);
+    });
+
+    // Tests valid notes field
+    it('successfully patches time with valid notes', function(done) {
+      const postObj = {notes: postPatchedTime.notes};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.notes = postPatchedTime.notes;
+      expectedResults.project = ['wf'];
+      expectedResults.updated_at = updatedAt;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, postObj, expectedResults, undefined,
+                 statusCode);
+    });
+
+    // Tests valid issue_uri field
+    it('successfully patches time with valid issue_uri', function(done) {
+      const postObj = {issue_uri: postPatchedTime.issue_uri};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.issue_uri = postPatchedTime.issue_uri;
+      expectedResults.project = ['wf'];
+      expectedResults.updated_at = updatedAt;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, postObj, expectedResults, undefined,
+                 statusCode);
+    });
+
+    // Tests valid date_worked field
+    it('successfully patches time with valid date_worked', function(done) {
+      const postObj = {date_worked: postPatchedTime.date_worked};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.date_worked = postPatchedTime.date_worked;
+      expectedResults.project = ['wf'];
+      expectedResults.updated_at = updatedAt;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, postObj, expectedResults, undefined,
+                 statusCode);
+    });
+
+    // Tests all invalid fields
+    it('unsuccesfully patches time with invalid duration, user, project,' +
+       ' activity notes, issue_uri, and date_worked dattype',
+       function(done) {
+      const postObj = copyJsonObject(invalidTimeDataType);
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field duration of time should be ' +
+              'number but was sent as object',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field user of time should be ' +
+              'string but was sent as object',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field project of time should be ' +
+              'string but was sent as object',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field activities of time should be ' +
+              'array but was sent as object',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field notes of time should be ' +
+              'string but was sent as object',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field issue_uri of time should be ' +
+              'string but was sent as object',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field date_worked of time should be ' +
+              'string but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests invalid duration field
+    it('unsuccessfully patches time with just invalid duration datatype',
+       function(done) {
+      const postObj = {duration: invalidTimeDataType.duration};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field duration of time should be ' +
+              'number but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests invalid user field
+    // This test's functionality will be implemented at a later date
+    // (after the rest of the /time/:id functionality is implemented)
+    it('unsuccessfully patches time with just invalid user datatype',
+       function(done) {
+      const postObj = {user: invalidTimeDataType.user};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field user of time should be ' +
+              'string but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests invalid project field
+    it('unsuccessfully patches time with just invalid project datatype',
+       function(done) {
+      const postObj = {project: invalidTimeDataType.project};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field project of time should be ' +
+              'string but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests invalid activities field
+    it('unsuccessfully patches time with just invalid activites datatype',
+       function(done) {
+      const postObj = {activities: invalidTimeDataType.activities};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field activities of time should be ' +
+              'array but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests invalid notes field
+    it('unsuccessfully patches time with just invalid notes datatype',
+       function(done) {
+      const postObj = {notes: invalidTimeDataType.notes};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field notes of time should be ' +
+              'string but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests invalid issue_uri field
+    it('unsuccessfully patches time with just invalid issue_uri datatype',
+       function(done) {
+      const postObj = {issue_uri: invalidTimeDataType.issue_uri};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field issue_uri of time should be ' +
+              'string but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests invalid date_worked field
+    it('unsuccessfully patches time with just invalid date_worked datatype',
+       function(done) {
+      const postObj = {date_worked: invalidTimeDataType.date_worked};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field date_worked of time should be ' +
+              'string but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests invalid key field
+    it('unsuccessfully patches time with just invalid key datatype',
+       function(done) {
+      const postObj = {key: invalidTimeDataType.key};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'time does not have a key field',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests all valid fields except invalid duration
+    it('unsuccessfully patches time with an invalid duration datatype',
+       function(done) {
+      const postObj = copyJsonObject(postOriginalTime);
+      postObj.duration = invalidTimeDataType.duration;
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field duration of time should be ' +
+              'number but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests all valid fields except invalid user
+    // This test's functionality will be implemented at a later date
+    // (after the rest of the /time/:id functionality is implemented)
+    it('unsuccessfully patches time with an invalid user datatype',
+       function(done) {
+      const postObj = copyJsonObject(postOriginalTime);
+      postObj.user = invalidTimeDataType.user;
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field user of time should be ' +
+              'string but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests all valid fields except invalid project
+    it('unsuccessfully patches time with an invalid project datatype',
+       function(done) {
+      const postObj = copyJsonObject(postOriginalTime);
+      postObj.project = invalidTimeDataType.project;
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field project of time should be ' +
+              'string but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests all valid fields except invalid activities
+    it('unsuccessfully patches time with an invalid activities datatype',
+       function(done) {
+      const postObj = copyJsonObject(postOriginalTime);
+      postObj.activities = invalidTimeDataType.activities;
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field activities of time should be ' +
+              'array but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests all valid fields except invalid notes
+    it('unsuccessfully patches time with an invalid notes datatype',
+      function(done) {
+      const postObj = copyJsonObject(postOriginalTime);
+      postObj.notes = invalidTimeDataType.notes;
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field notes of time should be ' +
+              'string but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests all valid fields except invalid issue_uri
+    it('unsuccessfully patches time with an invalid issue_uri datatype',
+      function(done) {
+      const postObj = copyJsonObject(postOriginalTime);
+      postObj.issue_uri = invalidTimeDataType.issue_uri;
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field issue_uri of time should be ' +
+              'string but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests all valid fields except invalid date_worked
+    it('unsuccessfully patches time with an invalid date_worked datatype',
+      function(done) {
+      const postObj = copyJsonObject(postOriginalTime);
+      postObj.date_worked = invalidTimeDataType.date_worked;
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field date_worked of time should be ' +
+              'string but was sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Tests all valid fields except invalid key
+    it('unsuccessfully patches time with an invalid key datatype',
+      function(done) {
+      const postObj = copyJsonObject(postOriginalTime);
+      postObj.key = invalidTimeDataType.key;
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'time does not have a key field',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // The following test a valid datatype being sent to /times/:id, but
+    // the data being sent is incorrect, either a bad slug or some other
+    // error.
+    //
+    // Test multiple bad identifiers at once
+
+    // Test invalid duration identifier
+    it('unsuccessfully patches time with just invalid duration identifier',
+       function(done) {
+      const postObj = {duration: invalidTimeValue.duration};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field duration of time should be positive integer but ' +
+              'was sent as negative integer',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Test invalid user invalid foreign key
+    it('unsuccessfully patches time with just invalid user foreign key',
+       function(done) {
+      const postObj = {user: invalidTimeValue.user1};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Invalid foreign key';
+      const statusCode = 409;
+      const postBody = [
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The time does not contain a valid user reference.',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Test invalid user (invalid formatting)
+    /*
+    it('unsuccessfully patches time with just invalid user string',
+       function(done) {
+      const postObj = {user: invalidTimeValue.user2};
+      const expectedResults = copyJsonObject(originalTime);
+      expectedResults.project = ['wf'];
+      let error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+      {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field user of time should be username but was sent ' +
+            'as string.'
+      }];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+    */
+
+    // Test invalid project foreign key
+    it('unsuccessfully patches time with just invalid project foreign key',
+       function(done) {
+      const postObj = {project: invalidTimeValue.project1};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Invalid foreign key';
+      const statusCode = 409;
+      const postBody = [
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The time does not contain a valid project reference.',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Test invalid project (inavlid formatting)
+    it('unsuccessfully patches time with just invalid project string',
+       function(done) {
+      const postObj = {project: invalidTimeValue.project2};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Invalid foreign key';
+      const statusCode = 409;
+      const postBody = [
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The time does not contain a valid project reference.',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Test invalid activities (not in the database)
+    /*
+    it('unsuccessfully patches time with just invalid activities foreign ' +
+       'key', function(done) {
+      const postObj = {activities: invalidTimeValue.activities1};
+      const expectedResults = copyJsonObject(originalTime);
+      expectedResults.project = ['wf'];
+      let error = 'Invalid foreign key';
+      const statusCode = 409;
+      const postBody = [
+      {
+        status: 409,
+        error: 'Bad object',
+        text: 'The time does not contain a valid activities reference'
+      }];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+    */
+
+    // Test invalid activities (invalid formatting)
+    /*
+    it('unsuccessfully patches time with just invalid activities string',
+       function(done) {
+      const postObj = {user: invalidTimeValue.activities2};
+      const expectedResults = copyJsonObject(originalTime);
+      expectedResults.project = ['wf'];
+      let error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+      {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field activites of time should be array of activities ' +
+            'but was sent as array of strings.'
+      }];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+    */
+
+    // Test bad issue uri (formatting)
+    it('unsuccessfully patches time with just invalid issue_uri',
+       function(done) {
+      const postObj = {issue_uri: invalidTimeValue.issue_uri};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      expectedResults.project = ['wf'];
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field issue_uri of time should be URI but was sent ' +
+              'as invalid URI git@github.com:osuosl',
+        },
+      ];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+              statusCode, postBody);
+    });
+
+    // Test bad date (formatting)
+    /*
+    it('unsuccessfully patches time with just invalid date_worked',
+       function(done) {
+      const postObj = {date_worked: invalidTimeValue.date_worked};
+      const expectedResults = copyJsonObject(originalTime);
+      expectedResults.project = ['wf'];
+      let error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+      {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field date_worked of time should be date but was ' +
+            'sent as string.'
+      }];
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+    */
+  });
 };
