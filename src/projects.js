@@ -6,6 +6,7 @@ module.exports = function(app) {
   const helpers = require('./helpers')(app);
   const validUrl = require('valid-url');
   const passport = require('passport');
+  const authenticatedPost = require('./authenticatedPost');
 
   app.get(app.get('version') + '/projects', function(req, res) {
     knex('projects').then(function(projects) {
@@ -142,136 +143,115 @@ module.exports = function(app) {
     });
   });
 
-  app.post(app.get('version') + '/projects', function(req, res, next) {
-    let processPost = function(autherr, user, info) {
-      if (!user) {
-        const err = errors.errorAuthenticationFailure(info.message);
+  authenticatedPost(app, app.get('version') + '/projects', function(req, res, user) {
+    const obj = req.body.object;
+
+    // run various checks
+    // valid keys
+    const validKeys = ['name', 'uri', 'owner', 'slugs'];
+    /* eslint-disable prefer-const */
+    for (let key in obj) {
+      /* eslint-enable prefer-const */
+      // indexOf returns -1 if the parameter is not in the array,
+      // so this returns true if the slug is not in slugNames
+      if (validKeys.indexOf(key) === -1) {
+        const err = errors.errorBadObjectUnknownField('project', key);
         return res.status(err.status).send(err);
       }
-
-      const obj = req.body.object;
-
-      // run various checks
-      // valid keys
-      const validKeys = ['name', 'uri', 'owner', 'slugs'];
-      /* eslint-disable prefer-const */
-      for (let key in obj) {
-        /* eslint-enable prefer-const */
-        // indexOf returns -1 if the parameter is not in the array,
-        // so this returns true if the slug is not in slugNames
-        if (validKeys.indexOf(key) === -1) {
-          const err = errors.errorBadObjectUnknownField('project', key);
-          return res.status(err.status).send(err);
-        }
-      }
-
-      // check existence of slugs
-      if (!obj.slugs) {
-        const err = errors.errorBadObjectMissingField('project', 'slug');
-        return res.status(err.status).send(err);
-      }
-
-      // check existence of name
-      if (!obj.name) {
-        const err = errors.errorBadObjectMissingField('project', 'name');
-        return res.status(err.status).send(err);
-      }
-
-      // check field types
-      const fields = [
-        {name: 'name', type: 'string', required: true},
-        {name: 'uri', type: 'string', required: false},
-        {name: 'owner', type: 'string', required: true},
-        {name: 'slugs', type: 'array', required: true},
-      ];
-
-      // validateFields takes the object to check fields on,
-      // and an array of field names and types
-      const validationFailure = helpers.validateFields(obj, fields);
-      if (validationFailure) {
-        const err = errors.errorBadObjectInvalidField('project',
-          validationFailure.name, validationFailure.type,
-          validationFailure.actualType);
-        return res.status(err.status).send(err);
-      }
-
-      // check validity of uri syntax
-      if (obj.uri && !validUrl.isWebUri(obj.uri)) {
-        const err = errors.errorBadObjectInvalidField('project', 'uri', 'uri',
-        'non-uri string');
-        return res.status(err.status).send(err);
-      }
-
-      // check validity of slugs
-      const invalidSlugs = obj.slugs.filter(function(slug) {
-        return !helpers.validateSlug(slug);
-      });
-
-      if (invalidSlugs.length) {
-        const err = errors.errorBadObjectInvalidField('project', 'slugs',
-        'slugs', 'non-slug strings');
-        return res.status(err.status).send(err);
-      }
-
-      // check validity of owner -- it must match the submitting user
-      // if checkUser fails, the user submitting the request doesn't match
-      helpers.checkUser(user.username, obj.owner).then(function(userId) {
-        // select any slugs that match the ones submitted
-        // this is to check that none of the submitted slugs are
-        // currently in use.
-        knex('projectslugs').where('name', 'in', obj.slugs)
-        .then(function(slugs) {
-          // if any slugs match the slugs passed to us, error out
-          if (slugs.length) {
-            const err = errors.errorSlugsAlreadyExist(slugs.map(function(slug) {
-              return slug.name;
-            }));
-
-            return res.status(err.status).send(err);
-          }
-
-          // create object to insert into database
-          const insertion = {
-            uri: obj.uri,
-            owner: userId,
-            name: obj.name,
-          };
-
-          knex('projects').insert(insertion).then(function(projects) {
-            // project is a list containing the ID of the
-            // newly created project
-            const project = projects[0];
-            const projectSlugs = obj.slugs.map(function(slug) {
-              return {name: slug, project: project};
-            });
-
-            knex('projectslugs').insert(projectSlugs).then(function() {
-              obj.id = project;
-              res.send(JSON.stringify(obj));
-            });
-          });
-        });
-      }).catch(function() {
-        // checkUser failed, meaning the user is not authorized
-        const err = errors.errorAuthenticationTypeFailure(req.body.auth.username,
-          'create objects for ' + obj.owner);
-        return res.status(err.status).send(err);
-      });
-    };
-
-    let authType;
-    if (req.body.auth.type === 'password') {
-      authType = 'local';
-    } else if (req.body.auth.type === 'ldap') {
-      authType = 'ldapauth';
     }
 
-    if (app.get('strategies').indexOf(authType) < 0) {
-      const err = errors.errorAuthorizationTypeFailure(req.body.auth.type);
+    // check existence of slugs
+    if (!obj.slugs) {
+      const err = errors.errorBadObjectMissingField('project', 'slug');
       return res.status(err.status).send(err);
     }
 
-    passport.authenticate(authType, processPost)(req, res, next);
+    // check existence of name
+    if (!obj.name) {
+      const err = errors.errorBadObjectMissingField('project', 'name');
+      return res.status(err.status).send(err);
+    }
+
+    // check field types
+    const fields = [
+      {name: 'name', type: 'string', required: true},
+      {name: 'uri', type: 'string', required: false},
+      {name: 'owner', type: 'string', required: true},
+      {name: 'slugs', type: 'array', required: true},
+    ];
+
+    // validateFields takes the object to check fields on,
+    // and an array of field names and types
+    const validationFailure = helpers.validateFields(obj, fields);
+    if (validationFailure) {
+      const err = errors.errorBadObjectInvalidField('project',
+        validationFailure.name, validationFailure.type,
+        validationFailure.actualType);
+      return res.status(err.status).send(err);
+    }
+
+    // check validity of uri syntax
+    if (obj.uri && !validUrl.isWebUri(obj.uri)) {
+      const err = errors.errorBadObjectInvalidField('project', 'uri', 'uri',
+      'non-uri string');
+      return res.status(err.status).send(err);
+    }
+
+    // check validity of slugs
+    const invalidSlugs = obj.slugs.filter(function(slug) {
+      return !helpers.validateSlug(slug);
+    });
+
+    if (invalidSlugs.length) {
+      const err = errors.errorBadObjectInvalidField('project', 'slugs',
+      'slugs', 'non-slug strings');
+      return res.status(err.status).send(err);
+    }
+
+    // check validity of owner -- it must match the submitting user
+    // if checkUser fails, the user submitting the request doesn't match
+    helpers.checkUser(user.username, obj.owner).then(function(userId) {
+      // select any slugs that match the ones submitted
+      // this is to check that none of the submitted slugs are
+      // currently in use.
+      knex('projectslugs').where('name', 'in', obj.slugs)
+      .then(function(slugs) {
+        // if any slugs match the slugs passed to us, error out
+        if (slugs.length) {
+          const err = errors.errorSlugsAlreadyExist(slugs.map(function(slug) {
+            return slug.name;
+          }));
+
+          return res.status(err.status).send(err);
+        }
+
+        // create object to insert into database
+        const insertion = {
+          uri: obj.uri,
+          owner: userId,
+          name: obj.name,
+        };
+
+        knex('projects').insert(insertion).then(function(projects) {
+          // project is a list containing the ID of the
+          // newly created project
+          const project = projects[0];
+          const projectSlugs = obj.slugs.map(function(slug) {
+            return {name: slug, project: project};
+          });
+
+          knex('projectslugs').insert(projectSlugs).then(function() {
+            obj.id = project;
+            res.send(JSON.stringify(obj));
+          });
+        });
+      });
+    }).catch(function() {
+      // checkUser failed, meaning the user is not authorized
+      const err = errors.errorAuthorizationFailure(req.body.auth.username,
+        'create objects for ' + obj.owner);
+      return res.status(err.status).send(err);
+    });
   });
 
   app.post(app.get('version') + '/projects/:slug', function(req, res, next) {

@@ -556,6 +556,7 @@ module.exports = function(expect, request, baseUrl) {
       auth: {
         username: 'tschuy',
         password: 'password',
+        type: 'password',
       },
       object: project,
     };

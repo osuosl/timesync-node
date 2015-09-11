@@ -43,7 +43,6 @@ if (process.env.TIMESYNC_LDAP) {
   const ldapStrategy = require('./auth/ldap')(knex);
   passport.use(ldapStrategy);
   app.get('strategies').push('ldapauth');
-  console.log(app.get('strategies'));
 }
 
 if (process.env.TIMESYNC_LOCAL) {
