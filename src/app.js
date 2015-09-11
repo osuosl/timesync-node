@@ -26,7 +26,6 @@ app.set('version', '/v1');
 
 // Set up authentication
 const passport = require('passport');
-const localPassport = require('./auth/local.js')(knex);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -39,7 +38,19 @@ passport.deserializeUser(function deserializeCallback(user, done) {
   done(null, user);
 });
 
-passport.use(localPassport);
+app.set('strategies', []);
+if (process.env.TIMESYNC_LDAP) {
+  const ldapStrategy = require('./auth/ldap')(knex);
+  passport.use(ldapStrategy);
+  app.get('strategies').push('ldapauth');
+  console.log(app.get('strategies'));
+}
+
+if (process.env.TIMESYNC_LOCAL) {
+  const localStrategy = require('./auth/local')(knex);
+  passport.use(localStrategy);
+  app.get('strategies').push('local');
+}
 
 // Load local functions
 require('./projects')(app);
