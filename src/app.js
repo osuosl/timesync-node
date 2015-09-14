@@ -1,10 +1,29 @@
 'use strict';
+/* eslint-disable no-console */
 
 // Library requirements
 const express = require('express');
 const bodyParser = require('body-parser');
 const knexfile = require('../knexfile');
 const db = process.env.NODE_ENV || 'development';
+let auth;
+
+try {
+  auth = JSON.parse(process.env.TIMESYNC_AUTH_MODULES);
+} catch (e) {
+  if (process.env.TIMESYNC_AUTH_MODULES === undefined) {
+    console.log('You must set TIMESYNC_AUTH_MODULES before running TimeSync!');
+  } else {
+    console.log('Invalid TIMESYNC_AUTH_MODULES variable!', e);
+  }
+  process.exit(1);
+}
+
+if (!Array.isArray(auth) || auth.length === 0) {
+  console.log('TIMESYNC_AUTH_MODULES must be array of at least one module!');
+  process.exit(1);
+}
+
 
 let knex;
 if (!GLOBAL.knex) {
@@ -39,13 +58,13 @@ passport.deserializeUser(function deserializeCallback(user, done) {
 });
 
 app.set('strategies', []);
-if (process.env.TIMESYNC_LDAP) {
+if (auth.indexOf('ldap') > -1) {
   const ldapStrategy = require('./auth/ldap')(knex);
   passport.use(ldapStrategy);
   app.get('strategies').push('ldapauth');
 }
 
-if (process.env.TIMESYNC_LOCAL) {
+if (auth.indexOf('password') > -1) {
   const localStrategy = require('./auth/local')(knex);
   passport.use(localStrategy);
   app.get('strategies').push('local');
@@ -59,7 +78,5 @@ require('./times')(app);
 module.exports = app;
 
 app.listen(process.env.PORT || 8000, function notifyUser() {
-  /* eslint-disable */
   console.log('App now listening on %s', process.env.PORT || 8000);
-  /* eslint-enable */
 });
