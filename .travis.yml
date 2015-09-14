@@ -8,5 +8,3 @@ before_script:
   - npm run migrations
 git:
     submodules: false
-env:
-    TIMESYNC_LOCAL=1
