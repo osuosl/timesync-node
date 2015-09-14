@@ -21,9 +21,8 @@ module.exports = function(expect, request, baseUrl) {
             id: 1,
           },
         ];
-        
-        //body.created_at = body.created_at.slice(0, 10);
-        // chopping off the end of the date...
+
+        // chopping off the end of the date
         const jsonBody = JSON.parse(body);
         jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
         jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
@@ -43,8 +42,6 @@ module.exports = function(expect, request, baseUrl) {
         jsonBody.created_at = jsonBody.created_at.slice(0, 10);
         jsonBody.date_worked = jsonBody.date_worked.slice(0, 10);
 
-        //jsonBody.created_at = new Date().toISOString().slice(0,10);
-
         const expectedResult = {
           duration: 12,
           user: 'tschuy',
@@ -62,7 +59,6 @@ module.exports = function(expect, request, baseUrl) {
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
 
-        //console.log(jsonBody.date_worked);
         expect(jsonBody).to.deep.equal(expectedResult);
         done();
       });
@@ -159,7 +155,7 @@ module.exports = function(expect, request, baseUrl) {
               duration: 20,
               user: 'tschuy',
               project: ['gwm', 'ganeti-webmgr'],
-              activities: ['dev', 'docs'],
+              activities: ['docs', 'dev'],
               notes: '',
               issue_uri: 'https://github.com/osuosl/gwm/issues/1',
               date_worked: '2015-07-30',
@@ -170,7 +166,7 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          
+
           const jsonGetBody = JSON.parse(getBody);
           /* eslint-disable prefer-const */
           for (let i = 0, len = jsonGetBody.length; i < len; i++) {
@@ -214,8 +210,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -254,8 +254,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -292,8 +296,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -330,8 +338,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -368,8 +380,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -402,10 +418,14 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          
+
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -442,8 +462,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -479,8 +503,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -515,10 +543,14 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
-          
+
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -555,8 +587,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -591,8 +627,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -629,8 +669,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -666,8 +710,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -703,8 +751,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -739,8 +791,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -777,8 +833,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -815,8 +875,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -836,14 +900,9 @@ module.exports = function(expect, request, baseUrl) {
 
       const postArg = getPostObject(baseUrl + 'times/', time);
 
-      console.log('1');
       request.post(postArg, function(err, res, body) {
-        console.log('2');
         expect(err).to.equal(null);
-        console.log(err);
-        console.log(res.body);
         expect(res.statusCode).to.equal(200);
-        console.log('3');
 
         time.id = body.id;
         expect(body).to.deep.equal(time);
@@ -855,7 +914,7 @@ module.exports = function(expect, request, baseUrl) {
               duration: 20,
               user: 'tschuy',
               project: ['gwm', 'ganeti-webmgr'],
-              activities: ['dev', 'docs'],
+              activities: ['docs', 'dev'],
               notes: '',
               issue_uri: null,
               date_worked: '2015-07-30',
@@ -866,7 +925,15 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(getErr).to.equal(null);
           expect(getRes.statusCode).to.equal(200);
+
           const jsonGetBody = JSON.parse(getBody);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonGetBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonGetBody[i].created_at = jsonGetBody[i].created_at.slice(0, 10);
+            jsonGetBody[i].date_worked = jsonGetBody[i].date_worked.slice(0, 10);
+          }
+
           expect(jsonGetBody).to.deep.have.same.members(expectedResults);
           done();
         });
@@ -901,8 +968,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -939,8 +1010,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -975,8 +1050,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -1013,8 +1092,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -1051,8 +1134,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();
@@ -1087,8 +1174,12 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-          jsonBody[0].created_at = jsonBody[0].created_at.slice(0, 10);
-          jsonBody[0].date_worked = jsonBody[0].date_worked.slice(0, 10);
+          /* eslint-disable prefer-const */
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+          /* eslint-enable prefer-const */
+            jsonBody[i].created_at = jsonBody[i].created_at.slice(0, 10);
+            jsonBody[i].date_worked = jsonBody[i].date_worked.slice(0, 10);
+          }
 
           expect(jsonBody).to.deep.equal(initialData);
           done();

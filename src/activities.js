@@ -248,7 +248,7 @@ module.exports = function(app) {
           return res.status(err.status).send(err);
         }
 
-        knex('activities').insert(obj).then(function(activities) {
+        knex('activities').insert(obj).returning('id').then(function(activities) {
           // activities is a list containing the ID of the
           // newly created activity
           const activity = activities[0];

@@ -288,8 +288,8 @@ module.exports = function(app) {
                 created_at: createdAt,
               };
 
-              console.log('Start');
-              knex('times').insert(insertion).returning('id').then(function(timeIds) {
+              knex('times').insert(insertion).returning('id').
+              then(function(timeIds) {
                 const timeId = timeIds[0];
 
                 const taInsertion = [];
@@ -312,7 +312,6 @@ module.exports = function(app) {
                   });
                 });
               }).catch(function(error) {
-                console.log('End');
                 const err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
               });

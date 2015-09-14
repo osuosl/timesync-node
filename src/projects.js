@@ -237,7 +237,8 @@ module.exports = function(app) {
             name: obj.name,
           };
 
-          knex('projects').insert(insertion).then(function(projects) {
+          knex('projects').insert(insertion).returning('id')
+          .then(function(projects) {
             // project is a list containing the ID of the
             // newly created project
             const project = projects[0];
@@ -476,9 +477,10 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
         // Otherwise delete project
       }
-      console.log(req.params.slug);
 
-      //knex('projectslugs').where('name', req.params.slug).del().then(function() {
+      /* Before deleting the project, delete its associated slugs
+       * (onDelete('cascade') can only be used to delete columns*/
+      knex('projectslugs').where('project', projectId).del().then(function() {
         knex('projects').where('id', '=', projectId)
         .del().then(function(numObj) {
           /* When deleting something from the table, the number of
@@ -496,7 +498,7 @@ module.exports = function(app) {
           const err = errors.errorServerError(error);
           return res.status(err.status).send(err);
         });
-     //});
+      });
     });
   });
 };
