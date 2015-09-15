@@ -6,11 +6,11 @@ module.exports = {
     }*/
     client: 'pg',
     connection: {
-      //filename: './dev.sqlite3'
-      host: '172.17.42.1',
+      /*host: '172.17.42.1',
       port: '5432',
       user: 'thai',
-      password: 'password1'
+      password: 'password1'*/
+      process.env.PG_CONNECTION_STRING
     }
   },
 
@@ -21,10 +21,11 @@ module.exports = {
     }*/
     client: 'pg',
     connection: {
-      host: '172.17.42.1',
+      /*host: '172.17.42.1',
       port: '5432',
       user: 'thai',
-      password: 'password1'
+      password: 'password1'*/
+      process.env.PG_CONNECTION_STRING
     }
   },
 

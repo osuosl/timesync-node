@@ -478,26 +478,39 @@ module.exports = function(app) {
         // Otherwise delete project
       }
 
-      /* Before deleting the project, delete its associated slugs
-       * (onDelete('cascade') can only be used to delete columns*/
-      knex('projectslugs').where('project', projectId).del().then(function() {
-        knex('projects').where('id', '=', projectId)
-        .del().then(function(numObj) {
-          /* When deleting something from the table, the number of
-          objects deleted is returned. So to confirm that deletion
-          was successful, make sure that the number returned is at
-          least one. */
-          if (numObj >= 1) {
-            return res.send();
-          }
+      /* Slugs associated with this project will be deleted so store the
+       * projectId to a variable now */
+      knex('projectslugs').select('project').where('project', projectId)
+      .then(function(projIdObj) {
+        const projId = projIdObj[0].project;
+        /* Before deleting the project, delete its associated userroles and
+         * slugs (knex's onDelete('cascade') can only be used to delete
+         * columns) */
+        knex('userroles').where('project', projectId).del()
+        .then(function() {
+          knex('projectslugs').where('project', projectId).del()
+          .then(function() {
+            knex('projects').where('id', '=', projId)
+            .del().then(function(numObj) {
+                /* When deleting something from the table, the number of
+                objects deleted is returned. So to confirm that deletion
+                was successful, make sure that the number returned is at
+                least one. */
+              if (numObj >= 1) {
+                return res.send();
+              }
 
-          const err = errors.errorObjectNotFound('slug',
-          req.params.slug);
-          return res.status(err.status).send(err);
-        }).catch(function(error) {
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
+              const err = errors.errorObjectNotFound('slug', req.params.slug);
+              return res.status(err.status).send(err);
+            }).catch(function(error) {
+              const err = errors.errorServerError(error);
+              return res.status(err.status).send(err);
+            });
+          });
         });
+      }).catch(function() {
+        const err = errors.errorObjectNotFound('slug', req.params.slug);
+        return res.status(err.status).send(err);
       });
     });
   });
