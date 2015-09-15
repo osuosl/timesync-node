@@ -30,7 +30,7 @@ const clearDatabase = function(done) {
     knex.raw("TRUNCATE activities CASCADE; SELECT setval('activities_id_seq', 3)").then(function() {
       knex.raw('TRUNCATE users CASCADE').then(function() {
         knex.raw("TRUNCATE times CASCADE; SELECT setval('times_id_seq', 1)").then(function() {
-          knex.raw('TRUNCATE projectslugs CASCADE').then(function() {
+          knex.raw("TRUNCATE projectslugs CASCADE; SELECT setval('projectslugs_id_seq', (SELECT MAX(id) FROM projectslugs))").then(function() {
             knex.raw('TRUNCATE userroles RESTART IDENTITY CASCADE').then(function() {
               knex.raw('TRUNCATE timesactivities CASCADE').then(done);
             });
