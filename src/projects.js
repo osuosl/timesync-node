@@ -413,70 +413,78 @@ module.exports = function(app) {
 
           delete project.ownerId;
 
-          knex('projects').where({id: project.id}).update(project)
-          .then(function() {
-            // slugNames contains the list of names of slugs that
-            // overlap with what the user submitted.
-            const slugNames = slugs.map(function(slug) {
-              return slug.name;
-            });
+          knex('projects').where({id: project.id})
+          .update({'deleted_at': Date.now()}).then(function() {
+            knex('projects').insert(project).then(function(id) {
+              project.id = id[0];
 
-            knex('projectslugs').where({project: project.id})
-            .then(function(existingSlugObjs) {
-              const existingSlugs = existingSlugObjs.map(function(slug) {
+              // slugNames contains the list of names of slugs that
+              // overlap with what the user submitted.
+              const slugNames = slugs.map(function(slug) {
                 return slug.name;
               });
-              // existingSlugs contains a list of all of slugs
-              // that already belong to the project, by name
 
-              // get list of slugs that is no longer in POST
-              // request
-              let delSlugs = [];
-              if (obj.slugs.length) {
-                delSlugs = existingSlugs.filter(function(slug) {
-                  return obj.slugs.indexOf(slug) === -1;
+              knex('projectslugs').where({project: project.id})
+              .then(function(existingSlugObjs) {
+                const existingSlugs = existingSlugObjs.map(function(slug) {
+                  return slug.name;
                 });
-              }
+                // existingSlugs contains a list of all of slugs
+                // that already belong to the project, by name
 
-              // make a list containing all of the slugs that need
-              // to be inserted
-              const newSlugs = obj.slugs.filter(function(objSlug) {
-                if (slugNames.indexOf(objSlug) === -1) {
-                  return true;
-                }
-              }).map(function(newSlug) {
-                return {name: newSlug, project: project.id};
-              });
-
-              knex.transaction(function(trx) {
-                // trx can be used just like knex, but every call is temporary
-                // until trx.commit() is called. Until then, they're stored
-                // separately, and, if something goes wrong, can be rolled back
-                // without side effects.
-
-                // make a list containing creation and
-                // deletion promises
-                const slugsPromises = [];
-                if (delSlugs.length) {
-                  slugsPromises.push(trx('projectslugs')
-                  .where('name', 'in', delSlugs).del());
-                }
-                if (newSlugs.length) {
-                  slugsPromises.push(trx('projectslugs').insert(newSlugs));
+                // get list of slugs that is no longer in POST
+                // request
+                let delSlugs = [];
+                if (obj.slugs.length) {
+                  delSlugs = existingSlugs.filter(function(slug) {
+                    return obj.slugs.indexOf(slug) === -1;
+                  });
                 }
 
-                Promise.all(slugsPromises).then(function() {
-                  if (obj.slugs.length) {
-                    project.slugs = obj.slugs;
-                  } else {
-                    project.slugs = existingSlugs;
+                knex.transaction(function(trx) {
+                  // trx can be used just like knex, but every call is temporary
+                  // until trx.commit() is called. Until then, they're stored
+                  // separately, and, if something goes wrong, can be rolled
+                  // back without side effects.
+
+                  // make a list containing all of the slugs that need
+                  // to be inserted
+                  const newSlugs = obj.slugs.filter(function(objSlug) {
+                    if (slugNames.indexOf(objSlug) === -1) {
+                      return true;
+                    }
+                  }).map(function(newSlug) {
+                    return {name: newSlug, project: project.id};
+                  });
+
+                  // make a list containing creation and
+                  // deletion promises
+                  const slugsPromises = [];
+                  if (delSlugs.length) {
+                    slugsPromises.push(trx('projectslugs')
+                    .where('name', 'in', delSlugs).del());
+                  }
+                  if (newSlugs.length) {
+                    slugsPromises.push(trx('projectslugs').insert(newSlugs));
                   }
 
-                  project.owner = user.username;
-                  trx.commit();
-                  res.send(JSON.stringify(project));
+                  Promise.all(slugsPromises).then(function() {
+                    if (obj.slugs.length) {
+                      project.slugs = obj.slugs;
+                    } else {
+                      project.slugs = existingSlugs;
+                    }
+
+                    project.owner = user.username;
+
+                    trx.commit();
+                    res.send(JSON.stringify(project));
+                  }).catch(function(error) {
+                    trx.rollback();
+                    const err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
+                  });
                 }).catch(function(error) {
-                  trx.rollback();
                   const err = errors.errorServerError(error);
                   return res.status(err.status).send(err);
                 });
@@ -484,7 +492,13 @@ module.exports = function(app) {
                 const err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
               });
+            }).catch(function(error) {
+              const err = errors.errorServerError(error);
+              return res.status(err.status).send(err);
             });
+          }).catch(function(error) {
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
           });
         }).catch(function(error) {
           const err = errors.errorServerError(error);
@@ -494,6 +508,9 @@ module.exports = function(app) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
+    }).catch(function(error) {
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
     });
   });
 
