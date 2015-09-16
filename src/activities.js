@@ -159,10 +159,15 @@ module.exports = function(app) {
       };
 
       knex('activities').where('slug', '=', req.params.slug)
-      .update(activity).then(function(numObj) {
+      .update({'deleted_at': Date.now()}).then(function(numObj) {
         if (numObj >= 1) {
-          activity.id = obj.id;
-          return res.send(activity);
+          knex('activities').insert(activity).then(function(newObj) {
+            activity.id = newObj.id;
+            return res.send(activity);
+          }).catch(function(error) {
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+          });
         }
         const err = errors.errorObjectNotFound('activity');
         return res.status(err.status).send(err);
