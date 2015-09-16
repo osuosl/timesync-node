@@ -16,7 +16,8 @@
     "test": "NODE_ENV=mocha PORT=8851 DEBUG=true mocha --harmony tests",
     "latte": "sh ./scripts/latte.sh",
     "coverage": "NODE_ENV=mocha PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
-    "create-account": "node --harmony ./scripts/create-account.js"
+    "create-account": "node --harmony ./scripts/create-account.js",
+    "docker-test": "sh ./scripts/docker-test.sh"
   },
   "repository": {
     "type": "git",
