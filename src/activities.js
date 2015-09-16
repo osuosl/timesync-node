@@ -161,8 +161,8 @@ module.exports = function(app) {
       knex('activities').where('slug', '=', req.params.slug)
       .update({'deleted_at': Date.now()}).then(function(numObj) {
         if (numObj >= 1) {
-          knex('activities').insert(activity).then(function(newObj) {
-            activity.id = newObj.id;
+          knex('activities').insert(activity).then(function(id) {
+            activity.id = id[0];
             return res.send(activity);
           }).catch(function(error) {
             const err = errors.errorServerError(error);
