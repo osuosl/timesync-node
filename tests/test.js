@@ -26,13 +26,14 @@ const reloadFixtures = function(done) {
 };
 
 const clearDatabase = function(done) {
-  knex.raw("TRUNCATE projects CASCADE; SELECT setval('projects_id_seq', 3)")
-  .then(function() {
+  knex.raw("TRUNCATE projects CASCADE; SELECT setval('projects_id_seq', " +
+           '(SELECT MAX(id) FROM projects))').then(function() {
     knex.raw('TRUNCATE activities CASCADE;' +
-             "SELECT setval('activities_id_seq', 3)").then(function() {
+             "SELECT setval('activities_id_seq', " + 
+             '(SELECT MAX(id) FROM activities))').then(function() {
       knex.raw('TRUNCATE users CASCADE').then(function() {
-        knex.raw("TRUNCATE times CASCADE; SELECT setval('times_id_seq', 1)")
-        .then(function() {
+        knex.raw("TRUNCATE times CASCADE; SELECT setval('times_id_seq', " +
+                 '(SELECT MAX(id) FROM times))').then(function() {
           knex.raw('TRUNCATE projectslugs CASCADE;' +
                    "SELECT setval('projectslugs_id_seq', " +
                    '(SELECT MAX(id) FROM projectslugs))').then(function() {
