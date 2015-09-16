@@ -180,7 +180,8 @@ module.exports = function(expect, request, baseUrl) {
           for (let i = 0, len = jsonGetBody.length; i < len; i++) {
           /* eslint-enable prefer-const */
             jsonGetBody[i].created_at = jsonGetBody[i].created_at.slice(0, 10);
-            jsonGetBody[i].date_worked = jsonGetBody[i].date_worked.slice(0, 10);
+            jsonGetBody[i].date_worked = jsonGetBody[i].date_worked
+                                                       .slice(0, 10);
           }
 
           expect(jsonGetBody).to.deep.have.same.members(expectedResults);
@@ -941,7 +942,8 @@ module.exports = function(expect, request, baseUrl) {
           for (let i = 0, len = jsonGetBody.length; i < len; i++) {
           /* eslint-enable prefer-const */
             jsonGetBody[i].created_at = jsonGetBody[i].created_at.slice(0, 10);
-            jsonGetBody[i].date_worked = jsonGetBody[i].date_worked.slice(0, 10);
+            jsonGetBody[i].date_worked = jsonGetBody[i].date_worked
+                                                       .slice(0, 10);
           }
 
           expect(jsonGetBody).to.deep.have.same.members(expectedResults);
@@ -1335,7 +1337,16 @@ module.exports = function(expect, request, baseUrl) {
         request.get(requestOptions.url, function(err0, res0, body0) {
           expect(body0.error).to.equal(undefined);
           expect(res0.statusCode).to.equal(200);
-          expect(JSON.parse(body0)).to.deep.equal(expectedResults);
+
+          const jsonBody0 = JSON.parse(body0);
+          jsonBody0.created_at = jsonBody0.created_at.slice(0, 10);
+          jsonBody0.date_worked = jsonBody0.date_worked.slice(0, 10);
+
+          if (jsonBody0.updated_at !== null) {
+            jsonBody0.updated_at = jsonBody0.updated_at.slice(0, 10);
+          }
+
+          expect(jsonBody0).to.deep.equal(expectedResults);
           done();
         });
       });
