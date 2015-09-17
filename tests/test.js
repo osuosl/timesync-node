@@ -8,48 +8,40 @@ const request = requestBuilder.defaults({encoding: null});
 const testData = require('./fixtures/test_data');
 const knexfile = require('../knexfile');
 const knex = require('knex')(knexfile.mocha);
-const fixtureCreator = new SqlFixtures(knex);
-
-GLOBAL.knex = knex;
-const app = require('../src/app');
 
 const port = process.env.PORT || 8000;
 const baseUrl = 'http://localhost:' + port + '/v1/';
 
-const reloadFixtures = function(done) {
-  // Clear SQLite indexes
-  // knex.raw('delete from sqlite_sequence').then(function() {
-  fixtureCreator.create(testData).then(function() {
-    done();
+const app = require('../src/app');
+let trx;
+
+const transact = function(done) {
+  knex.transaction(function(newTrx) {
+    trx = newTrx;
+    app.set('knex', trx);
+
+    const fixtureCreator = new SqlFixtures(trx);
+    fixtureCreator.create(testData).then(function() {
+      done();
+    });
+  }).catch(function(e) {
+    // only swallow the test rollback error
+    if (e !== 'test rollback') {
+      throw e;
+    }
   });
-  // });
 };
 
-const clearDatabase = function(done) {
-  knex.raw("TRUNCATE projects CASCADE; SELECT setval('projects_id_seq', 3)").then(function() {
-    knex.raw("TRUNCATE activities CASCADE; SELECT setval('activities_id_seq', 3)").then(function() {
-      knex.raw('TRUNCATE users CASCADE').then(function() {
-        knex.raw("TRUNCATE times CASCADE; SELECT setval('times_id_seq', 1)").then(function() {
-          knex.raw("TRUNCATE projectslugs CASCADE; SELECT setval('projectslugs_id_seq', (SELECT MAX(id) FROM projectslugs))").then(function() {
-            knex.raw('TRUNCATE userroles RESTART IDENTITY CASCADE').then(function() {
-              knex.raw('TRUNCATE timesactivities CASCADE').then(done);
-            });
-          });
-        });
-      });
-    });
+const endTransact = function(done) {
+  trx.rollback('test rollback').then(function() {
+    done();
   });
 };
 
 describe('Endpoints', function() {
-  this.timeout(3000);
-  beforeEach(function(done) {
-    knex.migrate.latest().then(function() {
-      clearDatabase(function() {
-        reloadFixtures(done);
-      });
-    });
-  });
+  this.timeout(5000);
+  beforeEach(transact);
+  afterEach(endTransact);
 
   require('./times')(expect, request, baseUrl);
   require('./activities')(expect, request, baseUrl);
@@ -61,16 +53,11 @@ describe('Errors', function() {
 });
 
 describe('Helpers', function() {
-  this.timeout(3000);
-  beforeEach(function(done) {
-    knex.migrate.latest().then(function() {
-      clearDatabase(function() {
-        reloadFixtures(done);
-      });
-    });
-  });
+  this.timeout(5000);
+  beforeEach(transact);
+  afterEach(endTransact);
 
-  const localPassport = require('../src/auth/local.js')(knex);
+  const localPassport = require('../src/auth/local.js')(trx);
   require('./login')(expect, localPassport);
   require('./helpers')(expect, app);
 });

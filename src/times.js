@@ -1,13 +1,13 @@
 'use strict';
 
 module.exports = function(app) {
-  const knex = app.get('knex');
   const errors = require('./errors');
   const helpers = require('./helpers')(app);
   const validUrl = require('valid-url');
   const passport = require('passport');
 
   app.get(app.get('version') + '/times', function(req, res) {
+    const knex = app.get('knex');
     knex('times').then(function(times) {
       if (times.length === 0) {
         return res.send([]);
@@ -137,6 +137,7 @@ module.exports = function(app) {
   });
 
   app.get(app.get('version') + '/times/:id', function(req, res) {
+    const knex = app.get('knex');
     if (isNaN(req.params.id)) { // isNaN can check if a string is a number
       const err = errors.errorInvalidIdentifier('ID', req.params.id);
       return res.status(err.status).send(err);
@@ -195,6 +196,7 @@ module.exports = function(app) {
   });
 
   app.post(app.get('version') + '/times', function(req, res, next) {
+    const knex = app.get('knex');
     passport.authenticate('local', function(autherr, user, info) {
       if (!user) {
         const err = errors.errorAuthenticationFailure(info.message);

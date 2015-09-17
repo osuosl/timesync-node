@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-disable no-console */
 
 // Library requirements
 const express = require('express');
@@ -6,15 +7,7 @@ const bodyParser = require('body-parser');
 const knexfile = require('../knexfile');
 const db = process.env.NODE_ENV || 'development';
 
-let knex;
-if (!GLOBAL.knex) {
-  // Load the database (default to development)
-  knex = require('knex')(knexfile[db]);
-} else {
-  // use the knex connection initiated from inside the testing
-  // environment
-  knex = GLOBAL.knex;
-}
+const knex = require('knex')(knexfile[db]);
 
 const app = express();
 app.use(bodyParser.json());
@@ -26,8 +19,7 @@ app.set('version', '/v1');
 
 // Set up authentication
 const passport = require('passport');
-const localPassport = require('./auth/local.js')(knex);
-
+const localPassport = require('./auth/local.js')(app);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -49,7 +41,5 @@ require('./times')(app);
 module.exports = app;
 
 app.listen(process.env.PORT || 8000, function notifyUser() {
-  /* eslint-disable */
   console.log('App now listening on %s', process.env.PORT || 8000);
-  /* eslint-enable */
 });

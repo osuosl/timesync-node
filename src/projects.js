@@ -1,13 +1,13 @@
 'use strict';
 
 module.exports = function(app) {
-  const knex = app.get('knex');
   const errors = require('./errors');
   const helpers = require('./helpers')(app);
   const validUrl = require('valid-url');
   const passport = require('passport');
 
   app.get(app.get('version') + '/projects', function(req, res) {
+    const knex = app.get('knex');
     knex('projects').then(function(projects) {
       if (projects.length === 0) {
         return res.send([]);
@@ -73,6 +73,7 @@ module.exports = function(app) {
   });
 
   app.get(app.get('version') + '/projects/:slug', function(req, res) {
+    const knex = app.get('knex');
     if (errors.isInvalidSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
@@ -143,6 +144,7 @@ module.exports = function(app) {
   });
 
   app.post(app.get('version') + '/projects', function(req, res, next) {
+    const knex = app.get('knex');
     passport.authenticate('local', function(autherr, user, info) {
       if (!user) {
         const err = errors.errorAuthenticationFailure(info.message);
@@ -250,6 +252,9 @@ module.exports = function(app) {
               obj.id = project;
               res.send(JSON.stringify(obj));
             });
+          }).catch(function(error) {
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
           });
         });
       }).catch(function() {
@@ -262,6 +267,7 @@ module.exports = function(app) {
   });
 
   app.post(app.get('version') + '/projects/:slug', function(req, res, next) {
+    const knex = app.get('knex');
     passport.authenticate('local', function(autherr, user, info) {
       if (!user) {
         const err = errors.errorAuthenticationFailure(info.message);
@@ -459,6 +465,7 @@ module.exports = function(app) {
   });
 
   app.delete(app.get('version') + '/projects/:slug', function(req, res) {
+    const knex = app.get('knex');
     if (!helpers.validateSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);

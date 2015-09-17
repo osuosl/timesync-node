@@ -1,12 +1,12 @@
 'use strict';
 
 module.exports = function(app) {
-  const knex = app.get('knex');
   const errors = require('./errors');
   const helpers = require('./helpers')(app);
   const passport = require('passport');
 
   app.get(app.get('version') + '/activities', function(req, res) {
+    const knex = app.get('knex');
     knex('activities').then(function(activities) {
       if (activities.length === 0) {
         return res.send([]);
@@ -20,6 +20,7 @@ module.exports = function(app) {
   });
 
   app.get(app.get('version') + '/activities/:slug', function(req, res) {
+    const knex = app.get('knex');
     if (errors.isInvalidSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
@@ -41,6 +42,7 @@ module.exports = function(app) {
   });
 
   app.delete(app.get('version') + '/activities/:slug', function(req, res) {
+    const knex = app.get('knex');
     if (!helpers.validateSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
@@ -81,6 +83,7 @@ module.exports = function(app) {
   });
 
   app.post(app.get('version') + '/activities/:slug', function(req, res, next) {
+    const knex = app.get('knex');
     passport.authenticate('local', function(autherr, user, info) {
       if (!user) {
         const err = errors.errorAuthenticationFailure(info.message);
@@ -169,6 +172,7 @@ module.exports = function(app) {
   });
 
   app.post(app.get('version') + '/activities', function(req, res, next) {
+    const knex = app.get('knex');
     passport.authenticate('local', function(autherr, user, info) {
       if (!user) {
         const err = errors.errorAuthenticationFailure(info.message);
