@@ -293,10 +293,27 @@ module.exports = function(expect, request, baseUrl) {
       updated_at: null,
       parent: null,
       id: 1,
+      parent: null,
+      deleted_at: null,
+    };
+
+    const responseActivity = {
+      name: 'TimeSync Documentation',
+      slug: 'dev-docs',
+      id: 2,
+      parent: 1,
+      deleted_at: null,
+    };
+
+    const deletedActivity =  {
+      name: 'Documentation',
+      slug: 'docs',
+      id: 1,
+      parent: null,
+      deleted_at: new Date().toISOString().substring(0, 10),
     };
 
     const patchedName = { name: patchedActivity.name };
-
     const patchedSlug = { slug: patchedActivity.slug };
 
     const badActivity = {
@@ -305,7 +322,6 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const badPatchedName = { name: badActivity.name };
-
     const badPatchedSlug = { slug: badActivity.slug };
 
     // Base POST JSON
@@ -345,8 +361,9 @@ module.exports = function(expect, request, baseUrl) {
         expect(res.statusCode).to.equal(200);
 
         const expectedResult = copyJsonObject(originalActivity);
-        expectedResult.name = patchedActivity.name;
-        expectedResult.slug = patchedActivity.slug;
+        expectedResult.name  = responseActivity.name;
+        expectedResult.slug  = responseActivity.slug;
+        expectedResult.id    = responseActivity.id;
 
         const expectedPost = copyJsonObject(expectedResult);
         delete expectedPost.deleted_at;
@@ -362,10 +379,19 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-
           expect(jsonBody).to.deep.equal(expectedResult);
 
-          done();
+          // Make request to see old version of this object.
+          request.get(baseUrl + 'activities/dev-docs?archived=true',
+          function(getErrArchive, getResArchive, getBodyArchive) {
+            expect(getErrArchive).to.be.a('null');
+            expect(getResArchive.statusCode).to.equal(200);
+
+            const jsonBodyArchive = JSON.parse(getBodyArchive);
+            expect(jsonBodyArchive).to.contain(deletedActivity);
+
+            done();
+          });
         });
       });
     });
@@ -379,7 +405,8 @@ module.exports = function(expect, request, baseUrl) {
         expect(res.statusCode).to.equal(200);
 
         const expectedResult = copyJsonObject(originalActivity);
-        expectedResult.name = patchedName.name;
+        expectedResult.name  = responseActivity.name;
+        expectedResult.id    = responseActivity.id;
 
         const expectedPost = copyJsonObject(expectedResult);
         delete expectedPost.deleted_at;
@@ -394,10 +421,19 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonBody = JSON.parse(getBody);
-
           expect(jsonBody).to.deep.equal(expectedResult);
 
-          done();
+          // Make request to see old version of this object.
+          request.get(baseUrl + 'activities/dev-docs?archived=true',
+          function(getErrArchive, getResArchive, getBodyArchive) {
+            expect(getErrArchive).to.be.a('null');
+            expect(getResArchive.statusCode).to.equal(200);
+
+            const jsonBodyArchive = JSON.parse(getBodyArchive);
+            expect(jsonBodyArchive).to.contain(deletedActivity);
+
+            done();
+          });
         });
       });
     });
@@ -411,7 +447,8 @@ module.exports = function(expect, request, baseUrl) {
         expect(res.statusCode).to.equal(200);
 
         const expectedResult = copyJsonObject(originalActivity);
-        expectedResult.slug = patchedSlug.slug;
+        expectedResult.slug  = responseActivity.slug;
+        expectedResult.id    = responseActivity.id;
 
         const expectedPost = copyJsonObject(expectedResult);
         delete expectedPost.deleted_at;
@@ -429,7 +466,17 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(jsonBody).to.deep.equal(expectedResult);
 
-          done();
+          // Make request to see old version of this object.
+          request.get(baseUrl + 'activities/dev-docs?archived=true',
+          function(getErrArchive, getResArchive, getBodyArchive) {
+            expect(getErrArchive).to.be.a('null');
+            expect(getResArchive.statusCode).to.equal(200);
+
+            const jsonBodyArchive = JSON.parse(getBodyArchive);
+            expect(jsonBodyArchive).to.contain(deletedActivity);
+
+            done();
+          });
         });
       });
     });
