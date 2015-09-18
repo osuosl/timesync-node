@@ -43,7 +43,7 @@ const clearDatabase = function(done) {
 };
 
 describe('Endpoints', function() {
-  this.timeout(5000);
+  this.timeout(7500);
   beforeEach(function(done) {
     knex.migrate.latest().then(function() {
       clearDatabase(function() {
@@ -62,7 +62,7 @@ describe('Errors', function() {
 });
 
 describe('Helpers', function() {
-  this.timeout(5000);
+  this.timeout(7500);
   beforeEach(function(done) {
     knex.migrate.latest().then(function() {
       clearDatabase(function() {
