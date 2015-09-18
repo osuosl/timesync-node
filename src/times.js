@@ -291,32 +291,40 @@ module.exports = function(app) {
                 created_at: createdAt,
               };
 
-              knex('times').insert(insertion).returning('id').
-              then(function(timeIds) {
-                const timeId = timeIds[0];
+              knex.raw("SELECT setval('times_id_seq', " +
+                       '(SELECT MAX(id) FROM times))').then(function() {
+                knex('times').insert(insertion).returning('id').
+                then(function(timeIds) {
+                  const timeId = timeIds[0];
 
-                const taInsertion = [];
-                /* eslint-disable prefer-const */
-                for (let activityId of activityIds) {
-                  /* eslint-enable prefer-const */
-                  taInsertion.push({
-                    time: timeId,
-                    activity: activityId,
+                  const taInsertion = [];
+                  /* eslint-disable prefer-const */
+                  for (let activityId of activityIds) {
+                    /* eslint-enable prefer-const */
+                    taInsertion.push({
+                      time: timeId,
+                      activity: activityId,
+                    });
+                  }
+
+                  knex.raw("SELECT setval('timesactivities_id_seq', " +
+                           '(SELECT MAX(id) FROM timesactivities))')
+                  .then(function() {
+                    knex('timesactivities').insert(taInsertion)
+                    .then(function() {
+                      time.id = timeId;
+                      return res.send(JSON.stringify(time));
+                    }).catch(function(error) {
+                      knex('times').del().where({id: timeId}).then(function() {
+                        const err = errors.errorServerError(error);
+                        return res.status(err.status).send(err);
+                      });
+                    });
                   });
-                }
-
-                knex('timesactivities').insert(taInsertion).then(function() {
-                  time.id = timeId;
-                  return res.send(JSON.stringify(time));
                 }).catch(function(error) {
-                  knex('times').del().where({id: timeId}).then(function() {
-                    const err = errors.errorServerError(error);
-                    return res.status(err.status).send(err);
-                  });
+                  const err = errors.errorServerError(error);
+                  return res.status(err.status).send(err);
                 });
-              }).catch(function(error) {
-                const err = errors.errorServerError(error);
-                return res.status(err.status).send(err);
               });
             }).catch(function() {
               const err = errors.errorInvalidForeignKey('time', 'activities');
