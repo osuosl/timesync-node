@@ -94,6 +94,142 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
+  /* DELETE one of the times endpoints and check whether it can still be
+     retrieved from the database */
+
+  describe('DELETE /times/:id', function() {
+    // The response when the user checks for the deleted item using the
+    // ?archived=true GET parameter
+    const expectedGetResponse = {
+      duration: 12,
+      user: 'users:1',
+      project: 'projects:2',
+      notes: '',
+      issue_uri: 'https:://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-19',
+      created_at: '2015-04-19',
+      updated_at: null,
+      id: 1,
+      deleted_at: new Date().toISOString().substring(0, 10),
+      parent: null,
+    };
+
+    it('deletes the desired time instance', function(done) {
+      request.del(baseUrl + 'times/1', function(err, res) {
+        expect(err).to.be.a('null');
+        expect(res.statusCode).to.equal(200);
+
+        // Check if time instance was deleted from db
+        request.get(baseUrl + 'times/1', function(err0, res0, body00) {
+          const jsonBody = JSON.parse(body00);
+          const expectedError = {
+            status: 404,
+            error: 'Object not found',
+            text: 'Nonexistent time',
+          };
+
+          expect(jsonBody).to.deep.equal(expectedError);
+          expect(res0.statusCode).to.equal(404);
+          request.get(baseUrl + 'times/1?archived=true',
+          function(errArchive, resArchive, bodyArchive) {
+            const jsonBodyArchive = JSON.parse(bodyArchive);
+
+            expect(errArchive).to.be.a('null');
+            expect(resArchive.statusCode).to.equal(200);
+            expect(jsonBodyArchive).to.equal(expectedGetResponse);
+
+            done();
+          });
+        });
+      });
+    });
+
+    // Checks that a nonexistent time id will fail /ex: time id = 6013
+    it('fails if it receives a nonexistent time id', function(done) {
+      request.del(baseUrl + 'times/6013', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedError = {
+          status: 404,
+          error: 'Object not found',
+          text: 'Nonexistent time id',
+        };
+
+        expect(jsonBody).to.deep.equal(expectedError);
+        expect(res.statusCode).to.equal(404);
+
+        request.get(baseUrl + 'times', function(err0, res0, body0) {
+          const jsBody = JSON.parse(body0);
+          const expectedResult = [
+            {
+              // jscs: disable
+              id: 1,
+              duration: 12,
+              user: 'tschuy',
+              project: ['wf'],
+              notes: '',
+              issue_uri: 'https://github.com/osu-cass/' +
+                     'whats-fres0h-api/issues/56',
+              date_worked: null,
+              created_at: null,
+              updated_at: null,
+              activities: ['docs', 'dev'],
+              // jscs: enable
+            },
+          ];
+
+          expect(err0).to.be.a('null');
+          expect(res0.statusCode).to.equal(200);
+          expect(jsBody).to.deep.have.same.members(expectedResult);
+
+          done();
+        });
+      });
+    });
+
+    // Checks that an invalid time id will fail /ex: time id = 'tabby'
+    it('fails if it receives an invalid time id', function(done) {
+      request.del(baseUrl + 'times/tabby', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedError = {
+          status: 400,
+          error: 'The provided identifier was invalid',
+          text: 'Expected id but received tabby',
+          values: ['tabby'],
+        };
+
+        expect(jsonBody).to.deep.equal(expectedError);
+        expect(res.statusCode).to.equal(400);
+
+        request.get(baseUrl + 'times', function(err0, res0, body0) {
+          const jsonBody0 = JSON.parse(body0);
+          const expectedResult = [
+            {
+              // jscs: disable
+              id: 1,
+              duration: 12,
+              user: 'tschuy',
+              project: ['wf'],
+              notes: '',
+              issue_uri: 'https://github.com/osu-cass/' +
+                     'whats-fres0h-api/issues/56',
+              date_worked: null,
+              created_at: null,
+              updated_at: null,
+              activities: ['docs', 'dev'],
+              // jscs: enable
+            },
+          ];
+
+          expect(err0).to.be.a('null');
+          expect(res0.statusCode).to.equal(200);
+          expect(jsonBody0).to.deep.have.same.members(expectedResult);
+
+          done();
+        });
+      });
+    });
+  });
+
   describe('POST /times', function() {
     function getPostObject(uri, time) {
       return {
@@ -1022,6 +1158,23 @@ module.exports = function(expect, request, baseUrl) {
       created_at: '2015-04-19',
       updated_at: updatedAt,
       deleted_at: null,
+      id: 2,
+      parent: 1,
+    };
+
+    const getArchivedTime = {
+      duration: 12,
+      user: 'tschuy',
+      project: 'wf',
+      notes: '',
+      activities: ['docs', 'dev'],
+      issue_uri:
+         'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-19',
+      created_at: '2015-04-19',
+      updated_at: null,
+      id: 1,
+      deleted_at: updatedAt,
       parent: null,
     };
 
@@ -1082,7 +1235,9 @@ module.exports = function(expect, request, baseUrl) {
                   expectedResults,
                   error,
                   statusCode,
-                  postBodies) {
+                  postBodies,
+                  archiveCheck,
+                  archiveExpectedResults) {
       postArg.object = postObj;
       requestOptions.form = postArg;
 
@@ -1107,7 +1262,20 @@ module.exports = function(expect, request, baseUrl) {
           expect(body0.error).to.equal(undefined);
           expect(res0.statusCode).to.equal(200);
           expect(JSON.parse(body0)).to.deep.equal(expectedResults);
-          done();
+
+          if (archiveCheck === true) {
+            request.get(requestOptions.url + '?archived=true',
+            function(errArchive, resArchive, bodyArchive) {
+              expect(bodyArchive.error).to.equal(undefined);
+              expect(resArchive.statusCode).to.equal(200);
+              expect(JSON.parse(bodyArchive))
+              .to.deep.equal(archiveExpectedResults);
+
+              done();
+            });
+          } else {
+            done();
+          }
         });
       });
     }
@@ -1117,13 +1285,13 @@ module.exports = function(expect, request, baseUrl) {
     ' activity notes, issue_uri, and date_worked', function(done) {
       const postObj = copyJsonObject(postPatchedTime);
       const expectedResults = copyJsonObject(getPatchedTime);
-      expectedResults.id = getOriginalTime.id;
       expectedResults.project = ['pgd'];
+      expectedResults.id = getPatchedTime.id;
       let error;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
-                 statusCode);
+                 statusCode, undefined, true, getArchivedTime);
     });
 
     // Tests valid duration field
@@ -1133,11 +1301,12 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.duration = postPatchedTime.duration;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
+      expectedResults.id = getPatchedTime.id;
       let error;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
-                 statusCode);
+                 statusCode, undefined, true, getArchivedTime);
     });
 
     // Tests valid user field
@@ -1149,10 +1318,11 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.user = postPatchedTime.user;
+      expectedResults.id = getPatchedTime.id;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
-                 statusCode);
+                 statusCode, undefined, true, getArchivedTime);
     });
 
     // Tests valid project field
@@ -1161,10 +1331,11 @@ module.exports = function(expect, request, baseUrl) {
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['pgd'];
       expectedResults.updated_at = updatedAt;
+      expectedResults.id = getPatchedTime.id;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
-                 statusCode);
+                 statusCode, undefined, true, getArchivedTime);
     });
 
     // Tests valid activities field
@@ -1174,10 +1345,11 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.activities = postPatchedTime.activities;
+      expectedResults.id = getPatchedTime.id;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
-                 statusCode);
+                 statusCode, undefined, true, getArchivedTime);
     });
 
     // Tests valid notes field
@@ -1187,10 +1359,11 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.notes = postPatchedTime.notes;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
+      expectedResults.id = getPatchedTime.id;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
-                 statusCode);
+                 statusCode, undefined, true, getArchivedTime);
     });
 
     // Tests valid issue_uri field
@@ -1200,10 +1373,11 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.issue_uri = postPatchedTime.issue_uri;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
+      expectedResults.id = getPatchedTime.id;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
-                 statusCode);
+                 statusCode, undefined, true, getArchivedTime);
     });
 
     // Tests valid date_worked field
@@ -1213,10 +1387,11 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.date_worked = postPatchedTime.date_worked;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
+      expectedResults.id = getPatchedTime.id;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
-                 statusCode);
+                 statusCode, undefined, true, getArchivedTime);
     });
 
     // Tests all invalid fields

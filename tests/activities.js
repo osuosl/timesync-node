@@ -109,7 +109,15 @@ module.exports = function(expect, request, baseUrl) {
         expect(delErr).to.be.a('null');
         expect(delRes.statusCode).to.equal(200);
 
-        // Checks to see that the activity has been deleted from the db
+        const expectedResponse = {
+          name: 'Systems',
+          slug: 'sys',
+          id: 3,
+          deleted_at: new Date().toISOString().substring(0, 10),
+          parent: null,
+        };
+
+        // Checks to see that the activity has been 'deleted' from the db
         request.get(baseUrl + 'activities/sys', function(getErr, getRes, body) {
           const jsonBody = JSON.parse(body);
           const expectedError = {
@@ -121,7 +129,17 @@ module.exports = function(expect, request, baseUrl) {
           expect(jsonBody).to.deep.equal(expectedError);
           expect(getRes.statusCode).to.equal(404);
 
-          done();
+          // Checks to see that the activity is still visible with the archive
+          // parameter.
+          request.get(baseUrl + 'activities/sys?archived=true',
+          function(getErrArchive, getResArchive, bodyArchive) {
+            const jsonBodyArchive  = JSON.parse(bodyArchive);
+
+            expect(jsonBodyArchive).to.deep.equal(expectedResponse);
+            expect(getResArchive.statusCode).to.equal(200);
+
+            done();
+          });
         });
       });
     });
@@ -293,14 +311,12 @@ module.exports = function(expect, request, baseUrl) {
       updated_at: null,
       parent: null,
       id: 1,
-      parent: null,
-      deleted_at: null,
     };
 
     const responseActivity = {
       name: 'TimeSync Documentation',
       slug: 'dev-docs',
-      id: 2,
+      id: 4,
       parent: 1,
       deleted_at: null,
     };
