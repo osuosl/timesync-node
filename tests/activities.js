@@ -21,6 +21,8 @@ module.exports = function(expect, request, baseUrl) {
             updated_at: null,
             parent: null,
             id: 1,
+            delete_at: null,
+            parent: null,
           },
           {
             name: 'Development',
@@ -29,6 +31,8 @@ module.exports = function(expect, request, baseUrl) {
             updated_at: null,
             parent: null,
             id: 2,
+            delete_at: null,
+            parent: null,
           },
           {
             name: 'Systems',
@@ -37,6 +41,8 @@ module.exports = function(expect, request, baseUrl) {
             updated_at: null,
             parent: null,
             id: 3,
+            delete_at: null,
+            parent: null,
           },
         ];
 
@@ -59,6 +65,8 @@ module.exports = function(expect, request, baseUrl) {
           updated_at: null,
           parent: null,
           id: 3,
+          delete_at: null,
+          parent: null,
         };
 
         expect(err).to.equal(null);
@@ -166,6 +174,8 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 1,
+              deleted_at: null,
+              parent: null,
             },
             {
               name: 'Development',
@@ -174,6 +184,8 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 2,
+              deleted_at: null,
+              parent: null,
             },
             {
               name: 'Systems',
@@ -182,6 +194,8 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 3,
+              deleted_at: null,
+              parent: null,
             },
           ];
 
@@ -217,6 +231,8 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 1,
+              deleted_at: null,
+              parent: null,
             },
             {
               name: 'Development',
@@ -225,6 +241,8 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 2,
+              deleted_at: null,
+              parent: null,
             },
             {
               name: 'Systems',
@@ -233,6 +251,8 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 3,
+              deleted_at: null,
+              parent: null,
             },
           ];
 
@@ -269,6 +289,8 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 1,
+              deleted_at: null,
+              parent: null,
             },
             {
               name: 'Development',
@@ -277,6 +299,8 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 2,
+              deleted_at: null,
+              parent: null,
             },
             {
               name: 'Systems',
@@ -285,6 +309,8 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 3,
+              deleted_at: null,
+              parent: null,
             },
           ];
 
@@ -649,6 +675,8 @@ module.exports = function(expect, request, baseUrl) {
       slug: 'chef',
       name: 'Chef',
       id: 4,
+      deleted_at: null,
+      parent: null,
     };
 
     // the base POST JSON

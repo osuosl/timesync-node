@@ -21,6 +21,8 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             parent: null,
             id: 1,
+            deleted_at: null,
+            parent: null,
           },
         ];
 
@@ -50,6 +52,8 @@ module.exports = function(expect, request, baseUrl) {
           deleted_at: null,
           parent: null,
           id: 1,
+          deleted_at: null,
+          parent: null,
         };
 
         expect(err).to.equal(null);
@@ -114,7 +118,7 @@ module.exports = function(expect, request, baseUrl) {
       parent: null,
     };
 
-    it('deletes the desired time instance', function(done) {
+    it('deetes the desired time instance', function(done) {
       request.del(baseUrl + 'times/1', function(err, res) {
         expect(err).to.be.a('null');
         expect(res.statusCode).to.equal(200);
@@ -173,6 +177,8 @@ module.exports = function(expect, request, baseUrl) {
               created_at: null,
               updated_at: null,
               activities: ['docs', 'dev'],
+              deleted_at: null,
+              parent: null,
               // jscs: enable
             },
           ];
@@ -216,6 +222,8 @@ module.exports = function(expect, request, baseUrl) {
               created_at: null,
               updated_at: null,
               activities: ['docs', 'dev'],
+              deleted_at: null,
+              parent: null,
               // jscs: enable
             },
           ];
@@ -260,6 +268,8 @@ module.exports = function(expect, request, baseUrl) {
         deleted_at: null,
         parent: null,
         id: 1,
+        deleted_at: null,
+        parent: null,
       },
     ];
 
@@ -300,6 +310,8 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               parent: null,
               id: 2,
+              deleted_at: null,
+              parent: null,
             },
           ]);
           expect(getErr).to.equal(null);
@@ -900,6 +912,8 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               parent: null,
               id: 2,
+              deleted_at: null,
+              parent: null,
             },
           ]);
           expect(getErr).to.equal(null);
