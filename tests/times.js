@@ -332,7 +332,7 @@ module.exports = function(expect, request, baseUrl) {
     it('returns an error for a future start date', function(done) {
       request.get(baseUrl + 'times?start=2105-04-19', function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
-        const expectedResults = {
+        const expectedResult = {
           status: 400,
           error: 'Bad Query Value',
           text: 'Parameter start contained invalid value 2105-04-19',
@@ -340,7 +340,7 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(400);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
+        expect(jsonBody).to.deep.equal(expectedResult);
         done();
       });
     });
@@ -1130,7 +1130,7 @@ module.exports = function(expect, request, baseUrl) {
   'start=:start&end=:end', function() {
     it('returns all times for a user, project, and activity ' +
     'between two dates', function(done) {
-      request.get(baseUrl + 'times?user=tschuy&project=pgd&' +
+      request.get(baseUrl + 'times?user=tschuy&project=gwm&' +
       'activity=docs' + '&start=2015-04-20&end=2015-04-22',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
@@ -1170,7 +1170,7 @@ module.exports = function(expect, request, baseUrl) {
     it('returns all times for two users, a project, and activity ' +
     'between two dates', function(done) {
       request.get(baseUrl + 'times?user=deanj&user=tschuy&project=gwm&' +
-      'activity=dev&start=2015-04-19&end=2015-04-21',
+      'activity=docs&start=2015-04-19&end=2015-04-21',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
