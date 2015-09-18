@@ -249,7 +249,7 @@ module.exports = function(app) {
         }
 
         knex.raw("SELECT setval('activities_id_seq', " +
-                 '(SELECT MAX(id) FROM activities))').then(function() {
+        '(SELECT MAX(id) FROM activities))').then(function() {
           knex('activities').insert(obj).returning('id')
           .then(function(activities) {
             // activities is a list containing the ID of the

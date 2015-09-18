@@ -292,7 +292,7 @@ module.exports = function(app) {
               };
 
               knex.raw("SELECT setval('times_id_seq', " +
-                       '(SELECT MAX(id) FROM times))').then(function() {
+              '(SELECT MAX(id) FROM times))').then(function() {
                 knex('times').insert(insertion).returning('id').
                 then(function(timeIds) {
                   const timeId = timeIds[0];
@@ -458,8 +458,8 @@ module.exports = function(app) {
               'times.updated_at as updated_at', 'times.id as id',
               'users.username as owner', 'projectslugs.name as projectName')
       .where('times.id', '=', req.params.id).innerJoin('users', 'users.id',
-                  'times.user').innerJoin('projectslugs', 'projectslugs.id',
-                  'times.project')
+              'times.user').innerJoin('projectslugs', 'projectslugs.id',
+              'times.project')
       .then(function(time) {
         if (user.username !== time[0].owner) {
           const err = errors.errorAuthorizationFailure(user.username,

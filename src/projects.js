@@ -238,7 +238,7 @@ module.exports = function(app) {
           };
 
           knex.raw("SELECT setval('projects_id_seq', " +
-                   '(SELECT MAX(id) from projects))').then(function() {
+          '(SELECT MAX(id) from projects))').then(function() {
             knex('projects').insert(insertion).returning('id')
             .then(function(projects) {
               // project is a list containing the ID of the
@@ -249,7 +249,7 @@ module.exports = function(app) {
               });
 
               knex.raw("SELECT setval('projectslugs_id_seq', " +
-                       '(SELECT MAX(id) from projectslugs))').then(function() {
+              '(SELECT MAX(id) from projectslugs))').then(function() {
                 knex('projectslugs').insert(projectSlugs).then(function() {
                   obj.id = project;
                   res.send(JSON.stringify(obj));
@@ -400,7 +400,7 @@ module.exports = function(app) {
               });
 
               knex.raw("SELECT setval('projectslugs_id_seq', " +
-                       '(SELECT MAX(id) FROM projectslugs))').then(function() {
+              '(SELECT MAX(id) FROM projectslugs))').then(function() {
                 knex('projectslugs').where({project: project.id})
                 .then(function(existingSlugObjs) {
                   const existingSlugs = existingSlugObjs.map(function(slug) {
