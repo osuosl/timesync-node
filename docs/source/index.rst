@@ -10,6 +10,7 @@ Development Docs
   :maxdepth: 2
 
   Developer Guide <dev/development>
+  Testing in Postgres <dev/dockerdb>
   Usage Guide <dev/usage>
 
 Design
