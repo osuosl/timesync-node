@@ -17,16 +17,25 @@ module.exports = function(expect, request, baseUrl) {
           {
             name: 'Documentation',
             slug: 'docs',
+            deleted_at: null,
+            updated_at: null,
+            parent: null,
             id: 1,
           },
           {
             name: 'Development',
             slug: 'dev',
+            deleted_at: null,
+            updated_at: null,
+            parent: null,
             id: 2,
           },
           {
             name: 'Systems',
             slug: 'sys',
+            deleted_at: null,
+            updated_at: null,
+            parent: null,
             id: 3,
           },
         ];
@@ -46,6 +55,9 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = {
           name: 'Systems',
           slug: 'sys',
+          deleted_at: null,
+          updated_at: null,
+          parent: null,
           id: 3,
         };
 
@@ -132,16 +144,25 @@ module.exports = function(expect, request, baseUrl) {
             {
               name: 'Documentation',
               slug: 'docs',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 1,
             },
             {
               name: 'Development',
               slug: 'dev',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 2,
             },
             {
               name: 'Systems',
               slug: 'sys',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 3,
             },
           ];
@@ -174,16 +195,25 @@ module.exports = function(expect, request, baseUrl) {
             {
               name: 'Documentation',
               slug: 'docs',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 1,
             },
             {
               name: 'Development',
               slug: 'dev',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 2,
             },
             {
               name: 'Systems',
               slug: 'sys',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 3,
             },
           ];
@@ -217,16 +247,25 @@ module.exports = function(expect, request, baseUrl) {
             {
               name: 'Documentation',
               slug: 'docs',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 1,
             },
             {
               name: 'Development',
               slug: 'dev',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 2,
             },
             {
               name: 'Systems',
               slug: 'sys',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 3,
             },
           ];
@@ -250,6 +289,9 @@ module.exports = function(expect, request, baseUrl) {
     const originalActivity =  {
       name: 'Documentation',
       slug: 'docs',
+      deleted_at: null,
+      updated_at: null,
+      parent: null,
       id: 1,
     };
 
@@ -306,7 +348,12 @@ module.exports = function(expect, request, baseUrl) {
         expectedResult.name = patchedActivity.name;
         expectedResult.slug = patchedActivity.slug;
 
-        expect(body).to.deep.equal(expectedResult);
+        const expectedPost = copyJsonObject(expectedResult);
+        delete expectedPost.deleted_at;
+        delete expectedPost.updated_at;
+        delete expectedPost.parent;
+
+        expect(body).to.deep.equal(expectedPost);
 
         // Checking that the activity has been properly updated
         request.get(baseUrl + 'activities/dev-docs',
@@ -334,7 +381,12 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.name = patchedName.name;
 
-        expect(body).to.deep.equal(expectedResult);
+        const expectedPost = copyJsonObject(expectedResult);
+        delete expectedPost.deleted_at;
+        delete expectedPost.updated_at;
+        delete expectedPost.parent;
+
+        expect(body).to.deep.equal(expectedPost);
 
         request.get(baseUrl + 'activities/docs',
         function(getErr, getRes, getBody) {
@@ -361,7 +413,12 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.slug = patchedSlug.slug;
 
-        expect(body).to.deep.equal(expectedResult);
+        const expectedPost = copyJsonObject(expectedResult);
+        delete expectedPost.deleted_at;
+        delete expectedPost.updated_at;
+        delete expectedPost.parent;
+
+        expect(body).to.deep.equal(expectedPost);
 
         request.get(baseUrl + 'activities/dev-docs',
         function(getErr, getRes, getBody) {
@@ -544,16 +601,25 @@ module.exports = function(expect, request, baseUrl) {
       {
         'name': 'Documentation',
         'slug': 'docs',
+        'deleted_at': null,
+        'updated_at': null,
+        'parent': null,
         'id': 1,
       },
       {
         'name': 'Development',
         'slug': 'dev',
+        'deleted_at': null,
+        'updated_at': null,
+        'parent': null,
         'id': 2,
       },
       {
         'name': 'Systems',
         'slug': 'sys',
+        'deleted_at': null,
+        'updated_at': null,
+        'parent': null,
         'id': 3,
       },
     ];
@@ -569,7 +635,16 @@ module.exports = function(expect, request, baseUrl) {
         // the projects/ endpoint should now have one more project
         let expectedGetResults;
         if (newActivityItem) {
-          expectedGetResults = initialActivities.concat([newActivityItem]);
+          expectedGetResults = initialActivities.concat([
+            {
+              slug: 'chef',
+              name: 'Chef',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
+              id: 4,
+            },
+          ]);
         } else {
           expectedGetResults = initialActivities;
         }

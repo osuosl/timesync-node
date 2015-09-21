@@ -18,6 +18,8 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            parent: null,
             id: 1,
           },
         ];
@@ -45,6 +47,8 @@ module.exports = function(expect, request, baseUrl) {
           date_worked: '2015-04-19',
           created_at: '2015-04-19',
           updated_at: null,
+          deleted_at: null,
+          parent: null,
           id: 1,
         };
 
@@ -117,6 +121,8 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-04-19',
         created_at: '2015-04-19',
         updated_at: null,
+        deleted_at: null,
+        parent: null,
         id: 1,
       },
     ];
@@ -139,6 +145,7 @@ module.exports = function(expect, request, baseUrl) {
         expect(res.statusCode).to.equal(200);
 
         time.id = body.id;
+
         expect(body).to.deep.equal(time);
 
         const createdAt = new Date().toISOString().substring(0, 10);
@@ -154,6 +161,8 @@ module.exports = function(expect, request, baseUrl) {
               date_worked: '2015-07-30',
               created_at: createdAt,
               updated_at: null,
+              deleted_at: null,
+              parent: null,
               id: 2,
             },
           ]);
@@ -752,6 +761,8 @@ module.exports = function(expect, request, baseUrl) {
               date_worked: '2015-07-30',
               created_at: createdAt,
               updated_at: null,
+              deleted_at: null,
+              parent: null,
               id: 2,
             },
           ]);
@@ -982,6 +993,8 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-19',
       created_at: '2015-04-19',
       updated_at: null,
+      deleted_at: null,
+      parent: null,
       id: 1,
     };
 
@@ -1008,6 +1021,8 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-28',
       created_at: '2015-04-19',
       updated_at: updatedAt,
+      deleted_at: null,
+      parent: null,
     };
 
     // Sends invalid data to the /times/:id endpoint
@@ -1099,7 +1114,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests all valid fields
     it('succesfully patches time with valid duration, user, project,' +
-       ' activity notes, issue_uri, and date_worked', function(done) {
+    ' activity notes, issue_uri, and date_worked', function(done) {
       const postObj = copyJsonObject(postPatchedTime);
       const expectedResults = copyJsonObject(getPatchedTime);
       expectedResults.id = getOriginalTime.id;
@@ -1206,8 +1221,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests all invalid fields
     it('unsuccesfully patches time with invalid duration, user, project,' +
-       ' activity notes, issue_uri, and date_worked dattype',
-       function(done) {
+    ' activity notes, issue_uri, and date_worked dattype', function(done) {
       const postObj = copyJsonObject(invalidTimeDataType);
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1264,7 +1278,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests invalid duration field
     it('unsuccessfully patches time with just invalid duration datatype',
-       function(done) {
+    function(done) {
       const postObj = {duration: invalidTimeDataType.duration};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1287,7 +1301,7 @@ module.exports = function(expect, request, baseUrl) {
     // This test's functionality will be implemented at a later date
     // (after the rest of the /time/:id functionality is implemented)
     it('unsuccessfully patches time with just invalid user datatype',
-       function(done) {
+    function(done) {
       const postObj = {user: invalidTimeDataType.user};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1308,7 +1322,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests invalid project field
     it('unsuccessfully patches time with just invalid project datatype',
-       function(done) {
+    function(done) {
       const postObj = {project: invalidTimeDataType.project};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1329,7 +1343,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests invalid activities field
     it('unsuccessfully patches time with just invalid activites datatype',
-       function(done) {
+    function(done) {
       const postObj = {activities: invalidTimeDataType.activities};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1350,7 +1364,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests invalid notes field
     it('unsuccessfully patches time with just invalid notes datatype',
-       function(done) {
+    function(done) {
       const postObj = {notes: invalidTimeDataType.notes};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1371,7 +1385,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests invalid issue_uri field
     it('unsuccessfully patches time with just invalid issue_uri datatype',
-       function(done) {
+    function(done) {
       const postObj = {issue_uri: invalidTimeDataType.issue_uri};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1392,7 +1406,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests invalid date_worked field
     it('unsuccessfully patches time with just invalid date_worked datatype',
-       function(done) {
+    function(done) {
       const postObj = {date_worked: invalidTimeDataType.date_worked};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1413,7 +1427,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests invalid key field
     it('unsuccessfully patches time with just invalid key datatype',
-       function(done) {
+    function(done) {
       const postObj = {key: invalidTimeDataType.key};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1433,7 +1447,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests all valid fields except invalid duration
     it('unsuccessfully patches time with an invalid duration datatype',
-       function(done) {
+    function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.duration = invalidTimeDataType.duration;
       const expectedResults = copyJsonObject(getOriginalTime);
@@ -1457,7 +1471,7 @@ module.exports = function(expect, request, baseUrl) {
     // This test's functionality will be implemented at a later date
     // (after the rest of the /time/:id functionality is implemented)
     it('unsuccessfully patches time with an invalid user datatype',
-       function(done) {
+    function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.user = invalidTimeDataType.user;
       const expectedResults = copyJsonObject(getOriginalTime);
@@ -1479,7 +1493,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests all valid fields except invalid project
     it('unsuccessfully patches time with an invalid project datatype',
-       function(done) {
+    function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.project = invalidTimeDataType.project;
       const expectedResults = copyJsonObject(getOriginalTime);
@@ -1501,7 +1515,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests all valid fields except invalid activities
     it('unsuccessfully patches time with an invalid activities datatype',
-       function(done) {
+    function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.activities = invalidTimeDataType.activities;
       const expectedResults = copyJsonObject(getOriginalTime);
@@ -1523,7 +1537,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests all valid fields except invalid notes
     it('unsuccessfully patches time with an invalid notes datatype',
-      function(done) {
+    function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.notes = invalidTimeDataType.notes;
       const expectedResults = copyJsonObject(getOriginalTime);
@@ -1545,7 +1559,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests all valid fields except invalid issue_uri
     it('unsuccessfully patches time with an invalid issue_uri datatype',
-      function(done) {
+    function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.issue_uri = invalidTimeDataType.issue_uri;
       const expectedResults = copyJsonObject(getOriginalTime);
@@ -1567,7 +1581,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests all valid fields except invalid date_worked
     it('unsuccessfully patches time with an invalid date_worked datatype',
-      function(done) {
+    function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.date_worked = invalidTimeDataType.date_worked;
       const expectedResults = copyJsonObject(getOriginalTime);
@@ -1589,7 +1603,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests all valid fields except invalid key
     it('unsuccessfully patches time with an invalid key datatype',
-      function(done) {
+    function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.key = invalidTimeDataType.key;
       const expectedResults = copyJsonObject(getOriginalTime);
@@ -1616,7 +1630,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Test invalid duration identifier
     it('unsuccessfully patches time with just invalid duration identifier',
-       function(done) {
+    function(done) {
       const postObj = {duration: invalidTimeValue.duration};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1637,7 +1651,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Test invalid user invalid foreign key
     it('unsuccessfully patches time with just invalid user foreign key',
-       function(done) {
+    function(done) {
       const postObj = {user: invalidTimeValue.user1};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1679,7 +1693,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Test invalid project foreign key
     it('unsuccessfully patches time with just invalid project foreign key',
-       function(done) {
+    function(done) {
       const postObj = {project: invalidTimeValue.project1};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1699,7 +1713,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Test invalid project (inavlid formatting)
     it('unsuccessfully patches time with just invalid project string',
-       function(done) {
+    function(done) {
       const postObj = {project: invalidTimeValue.project2};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
@@ -1762,7 +1776,7 @@ module.exports = function(expect, request, baseUrl) {
 
     // Test bad issue uri (formatting)
     it('unsuccessfully patches time with just invalid issue_uri',
-       function(done) {
+    function(done) {
       const postObj = {issue_uri: invalidTimeValue.issue_uri};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];

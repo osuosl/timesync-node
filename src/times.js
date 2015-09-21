@@ -447,10 +447,10 @@ module.exports = function(app) {
               'times.created_at as created_at',
               'times.updated_at as updated_at', 'times.id as id',
               'users.username as owner', 'projectslugs.name as projectName')
-          .where('times.id', '=', req.params.id).innerJoin('users', 'users.id',
+      .where('times.id', '=', req.params.id).innerJoin('users', 'users.id',
                   'times.user').innerJoin('projectslugs', 'projectslugs.id',
                   'times.project')
-          .then(function(time) {
+      .then(function(time) {
         if (user.username !== time[0].owner) {
           const err = errors.errorAuthorizationFailure(user.username,
             'create objects for ' + time[0].owner);

@@ -19,6 +19,9 @@ module.exports = function(expect, request, baseUrl) {
             name: 'Ganeti Web Manager',
             slugs: ['gwm', 'ganeti-webmgr'],
             owner: 'tschuy',
+            deleted_at: null,
+            updated_at: null,
+            parent: null,
             id: 1,
           },
           {
@@ -26,6 +29,9 @@ module.exports = function(expect, request, baseUrl) {
             name: 'Protein Geometry Database',
             slugs: ['pgd'],
             owner: 'deanj',
+            deleted_at: null,
+            updated_at: null,
+            parent: null,
             id: 2,
           },
           {
@@ -33,6 +39,9 @@ module.exports = function(expect, request, baseUrl) {
             name: 'Whats Fresh',
             slugs: ['wf'],
             owner: 'tschuy',
+            deleted_at: null,
+            updated_at: null,
+            parent: null,
             id: 3,
           },
         ];
@@ -567,6 +576,9 @@ module.exports = function(expect, request, baseUrl) {
         name: 'Ganeti Web Manager',
         slugs: ['gwm', 'ganeti-webmgr'],
         owner: 'tschuy',
+        deleted_at: null,
+        updated_at: null,
+        parent: null,
         id: 1,
       },
       {
@@ -574,6 +586,9 @@ module.exports = function(expect, request, baseUrl) {
         name: 'Protein Geometry Database',
         slugs: ['pgd'],
         owner: 'deanj',
+        deleted_at: null,
+        updated_at: null,
+        parent: null,
         id: 2,
       },
       {
@@ -581,6 +596,9 @@ module.exports = function(expect, request, baseUrl) {
         name: 'Whats Fresh',
         slugs: ['wf'],
         owner: 'tschuy',
+        deleted_at: null,
+        updated_at: null,
+        parent: null,
         id: 3,
       },
     ];
@@ -609,11 +627,23 @@ module.exports = function(expect, request, baseUrl) {
       request.post(requestOptions, function(err, res, body) {
         expect(err).to.be.a('null');
         expect(res.statusCode).to.equal(200);
+
         expect(body).to.deep.equal(newProject);
 
         request.get(baseUrl + 'projects', function(getErr, getRes, getBody) {
           // the projects/ endpoint should now have one more project
-          const expectedGetResults = initialProjects.concat([newProject]);
+          const expectedGetResults = initialProjects.concat([
+            {
+              owner: 'tschuy',
+              uri: 'https://github.com/osuosl/timesync-node',
+              slugs: ['ts', 'timesync'],
+              name: 'TimeSync Node',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
+              id: 4,
+            },
+          ]);
 
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
@@ -649,6 +679,9 @@ module.exports = function(expect, request, baseUrl) {
               uri: null,
               slugs: ['ts', 'timesync'],
               name: 'TimeSync Node',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 4,
             },
           ]);
@@ -967,6 +1000,9 @@ module.exports = function(expect, request, baseUrl) {
               name: 'Ganeti Web Manager',
               slugs: ['gwm', 'ganeti-webmgr'],
               owner: 'tschuy',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 1,
             },
             {
@@ -974,6 +1010,9 @@ module.exports = function(expect, request, baseUrl) {
               name: 'Protein Geometry Database',
               slugs: ['pgd'],
               owner: 'deanj',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 2,
             },
             {
@@ -981,6 +1020,9 @@ module.exports = function(expect, request, baseUrl) {
               name: 'Whats Fresh',
               slugs: ['wf'],
               owner: 'tschuy',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 3,
             },
           ];
@@ -1013,6 +1055,9 @@ module.exports = function(expect, request, baseUrl) {
               name: 'Ganeti Web Manager',
               slugs: ['gwm', 'ganeti-webmgr'],
               owner: 'tschuy',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 1,
             },
             {
@@ -1020,6 +1065,9 @@ module.exports = function(expect, request, baseUrl) {
               name: 'Protein Geometry Database',
               slugs: ['pgd'],
               owner: 'deanj',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 2,
             },
             {
@@ -1027,6 +1075,9 @@ module.exports = function(expect, request, baseUrl) {
               name: 'Whats Fresh',
               slugs: ['wf'],
               owner: 'tschuy',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 3,
             },
           ];
