@@ -6,14 +6,14 @@
 
 var ldap = require('ldapjs');
 
-authorize = function(req, res, next) {
+var authorize = function(req, res, next) {
   return next();
 };
 
 var SUFFIX = 'ou=passport-ldapauth';
 var server = null;
 
-db = {
+var db = {
   'valid': {
     dn: 'cn=valid, ou=passport-ldapauth',
     attributes:  {
