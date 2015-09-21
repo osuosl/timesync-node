@@ -8,19 +8,19 @@ const knexfile = require('../knexfile');
 const db = process.env.NODE_ENV || 'development';
 let auth;
 
-try {
-  auth = JSON.parse(process.env.TIMESYNC_AUTH_MODULES);
-} catch (e) {
-  if (process.env.TIMESYNC_AUTH_MODULES === undefined) {
-    console.log('You must set TIMESYNC_AUTH_MODULES before running TimeSync!');
-  } else {
+if (process.env.TIMESYNC_AUTH_MODULES === undefined) {
+  auth = ['password'];
+} else {
+  try {
+    auth = JSON.parse(process.env.TIMESYNC_AUTH_MODULES);
+  } catch (e) {
     console.log('Invalid TIMESYNC_AUTH_MODULES variable!', e);
+    process.exit(1);
   }
-  process.exit(1);
 }
 
-if (!Array.isArray(auth) || auth.length === 0) {
-  console.log('TIMESYNC_AUTH_MODULES must be array of at least one module!');
+if (!Array.isArray(auth)) {
+  console.log('TIMESYNC_AUTH_MODULES must be array of auth modules!');
   process.exit(1);
 }
 
