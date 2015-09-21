@@ -146,9 +146,6 @@ module.exports = function(expect, request, baseUrl) {
 
         time.id = body.id;
 
-        console.log(time);
-        console.log(body);
-
         expect(body).to.deep.equal(time);
 
         const createdAt = new Date().toISOString().substring(0, 10);

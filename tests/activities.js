@@ -348,10 +348,12 @@ module.exports = function(expect, request, baseUrl) {
         expectedResult.name = patchedActivity.name;
         expectedResult.slug = patchedActivity.slug;
 
-        //console.log(body);
-        //console.log(expectedResult);
+        const expectedPost = copyJsonObject(expectedResult);
+        delete expectedPost.deleted_at;
+        delete expectedPost.updated_at;
+        delete expectedPost.parent;
 
-        expect(body).to.deep.equal(expectedResult);
+        expect(body).to.deep.equal(expectedPost);
 
         // Checking that the activity has been properly updated
         request.get(baseUrl + 'activities/dev-docs',
@@ -379,7 +381,12 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.name = patchedName.name;
 
-        expect(body).to.deep.equal(expectedResult);
+        const expectedPost = copyJsonObject(expectedResult);
+        delete expectedPost.deleted_at;
+        delete expectedPost.updated_at;
+        delete expectedPost.parent;
+
+        expect(body).to.deep.equal(expectedPost);
 
         request.get(baseUrl + 'activities/docs',
         function(getErr, getRes, getBody) {
@@ -406,7 +413,12 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.slug = patchedSlug.slug;
 
-        expect(body).to.deep.equal(expectedResult);
+        const expectedPost = copyJsonObject(expectedResult);
+        delete expectedPost.deleted_at;
+        delete expectedPost.updated_at;
+        delete expectedPost.parent;
+
+        expect(body).to.deep.equal(expectedPost);
 
         request.get(baseUrl + 'activities/dev-docs',
         function(getErr, getRes, getBody) {
@@ -623,16 +635,22 @@ module.exports = function(expect, request, baseUrl) {
         // the projects/ endpoint should now have one more project
         let expectedGetResults;
         if (newActivityItem) {
-          expectedGetResults = initialActivities.concat([newActivityItem]);
+          expectedGetResults = initialActivities.concat([
+            {
+              slug: 'chef',
+              name: 'Chef',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
+              id: 4,
+            },
+          ]);
         } else {
           expectedGetResults = initialActivities;
         }
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
-
-        //console.log(JSON.parse(getBody));
-        //console.log(expectedGetResults);
 
         expect(JSON.parse(getBody))
         .to.have.same.deep.members(expectedGetResults);
