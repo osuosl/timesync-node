@@ -71,6 +71,8 @@ module.exports = function(expect, request, baseUrl) {
           slugs: ['gwm', 'ganeti-webmgr'],
           owner: 'tschuy',
           id: 1,
+          deleted_at: null,
+          parent: null,
         };
         expectedResult.slugs.sort();
         jsonBody.slugs.sort();
@@ -132,6 +134,18 @@ module.exports = function(expect, request, baseUrl) {
       owner: 'tschuy',
       slugs: ['gwm', 'ganeti-webmgr'],
       uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      deleted_at: null,
+      parent: null,
+    };
+
+    const deletedProject = {
+      id: 1,
+      name: 'Ganeti Web Manager',
+      owner: 'tschuy',
+      slugs: ['gwm', 'ganeti-webmgr'],
+      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      deleted_at: new Date().toISOString().substring(0, 10),
+      parent: null,
     };
 
     const patchedProjectName = {name: patchedProject.name};
@@ -168,15 +182,30 @@ module.exports = function(expect, request, baseUrl) {
     // Function used for validating that the object in the database
     // is in the correct state (change or unchanged based on if the POST
     // was valid)
-    const checkListEndpoint = function(done, expectedResults) {
+    const checkListEndpoint = function(done, expectedResults, archivedExpect) {
       // Make a get request
       request.get(requestOptions.url, function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+
         expect(err).to.be.a('null');
         expect(res.statusCode).to.equal(200);
-
-        const jsonBody = JSON.parse(body);
         expect(jsonBody).to.deep.equal(expectedResults);
-        done();
+
+        if (archivedExpect !== undefined) {
+          // Check that the old version exists in the archive.
+          request.get(requestOptions.url + '?archived=true',
+          function(err0, res0, body0) {
+            const jsonBody0 = JSON.parse(body0);
+
+            expect(err0).to.be.a('null');
+            expect(res0.statusCode).to.equal(200);
+            expect(jsonBody0).to.deep.equal(archivedExpect);
+
+            done();
+          });
+        } else {
+          done();
+        }
       });
     };
 
@@ -195,11 +224,15 @@ module.exports = function(expect, request, baseUrl) {
         expectedResults.uri = patchedProject.uri;
         expectedResults.slugs = patchedProject.slugs;
         expectedResults.owner = patchedProject.owner;
+        // There are 3 projects in the text_data.json dataset, so we need to
+        // make expectedResults.id the original id +3 (we add the new object to
+        // the end)
+        expectedResults.id = originalProject.id + 3;
 
         // expect body of post request to be the new state of gwm
         expect(body).to.deep.equal(expectedResults);
 
-        checkListEndpoint(done, expectedResults);
+        checkListEndpoint(done, expectedResults, deletedProject);
       });
     });
 
@@ -213,10 +246,11 @@ module.exports = function(expect, request, baseUrl) {
 
         const expectedResults = copyJsonObject(originalProject);
         expectedResults.uri = patchedProject.uri;
+        expectedResults.id = originalProject.id + 3;
 
         expect(body).to.deep.equal(expectedResults);
 
-        checkListEndpoint(done, expectedResults);
+        checkListEndpoint(done, expectedResults, deletedProject);
       });
     });
 
@@ -230,10 +264,11 @@ module.exports = function(expect, request, baseUrl) {
 
         const expectedResults = copyJsonObject(originalProject);
         expectedResults.slugs = patchedProject.slugs;
+        expectedResults.id = originalProject.id + 3;
 
         expect(body).to.deep.equal(expectedResults);
 
-        checkListEndpoint(done, expectedResults);
+        checkListEndpoint(done, expectedResults, deletedProject);
       });
     });
 
@@ -247,10 +282,11 @@ module.exports = function(expect, request, baseUrl) {
 
         const expectedResults = copyJsonObject(originalProject);
         expectedResults.name = patchedProject.name;
+        expectedResults.id = originalProject.id + 3;
 
         expect(body).to.deep.equal(expectedResults);
 
-        checkListEndpoint(done, expectedResults);
+        checkListEndpoint(done, expectedResults, deletedProject);
       });
     });
 
@@ -265,12 +301,13 @@ module.exports = function(expect, request, baseUrl) {
     //
     //             const expectedResults = copyJsonObject(originalProject);
     //             expectedResults.owner = patchedProject.owner;
+    //             expectedResults.id = originalProject.id + 3;
     //
     //             body = JSON.parse(body);
     //
     //             expect(body).to.equal(expectedResults);
     //
-    //             checkListEndpoint(done, expectedResults);
+    //             checkListEndpoint(done, expectedResults, deletedProject);
     //         });
     //     });
 
@@ -330,7 +367,6 @@ module.exports = function(expect, request, baseUrl) {
         ]).to.include.members([body.text]);
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -346,7 +382,6 @@ module.exports = function(expect, request, baseUrl) {
         ' should be string but was sent as array');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -362,7 +397,6 @@ module.exports = function(expect, request, baseUrl) {
         ' project should be array but was sent as string');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -378,7 +412,6 @@ module.exports = function(expect, request, baseUrl) {
         ' project should be string but was sent as array');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -394,7 +427,6 @@ module.exports = function(expect, request, baseUrl) {
         ' project should be string but was sent as array');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -410,7 +442,6 @@ module.exports = function(expect, request, baseUrl) {
         ' have a key field');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -428,7 +459,6 @@ module.exports = function(expect, request, baseUrl) {
         ' should be string but was sent as array');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -446,7 +476,6 @@ module.exports = function(expect, request, baseUrl) {
         ' should be uri but was sent as string');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -464,7 +493,6 @@ module.exports = function(expect, request, baseUrl) {
         ' should be slugs but was sent as non-slug strings');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -482,7 +510,6 @@ module.exports = function(expect, request, baseUrl) {
         ' project should be array but was sent as string');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -500,7 +527,6 @@ module.exports = function(expect, request, baseUrl) {
         ' project should be string but was sent as array');
 
         const expectedResults = originalProject;
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -518,7 +544,6 @@ module.exports = function(expect, request, baseUrl) {
         ' project should be string but was sent as array');
 
         const expectedResults = originalProject;
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -536,7 +561,6 @@ module.exports = function(expect, request, baseUrl) {
         ' have a key field');
 
         const expectedResults = originalProject;
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -558,6 +582,8 @@ module.exports = function(expect, request, baseUrl) {
       slugs: ['ts', 'timesync'],
       name: 'TimeSync Node',
       id: 4,
+      deleted_at: null,
+      parent: null,
     };
 
     // the base POST JSON
@@ -960,7 +986,25 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(jsonBody).to.deep.equal(expectedResult);
           expect(getRes.statusCode).to.equal(404);
-          done();
+
+          // Test that the item still exists in archive
+          request.get(baseUrl + 'projects/pgd?archived=true',
+          function(getErrArchive, getResArchive, getBodyArchive) {
+            const jsonBodyArchive = JSON.parse(getBodyArchive);
+
+            const archiveExpectedResult = {
+              uri: 'https:://code.osuosl.org/projects/pgd',
+              name: 'Protein Geometry Database',
+              owner: 1,
+              id: 2,
+              deleted_at: new Date().toISOString().substring(0, 10),
+              parent: null,
+            };
+
+            expect(jsonBodyArchive).to.deep.equal(archiveExpectedResult);
+            expect(getResArchive.statusCode).to.equal(404);
+            done();
+          });
         });
       });
     });
