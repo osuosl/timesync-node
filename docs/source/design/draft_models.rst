@@ -61,5 +61,9 @@ User:
 
 .. code-block:: python
 
-    # This is currently unplanned. We will address this in a future meeting.
-    id # auto-incrementing primary key
+    id, # auto-incrementing primary key
+    first_name, # string
+    last_name, # string
+    github_username, # string
+    password, # hash
+    role, # string (ie. developer, system administrator, writer, etc.)
