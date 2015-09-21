@@ -125,7 +125,8 @@ set the environment variable ``TIMESYNC_AUTH_MODULES`` to a JSON list containing
 the plugin names you wish to enable. Note that some types of authentication may
 require additional settings (see below).
 
-Invalid module names are ignored.
+If the ``TIMESYNC_AUTH_MODULES`` variable is empty, password-based
+authentication will be enabled as a default. Invalid module names are ignored.
 
 **Possible options**:
   * ``password`` for simple password-based authentication
