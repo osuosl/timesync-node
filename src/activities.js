@@ -6,81 +6,80 @@ module.exports = function(app) {
   const helpers = require('./helpers')(app);
   const authPost = require('./authenticatedPost');
 
-  app.get(app.get('version') + '/activities', function(req, res) {
-    knex('activities').then(function(activities) {
+  app.get(app.get('version') + '/activities', async function(req, res) {
+    try {
+      const activities = await knex('activities');
       if (activities.length === 0) {
-        return res.send([]);
+        res.send([]);
+      } else {
+        res.send(activities);
       }
-
-      return res.send(activities);
-    }).catch(function(error) {
+    } catch (error) {
       const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
-    });
+    }
   });
 
-  app.get(app.get('version') + '/activities/:slug', function(req, res) {
+  app.get(app.get('version') + '/activities/:slug', async function(req, res) {
     if (errors.isInvalidSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
     }
 
     // get matching activity
-    knex('activities').select().where('slug', '=', req.params.slug)
-    .then(function(activity) {
+    try {
+      const activity = await knex('activities').select()
+      .where('slug', '=', req.params.slug);
+
       if (activity.length === 0) {
         const err = errors.errorObjectNotFound('activity');
         return res.status(err.status).send(err);
       }
 
       return res.send(activity[0]);
-    }).catch(function(error) {
+    } catch (error) {
       const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
-    });
+    };
   });
 
-  app.delete(app.get('version') + '/activities/:slug', function(req, res) {
+  app.delete(app.get('version') + '/activities/:slug', async function(req, res) {
     if (!helpers.validateSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
     }
 
-    const activityId = knex('activities').select('id')
-    .where('slug', req.params.slug);
+    try {
+      const activityId = await knex('activities').select('id')
+      .where('slug', req.params.slug);
+      // Check timesactivities to see if an activity (id) is being referenced
+      const activity = await knex('timesactivities').select('id').where('id', '=', activityId);
 
-    // Check timesactivities to see if an activity (id) is being referenced
-    knex('timesactivities').select('id').where('id', '=', activityId)
-    .then(function(activity) {
-      /* If the length of the activity array is greater than 0, then
-      the activity id is being referenced by timesactivities */
       if (activity.length > 0) {
         res.set('Allow', 'GET, POST');
         const err = errors.errorRequestFailure('activity');
         return res.status(err.status).send(err);
       }
 
-      // delete activity after running through the checks
-      knex('activities').where('slug', req.params.slug).del()
-      .then(function(numObj) {
-        /* When deleting something from the table, the number of
-        objects deleted is returned. So to confirm that deletion was
-        successful, make sure that the number returned is at least
-        one. */
-        if (numObj >= 1) {
-          return res.send();
-        }
+      const numObj = await knex('activities').where('slug', req.params.slug).del();
 
+      /* When deleting something from the table, the number of
+      objects deleted is returned. So to confirm that deletion was
+      successful, make sure that the number returned is at least
+      one. */
+      if (numObj >= 1) {
+        return res.send();
+      } else {
         const err = errors.errorObjectNotFound('slug', req.params.slug);
         return res.status(err.status).send(err);
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
-      });
-    });
+      }
+    } catch (error) {
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
+    }
   });
 
-  authPost(app, app.get('version') + '/activities/:slug', function(req, res) {
+  authPost(app, app.get('version') + '/activities/:slug', async function(req, res) {
     const currObj = req.body.object;
 
     const validKeys = ['name', 'slug'];
@@ -133,35 +132,43 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    knex('activities').first().select('activities.name as name',
-    'activities.slug as slug', 'activities.id as id')
-    .where('slug', '=', req.params.slug).then(function(obj) {
-      /* req.body.object.name = updated name
-         currObj.name = name remains unchanged
+    try {
+      const obj = await knex('activities').first().select('activities.name as name',
+      'activities.slug as slug', 'activities.id as id')
+      .where('slug', '=', req.params.slug);
+    } catch (error) {
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
+    }
 
-         req.body.object.slug = updated slug
-         currObj.slug = slug remains unchanged */
-      const activity = {
-        name: req.body.object.name || obj.name,
-        slug: req.body.object.slug || obj.slug,
-      };
+    /* req.body.object.name = updated name
+       currObj.name = name remains unchanged
 
-      knex('activities').where('slug', '=', req.params.slug)
-      .update(activity).then(function(numObj) {
-        if (numObj >= 1) {
-          activity.id = obj.id;
-          return res.send(activity);
-        }
-        const err = errors.errorObjectNotFound('activity');
-        return res.status(err.status).send(err);
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
-      });
-    });
+       req.body.object.slug = updated slug
+       currObj.slug = slug remains unchanged */
+    const activity = {
+      name: req.body.object.name || obj.name,
+      slug: req.body.object.slug || obj.slug,
+    };
+
+    try {
+      const numObj = await knex('activities')
+      .where('slug', '=', req.params.slug).update(activity);
+    } catch (error) {
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
+    }
+
+    if (numObj >= 1) {
+      activity.id = obj.id;
+      return res.send(activity);
+    } else {
+      const err = errors.errorObjectNotFound('activity');
+      return res.status(err.status).send(err);
+    }
   });
 
-  authPost(app, app.get('version') + '/activities', function(req, res) {
+  authPost(app, app.get('version') + '/activities', async function(req, res) {
     const obj = req.body.object;
 
     const validKeys = ['name', 'slug'];
@@ -224,24 +231,33 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    knex('activities').where('slug', '=', obj.slug).then(function(existing) {
-      if (existing.length) {
-        const err = errors.errorSlugsAlreadyExist(
-          existing.map(function(slug) {
-            return slug.slug;
-          })
-        );
+    try {
+      const existing = await knex('activities').where('slug', '=', obj.slug);
+    } catch (error) {
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
+    }
 
-        return res.status(err.status).send(err);
-      }
+    if (existing.length) {
+      const err = errors.errorSlugsAlreadyExist(
+        existing.map(function(slug) {
+          return slug.slug;
+        })
+      );
 
-      knex('activities').insert(obj).then(function(activities) {
-        // activities is a list containing the ID of the
-        // newly created activity
-        const activity = activities[0];
-        obj.id = activity;
-        res.send(JSON.stringify(obj));
-      });
-    });
+      return res.status(err.status).send(err);
+    }
+
+    try {
+      const activities = knex('activities').insert(obj);
+    } catch (error) {
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
+    }
+    // activities is a list containing the ID of the
+    // newly created activity
+    const activity = activities[0];
+    obj.id = activity;
+    res.send(JSON.stringify(obj));
   });
 };

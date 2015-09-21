@@ -7,15 +7,16 @@
     "doc": "docs"
   },
   "scripts": {
-    "start": "node --harmony ./src/app.js",
-    "devel": "nodemon --harmony ./src/app.js",
+    "start": "node ./dist/app.js",
+    "compile": "babel src --out-dir dist",
+    "devel": "nodemon --exec babel-node -- ./src/app.js",
     "migrations": "knex migrate:latest",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "linter": "jshint ./src ./tests ./scripts && eslint ./src ./tests ./scripts",
     "fixtures": "node --harmony ./scripts/load_fixtures.js",
-    "test": "NODE_ENV=mocha TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
+    "test": "NODE_ENV=mocha TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --compilers js:babel/register tests",
     "latte": "sh ./scripts/latte.sh",
-    "coverage": "NODE_ENV=mocha TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
+    "coverage": "NODE_ENV=mocha TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- --compilers js:babel/register tests",
     "create-account": "node --harmony ./scripts/create-account.js"
   },
   "repository": {
@@ -50,11 +51,12 @@
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
+    "babel": "^5.4.7",
     "chai": "^3.2.0",
     "chai-passport-strategy": "^0.2.0",
     "istanbul": "^0.3.17",
     "jshint": "^2.8.0",
-    "mocha": "^2.2.4",
+    "mocha": "^2.3.2",
     "nodemon": "^1.4.0",
     "request": "^2.55.0",
     "sql-fixtures": "^0.11.0"
