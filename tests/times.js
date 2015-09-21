@@ -21,8 +21,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             parent: null,
             id: 1,
-            deleted_at: null,
-            parent: null,
           },
         ];
 
@@ -52,8 +50,6 @@ module.exports = function(expect, request, baseUrl) {
           deleted_at: null,
           parent: null,
           id: 1,
-          deleted_at: null,
-          parent: null,
         };
 
         expect(err).to.equal(null);
@@ -268,8 +264,6 @@ module.exports = function(expect, request, baseUrl) {
         deleted_at: null,
         parent: null,
         id: 1,
-        deleted_at: null,
-        parent: null,
       },
     ];
 
@@ -310,8 +304,6 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               parent: null,
               id: 2,
-              deleted_at: null,
-              parent: null,
             },
           ]);
           expect(getErr).to.equal(null);
@@ -912,8 +904,6 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               parent: null,
               id: 2,
-              deleted_at: null,
-              parent: null,
             },
           ]);
           expect(getErr).to.equal(null);

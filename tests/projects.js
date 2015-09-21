@@ -23,8 +23,6 @@ module.exports = function(expect, request, baseUrl) {
             updated_at: null,
             parent: null,
             id: 1,
-            deleted_at: null,
-            parent: null,
           },
           {
             uri: 'https://code.osuosl.org/projects/pgd',
@@ -35,8 +33,6 @@ module.exports = function(expect, request, baseUrl) {
             updated_at: null,
             parent: null,
             id: 2,
-            deleted_at: null,
-            parent: null,
           },
           {
             uri: 'https://github.com/osu-cass/whats-fresh-api',
@@ -47,8 +43,6 @@ module.exports = function(expect, request, baseUrl) {
             updated_at: null,
             parent: null,
             id: 3,
-            deleted_at: null,
-            parent: null,
           },
         ];
 
@@ -612,8 +606,6 @@ module.exports = function(expect, request, baseUrl) {
         updated_at: null,
         parent: null,
         id: 1,
-        deleted_at: null,
-        parent: null,
       },
       {
         uri: 'https://code.osuosl.org/projects/pgd',
@@ -624,8 +616,6 @@ module.exports = function(expect, request, baseUrl) {
         updated_at: null,
         parent: null,
         id: 2,
-        deleted_at: null,
-        parent: null,
       },
       {
         uri: 'https://github.com/osu-cass/whats-fresh-api',
@@ -636,8 +626,6 @@ module.exports = function(expect, request, baseUrl) {
         updated_at: null,
         parent: null,
         id: 3,
-        deleted_at: null,
-        parent: null,
       },
     ];
 
@@ -1060,8 +1048,6 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 1,
-              deleted_at: null,
-              parent: null,
             },
             {
               uri: 'https://code.osuosl.org/projects/pgd',
@@ -1072,8 +1058,6 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 2,
-              deleted_at: null,
-              parent: null,
             },
             {
               uri: 'https://github.com/osu-cass/whats-fresh-api',
@@ -1084,8 +1068,6 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 3,
-              deleted_at: null,
-              parent: null,
             },
           ];
 
@@ -1121,8 +1103,6 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 1,
-              deleted_at: null,
-              parent: null,
             },
             {
               uri: 'https://code.osuosl.org/projects/pgd',
@@ -1133,8 +1113,6 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 2,
-              deleted_at: null,
-              parent: null,
             },
             {
               uri: 'https://github.com/osu-cass/whats-fresh-api',
@@ -1145,8 +1123,6 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               parent: null,
               id: 3,
-              deleted_at: null,
-              parent: null,
             },
           ];
 
