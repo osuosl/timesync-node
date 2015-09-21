@@ -18,20 +18,23 @@ const baseUrl = 'http://localhost:' + port + '/v1/';
 
 const reloadFixtures = function(done) {
   // Clear SQLite indexes
-  knex.raw('delete from sqlite_sequence').then(function() {
-    fixtureCreator.create(testData).then(function() {
-      done();
-    });
+  // knex.raw('delete from sqlite_sequence').then(function() {
+  fixtureCreator.create(testData).then(function() {
+    done();
   });
+  // });
 };
 
 const clearDatabase = function(done) {
-  knex('projects').del().then(function() {
-    knex('activities').del().then(function() {
-      knex('users').del().then(function() {
-        knex('times').del().then(function() {
-          knex('projectslugs').del().then(function() {
-            knex('timesactivities').del().then(done);
+  knex.raw('TRUNCATE projects CASCADE').then(function() {
+    knex.raw('TRUNCATE activities CASCADE').then(function() {
+      knex.raw('TRUNCATE users CASCADE').then(function() {
+        knex.raw('TRUNCATE times CASCADE').then(function() {
+          knex.raw('TRUNCATE projectslugs CASCADE').then(function() {
+            knex.raw('TRUNCATE userroles RESTART IDENTITY CASCADE')
+            .then(function() {
+              knex.raw('TRUNCATE timesactivities CASCADE').then(done);
+            });
           });
         });
       });
@@ -40,6 +43,7 @@ const clearDatabase = function(done) {
 };
 
 describe('Endpoints', function() {
+  this.timeout(7500);
   beforeEach(function(done) {
     knex.migrate.latest().then(function() {
       clearDatabase(function() {
@@ -58,6 +62,7 @@ describe('Errors', function() {
 });
 
 describe('Helpers', function() {
+  this.timeout(7500);
   beforeEach(function(done) {
     knex.migrate.latest().then(function() {
       clearDatabase(function() {

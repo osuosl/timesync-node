@@ -248,12 +248,16 @@ module.exports = function(app) {
           return res.status(err.status).send(err);
         }
 
-        knex('activities').insert(obj).then(function(activities) {
-          // activities is a list containing the ID of the
-          // newly created activity
-          const activity = activities[0];
-          obj.id = activity;
-          res.send(JSON.stringify(obj));
+        knex.raw("SELECT setval('activities_id_seq', " +
+        '(SELECT MAX(id) FROM activities))').then(function() {
+          knex('activities').insert(obj).returning('id')
+          .then(function(activities) {
+            // activities is a list containing the ID of the
+            // newly created activity
+            const activity = activities[0];
+            obj.id = activity;
+            res.send(JSON.stringify(obj));
+          });
         });
       });
     })(req, res, next);

@@ -35,7 +35,7 @@ exports.up = function(knex) {
   }).createTable('projectslugs', function(table) {
     table.increments('id').primary();
     table.string('name').unique().notNullable();
-    table.integer('project').references('id').inTable('projects').notNullable();
+    table.integer('project').references('id').inTable('projects').notNullable().onDelete('cascade');
   }).createTable('timesactivities', function(table) {
     table.increments('id').primary();
     table.integer('time').references('id').inTable('times').notNullable();

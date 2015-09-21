@@ -237,17 +237,24 @@ module.exports = function(app) {
             name: obj.name,
           };
 
-          knex('projects').insert(insertion).then(function(projects) {
-            // project is a list containing the ID of the
-            // newly created project
-            const project = projects[0];
-            const projectSlugs = obj.slugs.map(function(slug) {
-              return {name: slug, project: project};
-            });
+          knex.raw("SELECT setval('projects_id_seq', " +
+          '(SELECT MAX(id) from projects))').then(function() {
+            knex('projects').insert(insertion).returning('id')
+            .then(function(projects) {
+              // project is a list containing the ID of the
+              // newly created project
+              const project = projects[0];
+              const projectSlugs = obj.slugs.map(function(slug) {
+                return {name: slug, project: project};
+              });
 
-            knex('projectslugs').insert(projectSlugs).then(function() {
-              obj.id = project;
-              res.send(JSON.stringify(obj));
+              knex.raw("SELECT setval('projectslugs_id_seq', " +
+              '(SELECT MAX(id) from projectslugs))').then(function() {
+                knex('projectslugs').insert(projectSlugs).then(function() {
+                  obj.id = project;
+                  res.send(JSON.stringify(obj));
+                });
+              });
             });
           });
         });
@@ -392,56 +399,59 @@ module.exports = function(app) {
                 return slug.name;
               });
 
-              knex('projectslugs').where({project: project.id})
-              .then(function(existingSlugObjs) {
-                const existingSlugs = existingSlugObjs.map(function(slug) {
-                  return slug.name;
-                });
-                // existingSlugs contains a list of all of slugs
-                // that already belong to the project, by name
-
-                // get list of slugs that is no longer in POST
-                // request
-                let delSlugs = [];
-                if (obj.slugs.length) {
-                  delSlugs = existingSlugs.filter(function(slug) {
-                    return obj.slugs.indexOf(slug) === -1;
+              knex.raw("SELECT setval('projectslugs_id_seq', " +
+              '(SELECT MAX(id) FROM projectslugs))').then(function() {
+                knex('projectslugs').where({project: project.id})
+                .then(function(existingSlugObjs) {
+                  const existingSlugs = existingSlugObjs.map(function(slug) {
+                    return slug.name;
                   });
-                }
+                  // existingSlugs contains a list of all of slugs
+                  // that already belong to the project, by name
 
-                // make a list containing all of the slugs that need
-                // to be inserted
-                const newSlugs = obj.slugs.filter(function(objSlug) {
-                  if (slugNames.indexOf(objSlug) === -1) {
-                    return true;
-                  }
-                }).map(function(newSlug) {
-                  return {name: newSlug, project: project.id};
-                });
-
-                // make a list containing creation and
-                // deletion promises
-                const slugsPromises = [];
-                if (delSlugs.length) {
-                  slugsPromises.push(knex('projectslugs')
-                  .where('name', 'in', delSlugs).del());
-                }
-                if (newSlugs.length) {
-                  slugsPromises.push(knex('projectslugs').insert(newSlugs));
-                }
-
-                Promise.all(slugsPromises).then(function() {
+                  // get list of slugs that is no longer in POST
+                  // request
+                  let delSlugs = [];
                   if (obj.slugs.length) {
-                    project.slugs = obj.slugs;
-                  } else {
-                    project.slugs = existingSlugs;
+                    delSlugs = existingSlugs.filter(function(slug) {
+                      return obj.slugs.indexOf(slug) === -1;
+                    });
                   }
 
-                  project.owner = user.username;
-                  res.send(JSON.stringify(project));
-                }).catch(function(error) {
-                  const err = errors.errorServerError(error);
-                  return res.status(err.status).send(err);
+                  // make a list containing all of the slugs that need
+                  // to be inserted
+                  const newSlugs = obj.slugs.filter(function(objSlug) {
+                    if (slugNames.indexOf(objSlug) === -1) {
+                      return true;
+                    }
+                  }).map(function(newSlug) {
+                    return {name: newSlug, project: project.id};
+                  });
+
+                  // make a list containing creation and
+                  // deletion promises
+                  const slugsPromises = [];
+                  if (delSlugs.length) {
+                    slugsPromises.push(knex('projectslugs')
+                    .where('name', 'in', delSlugs).del());
+                  }
+                  if (newSlugs.length) {
+                    slugsPromises.push(knex('projectslugs').insert(newSlugs));
+                  }
+
+                  Promise.all(slugsPromises).then(function() {
+                    if (obj.slugs.length) {
+                      project.slugs = obj.slugs;
+                    } else {
+                      project.slugs = existingSlugs;
+                    }
+
+                    project.owner = user.username;
+                    res.send(JSON.stringify(project));
+                  }).catch(function(error) {
+                    const err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
+                  });
                 });
               });
             });
@@ -477,21 +487,38 @@ module.exports = function(app) {
         // Otherwise delete project
       }
 
-      knex('projects').where('id', '=', projectId)
-      .del().then(function(numObj) {
-        /* When deleting something from the table, the number of
-        objects deleted is returned. So to confirm that deletion
-        was successful, make sure that the number returned is at
-        least one. */
-        if (numObj >= 1) {
-          return res.send();
-        }
+      /* Slugs associated with this project will be deleted so store the
+       * projectId to a variable now */
+      knex('projectslugs').select('project').where('project', projectId)
+      .then(function(projIdObj) {
+        const projId = projIdObj[0].project;
+        /* Before deleting the project, delete its associated userroles and
+         * slugs (knex's onDelete('cascade') can only be used to delete
+         * columns) */
+        knex('userroles').where('project', projectId).del()
+        .then(function() {
+          knex('projectslugs').where('project', projectId).del()
+          .then(function() {
+            knex('projects').where('id', '=', projId)
+            .del().then(function(numObj) {
+                /* When deleting something from the table, the number of
+                objects deleted is returned. So to confirm that deletion
+                was successful, make sure that the number returned is at
+                least one. */
+              if (numObj >= 1) {
+                return res.send();
+              }
 
-        const err = errors.errorObjectNotFound('slug',
-        req.params.slug);
-        return res.status(err.status).send(err);
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
+              const err = errors.errorObjectNotFound('slug', req.params.slug);
+              return res.status(err.status).send(err);
+            }).catch(function(error) {
+              const err = errors.errorServerError(error);
+              return res.status(err.status).send(err);
+            });
+          });
+        });
+      }).catch(function() {
+        const err = errors.errorObjectNotFound('slug', req.params.slug);
         return res.status(err.status).send(err);
       });
     });
