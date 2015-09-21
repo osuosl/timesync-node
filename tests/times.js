@@ -18,6 +18,8 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            parent: null,
             id: 1,
           },
         ];
@@ -45,6 +47,8 @@ module.exports = function(expect, request, baseUrl) {
           date_worked: '2015-04-19',
           created_at: '2015-04-19',
           updated_at: null,
+          deleted_at: null,
+          parent: null,
           id: 1,
         };
 
@@ -117,6 +121,8 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-04-19',
         created_at: '2015-04-19',
         updated_at: null,
+        deleted_at: null,
+        parent: null,
         id: 1,
       },
     ];
@@ -139,6 +145,10 @@ module.exports = function(expect, request, baseUrl) {
         expect(res.statusCode).to.equal(200);
 
         time.id = body.id;
+
+        console.log(time);
+        console.log(body);
+
         expect(body).to.deep.equal(time);
 
         const createdAt = new Date().toISOString().substring(0, 10);
@@ -154,6 +164,8 @@ module.exports = function(expect, request, baseUrl) {
               date_worked: '2015-07-30',
               created_at: createdAt,
               updated_at: null,
+              deleted_at: null,
+              parent: null,
               id: 2,
             },
           ]);
@@ -752,6 +764,8 @@ module.exports = function(expect, request, baseUrl) {
               date_worked: '2015-07-30',
               created_at: createdAt,
               updated_at: null,
+              deleted_at: null,
+              parent: null,
               id: 2,
             },
           ]);
@@ -982,6 +996,8 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-19',
       created_at: '2015-04-19',
       updated_at: null,
+      deleted_at: null,
+      parent: null,
       id: 1,
     };
 
@@ -1008,6 +1024,8 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-28',
       created_at: '2015-04-19',
       updated_at: updatedAt,
+      deleted_at: null,
+      parent: null,
     };
 
     // Sends invalid data to the /times/:id endpoint

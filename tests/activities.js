@@ -17,16 +17,25 @@ module.exports = function(expect, request, baseUrl) {
           {
             name: 'Documentation',
             slug: 'docs',
+            deleted_at: null,
+            updated_at: null,
+            parent: null,
             id: 1,
           },
           {
             name: 'Development',
             slug: 'dev',
+            deleted_at: null,
+            updated_at: null,
+            parent: null,
             id: 2,
           },
           {
             name: 'Systems',
             slug: 'sys',
+            deleted_at: null,
+            updated_at: null,
+            parent: null,
             id: 3,
           },
         ];
@@ -46,6 +55,9 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = {
           name: 'Systems',
           slug: 'sys',
+          deleted_at: null,
+          updated_at: null,
+          parent: null,
           id: 3,
         };
 
@@ -132,16 +144,25 @@ module.exports = function(expect, request, baseUrl) {
             {
               name: 'Documentation',
               slug: 'docs',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 1,
             },
             {
               name: 'Development',
               slug: 'dev',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 2,
             },
             {
               name: 'Systems',
               slug: 'sys',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 3,
             },
           ];
@@ -174,16 +195,25 @@ module.exports = function(expect, request, baseUrl) {
             {
               name: 'Documentation',
               slug: 'docs',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 1,
             },
             {
               name: 'Development',
               slug: 'dev',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 2,
             },
             {
               name: 'Systems',
               slug: 'sys',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 3,
             },
           ];
@@ -217,16 +247,25 @@ module.exports = function(expect, request, baseUrl) {
             {
               name: 'Documentation',
               slug: 'docs',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 1,
             },
             {
               name: 'Development',
               slug: 'dev',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 2,
             },
             {
               name: 'Systems',
               slug: 'sys',
+              deleted_at: null,
+              updated_at: null,
+              parent: null,
               id: 3,
             },
           ];
@@ -250,6 +289,9 @@ module.exports = function(expect, request, baseUrl) {
     const originalActivity =  {
       name: 'Documentation',
       slug: 'docs',
+      deleted_at: null,
+      updated_at: null,
+      parent: null,
       id: 1,
     };
 
@@ -305,6 +347,9 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.name = patchedActivity.name;
         expectedResult.slug = patchedActivity.slug;
+
+        //console.log(body);
+        //console.log(expectedResult);
 
         expect(body).to.deep.equal(expectedResult);
 
@@ -544,16 +589,25 @@ module.exports = function(expect, request, baseUrl) {
       {
         'name': 'Documentation',
         'slug': 'docs',
+        'deleted_at': null,
+        'updated_at': null,
+        'parent': null,
         'id': 1,
       },
       {
         'name': 'Development',
         'slug': 'dev',
+        'deleted_at': null,
+        'updated_at': null,
+        'parent': null,
         'id': 2,
       },
       {
         'name': 'Systems',
         'slug': 'sys',
+        'deleted_at': null,
+        'updated_at': null,
+        'parent': null,
         'id': 3,
       },
     ];
@@ -576,6 +630,9 @@ module.exports = function(expect, request, baseUrl) {
 
         expect(getErr).to.be.a('null');
         expect(getRes.statusCode).to.equal(200);
+
+        //console.log(JSON.parse(getBody));
+        //console.log(expectedGetResults);
 
         expect(JSON.parse(getBody))
         .to.have.same.deep.members(expectedGetResults);
