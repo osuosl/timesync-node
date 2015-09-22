@@ -290,31 +290,34 @@ module.exports = function(app) {
                 created_at: createdAt,
               };
 
-              knex('times').insert(insertion).then(function(timeIds) {
-                const timeId = timeIds[0];
+              knex.transaction(function(trx) {
+                trx('times').insert(insertion).then(function(timeIds) {
+                  const timeId = timeIds[0];
 
-                const taInsertion = [];
-                /* eslint-disable prefer-const */
-                for (let activityId of activityIds) {
-                  /* eslint-enable prefer-const */
-                  taInsertion.push({
-                    time: timeId,
-                    activity: activityId,
-                  });
-                }
+                  const taInsertion = [];
+                  /* eslint-disable prefer-const */
+                  for (let activityId of activityIds) {
+                    /* eslint-enable prefer-const */
+                    taInsertion.push({
+                      time: timeId,
+                      activity: activityId,
+                    });
+                  }
 
-                knex('timesactivities').insert(taInsertion).then(function() {
-                  time.id = timeId;
-                  return res.send(JSON.stringify(time));
-                }).catch(function(error) {
-                  knex('times').del().where({id: timeId}).then(function() {
+                  trx('timesactivities').insert(taInsertion).then(function() {
+                    time.id = timeId;
+                    trx.commit();
+                    return res.send(JSON.stringify(time));
+                  }).catch(function(error) {
+                    trx.rollback();
                     const err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                   });
+                }).catch(function(error) {
+                  trx.rollback();
+                  const err = errors.errorServerError(error);
+                  return res.status(err.status).send(err);
                 });
-              }).catch(function(error) {
-                const err = errors.errorServerError(error);
-                return res.status(err.status).send(err);
               });
             }).catch(function() {
               const err = errors.errorInvalidForeignKey('time', 'activities');
@@ -484,49 +487,55 @@ module.exports = function(app) {
 
               helpers.checkActivities(obj.activities)
               .then(function(activityIds) {
-                knex('timesactivities').where('time', '=', time[0].id)
-                .then(function(tas) {
-                  const taIds = [];
-                  /* eslint-disable prefer-const */
-                  for (let ta of tas) {
-                    /* eslint-enable prefer-const */
-                    taIds.push(ta.activity);
-                  }
+                knex.transaction(function(trx) {
+                  trx('timesactivities').where('time', '=', time[0].id)
+                  .then(function(tas) {
+                    const taIds = [];
+                    /* eslint-disable prefer-const */
+                    for (let ta of tas) {
+                      /* eslint-enable prefer-const */
+                      taIds.push(ta.activity);
+                    }
 
-                  const unmatchedTas = taIds.filter(function() {
-                    return taIds.indexOf(activityIds) < 0;
-                  });
-                  const unmatchedActivities = activityIds
-                  .filter(function() {
-                    return activityIds.indexOf(taIds) < 0;
-                  });
-
-                  const taInsertion = [];
-                  /* eslint-disable prefer-const */
-                  for (let activityId of unmatchedActivities) {
-                    /* eslint-enable prefer-const */
-                    taInsertion.push({
-                      time: time[0].id,
-                      activity: activityId,
+                    const unmatchedTas = taIds.filter(function() {
+                      return taIds.indexOf(activityIds) < 0;
                     });
-                  }
+                    const unmatchedActivities = activityIds
+                    .filter(function() {
+                      return activityIds.indexOf(taIds) < 0;
+                    });
 
-                  knex('timesactivities').where('id', 'in', unmatchedTas)
-                  .del().then(function() {
-                    knex('timesactivities').insert(taInsertion)
-                    .then(function() {
-                      return res.send(time);
+                    const taInsertion = [];
+                    /* eslint-disable prefer-const */
+                    for (let activityId of unmatchedActivities) {
+                      /* eslint-enable prefer-const */
+                      taInsertion.push({
+                        time: time[0].id,
+                        activity: activityId,
+                      });
+                    }
+
+                    trx('timesactivities').where('id', 'in', unmatchedTas)
+                    .del().then(function() {
+                      trx('timesactivities').insert(taInsertion)
+                      .then(function() {
+                        trx.commit();
+                        return res.send(time);
+                      }).catch(function(error) {
+                        trx.rollback();
+                        const err = errors.errorServerError(error);
+                        return res.status(err.status).send(err);
+                      });
                     }).catch(function(error) {
+                      trx.rollback();
                       const err = errors.errorServerError(error);
                       return res.status(err.status).send(err);
                     });
                   }).catch(function(error) {
+                    trx.rollback();
                     const err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                   });
-                }).catch(function(error) {
-                  const err = errors.errorServerError(error);
-                  return res.status(err.status).send(err);
                 });
               }).catch(function() {
                 const err = errors.errorInvalidForeignKey('time',
