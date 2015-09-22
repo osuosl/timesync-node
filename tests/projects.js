@@ -357,7 +357,6 @@ module.exports = function(expect, request, baseUrl) {
         ]).to.include.members([body.text]);
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -373,7 +372,6 @@ module.exports = function(expect, request, baseUrl) {
         ' should be string but was sent as array');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -389,7 +387,6 @@ module.exports = function(expect, request, baseUrl) {
         ' project should be array but was sent as string');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -405,7 +402,6 @@ module.exports = function(expect, request, baseUrl) {
         ' project should be string but was sent as array');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -421,7 +417,6 @@ module.exports = function(expect, request, baseUrl) {
         ' project should be string but was sent as array');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -437,7 +432,6 @@ module.exports = function(expect, request, baseUrl) {
         ' have a key field');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -457,7 +451,6 @@ module.exports = function(expect, request, baseUrl) {
         ' should be string but was sent as array');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -477,7 +470,6 @@ module.exports = function(expect, request, baseUrl) {
         ' should be uri but was sent as string');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -497,7 +489,6 @@ module.exports = function(expect, request, baseUrl) {
         ' should be slugs but was sent as non-slug strings');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -517,7 +508,6 @@ module.exports = function(expect, request, baseUrl) {
         ' project should be array but was sent as string');
 
         const expectedResults = copyJsonObject(originalProject);
-
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -536,8 +526,7 @@ module.exports = function(expect, request, baseUrl) {
         expect(body.text).to.equal('Field name of' +
         ' project should be string but was sent as array');
 
-        const expectedResults = originalProject;
-
+        const expectedResults = copyJsonObject(originalProject);
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -556,8 +545,7 @@ module.exports = function(expect, request, baseUrl) {
         expect(body.text).to.equal('Field owner of' +
         ' project should be string but was sent as array');
 
-        const expectedResults = originalProject;
-
+        const expectedResults = copyJsonObject(originalProject);
         checkListEndpoint(done, expectedResults);
       });
     });
@@ -576,8 +564,7 @@ module.exports = function(expect, request, baseUrl) {
         expect(body.text).to.equal('project does not' +
         ' have a key field');
 
-        const expectedResults = originalProject;
-
+        const expectedResults = copyJsonObject(originalProject);
         checkListEndpoint(done, expectedResults);
       });
     });

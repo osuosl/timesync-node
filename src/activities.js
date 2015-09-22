@@ -159,7 +159,7 @@ module.exports = function(app) {
       };
 
       knex('activities').where('slug', '=', req.params.slug)
-      .update({'deleted_at': Date.now()}).then(function(numObj) {
+      .update({deleted_at: Date.now()}).then(function(numObj) {
         if (numObj >= 1) {
           knex('activities').insert(activity).then(function(id) {
             activity.id = id[0];

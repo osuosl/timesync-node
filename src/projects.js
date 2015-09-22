@@ -467,6 +467,11 @@ module.exports = function(app) {
                   if (newSlugs.length) {
                     slugsPromises.push(trx('projectslugs').insert(newSlugs));
                   }
+                  if (sameSlugs.length) {
+                    slugsPromises.push(knex('projectslugs')
+                    .where('name', 'in', sameSlugs)
+                    .update({project: project.id}));
+                  }
 
                   Promise.all(slugsPromises).then(function() {
                     if (obj.slugs.length) {

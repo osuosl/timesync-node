@@ -30,8 +30,8 @@ exports.up = function(knex) {
     table.integer('revision').defaultTo(1);
   }).createTable('activities', function(table) {
     table.increments('id').primary();
-    table.string('name').unique().notNullable();
-    table.string('slug').unique().notNullable();
+    table.string('name').notNullable();
+    table.string('slug').notNullable();
     table.integer('deleted_at').defaultTo(null);
     table.integer('updated_at').defaultTo(null);
     table.uuid('uuid');
