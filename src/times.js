@@ -157,11 +157,15 @@ module.exports = function(app) {
           knex('projectslugs').then(function(projectslugs) {
             if (projectsList && projectsList.length) {
               const projectIds = projectslugs.filter(function(slug) {
+                // Filter down to only slugs that were requested
                 return projectsList.indexOf(slug.name) !== -1;
               }).map(function(slug) {
                 return slug.project;
               });
 
+              // If we request a slug that isn't in projectslugs, then
+              // projectsList.length will be greater than projectIds.length.
+              // So this checks that all requested slugs actually exist.
               if (projectIds.length !== projectsList.length) {
                 const err = errors.errorBadQueryValue('project', req.query.project);
                 return res.status(err.status).send(err);
