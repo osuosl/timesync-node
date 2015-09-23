@@ -1,0 +1,15 @@
+---
+postgres:
+  image: postgres
+  environment:
+    POSTGRES_USER: timesync
+    POSTGRES_PASSWORD: pass
+
+web:
+  build: .
+  ports:
+    - "8000:8000"
+  volumes:
+    - .:/opt/timesync-node
+  links:
+    - postgres
