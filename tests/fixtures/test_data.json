@@ -4,17 +4,29 @@
     {
       "name":"Documentation",
       "slug":"docs",
-      "id": 1
+      "id": 1,
+      "uuid": "986fe650-4bef-4e36-a99d-ad880b7f6cad",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null
     },
     {
       "name":"Development",
       "slug":"dev",
-      "id": 2
+      "id": 2,
+      "uuid": "b0b8c83b-f529-4130-93ef-e4e94e5bc57e",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null
     },
     {
       "name":"Systems",
       "slug":"sys",
-      "id": 3
+      "id": 3,
+      "uuid": "504796fd-859d-4edd-b2b8-b4109bb1fdf2",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null
     }
   ],
   "users":[
@@ -60,19 +72,31 @@
       "uri":"https:://code.osuosl.org/projects/ganeti-webmgr",
       "name":"Ganeti Web Manager",
       "owner":"users:1",
-      "id": 1
+      "id": 1,
+      "uuid": "c285963e-192b-4e99-9d92-a940519f1fbd",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null
     },
     {
       "uri":"https:://code.osuosl.org/projects/pgd",
       "name":"Protein Geometry Database",
       "owner":"users:0",
-      "id": 2
+      "id": 2,
+      "uuid": "e3e25e6a-5e45-4df2-8561-796b07e8f974",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null
     },
     {
       "uri":"https:://github.com/osu-cass/whats-fresh-api",
       "name":"Whats Fresh",
       "owner":"users:1",
-      "id": 3
+      "id": 3,
+      "uuid": "9369f959-26f2-490d-8721-2948c49c3c09",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null
     }
   ],
   "times":[
@@ -85,7 +109,11 @@
       "date_worked":"2015-04-19",
       "created_at":"2015-04-19",
       "updated_at":null,
-      "id": 1
+      "id": 1,
+      "uuid": "32764929-1bea-4a17-8c8a-22d7fb144941",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null
     }
   ],
   "projectslugs":[
