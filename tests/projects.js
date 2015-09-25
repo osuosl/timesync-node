@@ -587,6 +587,7 @@ module.exports = function(expect, request, baseUrl) {
       owner: 'tschuy',
       slugs: ['ts', 'timesync'],
       name: 'TimeSync Node',
+      revision: 1,
       id: 4,
     };
 
@@ -662,7 +663,9 @@ module.exports = function(expect, request, baseUrl) {
         expect(err).to.be.a('null');
         expect(res.statusCode).to.equal(200);
 
-        expect(body).to.deep.equal(newProject);
+        const addedProject = copyJsonObject(newProject);
+        addedProject.uuid = body.uuid;
+        expect(body).to.deep.equal(addedProject);
 
         request.get(baseUrl + 'projects', function(getErr, getRes, getBody) {
           // the projects/ endpoint should now have one more project
@@ -675,6 +678,7 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               updated_at: null,
               revision: 1,
+              uuid: addedProject.uuid,
               id: 4,
             },
           ]);
@@ -703,7 +707,9 @@ module.exports = function(expect, request, baseUrl) {
         expect(err).to.be.a('null');
         expect(res.statusCode).to.equal(200);
 
-        expect(body).to.deep.equal(newProjectNoUri);
+        const addedProject = copyJsonObject(newProjectNoUri);
+        addedProject.uuid = body.uuid;
+        expect(body).to.deep.equal(addedProject);
 
         request.get(baseUrl + 'projects', function(getErr, getRes, getBody) {
           // the projects/ endpoint should now have one more project
@@ -716,6 +722,7 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               updated_at: null,
               revision: 1,
+              uuid: addedProject.uuid,
               id: 4,
             },
           ]);

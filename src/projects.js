@@ -6,6 +6,7 @@ module.exports = function(app) {
   const helpers = require('./helpers')(app);
   const validUrl = require('valid-url');
   const authPost = require('./authenticatedPost');
+  const uuid = require('uuid');
 
   app.get(app.get('version') + '/projects', function(req, res) {
     knex('projects').then(function(projects) {
@@ -93,10 +94,19 @@ module.exports = function(app) {
     * |  4 | Example | http://example.com/1 |    sample   |
     * |  4 | Example | http://example.com/1 |   Beispiel  |
     * +----+---------+----------------------+-------------+
+    * --------------------------------------+----------+
+    *                  uuid                 | Revision |
+    * --------------------------------------+----------+
+    *  986fe650-4bef-4e36-a99d-ad880b7f6cad |     1    |
+    *  986fe650-4bef-4e36-a99d-ad880b7f6cad |     1    |
+    *  986fe650-4bef-4e36-a99d-ad880b7f6cad |     1    |
+    *  986fe650-4bef-4e36-a99d-ad880b7f6cad |     1    |
+    * --------------------------------------+----------+
     *
     * Equivalent SQL:
     *       SELECT projects.id AS id, projects.name AS name,
-    *              projects.uri AS uri, users.username AS owner,
+    *              projects.uri AS uri, projects.uuid as uuid,
+    *              projects.revision AS revision, users.username AS owner,
     *              projectslugs.name AS slug FROM projectslugs
     *       INNER JOIN projects ON projectslugs.project = projects.id
     *       INNER JOIN users ON users.id = projects.owner
@@ -111,8 +121,9 @@ module.exports = function(app) {
     const slugsSubquery = knex('projects').select('id')
     .where('id', '=', projectSubquery);
 
-    knex('projectslugs').select('projects.id as id', 'projects.name as name',
-    'projects.uri as uri', 'users.username as owner',
+    knex('projectslugs').select('projects.id as id',
+    'projects.name as name', 'projects.uri as uri', 'projects.uuid as uuid',
+    'projects.revision as revision', 'users.username as owner',
     'projectslugs.name as slug')
     .where('projectslugs.project', '=', slugsSubquery)
     .innerJoin('projects', 'projectslugs.project', 'projects.id')
@@ -124,7 +135,8 @@ module.exports = function(app) {
         the slug, so just create it from the first one
         */
         const project = {id: results[0].id, name: results[0].name,
-          owner: results[0].owner, uri: results[0].uri, slugs: []};
+          owner: results[0].owner, uri: results[0].uri, uuid: results[0].uuid,
+          revision: results[0].revision, slugs: []};
 
         for (let i = 0, len = results.length; i < len; i++) {
           // add slugs to project
@@ -142,7 +154,7 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app, app.get('version') + '/projects', function(req, res, user) {
+  authPost(app.get('version') + '/projects', function(req, res, user) {
     const obj = req.body.object;
 
     // run various checks
@@ -224,11 +236,16 @@ module.exports = function(app) {
           return res.status(err.status).send(err);
         }
 
+        obj.uuid = uuid.v4();
+        obj.revision = 1;
+
         // create object to insert into database
         const insertion = {
           uri: obj.uri,
           owner: userId,
           name: obj.name,
+          uuid: obj.uuid,
+          revision: 1,
         };
 
         knex('projects').insert(insertion).then(function(projects) {
@@ -253,8 +270,7 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app, app.get('version') + '/projects/:slug',
-  function(req, res, user) {
+  authPost(app.get('version') + '/projects/:slug', function(req, res, user) {
     const obj = req.body.object;
 
     // valid keys
@@ -321,6 +337,7 @@ module.exports = function(app) {
     // puts the ownerId into the ownerId field.
     knex('projects').first().select('projects.id as id',
     'projects.name as name', 'projects.uri as uri',
+    'projects.uuid as uuid', 'projects.revision as revision',
     'users.username as owner', 'users.id as ownerId')
     .where('projects.id', '=', projectIdQuery)
     .innerJoin('users', 'users.id', 'projects.owner')
@@ -369,6 +386,7 @@ module.exports = function(app) {
           project.uri = obj.uri || project.uri;
           project.owner = project.ownerId;
           project.name = obj.name || project.name;
+          project.revision += 1;
 
           delete project.ownerId;
 
