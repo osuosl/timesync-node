@@ -19,7 +19,8 @@ module.exports = function(expect, request, baseUrl) {
             created_at: '2015-04-19',
             updated_at: null,
             deleted_at: null,
-            parent: null,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            revision: 1,
             id: 1,
           },
         ];
@@ -34,7 +35,8 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('GET /times/:id', function() {
     it('returns times by id', function(done) {
-      request.get(baseUrl + 'times/1', function(err, res, body) {
+      request.get(baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
+      function(err, res, body) {
         const jsonBody = JSON.parse(body);
         const expectedResult = {
           duration: 12,
@@ -48,7 +50,8 @@ module.exports = function(expect, request, baseUrl) {
           created_at: '2015-04-19',
           updated_at: null,
           deleted_at: null,
-          parent: null,
+          uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+          revision: 1,
           id: 1,
         };
 
@@ -122,7 +125,8 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2015-04-19',
         updated_at: null,
         deleted_at: null,
-        parent: null,
+        uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+        revision: 1,
         id: 1,
       },
     ];
@@ -162,7 +166,7 @@ module.exports = function(expect, request, baseUrl) {
               created_at: createdAt,
               updated_at: null,
               deleted_at: null,
-              parent: null,
+              revision: 1,
               id: 2,
             },
           ]);
@@ -762,7 +766,7 @@ module.exports = function(expect, request, baseUrl) {
               created_at: createdAt,
               updated_at: null,
               deleted_at: null,
-              parent: null,
+              revision: 1,
               id: 2,
             },
           ]);
@@ -980,6 +984,8 @@ module.exports = function(expect, request, baseUrl) {
       issue_uri:
          'https://github.com/osu-cass/whats-fresh-api/issues/56',
       date_worked: '2015-04-19',
+      uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+      revision: 1,
     };
 
     const getOriginalTime = {
@@ -994,7 +1000,8 @@ module.exports = function(expect, request, baseUrl) {
       created_at: '2015-04-19',
       updated_at: null,
       deleted_at: null,
-      parent: null,
+      uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+      revision: 1,
       id: 1,
     };
 
@@ -1022,7 +1029,8 @@ module.exports = function(expect, request, baseUrl) {
       created_at: '2015-04-19',
       updated_at: updatedAt,
       deleted_at: null,
-      parent: null,
+      uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+      revision: 2,
     };
 
     // Sends invalid data to the /times/:id endpoint
@@ -1059,7 +1067,7 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const requestOptions = {
-      url: baseUrl + 'times/1',
+      url: baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
       json: true,
     };
 

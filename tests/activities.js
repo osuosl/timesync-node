@@ -19,7 +19,8 @@ module.exports = function(expect, request, baseUrl) {
             slug: 'docs',
             deleted_at: null,
             updated_at: null,
-            parent: null,
+            uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+            revision: 1,
             id: 1,
           },
           {
@@ -27,7 +28,8 @@ module.exports = function(expect, request, baseUrl) {
             slug: 'dev',
             deleted_at: null,
             updated_at: null,
-            parent: null,
+            uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
+            revision: 1,
             id: 2,
           },
           {
@@ -35,7 +37,8 @@ module.exports = function(expect, request, baseUrl) {
             slug: 'sys',
             deleted_at: null,
             updated_at: null,
-            parent: null,
+            uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
+            revision: 1,
             id: 3,
           },
         ];
@@ -57,7 +60,8 @@ module.exports = function(expect, request, baseUrl) {
           slug: 'sys',
           deleted_at: null,
           updated_at: null,
-          parent: null,
+          uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
+          revision: 1,
           id: 3,
         };
 
@@ -146,7 +150,8 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'docs',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+              revision: 1,
               id: 1,
             },
             {
@@ -154,7 +159,8 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'dev',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
+              revision: 1,
               id: 2,
             },
             {
@@ -162,7 +168,8 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'sys',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
+              revision: 1,
               id: 3,
             },
           ];
@@ -197,7 +204,8 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'docs',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+              revision: 1,
               id: 1,
             },
             {
@@ -205,7 +213,8 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'dev',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
+              revision: 1,
               id: 2,
             },
             {
@@ -213,7 +222,8 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'sys',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
+              revision: 1,
               id: 3,
             },
           ];
@@ -249,7 +259,8 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'docs',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+              revision: 1,
               id: 1,
             },
             {
@@ -257,7 +268,8 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'dev',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
+              revision: 1,
               id: 2,
             },
             {
@@ -265,7 +277,8 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'sys',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
+              revision: 1,
               id: 3,
             },
           ];
@@ -291,7 +304,8 @@ module.exports = function(expect, request, baseUrl) {
       slug: 'docs',
       deleted_at: null,
       updated_at: null,
-      parent: null,
+      uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+      revision: 1,
       id: 1,
     };
 
@@ -348,11 +362,11 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.name = patchedActivity.name;
         expectedResult.slug = patchedActivity.slug;
+        expectedResult.revision = 2;
 
         const expectedPost = copyJsonObject(expectedResult);
         delete expectedPost.deleted_at;
         delete expectedPost.updated_at;
-        delete expectedPost.parent;
 
         expect(body).to.deep.equal(expectedPost);
 
@@ -381,11 +395,11 @@ module.exports = function(expect, request, baseUrl) {
 
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.name = patchedName.name;
+        expectedResult.revision = 2;
 
         const expectedPost = copyJsonObject(expectedResult);
         delete expectedPost.deleted_at;
         delete expectedPost.updated_at;
-        delete expectedPost.parent;
 
         expect(body).to.deep.equal(expectedPost);
 
@@ -413,11 +427,11 @@ module.exports = function(expect, request, baseUrl) {
 
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.slug = patchedSlug.slug;
+        expectedResult.revision = 2;
 
         const expectedPost = copyJsonObject(expectedResult);
         delete expectedPost.deleted_at;
         delete expectedPost.updated_at;
-        delete expectedPost.parent;
 
         expect(body).to.deep.equal(expectedPost);
 
@@ -601,28 +615,31 @@ module.exports = function(expect, request, baseUrl) {
 
     const initialActivities = [
       {
-        'name': 'Documentation',
-        'slug': 'docs',
-        'deleted_at': null,
-        'updated_at': null,
-        'parent': null,
-        'id': 1,
+        name: 'Documentation',
+        slug: 'docs',
+        deleted_at: null,
+        updated_at: null,
+        uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+        revision: 1,
+        id: 1,
       },
       {
-        'name': 'Development',
-        'slug': 'dev',
-        'deleted_at': null,
-        'updated_at': null,
-        'parent': null,
-        'id': 2,
+        name: 'Development',
+        slug: 'dev',
+        deleted_at: null,
+        updated_at: null,
+        uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
+        revision: 1,
+        id: 2,
       },
       {
-        'name': 'Systems',
-        'slug': 'sys',
-        'deleted_at': null,
-        'updated_at': null,
-        'parent': null,
-        'id': 3,
+        name: 'Systems',
+        slug: 'sys',
+        deleted_at: null,
+        updated_at: null,
+        uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
+        revision: 1,
+        id: 3,
       },
     ];
 

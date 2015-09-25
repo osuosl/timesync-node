@@ -21,7 +21,8 @@ module.exports = function(expect, request, baseUrl) {
             owner: 'tschuy',
             deleted_at: null,
             updated_at: null,
-            parent: null,
+            uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+            revision: 1,
             id: 1,
           },
           {
@@ -31,7 +32,8 @@ module.exports = function(expect, request, baseUrl) {
             owner: 'deanj',
             deleted_at: null,
             updated_at: null,
-            parent: null,
+            uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
+            revision: 1,
             id: 2,
           },
           {
@@ -41,7 +43,8 @@ module.exports = function(expect, request, baseUrl) {
             owner: 'tschuy',
             deleted_at: null,
             updated_at: null,
-            parent: null,
+            uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
+            revision: 1,
             id: 3,
           },
         ];
@@ -70,6 +73,8 @@ module.exports = function(expect, request, baseUrl) {
           name: 'Ganeti Web Manager',
           slugs: ['gwm', 'ganeti-webmgr'],
           owner: 'tschuy',
+          uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+          revision: 1,
           id: 1,
         };
         expectedResult.slugs.sort();
@@ -83,7 +88,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('should fail with invalid slug error', function(done) {
+    it('should fail with Object Not Found error', function(done) {
       request.get(baseUrl + 'projects/404', function(err, res, body) {
         const jsonBody = JSON.parse(body);
         const expectedResult = {
@@ -132,6 +137,8 @@ module.exports = function(expect, request, baseUrl) {
       owner: 'tschuy',
       slugs: ['gwm', 'ganeti-webmgr'],
       uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      revision: 1,
     };
 
     const patchedProjectName = {name: patchedProject.name};
@@ -196,6 +203,8 @@ module.exports = function(expect, request, baseUrl) {
         expectedResults.uri = patchedProject.uri;
         expectedResults.slugs = patchedProject.slugs;
         expectedResults.owner = patchedProject.owner;
+        expectedResults.uuid = originalProject.uuid;
+        expectedResults.revision = 2;
 
         // expect body of post request to be the new state of gwm
         expect(body).to.deep.equal(expectedResults);
@@ -214,6 +223,8 @@ module.exports = function(expect, request, baseUrl) {
 
         const expectedResults = copyJsonObject(originalProject);
         expectedResults.uri = patchedProject.uri;
+        expectedResults.uuid = originalProject.uuid;
+        expectedResults.revision = 2;
 
         expect(body).to.deep.equal(expectedResults);
 
@@ -231,6 +242,8 @@ module.exports = function(expect, request, baseUrl) {
 
         const expectedResults = copyJsonObject(originalProject);
         expectedResults.slugs = patchedProject.slugs;
+        expectedResults.uuid = originalProject.uuid;
+        expectedResults.revision = 2;
 
         expect(body).to.deep.equal(expectedResults);
 
@@ -248,6 +261,8 @@ module.exports = function(expect, request, baseUrl) {
 
         const expectedResults = copyJsonObject(originalProject);
         expectedResults.name = patchedProject.name;
+        expectedResults.uuid = originalProject.uuid;
+        expectedResults.revision = 2;
 
         expect(body).to.deep.equal(expectedResults);
 
@@ -420,6 +435,8 @@ module.exports = function(expect, request, baseUrl) {
       requestOptions.form = copyJsonObject(postArg);
       requestOptions.form.object = copyJsonObject(originalProject);
       delete requestOptions.form.object.id;
+      delete requestOptions.form.object.uuid;
+      delete requestOptions.form.object.revision;
       requestOptions.form.object.uri = badProject.uri;
 
       request.post(requestOptions, function(err, res, body) {
@@ -438,6 +455,8 @@ module.exports = function(expect, request, baseUrl) {
       requestOptions.form = copyJsonObject(postArg);
       requestOptions.form.object = copyJsonObject(originalProject);
       delete requestOptions.form.object.id;
+      delete requestOptions.form.object.uuid;
+      delete requestOptions.form.object.revision;
       requestOptions.form.object.uri = 'string but not uri';
 
       request.post(requestOptions, function(err, res, body) {
@@ -456,6 +475,8 @@ module.exports = function(expect, request, baseUrl) {
       requestOptions.form = copyJsonObject(postArg);
       requestOptions.form.object = copyJsonObject(originalProject);
       delete requestOptions.form.object.id;
+      delete requestOptions.form.object.uuid;
+      delete requestOptions.form.object.revision;
       requestOptions.form.object.slugs = ['@#SAfsda', '232sa$%'];
 
       request.post(requestOptions, function(err, res, body) {
@@ -474,6 +495,8 @@ module.exports = function(expect, request, baseUrl) {
       requestOptions.form = copyJsonObject(postArg);
       requestOptions.form.object = copyJsonObject(originalProject);
       delete requestOptions.form.object.id;
+      delete requestOptions.form.object.uuid;
+      delete requestOptions.form.object.revision;
       requestOptions.form.object.slugs = badProject.slugs;
 
       request.post(requestOptions, function(err, res, body) {
@@ -492,6 +515,8 @@ module.exports = function(expect, request, baseUrl) {
       requestOptions.form = copyJsonObject(postArg);
       requestOptions.form.object = copyJsonObject(originalProject);
       delete requestOptions.form.object.id;
+      delete requestOptions.form.object.uuid;
+      delete requestOptions.form.object.revision;
       requestOptions.form.object.name = badProject.name;
 
       request.post(requestOptions, function(err, res, body) {
@@ -510,6 +535,8 @@ module.exports = function(expect, request, baseUrl) {
       requestOptions.form = copyJsonObject(postArg);
       requestOptions.form.object = copyJsonObject(originalProject);
       delete requestOptions.form.object.id;
+      delete requestOptions.form.object.uuid;
+      delete requestOptions.form.object.revision;
       requestOptions.form.object.owner = badProject.owner;
 
       request.post(requestOptions, function(err, res, body) {
@@ -528,6 +555,8 @@ module.exports = function(expect, request, baseUrl) {
       requestOptions.form = copyJsonObject(postArg);
       requestOptions.form.object = copyJsonObject(originalProject);
       delete requestOptions.form.object.id;
+      delete requestOptions.form.object.uuid;
+      delete requestOptions.form.object.revision;
       requestOptions.form.object.key = badProject.key;
 
       request.post(requestOptions, function(err, res, body) {
@@ -580,7 +609,8 @@ module.exports = function(expect, request, baseUrl) {
         owner: 'tschuy',
         deleted_at: null,
         updated_at: null,
-        parent: null,
+        uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+        revision: 1,
         id: 1,
       },
       {
@@ -590,7 +620,8 @@ module.exports = function(expect, request, baseUrl) {
         owner: 'deanj',
         deleted_at: null,
         updated_at: null,
-        parent: null,
+        uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
+        revision: 1,
         id: 2,
       },
       {
@@ -600,7 +631,8 @@ module.exports = function(expect, request, baseUrl) {
         owner: 'tschuy',
         deleted_at: null,
         updated_at: null,
-        parent: null,
+        uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
+        revision: 1,
         id: 3,
       },
     ];
@@ -642,7 +674,7 @@ module.exports = function(expect, request, baseUrl) {
               name: 'TimeSync Node',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              revision: 1,
               id: 4,
             },
           ]);
@@ -683,7 +715,7 @@ module.exports = function(expect, request, baseUrl) {
               name: 'TimeSync Node',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              revision: 1,
               id: 4,
             },
           ]);
@@ -1003,7 +1035,8 @@ module.exports = function(expect, request, baseUrl) {
               owner: 'tschuy',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+              revision: 1,
               id: 1,
             },
             {
@@ -1013,7 +1046,8 @@ module.exports = function(expect, request, baseUrl) {
               owner: 'deanj',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
+              revision: 1,
               id: 2,
             },
             {
@@ -1023,7 +1057,8 @@ module.exports = function(expect, request, baseUrl) {
               owner: 'tschuy',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
+              revision: 1,
               id: 3,
             },
           ];
@@ -1058,7 +1093,8 @@ module.exports = function(expect, request, baseUrl) {
               owner: 'tschuy',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+              revision: 1,
               id: 1,
             },
             {
@@ -1068,7 +1104,8 @@ module.exports = function(expect, request, baseUrl) {
               owner: 'deanj',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
+              revision: 1,
               id: 2,
             },
             {
@@ -1078,7 +1115,8 @@ module.exports = function(expect, request, baseUrl) {
               owner: 'tschuy',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
+              revision: 1,
               id: 3,
             },
           ];
