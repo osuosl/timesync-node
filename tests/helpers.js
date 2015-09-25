@@ -271,4 +271,30 @@ module.exports = function(expect, app) {
       });
     });
   });
+
+  describe('validateUUID', function() {
+    it('returns true for a valid UUID', function(done) {
+      const val = helpers.validateUUID('986fe650-4bef-4e36-a99d-ad880b7f6cad');
+      expect(val).to.equal(true);
+      done();
+    });
+
+    it('returns false for an invalid UUID', function(done) {
+      const val = helpers.validateUUID('986fe6504bef-4e36-a99d-!@ad880b7f6cad');
+      expect(val).to.equal(false);
+      done();
+    });
+
+    it('returns false for a non-string UUID', function(done) {
+      const val = helpers.validateUUID(0x986fe6504bef4e36a99dad880b7f6cad);
+      expect(val).to.equal(false);
+      done();
+    });
+
+    it('returns false for null', function(done) {
+      const val = helpers.validateUUID(null);
+      expect(val).to.equal(false);
+      done();
+    });
+  });
 };

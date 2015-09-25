@@ -160,6 +160,16 @@ module.exports = function(app) {
         });
       });
     },
+
+    validateUUID: function(uuid) {
+      if (typeof uuid !== 'string') {
+        return false;
+      }
+
+      const uuidRegex = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
+
+      return uuidRegex.test(uuid.toLowerCase());
+    },
   };
 
   return helpers;
