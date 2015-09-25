@@ -1,0 +1,3 @@
+FROM postgres:9.0
+MAINTAINER OSU Open Source Lab
+EXPOSE 5432
