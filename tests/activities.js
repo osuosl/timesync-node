@@ -600,6 +600,7 @@ module.exports = function(expect, request, baseUrl) {
     const newActivity = {
       slug: 'chef',
       name: 'Chef',
+      revision: 1,
       id: 4,
     };
 
@@ -660,7 +661,8 @@ module.exports = function(expect, request, baseUrl) {
               name: 'Chef',
               deleted_at: null,
               updated_at: null,
-              parent: null,
+              uuid: newActivityItem.uuid,
+              revision: 1,
               id: 4,
             },
           ]);
@@ -683,6 +685,9 @@ module.exports = function(expect, request, baseUrl) {
       request.post(requestOptions, function(err, res, body) {
         expect(err).to.be.a('null');
         expect(res.statusCode).to.equal(200);
+
+        // Hacky workaround because UUIDs are random
+        newActivity.uuid = body.uuid;
         expect(body).to.deep.equal(newActivity);
 
         checkListEndpoint(done, newActivity);

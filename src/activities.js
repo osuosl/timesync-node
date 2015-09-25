@@ -5,6 +5,7 @@ module.exports = function(app) {
   const errors = require('./errors');
   const helpers = require('./helpers')(app);
   const authPost = require('./authenticatedPost');
+  const uuid = require('uuid');
 
   app.get(app.get('version') + '/activities', function(req, res) {
     knex('activities').then(function(activities) {
@@ -80,7 +81,7 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app, app.get('version') + '/activities/:slug', function(req, res) {
+  authPost(app.get('version') + '/activities/:slug', function(req, res) {
     const currObj = req.body.object;
 
     const validKeys = ['name', 'slug'];
@@ -134,8 +135,14 @@ module.exports = function(app) {
     }
 
     knex('activities').first().select('activities.name as name',
-    'activities.slug as slug', 'activities.id as id')
+    'activities.slug as slug', 'activities.id as id',
+    'activities.uuid as uuid', 'activities.revision as rev')
     .where('slug', '=', req.params.slug).then(function(obj) {
+      if (!obj) {
+        const err = errors.errorObjectNotFound('activity');
+        return res.status(err.status).send(err);
+      }
+
       /* req.body.object.name = updated name
          currObj.name = name remains unchanged
 
@@ -144,6 +151,8 @@ module.exports = function(app) {
       const activity = {
         name: req.body.object.name || obj.name,
         slug: req.body.object.slug || obj.slug,
+        uuid: obj.uuid,
+        revision: obj.rev + 1,
       };
 
       knex('activities').where('slug', '=', req.params.slug)
@@ -161,7 +170,7 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app, app.get('version') + '/activities', function(req, res) {
+  authPost(app.get('version') + '/activities', function(req, res) {
     const obj = req.body.object;
 
     const validKeys = ['name', 'slug'];
@@ -234,6 +243,9 @@ module.exports = function(app) {
 
         return res.status(err.status).send(err);
       }
+
+      obj.uuid = uuid.v4();
+      obj.revision = 1;
 
       knex('activities').insert(obj).then(function(activities) {
         // activities is a list containing the ID of the
