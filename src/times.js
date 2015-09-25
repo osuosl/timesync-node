@@ -265,7 +265,7 @@ module.exports = function(app) {
     helpers.checkUser(user.username, time.user).then(function(userId) {
       helpers.checkProject(time.project).then(function(projectId) {
         knex('userroles').where({user: userId, project: projectId}).then(
-            function(roles) {
+        function(roles) {
           if (roles.length === 0 || roles[0].member === false) {
             const err = errors.errorAuthorizationFailure(user.username,
               'create time entries for project ' + time.project + '.');
@@ -427,16 +427,16 @@ module.exports = function(app) {
 
     // retrieves the time from the database
     knex('times').select('times.duration as duration', 'times.user as user',
-            'times.project as project', 'times.notes as notes',
-            'times.issue_uri as issue_uri',
-            'times.date_worked as date_worked',
-            'times.created_at as created_at',
-            'times.updated_at as updated_at', 'times.id as id',
-            'users.username as owner', 'projectslugs.name as projectName')
-        .where('times.id', '=', req.params.id).innerJoin('users', 'users.id',
-                'times.user').innerJoin('projectslugs', 'projectslugs.id',
-                'times.project')
-        .then(function(time) {
+      'times.project as project', 'times.notes as notes',
+      'times.issue_uri as issue_uri',
+      'times.date_worked as date_worked',
+      'times.created_at as created_at',
+      'times.updated_at as updated_at', 'times.id as id',
+      'users.username as owner', 'projectslugs.name as projectName')
+    .where('times.id', '=', req.params.id).innerJoin('users', 'users.id',
+      'times.user').innerJoin('projectslugs', 'projectslugs.id',
+      'times.project')
+    .then(function(time) {
       if (user.username !== time[0].owner) {
         const err = errors.errorAuthorizationFailure(user.username,
           'create objects for ' + time[0].owner);

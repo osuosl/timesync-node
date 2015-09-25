@@ -254,7 +254,7 @@ module.exports = function(app) {
   });
 
   authPost(app, app.get('version') + '/projects/:slug',
-      function(req, res, user) {
+  function(req, res, user) {
     const obj = req.body.object;
 
     // valid keys
