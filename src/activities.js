@@ -81,7 +81,7 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app.get('version') + '/activities/:slug', function(req, res) {
+  authPost(app, app.get('version') + '/activities/:slug', function(req, res) {
     const currObj = req.body.object;
 
     const validKeys = ['name', 'slug'];
@@ -170,7 +170,7 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app.get('version') + '/activities', function(req, res) {
+  authPost(app, app.get('version') + '/activities', function(req, res) {
     const obj = req.body.object;
 
     const validKeys = ['name', 'slug'];

@@ -194,7 +194,7 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app.get('version') + '/times', function(req, res, user) {
+  authPost(app, app.get('version') + '/times', function(req, res, user) {
     const time = req.body.object;
 
     // Test existence and datatypes
@@ -334,7 +334,7 @@ module.exports = function(app) {
   });
 
   // Patch times
-  authPost(app.get('version') + '/times/:uuid', function(req, res, user) {
+  authPost(app, app.get('version') + '/times/:uuid', function(req, res, user) {
     if (!helpers.validateUUID(req.params.uuid)) {
       const err = errors.errorInvalidIdentifier('UUID', req.params.uuid);
       return res.status(err.status).send(err);

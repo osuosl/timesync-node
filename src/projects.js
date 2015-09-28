@@ -154,7 +154,7 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app.get('version') + '/projects', function(req, res, user) {
+  authPost(app, app.get('version') + '/projects', function(req, res, user) {
     const obj = req.body.object;
 
     // run various checks
@@ -270,7 +270,8 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app.get('version') + '/projects/:slug', function(req, res, user) {
+  authPost(app, app.get('version') + '/projects/:slug',
+  function(req, res, user) {
     const obj = req.body.object;
 
     // valid keys
