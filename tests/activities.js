@@ -313,6 +313,7 @@ module.exports = function(expect, request, baseUrl) {
       auth: {
         username: 'tschuy',
         password: 'password',
+        type: 'password',
       },
     };
 
@@ -593,6 +594,7 @@ module.exports = function(expect, request, baseUrl) {
       auth: {
         username: 'tschuy',
         password: 'password',
+        type: 'password',
       },
       object: activity,
     };

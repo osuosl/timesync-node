@@ -182,4 +182,12 @@ module.exports = {
     'is not allowed for the ' + objectType + ' identified');
   },
 
+  /*
+  * Error 11: Authorization type failure. Used when a user attempts to use an
+    invalid or unsupported authentication type.
+  */
+  errorAuthenticationTypeFailure: function(authType) {
+    return createError(401, authType + ' is not a valid authentication type');
+  },
+
 };

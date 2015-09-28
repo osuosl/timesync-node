@@ -66,7 +66,10 @@ describe('Helpers', function() {
     });
   });
 
-  const localPassport = require('../src/auth/local.js')(knex);
-  require('./login')(expect, localPassport);
+  const localPassport = require('../src/auth/local')(knex);
+  const ldapPassport = require('../src/auth/ldap')(knex);
+
+  require('./login/password')(expect, localPassport);
+  require('./login/ldap')(expect, ldapPassport);
   require('./helpers')(expect, app);
 });

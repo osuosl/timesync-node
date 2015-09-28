@@ -1052,6 +1052,7 @@ module.exports = function(expect, request, baseUrl) {
 
     const postArg = {
       auth: {
+        type: 'password',
         username: 'tschuy',
         password: 'password',
       },

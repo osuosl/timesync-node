@@ -13,9 +13,9 @@
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "linter": "jshint ./src ./tests ./scripts && eslint ./src ./tests ./scripts",
     "fixtures": "node --harmony ./scripts/load_fixtures.js",
-    "test": "NODE_ENV=mocha PORT=8851 DEBUG=true mocha --harmony tests",
+    "test": "NODE_ENV=mocha TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
     "latte": "sh ./scripts/latte.sh",
-    "coverage": "NODE_ENV=mocha PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
+    "coverage": "NODE_ENV=mocha TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
     "create-account": "node --harmony ./scripts/create-account.js"
   },
   "repository": {
@@ -40,7 +40,9 @@
     "eslint-plugin-react": "^3.2.3",
     "express": "^4.12.3",
     "knex": "^0.8.6",
+    "ldapjs": "mcavage/node-ldapjs",
     "passport": "^0.3.0",
+    "passport-ldapauth": "0.3.0",
     "passport-local": "^1.0.0",
     "pg": "^4.4.1",
     "prompt": "^0.2.14",

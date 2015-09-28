@@ -16,7 +16,7 @@ To start a local instance running on port 8000, just run:
 
 ```
 $ npm install
-$ npm run devel
+$ TIMESYNC_AUTH_MODULES='["password"]' npm run devel
 ```
 
 ``npm run devel`` is a convenience that will automatically restart the server
@@ -48,7 +48,7 @@ $ npm run fixtures
 Next, run the application:
 
 ```
-$ npm start
+$ TIMESYNC_AUTH_MODULES='["password"]' npm start
 ```
 
 Then, in another terminal, make a request to the application with curl.
@@ -115,3 +115,31 @@ $ cd timesync-api
 [timesync-api]$ make html
 [timesync-api]$ <browser> build/html/index.html
 ```
+
+Authentication
+--------------
+
+Authentication is handled with a number of "modules", including simple password-
+based, LDAP, and possibly more in the future. To use an authentication module,
+set the environment variable ``TIMESYNC_AUTH_MODULES`` to a JSON list containing
+the plugin names you wish to enable. Note that some types of authentication may
+require additional settings (see below).
+
+If the ``TIMESYNC_AUTH_MODULES`` variable is empty, password-based
+authentication will be enabled as a default. Invalid module names are ignored.
+
+**Possible options**:
+  * ``password`` for simple password-based authentication
+  * ``ldap`` for LDAP-based authentication
+
+ex: to enable only LDAP authentication, set ``TIMESYNC_AUTH_MODULES`` to
+``["ldap"]``. To enable both local password and LDAP, set it to
+``["password","ldap"]``. Order does not matter.
+
+To use LDAP authentication, there are two additional environment variables that
+need to be set:
+
+1. ``TIMESYNC_LDAP_URL``: the URL of the LDAP server to connect to, ex.
+  ``ldaps://ldap.osuosl.org``.
+2. ``TIMESYNC_LDAP_SEARCH_BASE``: the search parameter used to find users,
+  ex. ``ou=People,dc=osuosl,dc=org``
