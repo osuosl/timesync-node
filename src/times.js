@@ -6,6 +6,7 @@ module.exports = function(app) {
   const helpers = require('./helpers')(app);
   const validUrl = require('valid-url');
   const authPost = require('./authenticatedPost');
+  const uuid = require('uuid');
 
   app.get(app.get('version') + '/times', function(req, res) {
     knex('times').then(function(times) {
@@ -136,17 +137,16 @@ module.exports = function(app) {
     });
   });
 
-  app.get(app.get('version') + '/times/:id', function(req, res) {
-    if (isNaN(req.params.id)) { // isNaN can check if a string is a number
-      const err = errors.errorInvalidIdentifier('ID', req.params.id);
+  app.get(app.get('version') + '/times/:uuid', function(req, res) {
+    if (!helpers.validateUUID(req.params.uuid)) {
+      const err = errors.errorInvalidIdentifier('UUID', req.params.uuid);
       return res.status(err.status).send(err);
     }
 
-    knex('times').where({id: req.params.id}).then(function(timeList) {
+    knex('times').first().where({uuid: req.params.uuid})
+    .orderBy('revision', 'desc').then(function(time) {
       // get the matching time entry
-      if (timeList.length === 1) {
-        const time = timeList[0];
-
+      if (time) {
         knex('users').where({id: time.user}).select('username')
         .then(function(user) {
           // set its user
@@ -194,7 +194,7 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app, app.get('version') + '/times', function(req, res, user) {
+  authPost(app.get('version') + '/times', function(req, res, user) {
     const time = req.body.object;
 
     // Test existence and datatypes
@@ -249,8 +249,8 @@ module.exports = function(app) {
 
     // Test issue URI value
     if (time.issue_uri && !validUrl.isWebUri(time.issue_uri)) {
-      const err = errors.errorBadObjectInvalidField('time', 'issue_uri', 'URI',
-      'invalid URI ' + time.issue_uri);
+      const err = errors.errorBadObjectInvalidField('time', 'issue_uri',
+              'URI', 'invalid URI ' + time.issue_uri);
       return res.status(err.status).send(err);
     }
 
@@ -264,14 +264,17 @@ module.exports = function(app) {
     // Finish checks for user, project, and activity
     helpers.checkUser(user.username, time.user).then(function(userId) {
       helpers.checkProject(time.project).then(function(projectId) {
-        knex('userroles').where({user: userId, project: projectId}).then(
-        function(roles) {
+        knex('userroles').where({user: userId, project: projectId})
+        .then(function(roles) {
           if (roles.length === 0 || roles[0].member === false) {
             const err = errors.errorAuthorizationFailure(user.username,
               'create time entries for project ' + time.project + '.');
             return res.status(err.status).send(err);
           }
-          helpers.checkActivities(time.activities).then(function(activityIds) {
+          helpers.checkActivities(time.activities)
+          .then(function(activityIds) {
+            time.uuid = uuid.v4();
+            time.revision = 1;
             const createdAt = new Date().toISOString().substring(0, 10);
             const insertion = {
               duration: time.duration,
@@ -281,6 +284,8 @@ module.exports = function(app) {
               issue_uri: time.issue_uri,
               date_worked: time.date_worked,
               created_at: createdAt,
+              uuid: time.uuid,
+              revision: 1,
             };
 
             knex('times').insert(insertion).then(function(timeIds) {
@@ -329,7 +334,12 @@ module.exports = function(app) {
   });
 
   // Patch times
-  authPost(app, app.get('version') + '/times/:id', function(req, res, user) {
+  authPost(app.get('version') + '/times/:uuid', function(req, res, user) {
+    if (!helpers.validateUUID(req.params.uuid)) {
+      const err = errors.errorInvalidIdentifier('UUID', req.params.uuid);
+      return res.status(err.status).send(err);
+    }
+
     const obj = req.body.object;
 
     // Test duration value
@@ -427,15 +437,17 @@ module.exports = function(app) {
 
     // retrieves the time from the database
     knex('times').select('times.duration as duration', 'times.user as user',
-      'times.project as project', 'times.notes as notes',
-      'times.issue_uri as issue_uri',
-      'times.date_worked as date_worked',
-      'times.created_at as created_at',
-      'times.updated_at as updated_at', 'times.id as id',
-      'users.username as owner', 'projectslugs.name as projectName')
-    .where('times.id', '=', req.params.id).innerJoin('users', 'users.id',
-      'times.user').innerJoin('projectslugs', 'projectslugs.id',
-      'times.project')
+            'times.project as project', 'times.notes as notes',
+            'times.issue_uri as issue_uri',
+            'times.date_worked as date_worked',
+            'times.created_at as created_at',
+            'times.updated_at as updated_at', 'times.id as id',
+            'times.uuid as uuid', 'times.revision as revision',
+            'users.username as owner', 'projectslugs.name as projectName')
+    .where('times.uuid', '=', req.params.uuid).innerJoin('users', 'users.id',
+                'times.user').innerJoin('projectslugs', 'projectslugs.id',
+                'times.project')
+    .orderBy('times.revision', 'desc')
     .then(function(time) {
       if (user.username !== time[0].owner) {
         const err = errors.errorAuthorizationFailure(user.username,
@@ -459,78 +471,83 @@ module.exports = function(app) {
           time[0].issue_uri = obj.issue_uri || time[0].issue_uri;
           time[0].date_worked = obj.date_worked || time[0].date_worked;
           time[0].updated_at = new Date().toISOString().substring(0, 10);
+          time[0].revision += 1;
           delete time[0].owner;
           delete time[0].projectName;
 
-          knex('times').where({id: time[0].id}).update(time[0])
-          .then(function() {
-            if (!obj.activities) {
-              return res.send(time);
-            }
+          const oldId = time[0].id;
+          delete time[0].id;
 
-            helpers.checkActivities(obj.activities)
-            .then(function(activityIds) {
-              knex('timesactivities').where('time', '=', time[0].id)
-              .then(function(tas) {
-                const taIds = [];
-                /* eslint-disable prefer-const */
-                for (let ta of tas) {
-                  /* eslint-enable prefer-const */
-                  taIds.push(ta.activity);
+          const activityList = obj.activities || [];
+          helpers.checkActivities(activityList).then(function(activityIds) {
+            knex('times').where({id: oldId})
+            .update({'deleted_at': Date.now()}).then(function() {
+              knex('times').insert(time[0]).then(function(id) {
+                time[0].id = id[0];
+
+                if (helpers.getType(obj.activities) !== 'array' ||
+                obj.activities.length) {
+                  if (!obj.activities) {
+                    knex('timesactivities').select('activity')
+                    .where('time', oldId).then(function(activities) {
+                      const taInsertion = [];
+                      /* eslint-disable prefer-const */
+                      for (let activity of activities) {
+                        /* eslint-enable prefer-const */
+                        taInsertion.push({
+                          time: time[0].id,
+                          activity: activity.activity,
+                        });
+                      }
+
+                      knex('timesactivities').insert(taInsertion)
+                      .then(function() {
+                        return res.send(time);
+                      }).catch(function(error) {
+                        const err = errors.errorServerError(error);
+                        return res.status(err.status).send(err);
+                      });
+                    }).catch(function(error) {
+                      const err = errors.errorServerError(error);
+                      return res.status(err.status).send(err);
+                    });
+                  } else {
+                    const taInsertion = [];
+                    /* eslint-disable prefer-const */
+                    for (let activity of activityIds) {
+                      /* eslint-enable prefer-const */
+                      taInsertion.push({
+                        time: time[0].id,
+                        activity: activity,
+                      });
+                    }
+
+                    knex('timesactivities').insert(taInsertion)
+                    .then(function() {
+                      return res.send(time);
+                    }).catch(function(error) {
+                      const err = errors.errorServerError(error);
+                      return res.status(err.status).send(err);
+                    });
+                  }
+                } else {
+                  return res.send(time);
                 }
-
-                const unmatchedTas = taIds.filter(function() {
-                  return taIds.indexOf(activityIds) < 0;
-                });
-                const unmatchedActivities = activityIds
-                .filter(function() {
-                  return activityIds.indexOf(taIds) < 0;
-                });
-
-                const taInsertion = [];
-                /* eslint-disable prefer-const */
-                for (let activityId of unmatchedActivities) {
-                  /* eslint-enable prefer-const */
-                  taInsertion.push({
-                    time: time[0].id,
-                    activity: activityId,
-                  });
-                }
-
-                knex('timesactivities').where('id', 'in', unmatchedTas)
-                .del().then(function() {
-                  knex('timesactivities').insert(taInsertion)
-                  .then(function() {
-                    return res.send(time);
-                  }).catch(function(error) {
-                    const err = errors.errorServerError(error);
-                    return res.status(err.status).send(err);
-                  });
-                }).catch(function(error) {
-                  const err = errors.errorServerError(error);
-                  return res.status(err.status).send(err);
-                });
               }).catch(function(error) {
                 const err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
               });
-            }).catch(function() {
-              const err = errors.errorInvalidForeignKey('time',
-                      'activities');
-              return res.status(err.status).send(err);
             }).catch(function(error) {
               const err = errors.errorServerError(error);
               return res.status(err.status).send(err);
             });
-          }).catch(function(error) {
-            const err = errors.errorServerError(error);
+          }).catch(function() {
+            const err = errors.errorInvalidForeignKey('time',
+                    'activities');
             return res.status(err.status).send(err);
           });
         }).catch(function() {
           const err = errors.errorInvalidForeignKey('time', 'project');
-          return res.status(err.status).send(err);
-        }).catch(function(error) {
-          const err = errors.errorServerError(error);
           return res.status(err.status).send(err);
         });
       }).catch(function() {
