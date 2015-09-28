@@ -134,6 +134,8 @@ module.exports = function(app) {
         knex('activities').where('slug', 'in', names).then(function(slugs) {
           if (names === undefined || names === null) {
             reject({type: 'invalid', value: names});
+          } else if (names === []) {
+            resolve([]);
           } else {
             const results = slugs.map(function(value) {
               return value.slug;
