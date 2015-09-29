@@ -19,7 +19,8 @@ module.exports = function(expect, request, baseUrl) {
             created_at: '2015-04-19',
             updated_at: null,
             deleted_at: null,
-            parent: null,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            revision: 1,
             id: 1,
           },
         ];
@@ -32,9 +33,10 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times/:id', function() {
-    it('returns times by id', function(done) {
-      request.get(baseUrl + 'times/1', function(err, res, body) {
+  describe('GET /times/:uuid', function() {
+    it('returns times by uuid', function(done) {
+      request.get(baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
+      function(err, res, body) {
         const jsonBody = JSON.parse(body);
         const expectedResult = {
           duration: 12,
@@ -48,7 +50,8 @@ module.exports = function(expect, request, baseUrl) {
           created_at: '2015-04-19',
           updated_at: null,
           deleted_at: null,
-          parent: null,
+          uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+          revision: 1,
           id: 1,
         };
 
@@ -61,7 +64,8 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails with Object not found error', function(done) {
-      request.get(baseUrl + 'times/404', function(err, res, body) {
+      request.get(baseUrl + 'times/00000000-0000-0000-0000-000000000000',
+      function(err, res, body) {
         const jsonBody = JSON.parse(body);
         const expectedResult = {
           error: 'Object not found',
@@ -82,7 +86,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = {
           error: 'The provided identifier was invalid',
           status: 400,
-          text: 'Expected ID but received cat',
+          text: 'Expected UUID but received cat',
           values: ['cat'],
         };
 
@@ -122,7 +126,8 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2015-04-19',
         updated_at: null,
         deleted_at: null,
-        parent: null,
+        uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+        revision: 1,
         id: 1,
       },
     ];
@@ -145,6 +150,8 @@ module.exports = function(expect, request, baseUrl) {
         expect(res.statusCode).to.equal(200);
 
         time.id = body.id;
+        time.uuid = body.uuid;
+        time.revision = 1;
 
         expect(body).to.deep.equal(time);
 
@@ -162,7 +169,8 @@ module.exports = function(expect, request, baseUrl) {
               created_at: createdAt,
               updated_at: null,
               deleted_at: null,
-              parent: null,
+              uuid: time.uuid,
+              revision: 1,
               id: 2,
             },
           ]);
@@ -746,6 +754,8 @@ module.exports = function(expect, request, baseUrl) {
         expect(res.statusCode).to.equal(200);
 
         time.id = body.id;
+        time.uuid = body.uuid;
+        time.revision = 1;
         expect(body).to.deep.equal(time);
 
         const createdAt = new Date().toISOString().substring(0, 10);
@@ -762,7 +772,8 @@ module.exports = function(expect, request, baseUrl) {
               created_at: createdAt,
               updated_at: null,
               deleted_at: null,
-              parent: null,
+              uuid: time.uuid,
+              revision: 1,
               id: 2,
             },
           ]);
@@ -980,6 +991,8 @@ module.exports = function(expect, request, baseUrl) {
       issue_uri:
          'https://github.com/osu-cass/whats-fresh-api/issues/56',
       date_worked: '2015-04-19',
+      uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+      revision: 1,
     };
 
     const getOriginalTime = {
@@ -994,7 +1007,8 @@ module.exports = function(expect, request, baseUrl) {
       created_at: '2015-04-19',
       updated_at: null,
       deleted_at: null,
-      parent: null,
+      uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+      revision: 1,
       id: 1,
     };
 
@@ -1022,7 +1036,8 @@ module.exports = function(expect, request, baseUrl) {
       created_at: '2015-04-19',
       updated_at: updatedAt,
       deleted_at: null,
-      parent: null,
+      uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+      revision: 2,
     };
 
     // Sends invalid data to the /times/:id endpoint
@@ -1059,7 +1074,7 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const requestOptions = {
-      url: baseUrl + 'times/1',
+      url: baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
       json: true,
     };
 
@@ -1107,7 +1122,9 @@ module.exports = function(expect, request, baseUrl) {
         request.get(requestOptions.url, function(err0, res0, body0) {
           expect(body0.error).to.equal(undefined);
           expect(res0.statusCode).to.equal(200);
-          expect(JSON.parse(body0)).to.deep.equal(expectedResults);
+          const jsonBody = JSON.parse(body0);
+          expectedResults.id = jsonBody.id;
+          expect(jsonBody).to.deep.equal(expectedResults);
           done();
         });
       });
@@ -1118,7 +1135,6 @@ module.exports = function(expect, request, baseUrl) {
     ' activity notes, issue_uri, and date_worked', function(done) {
       const postObj = copyJsonObject(postPatchedTime);
       const expectedResults = copyJsonObject(getPatchedTime);
-      expectedResults.id = getOriginalTime.id;
       expectedResults.project = ['pgd'];
       let error;
       const statusCode = 200;
@@ -1134,6 +1150,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.duration = postPatchedTime.duration;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
       let error;
       const statusCode = 200;
 
@@ -1150,6 +1167,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.user = postPatchedTime.user;
+      expectedResults.revision = 2;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
@@ -1162,6 +1180,7 @@ module.exports = function(expect, request, baseUrl) {
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['pgd'];
       expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
@@ -1175,6 +1194,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.activities = postPatchedTime.activities;
+      expectedResults.revision = 2;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
@@ -1188,6 +1208,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.notes = postPatchedTime.notes;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
@@ -1201,6 +1222,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.issue_uri = postPatchedTime.issue_uri;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
@@ -1214,6 +1236,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.date_worked = postPatchedTime.date_worked;
       expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, undefined,
@@ -1451,6 +1474,9 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.duration = invalidTimeDataType.duration;
+      delete postObj.uuid;
+      delete postObj.revision;
+
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
@@ -1475,6 +1501,9 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.user = invalidTimeDataType.user;
+      delete postObj.uuid;
+      delete postObj.revision;
+
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
@@ -1497,6 +1526,9 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.project = invalidTimeDataType.project;
+      delete postObj.uuid;
+      delete postObj.revision;
+
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
@@ -1519,6 +1551,9 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.activities = invalidTimeDataType.activities;
+      delete postObj.uuid;
+      delete postObj.revision;
+
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
@@ -1541,6 +1576,9 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.notes = invalidTimeDataType.notes;
+      delete postObj.uuid;
+      delete postObj.revision;
+
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
@@ -1563,6 +1601,9 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.issue_uri = invalidTimeDataType.issue_uri;
+      delete postObj.uuid;
+      delete postObj.revision;
+
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
@@ -1585,6 +1626,9 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.date_worked = invalidTimeDataType.date_worked;
+      delete postObj.uuid;
+      delete postObj.revision;
+
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';
@@ -1607,6 +1651,9 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.key = invalidTimeDataType.key;
+      delete postObj.uuid;
+      delete postObj.revision;
+
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.project = ['wf'];
       const error = 'Bad object';

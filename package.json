@@ -47,6 +47,7 @@
     "pg": "^4.4.1",
     "prompt": "^0.2.14",
     "sqlite3": "^3.0.8",
+    "uuid": "^2.0.1",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {

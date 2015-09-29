@@ -5,15 +5,16 @@ exports.up = function(knex) {
     table.increments('id').primary();
     table.string('username').unique().notNullable();
     table.boolean('active').defaultTo(true);
-    table.string('password')
+    table.string('password');
   }).createTable('projects', function(table) {
     table.increments('id').primary();
     table.string('name').notNullable();
     table.string('uri');
     table.integer('owner').references('id').inTable('users').notNullable();
-    table.timestamp('updated_at').defaultTo(null);
-    table.timestamp('deleted_at').defaultTo(null);
-    table.integer('parent').references('id').inTable('projects').defaultTo(null);
+    table.integer('updated_at').defaultTo(null);
+    table.integer('deleted_at').defaultTo(null);
+    table.uuid('uuid');
+    table.integer('revision').defaultTo(1);
   }).createTable('times', function(table) {
     table.increments('id').primary();
     table.integer('duration').notNullable();
@@ -21,17 +22,20 @@ exports.up = function(knex) {
     table.integer('project').references('id').inTable('projects').notNullable();
     table.string('notes');
     table.string('issue_uri');
-    table.timestamp('date_worked');
-    table.timestamps();
-    table.timestamp('deleted_at').defaultTo(null);
-    table.integer('parent').references('id').inTable('times').defaultTo(null);
+    table.integer('date_worked');
+    table.integer('created_at').notNullable();
+    table.integer('updated_at').defaultTo(null);
+    table.integer('deleted_at').defaultTo(null);
+    table.uuid('uuid');
+    table.integer('revision').defaultTo(1);
   }).createTable('activities', function(table) {
     table.increments('id').primary();
     table.string('name').unique().notNullable();
     table.string('slug').unique().notNullable();
-    table.timestamp('deleted_at').defaultTo(null);
-    table.timestamp('updated_at').defaultTo(null);
-    table.integer('parent').references('id').inTable('activities').defaultTo(null);
+    table.integer('deleted_at').defaultTo(null);
+    table.integer('updated_at').defaultTo(null);
+    table.uuid('uuid');
+    table.integer('revision').defaultTo(1);
   }).createTable('projectslugs', function(table) {
     table.increments('id').primary();
     table.string('name').unique().notNullable();

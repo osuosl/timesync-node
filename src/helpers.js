@@ -134,6 +134,8 @@ module.exports = function(app) {
         knex('activities').where('slug', 'in', names).then(function(slugs) {
           if (names === undefined || names === null) {
             reject({type: 'invalid', value: names});
+          } else if (names === []) {
+            resolve([]);
           } else {
             const results = slugs.map(function(value) {
               return value.slug;
@@ -159,6 +161,18 @@ module.exports = function(app) {
           reject({type: 'database', value: err});
         });
       });
+    },
+
+    validateUUID: function(uuid) {
+      if (typeof uuid !== 'string') {
+        return false;
+      }
+
+      /* eslint-disable */
+      const uuidRegex = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
+      /* eslint-enable */
+
+      return uuidRegex.test(uuid.toLowerCase());
     },
   };
 
