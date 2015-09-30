@@ -183,11 +183,23 @@ module.exports = {
   },
 
   /*
-  * Error 11: Authorization type failure. Used when a user attempts to use an
+   * Error 11: Authorization type failure. Used when a user attempts to use an
     invalid or unsupported authentication type.
-  */
+   */
   errorAuthenticationTypeFailure: function(authType) {
     return createError(401, authType + ' is not a valid authentication type');
   },
 
+  /*
+  * Error 11: Bad query value. Used when a user attempts to query a time with
+  * a bad parameter.
+  *
+  * param delete (string): The name of the requested field
+  * param value (string): The invalid query obtained from the user -
+  *   contain this in double quotes
+  */
+  errorBadQueryValue: function(key, value) {
+    return createError(400, 'Bad Query Value', 'Parameter ' + key +
+    ' contained invalid value ' + value);
+  },
 };

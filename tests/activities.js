@@ -41,6 +41,15 @@ module.exports = function(expect, request, baseUrl) {
             revision: 1,
             id: 3,
           },
+          {
+            name: 'Meetings',
+            slug: 'meeting',
+            deleted_at: null,
+            updated_at: null,
+            uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+            revision: 1,
+            id: 4,
+          },
         ];
 
         expect(err).to.equal(null);
@@ -109,12 +118,13 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('DELETE /activities/:slug', function() {
     it('deletes the activity with the given slug', function(done) {
-      request.del(baseUrl + 'activities/sys', function(delErr, delRes) {
+      request.del(baseUrl + 'activities/meeting', function(delErr, delRes) {
         expect(delErr).to.be.a('null');
         expect(delRes.statusCode).to.equal(200);
 
         // Checks to see that the activity has been deleted from the db
-        request.get(baseUrl + 'activities/sys', function(getErr, getRes, body) {
+        request.get(baseUrl + 'activities/meeting',
+        function(getErr, getRes, body) {
           const jsonBody = JSON.parse(body);
           const expectedError = {
             status: 404,
@@ -172,6 +182,15 @@ module.exports = function(expect, request, baseUrl) {
               revision: 1,
               id: 3,
             },
+            {
+              name: 'Meetings',
+              slug: 'meeting',
+              deleted_at: null,
+              updated_at: null,
+              uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+              revision: 1,
+              id: 4,
+            },
           ];
 
           expect(getErr).to.be.a('null');
@@ -225,6 +244,15 @@ module.exports = function(expect, request, baseUrl) {
               uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
               revision: 1,
               id: 3,
+            },
+            {
+              name: 'Meetings',
+              slug: 'meeting',
+              deleted_at: null,
+              updated_at: null,
+              uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+              revision: 1,
+              id: 4,
             },
           ];
 
@@ -280,6 +308,15 @@ module.exports = function(expect, request, baseUrl) {
               uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
               revision: 1,
               id: 3,
+            },
+            {
+              name: 'Meetings',
+              slug: 'meeting',
+              deleted_at: null,
+              updated_at: null,
+              uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+              revision: 1,
+              id: 4,
             },
           ];
 
@@ -601,7 +638,7 @@ module.exports = function(expect, request, baseUrl) {
       slug: 'chef',
       name: 'Chef',
       revision: 1,
-      id: 4,
+      id: 5,
     };
 
     // the base POST JSON
@@ -642,6 +679,15 @@ module.exports = function(expect, request, baseUrl) {
         revision: 1,
         id: 3,
       },
+      {
+        name: 'Meetings',
+        slug: 'meeting',
+        deleted_at: null,
+        updated_at: null,
+        uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+        revision: 1,
+        id: 4,
+      },
     ];
 
     const requestOptions = {
@@ -663,7 +709,7 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               uuid: newActivityItem.uuid,
               revision: 1,
-              id: 4,
+              id: 5,
             },
           ]);
         } else {
