@@ -44,6 +44,10 @@ module.exports = function(expect, request, baseUrl) {
           {
             name: 'Meetings',
             slug: 'meeting',
+            deleted_at: null,
+            updated_at: null,
+            uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+            revision: 1,
             id: 4,
           },
         ];
@@ -181,6 +185,10 @@ module.exports = function(expect, request, baseUrl) {
             {
               name: 'Meetings',
               slug: 'meeting',
+              deleted_at: null,
+              updated_at: null,
+              uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+              revision: 1,
               id: 4,
             },
           ];
@@ -240,6 +248,10 @@ module.exports = function(expect, request, baseUrl) {
             {
               name: 'Meetings',
               slug: 'meeting',
+              deleted_at: null,
+              updated_at: null,
+              uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+              revision: 1,
               id: 4,
             },
           ];
@@ -300,6 +312,10 @@ module.exports = function(expect, request, baseUrl) {
             {
               name: 'Meetings',
               slug: 'meeting',
+              deleted_at: null,
+              updated_at: null,
+              uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+              revision: 1,
               id: 4,
             },
           ];
@@ -622,7 +638,7 @@ module.exports = function(expect, request, baseUrl) {
       slug: 'chef',
       name: 'Chef',
       revision: 1,
-      id: 4,
+      id: 5,
     };
 
     // the base POST JSON
@@ -664,9 +680,13 @@ module.exports = function(expect, request, baseUrl) {
         id: 3,
       },
       {
-        'name': 'Meetings',
-        'slug': 'meeting',
-        'id': 4,
+        name: 'Meetings',
+        slug: 'meeting',
+        deleted_at: null,
+        updated_at: null,
+        uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+        revision: 1,
+        id: 4,
       },
     ];
 
@@ -689,7 +709,7 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               uuid: newActivityItem.uuid,
               revision: 1,
-              id: 4,
+              id: 5,
             },
           ]);
         } else {

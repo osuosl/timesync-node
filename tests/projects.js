@@ -52,6 +52,10 @@ module.exports = function(expect, request, baseUrl) {
             name: 'Timesync',
             slugs: ['timesync', 'ts'],
             owner: 'patcht',
+            deleted_at: null,
+            updated_at: null,
+            uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
+            revision: 1,
             id: 4,
           },
         ];
@@ -595,7 +599,7 @@ module.exports = function(expect, request, baseUrl) {
       slugs: ['tsn', 'timesync-node'],
       name: 'TimeSync Node',
       revision: 1,
-      id: 4,
+      id: 5,
     };
 
     // the base POST JSON
@@ -648,6 +652,10 @@ module.exports = function(expect, request, baseUrl) {
         name: 'Timesync',
         slugs: ['timesync', 'ts'],
         owner: 'patcht',
+        deleted_at: null,
+        updated_at: null,
+        uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
+        revision: 1,
         id: 4,
       },
     ];
@@ -687,13 +695,13 @@ module.exports = function(expect, request, baseUrl) {
             {
               owner: 'tschuy',
               uri: 'https://github.com/osuosl/timesync-node',
-              slugs: ['ts', 'timesync'],
+              slugs: ['tsn', 'timesync-node'],
               name: 'TimeSync Node',
               deleted_at: null,
               updated_at: null,
               revision: 1,
               uuid: addedProject.uuid,
-              id: 4,
+              id: 5,
             },
           ]);
 
@@ -737,7 +745,7 @@ module.exports = function(expect, request, baseUrl) {
               updated_at: null,
               revision: 1,
               uuid: addedProject.uuid,
-              id: 4,
+              id: 5,
             },
           ]);
 
@@ -1086,6 +1094,10 @@ module.exports = function(expect, request, baseUrl) {
               name: 'Timesync',
               slugs: ['timesync', 'ts'],
               owner: 'patcht',
+              deleted_at: null,
+              updated_at: null,
+              uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
+              revision: 1,
               id: 4,
             },
           ];

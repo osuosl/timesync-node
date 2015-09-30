@@ -68,6 +68,10 @@ module.exports = function(app) {
               return res.status(err.status).send(err);
             }
           }
+
+          selectedActivities = selectedActivities.filter(function(activity) {
+            return activitiesList.indexOf(activity.slug) !== -1;
+          });
         }
 
         selectedActivities = selectedActivities.map(function(activity) {

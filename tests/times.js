@@ -17,6 +17,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
           {
@@ -29,6 +32,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
           {
@@ -41,6 +47,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
             id: 3,
           },
           {
@@ -53,6 +62,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
             id: 4,
           },
         ];
@@ -81,6 +93,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
           {
@@ -93,6 +108,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
             id: 3,
           },
         ];
@@ -146,6 +164,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
           {
@@ -158,6 +179,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
         ];
@@ -211,6 +235,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
           {
@@ -223,6 +250,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
         ];
@@ -276,6 +306,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
           {
@@ -288,6 +321,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
             id: 3,
           },
           {
@@ -300,6 +336,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
             id: 4,
           },
         ];
@@ -370,6 +409,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
           {
@@ -382,6 +424,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
           {
@@ -394,6 +439,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
             id: 3,
           },
         ];
@@ -447,6 +495,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
           {
@@ -459,6 +510,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
             id: 3,
           },
         ];
@@ -514,6 +568,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
           {
@@ -526,6 +583,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
             id: 3,
           },
           {
@@ -538,6 +598,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
             id: 4,
           },
         ];
@@ -574,6 +637,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
         ];
@@ -611,6 +677,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
         ];
@@ -647,6 +716,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-21',
             created_at: '2015-04-21',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
             id: 3,
           },
         ];
@@ -683,6 +755,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
         ];
@@ -720,6 +795,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
         ];
@@ -756,6 +834,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
           {
@@ -768,6 +849,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
         ];
@@ -805,6 +889,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
         ];
@@ -842,6 +929,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
         ];
@@ -879,6 +969,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
           {
@@ -891,6 +984,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
         ];
@@ -944,6 +1040,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
         ];
@@ -980,6 +1079,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
           {
@@ -992,6 +1094,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
           {
@@ -1004,6 +1109,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
             id: 4,
           },
         ];
@@ -1041,6 +1149,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-22',
             created_at: '2015-04-22',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
             id: 4,
           },
         ];
@@ -1078,6 +1189,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
         ];
@@ -1116,6 +1230,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
         ];
@@ -1155,6 +1272,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
         ];
@@ -1194,6 +1314,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
           {
@@ -1206,6 +1329,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             id: 2,
           },
         ];
@@ -1245,6 +1371,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
         ];
@@ -1284,6 +1413,9 @@ module.exports = function(expect, request, baseUrl) {
             date_worked: '2015-04-19',
             created_at: '2015-04-19',
             updated_at: null,
+            deleted_at: null,
+            revision: 1,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             id: 1,
           },
         ];
@@ -1411,7 +1543,7 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2015-04-20',
         updated_at: null,
         deleted_at: null,
-        uuid: '4612079d-daa9-4f27-b28c-25b18828d7c0',
+        uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
         revision: 1,
         id: 2,
       },
@@ -1426,7 +1558,7 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2015-04-21',
         updated_at: null,
         deleted_at: null,
-        uuid: '35e22684-511f-41e1-86ba-a4fa4e426121',
+        uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
         revision: 1,
         id: 3,
       },
@@ -1441,7 +1573,7 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2015-04-22',
         updated_at: null,
         deleted_at: null,
-        uuid: 'd260170c-9ddd-47be-9cc9-e3392a67edcc',
+        uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
         revision: 1,
         id: 4,
       },
@@ -1486,7 +1618,7 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               uuid: time.uuid,
               revision: 1,
-              id: 2,
+              id: 5,
             },
           ]);
           expect(getErr).to.be.a('null');
@@ -2089,7 +2221,7 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               uuid: time.uuid,
               revision: 1,
-              id: 2,
+              id: 5,
             },
           ]);
           expect(getErr).to.be.a('null');
@@ -2295,16 +2427,15 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('POST /times/:id', function() {
+  describe('POST /times/:uuid', function() {
     // The database's entry for `Whats Fresh`'s time entry
     const postOriginalTime = {
       duration: 12,
-      user: 'tschuy',
-      project: 'wf',
+      user: 'deanj',
+      project: ['gwm', 'ganeti-webmgr'],
       notes: '',
       activities: ['docs', 'dev'],
-      issue_uri:
-         'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
       date_worked: '2015-04-19',
       uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
       revision: 1,
@@ -2312,12 +2443,11 @@ module.exports = function(expect, request, baseUrl) {
 
     const getOriginalTime = {
       duration: 12,
-      user: 'tschuy',
-      project: 'wf',
+      user: 'deanj',
+      project: ['gwm', 'ganeti-webmgr'],
       notes: '',
       activities: ['docs', 'dev'],
-      issue_uri:
-         'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
       date_worked: '2015-04-19',
       created_at: '2015-04-19',
       updated_at: null,
@@ -2332,7 +2462,7 @@ module.exports = function(expect, request, baseUrl) {
     const updatedAt = new Date().toISOString().substring(0, 10);
     const postPatchedTime = {
       duration: 15,
-      user: 'deanj',
+      user: 'tschuy',
       project: 'pgd',
       activities: ['docs', 'sys'],
       notes: 'Now this is a note',
@@ -2342,7 +2472,7 @@ module.exports = function(expect, request, baseUrl) {
 
     const getPatchedTime = {
       duration: 15,
-      user: 'deanj',
+      user: 'tschuy',
       project: 'pgd',
       activities: ['docs', 'sys'],
       notes: 'Now this is a note',
@@ -2383,8 +2513,8 @@ module.exports = function(expect, request, baseUrl) {
     const postArg = {
       auth: {
         type: 'password',
-        username: 'tschuy',
-        password: 'password',
+        username: 'deanj',
+        password: 'pass',
       },
     };
 
@@ -2463,7 +2593,6 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = {duration: postPatchedTime.duration};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.duration = postPatchedTime.duration;
-      expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.revision = 2;
       let error;
@@ -2479,7 +2608,6 @@ module.exports = function(expect, request, baseUrl) {
     it('successfully patches time with valid user', function(done) {
       const postObj = {user: postPatchedTime.user};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.user = postPatchedTime.user;
       expectedResults.revision = 2;
@@ -2506,7 +2634,6 @@ module.exports = function(expect, request, baseUrl) {
     it('successfully patches time with valid activities', function(done) {
       const postObj = {activities: postPatchedTime.activities};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.activities = postPatchedTime.activities;
       expectedResults.revision = 2;
@@ -2521,7 +2648,6 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = {notes: postPatchedTime.notes};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.notes = postPatchedTime.notes;
-      expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.revision = 2;
       const statusCode = 200;
@@ -2535,7 +2661,6 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = {issue_uri: postPatchedTime.issue_uri};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.issue_uri = postPatchedTime.issue_uri;
-      expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.revision = 2;
       const statusCode = 200;
@@ -2549,7 +2674,6 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = {date_worked: postPatchedTime.date_worked};
       const expectedResults = copyJsonObject(getOriginalTime);
       expectedResults.date_worked = postPatchedTime.date_worked;
-      expectedResults.project = ['wf'];
       expectedResults.updated_at = updatedAt;
       expectedResults.revision = 2;
       const statusCode = 200;
@@ -2560,10 +2684,9 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests all invalid fields
     it('unsuccesfully patches time with invalid duration, user, project,' +
-    ' activity notes, issue_uri, and date_worked dattype', function(done) {
+    ' activity, notes, issue_uri, and date_worked dattype', function(done) {
       const postObj = copyJsonObject(invalidTimeDataType);
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2620,7 +2743,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {duration: invalidTimeDataType.duration};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2643,7 +2765,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {user: invalidTimeDataType.user};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2664,7 +2785,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {project: invalidTimeDataType.project};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2685,7 +2805,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {activities: invalidTimeDataType.activities};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2706,7 +2825,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {notes: invalidTimeDataType.notes};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2727,7 +2845,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {issue_uri: invalidTimeDataType.issue_uri};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2748,7 +2865,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {date_worked: invalidTimeDataType.date_worked};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2769,7 +2885,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {key: invalidTimeDataType.key};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2793,7 +2908,6 @@ module.exports = function(expect, request, baseUrl) {
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2816,11 +2930,11 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.user = invalidTimeDataType.user;
+      postObj.project = 'gwm';
       delete postObj.uuid;
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2845,7 +2959,6 @@ module.exports = function(expect, request, baseUrl) {
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2866,11 +2979,11 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.activities = invalidTimeDataType.activities;
+      postObj.project = 'gwm';
       delete postObj.uuid;
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2891,11 +3004,11 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.notes = invalidTimeDataType.notes;
+      postObj.project = 'gwm';
       delete postObj.uuid;
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2916,11 +3029,11 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.issue_uri = invalidTimeDataType.issue_uri;
+      postObj.project = 'gwm';
       delete postObj.uuid;
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2941,11 +3054,11 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.date_worked = invalidTimeDataType.date_worked;
+      postObj.project = 'gwm';
       delete postObj.uuid;
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2970,7 +3083,6 @@ module.exports = function(expect, request, baseUrl) {
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -2996,7 +3108,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {duration: invalidTimeValue.duration};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -3017,7 +3128,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {user: invalidTimeValue.user1};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Invalid foreign key';
       const statusCode = 409;
       const postBody = [
@@ -3038,7 +3148,6 @@ module.exports = function(expect, request, baseUrl) {
        function(done) {
       const postObj = {user: invalidTimeValue.user2};
       const expectedResults = copyJsonObject(originalTime);
-      expectedResults.project = ['wf'];
       let error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -3059,7 +3168,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {project: invalidTimeValue.project1};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Invalid foreign key';
       const statusCode = 409;
       const postBody = [
@@ -3079,7 +3187,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {project: invalidTimeValue.project2};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Invalid foreign key';
       const statusCode = 409;
       const postBody = [
@@ -3100,7 +3207,6 @@ module.exports = function(expect, request, baseUrl) {
        'key', function(done) {
       const postObj = {activities: invalidTimeValue.activities1};
       const expectedResults = copyJsonObject(originalTime);
-      expectedResults.project = ['wf'];
       let error = 'Invalid foreign key';
       const statusCode = 409;
       const postBody = [
@@ -3121,7 +3227,6 @@ module.exports = function(expect, request, baseUrl) {
        function(done) {
       const postObj = {user: invalidTimeValue.activities2};
       const expectedResults = copyJsonObject(originalTime);
-      expectedResults.project = ['wf'];
       let error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -3142,7 +3247,6 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {issue_uri: invalidTimeValue.issue_uri};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['wf'];
       const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
@@ -3164,7 +3268,6 @@ module.exports = function(expect, request, baseUrl) {
        function(done) {
       const postObj = {date_worked: invalidTimeValue.date_worked};
       const expectedResults = copyJsonObject(originalTime);
-      expectedResults.project = ['wf'];
       let error = 'Bad object';
       const statusCode = 400;
       const postBody = [
