@@ -174,7 +174,7 @@
       "uuid": "d24c191f-305c-4646-824d-433bbd86fcec",
       "revision": 1,
       "deleted_at": null
-    },
+    }
   ],
   "projectslugs":[
     {
@@ -238,8 +238,8 @@
     {
       "id": 5,
       "time": "times:3",
-      "activity": "activities:1",
-    },
+      "activity": "activities:1"
+    }
   ],
   "userroles":[
     {

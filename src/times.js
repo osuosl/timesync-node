@@ -68,26 +68,26 @@ module.exports = function(app) {
               return res.status(err.status).send(err);
             }
           }
-
-      selectedActivities = selectedActivities.map(function(activity) {
-        return activity.id;
-      });
-
-      // select all timesactivities
-      // this can't be limited by the activities the user selected in case
-      // a time entry has multiple activities
-      knex('timesactivities').then(function(timesActivities) {
-        let timesQ = knex('times');
-        if (activitiesList !== undefined) {
-          const validTimesActivities = timesActivities.filter(function(ta) {
-            return selectedActivities.indexOf(ta.activity) !== -1;
-          });
-
-          timesQ = timesQ.whereIn('id',
-          validTimesActivities.map(function(ta) {
-            return ta.time;
-          }));
         }
+
+        selectedActivities = selectedActivities.map(function(activity) {
+          return activity.id;
+        });
+
+        // select all timesactivities
+        // this can't be limited by the activities the user selected in case
+        // a time entry has multiple activities
+        knex('timesactivities').then(function(timesActivities) {
+          if (activitiesList !== undefined) {
+            const validTimesActivities = timesActivities.filter(function(ta) {
+              return selectedActivities.indexOf(ta.activity) !== -1;
+            });
+
+            timesQ = timesQ.whereIn('id', validTimesActivities.map(
+            function(ta) {
+              return ta.time;
+            }));
+          }
 
           if (req.query.start) {
             let start;
@@ -108,7 +108,8 @@ module.exports = function(app) {
 
             const startDate = new Date(start);
 
-            if (!startDate || !startDate.getTime() || startDate.getTime() > Date.now()) {
+            if (!startDate || !startDate.getTime() ||
+            startDate.getTime() > Date.now()) {
               const err = errors.errorBadQueryValue('start', req.query.start);
               return res.status(err.status).send(err);
             }
@@ -165,7 +166,8 @@ module.exports = function(app) {
               // projectsList.length will be greater than projectIds.length.
               // So this checks that all requested slugs actually exist.
               if (projectIds.length !== projectsList.length) {
-                const err = errors.errorBadQueryValue('project', req.query.project);
+                const err = errors.errorBadQueryValue('project',
+                                                      req.query.project);
                 return res.status(err.status).send(err);
               }
 
@@ -184,10 +186,14 @@ module.exports = function(app) {
               /* eslint-disable prefer-const */
               for (let time of times) {
               /* eslint-enable prefer-const */
-                time.date_worked = new Date(time.date_worked).toISOString().substring(0, 10);
-                time.created_at = new Date(time.created_at).toISOString().substring(0, 10);
+                time.date_worked = new Date(time.date_worked)
+                .toISOString().substring(0, 10);
+
+                time.created_at = new Date(time.created_at)
+                .toISOString().substring(0, 10);
                 if (time.updated_at) {
-                  time.updated_at = new Date(time.updated_at).toISOString().substring(0, 10);
+                  time.updated_at = new Date(time.updated_at)
+                  .toISOString().substring(0, 10);
                 } else {
                   time.updated_at = null;
                 }
@@ -292,17 +298,24 @@ module.exports = function(app) {
               if (usersDone && projectsDone) {
                 return res.send(times);
               }
+            }).catch(function(error) {
+              const err = errors.errorServerError(error);
+              return res.status(err.status).send(err);
             });
           }).catch(function(error) {
             const err = errors.errorServerError(error);
             return res.status(err.status).send(err);
           });
+        }).catch(function(error) {
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
         });
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
       });
+    }).catch(function(error) {
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
     });
+  });
 
   app.get(app.get('version') + '/times/:uuid', function(req, res) {
     if (!helpers.validateUUID(req.params.uuid)) {
@@ -314,13 +327,19 @@ module.exports = function(app) {
     .orderBy('revision', 'desc').then(function(time) {
       // get the matching time entry
       if (time) {
-        time.date_worked = new Date(time.date_worked).toISOString().substring(0, 10);
-        time.created_at = new Date(time.created_at).toISOString().substring(0, 10);
+        time.date_worked = new Date(time.date_worked)
+        .toISOString().substring(0, 10);
+
+        time.created_at = new Date(time.created_at)
+        .toISOString().substring(0, 10);
+
         if (time.updated_at) {
-          time.updated_at = new Date(time.updated_at).toISOString().substring(0, 10);
+          time.updated_at = new Date(time.updated_at)
+          .toISOString().substring(0, 10);
         } else {
           time.updated_at = null;
         }
+
         knex('users').where({id: time.user}).select('username')
         .then(function(user) {
           // set its user
@@ -429,7 +448,8 @@ module.exports = function(app) {
     }
 
     // Test date worked value
-    if (!/\d{4}-\d{2}-\d{2}/.test(time.date_worked) || !Date.parse(time.date_worked)) {
+    if (!/\d{4}-\d{2}-\d{2}/.test(time.date_worked) ||
+    !Date.parse(time.date_worked)) {
       const err = errors.errorBadObjectInvalidField('time', 'date_worked',
       'ISO-8601 date', time.date_worked);
       return res.status(err.status).send(err);

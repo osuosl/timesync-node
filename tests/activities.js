@@ -119,7 +119,8 @@ module.exports = function(expect, request, baseUrl) {
         expect(delRes.statusCode).to.equal(200);
 
         // Checks to see that the activity has been deleted from the db
-        request.get(baseUrl + 'activities/meeting', function(getErr, getRes, body) {
+        request.get(baseUrl + 'activities/meeting',
+        function(getErr, getRes, body) {
           const jsonBody = JSON.parse(body);
           const expectedError = {
             status: 404,

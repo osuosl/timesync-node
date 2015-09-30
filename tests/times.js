@@ -67,7 +67,8 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('GET /times?user=:user', function() {
     it('returns all times for a user', function(done) {
-      request.get(baseUrl + 'times?user=deanj', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?user=deanj',
+      function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
           {
@@ -112,7 +113,8 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('returns an error for a non-existent user', function(done) {
-      request.get(baseUrl + 'times?user=fakeuser', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?user=fakeuser',
+      function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResult = {
           status: 400,
@@ -130,7 +132,8 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('GET /times?project=:project', function() {
     it('returns all times for a project', function(done) {
-      request.get(baseUrl + 'times?project=gwm', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?project=gwm',
+      function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
           {
@@ -175,7 +178,8 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('returns an error for a non-existent project', function(done) {
-      request.get(baseUrl + 'times?project=notreal', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?project=notreal',
+      function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResult = {
           status: 400,
@@ -193,7 +197,8 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('GET /times?activity=:activity', function() {
     it('returns all times for an activity', function(done) {
-      request.get(baseUrl + 'times?activity=docs', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?activity=docs',
+      function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
           {
@@ -238,7 +243,8 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('returns an error for a non-existent activity', function(done) {
-      request.get(baseUrl + 'times?activity=falsch', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?activity=falsch',
+      function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResult = {
           status: 400,
@@ -314,7 +320,8 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('returns an error for an invalid start date', function(done) {
-      request.get(baseUrl + 'times?start=faux', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?start=faux',
+      function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResult = {
           status: 400,
@@ -330,7 +337,8 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('returns an error for a future start date', function(done) {
-      request.get(baseUrl + 'times?start=2105-04-19', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?start=2105-04-19',
+      function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResult = {
           status: 400,
@@ -406,7 +414,8 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('returns an error for an invalid end date', function(done) {
-      request.get(baseUrl + 'times?end=namaak', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?end=namaak',
+      function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResult = {
           status: 400,
@@ -470,7 +479,8 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('returns an error for a start date after an end date', function(done) {
-      request.get(baseUrl + 'times?start=2015-04-21&end=2015-04-19', function(getErr, getRes, getBody) {
+      request.get(baseUrl + 'times?start=2015-04-21&end=2015-04-19',
+      function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
 
         expect(getErr).to.be.a('null');
@@ -1315,8 +1325,8 @@ module.exports = function(expect, request, baseUrl) {
           id: 1,
         };
 
-        expect(getErr).to.be.a('null');
-        expect(getRes.statusCode).to.equal(200);
+        expect(err).to.be.a('null');
+        expect(res.statusCode).to.equal(200);
 
         expect(jsonBody).to.deep.equal(expectedResult);
         done();
@@ -1334,7 +1344,7 @@ module.exports = function(expect, request, baseUrl) {
         };
 
         expect(jsonBody).to.deep.equal(expectedResult);
-        expect(getRes.statusCode).to.equal(404);
+        expect(res.statusCode).to.equal(404);
 
         done();
       });
@@ -1454,11 +1464,11 @@ module.exports = function(expect, request, baseUrl) {
         expect(postErr).to.equal(null);
         expect(postRes.statusCode).to.equal(200);
 
-        time.id = body.id;
-        time.uuid = body.uuid;
+        time.id = postBody.id;
+        time.uuid = postBody.uuid;
         time.revision = 1;
 
-        expect(body).to.deep.equal(time);
+        expect(postBody).to.deep.equal(time);
 
         const createdAt = new Date().toISOString().substring(0, 10);
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
@@ -1481,7 +1491,8 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.have.same.members(expectedResults);
+          expect(JSON.parse(getBody)).to.deep.have
+          .same.members(expectedResults);
           done();
         });
       });
@@ -1638,7 +1649,8 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field duration of time should be number but was sent as string',
+          text: 'Field duration of time should be number but was sent as ' +
+                                                                       'string',
         };
 
         expect(postBody).to.deep.equal(expectedResult);
@@ -1799,7 +1811,8 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field activities of time should be array but was sent as number',
+          text: 'Field activities of time should be array but was sent as ' +
+                                                                       'number',
         };
 
         expect(postBody).to.deep.equal(expectedResult);
@@ -1862,8 +1875,8 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field project of time should be slug but was sent as invalid ' +
-          'slug project? we need a project?',
+          text: 'Field project of time should be slug but was sent as invalid' +
+          ' slug project? we need a project?',
         };
 
         expect(postBody).to.deep.equal(expectedResult);
@@ -2023,7 +2036,8 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = {
           error: 'Bad object',
           status: 400,
-          text: 'Field issue_uri of time should be string but was sent as number',
+          text: 'Field issue_uri of time should be string but was sent as ' +
+                                                                       'number',
         };
 
         expect(postBody).to.deep.equal(expectedResult);
@@ -2054,10 +2068,10 @@ module.exports = function(expect, request, baseUrl) {
         expect(postErr).to.equal(null);
         expect(postRes.statusCode).to.equal(200);
 
-        time.id = body.id;
-        time.uuid = body.uuid;
+        time.id = postBody.id;
+        time.uuid = postBody.uuid;
         time.revision = 1;
-        expect(body).to.deep.equal(time);
+        expect(postBody).to.deep.equal(time);
 
         const createdAt = new Date().toISOString().substring(0, 10);
         request.get(baseUrl + 'times', function(getErr, getRes, getBody) {
@@ -2080,7 +2094,8 @@ module.exports = function(expect, request, baseUrl) {
           ]);
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.have.same.members(expectedResults);
+          expect(JSON.parse(getBody)).to.deep.have
+          .same.members(expectedResults);
           done();
         });
       });
