@@ -848,8 +848,8 @@ module.exports = function(expect, request, baseUrl) {
         const expectedError = {
           status: 409,
           error: 'The slug provided already exists',
-          text: 'slugs ganeti-webmgr, gwm already exist',
-          values: ['ganeti-webmgr', 'gwm'],
+          text: 'slugs gwm, ganeti-webmgr already exist',
+          values: ['gwm', 'ganeti-webmgr'],
         };
 
         expect(body).to.deep.equal(expectedError);
@@ -1052,6 +1052,9 @@ module.exports = function(expect, request, baseUrl) {
           values: ['Not.a!project'],
         };
 
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+
         request.get(baseUrl + 'projects', function(getErr, getRes, getBody) {
           const jsonGetBody = JSON.parse(getBody);
           const expectedGetResult = [
@@ -1104,11 +1107,9 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(getRes.statusCode).to.equal(200);
           expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
-        });
 
-        expect(res.statusCode).to.equal(400);
-        expect(jsonBody).to.deep.equal(expectedResult);
-        done();
+          done();
+        });
       });
     });
 
@@ -1120,6 +1121,9 @@ module.exports = function(expect, request, baseUrl) {
           error: 'Object not found',
           text: 'Nonexistent slug',
         };
+
+        expect(res.statusCode).to.equal(404);
+        expect(jsonBody).to.deep.equal(expectedResult);
 
         request.get(baseUrl + 'projects', function(getErr, getRes, getBody) {
           const jsonGetBody = JSON.parse(getBody);
@@ -1169,11 +1173,9 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(getRes.statusCode).to.equal(200);
           expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
+          done();
         });
 
-        expect(res.statusCode).to.equal(404);
-        expect(jsonBody).to.deep.equal(expectedResult);
-        done();
       });
     });
   });
