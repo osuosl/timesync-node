@@ -250,7 +250,8 @@ module.exports = function(app) {
           revision: 1,
         };
 
-        knex('projects').insert(insertion).returning('id').then(function(projects) {
+        knex('projects').insert(insertion).returning('id')
+        .then(function(projects) {
           // project is a list containing the ID of the
           // newly created project
           const project = projects[0];

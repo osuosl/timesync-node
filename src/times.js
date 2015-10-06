@@ -190,13 +190,13 @@ module.exports = function(app) {
               /* eslint-disable prefer-const */
               for (let time of times) {
               /* eslint-enable prefer-const */
-                time.date_worked = new Date(parseInt(time.date_worked))
+                time.date_worked = new Date(parseInt(time.date_worked, 10))
                 .toISOString().substring(0, 10);
 
-                time.created_at = new Date(parseInt(time.created_at))
+                time.created_at = new Date(parseInt(time.created_at, 10))
                 .toISOString().substring(0, 10);
                 if (time.updated_at) {
-                  time.updated_at = new Date(parseInt(time.updated_at))
+                  time.updated_at = new Date(parseInt(time.updated_at, 10))
                   .toISOString().substring(0, 10);
                 } else {
                   time.updated_at = null;
@@ -332,14 +332,14 @@ module.exports = function(app) {
     .orderBy('revision', 'desc').then(function(time) {
       // get the matching time entry
       if (time) {
-        time.date_worked = new Date(parseInt(time.date_worked))
+        time.date_worked = new Date(parseInt(time.date_worked, 10))
         .toISOString().substring(0, 10);
 
-        time.created_at = new Date(parseInt(time.created_at))
+        time.created_at = new Date(parseInt(time.created_at, 10))
         .toISOString().substring(0, 10);
 
         if (time.updated_at) {
-          time.updated_at = new Date(parseInt(time.updated_at))
+          time.updated_at = new Date(parseInt(time.updated_at, 10))
           .toISOString().substring(0, 10);
         } else {
           time.updated_at = null;
@@ -487,7 +487,8 @@ module.exports = function(app) {
               revision: 1,
             };
 
-            knex('times').insert(insertion).returning('id').then(function(timeIds) {
+            knex('times').insert(insertion).returning('id')
+            .then(function(timeIds) {
               const timeId = timeIds[0];
 
               const taInsertion = [];
@@ -669,12 +670,18 @@ module.exports = function(app) {
           time[0].duration = obj.duration || time[0].duration;
           time[0].notes = obj.notes || time[0].notes;
           time[0].issue_uri = obj.issue_uri || time[0].issue_uri;
-          time[0].date_worked = Date.parse(obj.date_worked) || parseInt(time[0].date_worked);
-          time[0].created_at = parseInt(time[0].created_at); // returned as string by postgres
+          // created_at is returned as string by postgres
+          time[0].created_at = parseInt(time[0].created_at, 10);
           time[0].updated_at = Date.now();
           time[0].revision += 1;
           delete time[0].owner;
           delete time[0].projectName;
+
+          if (obj.date_worked) {
+            time[0].date_worked = Date.parse(obj.date_worked);
+          } else {
+            parseInt(time[0].date_worked, 10);
+          }
 
           const oldId = time[0].id;
           delete time[0].id;

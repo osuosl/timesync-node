@@ -22,15 +22,17 @@ const transact = function(done) {
 
     const fixtureCreator = new SqlFixtures(trx);
     fixtureCreator.create(testData).then(function() {
-      newTrx.raw("SELECT setval('times_id_seq', (SELECT MAX(id) FROM times));").then(function() {
-        newTrx.raw("SELECT setval('activities_id_seq', (SELECT MAX(id) FROM activities));").then(function() {
-          newTrx.raw("SELECT setval('projects_id_seq', (SELECT MAX(id) FROM projects));").then(function() {
+      newTrx.raw("SELECT setval('times_id_seq', " +
+      '(SELECT MAX(id) FROM times));').then(function() {
+        newTrx.raw("SELECT setval('activities_id_seq', " +
+        '(SELECT MAX(id) FROM activities));').then(function() {
+          newTrx.raw("SELECT setval('projects_id_seq', " +
+          '(SELECT MAX(id) FROM projects));').then(function() {
             done();
           });
         });
       });
     });
-
   }).catch(function(e) {
     // only swallow the test rollback error
     if (e !== 'test rollback') {
