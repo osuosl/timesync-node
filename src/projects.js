@@ -250,19 +250,29 @@ module.exports = function(app) {
           revision: 1,
         };
 
-        knex('projects').insert(insertion).returning('id')
-        .then(function(projects) {
-          // project is a list containing the ID of the
-          // newly created project
-          const project = projects[0];
-          const projectSlugs = obj.slugs.map(function(slug) {
-            return {name: slug, project: project};
-          });
+        knex.transaction(function(trx) {
+          trx('projects').insert(insertion).returning('id')
+          .then(function(projects) {
+            // project is a list containing the ID of the
+            // newly created project
+            const project = projects[0];
+            const projectSlugs = obj.slugs.map(function(slug) {
+              return {name: slug, project: project};
+            });
 
-          knex('projectslugs').insert(projectSlugs).then(function() {
-            obj.id = project;
-            res.send(JSON.stringify(obj));
+            trx('projectslugs').insert(projectSlugs).then(function() {
+              obj.id = project;
+              trx.commit();
+              res.send(JSON.stringify(obj));
+            }).catch(function(error) {
+              trx.rollback();
+              const err = errors.errorServerError(error);
+              return res.status(err.status).send(err);
+            });
           });
+        }).catch(function(error) {
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
         });
       });
     }).catch(function() {
@@ -430,26 +440,33 @@ module.exports = function(app) {
                 return {name: newSlug, project: project.id};
               });
 
-              // make a list containing creation and
-              // deletion promises
-              const slugsPromises = [];
-              if (delSlugs.length) {
-                slugsPromises.push(knex('projectslugs')
-                .where('name', 'in', delSlugs).del());
-              }
-              if (newSlugs.length) {
-                slugsPromises.push(knex('projectslugs').insert(newSlugs));
-              }
-
-              Promise.all(slugsPromises).then(function() {
-                if (obj.slugs.length) {
-                  project.slugs = obj.slugs;
-                } else {
-                  project.slugs = existingSlugs;
+              knex.transaction(function(trx) {
+                // make a list containing creation and
+                // deletion promises
+                const slugsPromises = [];
+                if (delSlugs.length) {
+                  slugsPromises.push(trx('projectslugs')
+                  .where('name', 'in', delSlugs).del());
+                }
+                if (newSlugs.length) {
+                  slugsPromises.push(trx('projectslugs').insert(newSlugs));
                 }
 
-                project.owner = user.username;
-                res.send(JSON.stringify(project));
+                Promise.all(slugsPromises).then(function() {
+                  if (obj.slugs.length) {
+                    project.slugs = obj.slugs;
+                  } else {
+                    project.slugs = existingSlugs;
+                  }
+
+                  project.owner = user.username;
+                  trx.commit();
+                  res.send(JSON.stringify(project));
+                }).catch(function(error) {
+                  trx.rollback();
+                  const err = errors.errorServerError(error);
+                  return res.status(err.status).send(err);
+                });
               }).catch(function(error) {
                 const err = errors.errorServerError(error);
                 return res.status(err.status).send(err);

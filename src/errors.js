@@ -41,7 +41,7 @@ module.exports = {
   */
   errorServerError: function(serverError) {
     if (process.env.DEBUG) {
-      return createError(500, 'Server error', serverError);
+      return createError(500, 'Server error', JSON.stringify(serverError));
     }
     return createError(500, 'Server error', 'Unexpected server error.');
   },
