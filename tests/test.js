@@ -21,28 +21,30 @@ const transact = function(done) {
     app.set('knex', trx);
 
     const fixtureCreator = new SqlFixtures(trx);
-    fixtureCreator.create(testData).then(function() {
-      if (process.env.NODE_ENV === 'mocha_sqlite') {
-        return done();
-      }
-
-      newTrx.raw("SELECT setval('times_id_seq', " +
-      '(SELECT MAX(id) FROM times));').then(function() {
-        newTrx.raw("SELECT setval('activities_id_seq', " +
-        '(SELECT MAX(id) FROM activities));').then(function() {
-          newTrx.raw("SELECT setval('projects_id_seq', " +
-          '(SELECT MAX(id) FROM projects));').then(function() {
-            newTrx.raw("SELECT setval('timesactivities_id_seq', " +
-            '(SELECT MAX(id) FROM timesactivities));').then(function() {
-              newTrx.raw("SELECT setval('projectslugs_id_seq', " +
-              '(SELECT MAX(id) FROM projectslugs));').then(function() {
-                done();
+    if (process.env.NODE_ENV === 'mocha_sqlite') {
+      fixtureCreator.create(testData).then(function() {
+        done();
+      });
+    } else {
+      fixtureCreator.create(testData).then(function() {
+        newTrx.raw("SELECT setval('times_id_seq', " +
+        '(SELECT MAX(id) FROM times));').then(function() {
+          newTrx.raw("SELECT setval('activities_id_seq', " +
+          '(SELECT MAX(id) FROM activities));').then(function() {
+            newTrx.raw("SELECT setval('projects_id_seq', " +
+            '(SELECT MAX(id) FROM projects));').then(function() {
+              newTrx.raw("SELECT setval('timesactivities_id_seq', " +
+              '(SELECT MAX(id) FROM timesactivities));').then(function() {
+                newTrx.raw("SELECT setval('projectslugs_id_seq', " +
+                '(SELECT MAX(id) FROM projectslugs));').then(function() {
+                  done();
+                });
               });
             });
           });
         });
       });
-    });
+    }
   }).catch(function(e) {
     // only swallow the test rollback error
     if (e !== 'test rollback') {
@@ -61,6 +63,12 @@ describe('Endpoints', function() {
   this.timeout(1000);
   beforeEach(transact);
   afterEach(endTransact);
+
+  before(function(done) {
+    knex.migrate.latest().then(function() {
+      done();
+    });
+  });
 
   require('./times')(expect, request, baseUrl);
   require('./activities')(expect, request, baseUrl);

@@ -27,6 +27,7 @@
     "describe",
     "it",
     "beforeEach",
-    "afterEach"
+    "afterEach",
+    "before"
   ]
 }

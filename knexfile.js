@@ -14,7 +14,7 @@ module.exports = {
   mocha_sqlite: {
     client: 'sqlite3',
     connection: {
-      filename: './test.sqlite3'
+      filename: ':memory:'
     }
   },
 
