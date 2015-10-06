@@ -80,6 +80,13 @@ $ curl -XGET -s localhost:8000/v1/times | python -m json.tool
 
 Your output should look something like the above.
 
+Database Backends
+-----------------
+
+TimeSync supports a development ``sqlite`` backend and a production ``postgres``
+backend. The default development and testing environment uses ``sqlite``; to use
+Postgres, see the development documentation.
+
 Documentation
 -------------
 

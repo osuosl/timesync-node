@@ -852,6 +852,13 @@ module.exports = function(expect, request, baseUrl) {
           values: ['gwm', 'ganeti-webmgr'],
         };
 
+        body.values.sort();
+        expectedError.values.sort();
+
+        if (body.text.substring(0, 10) === 'slugs gane') {
+          expectedError.text = 'slugs ganeti-webmgr, gwm already exist';
+        }
+
         expect(body).to.deep.equal(expectedError);
         expect(res.statusCode).to.equal(409);
 

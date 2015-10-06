@@ -7,7 +7,7 @@ const SqlFixtures = require('sql-fixtures');
 const request = requestBuilder.defaults({encoding: null});
 const testData = require('./fixtures/test_data');
 const knexfile = require('../knexfile');
-const knex = require('knex')(knexfile.mocha);
+const knex = require('knex')(knexfile[process.env.NODE_ENV]);
 
 const port = process.env.PORT || 8000;
 const baseUrl = 'http://localhost:' + port + '/v1/';
@@ -22,6 +22,10 @@ const transact = function(done) {
 
     const fixtureCreator = new SqlFixtures(trx);
     fixtureCreator.create(testData).then(function() {
+      if (process.env.NODE_ENV === 'mocha_sqlite') {
+        return done();
+      }
+
       newTrx.raw("SELECT setval('times_id_seq', " +
       '(SELECT MAX(id) FROM times));').then(function() {
         newTrx.raw("SELECT setval('activities_id_seq', " +

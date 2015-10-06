@@ -1,13 +1,26 @@
 module.exports = {
   development: {
+    client: 'sqlite3',
+    connection: {
+      filename: './dev.sqlite3'
+    }
+  },
+
+  development_pg: {
     client: 'pg',
     connection: process.env.PG_CONNECTION_STRING
   },
 
+  mocha_sqlite: {
+    client: 'sqlite3',
+    connection: {
+      filename: './test.sqlite3'
+    }
+  },
+
   mocha: {
     client: 'pg',
-    connection: process.env.PG_CONNECTION_STRING,
-    pool: { min: 1, max: 1 }
+    connection: process.env.TEST_PG_CONNECTION_STRING
   },
 
   production: {

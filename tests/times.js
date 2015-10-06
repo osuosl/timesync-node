@@ -1621,9 +1621,14 @@ module.exports = function(expect, request, baseUrl) {
               id: 5,
             },
           ]);
+
+          const jsonGetBody = JSON.parse(getBody);
+          expectedResults[expectedResults.length - 1].activities.sort();
+          jsonGetBody[jsonGetBody.length - 1].activities.sort();
+
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.have
+          expect(jsonGetBody).to.deep.have
           .same.members(expectedResults);
           done();
         });
