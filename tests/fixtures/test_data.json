@@ -22,37 +22,37 @@
       "username":"deanj",
       "id": 1,
       "active": false,
-      "password":"$2a$10$nkGN8eZN1DbOahNfv8YgWO790imw7poGcjfik1k0zQ9mFqYqtMY0y"
+      "password":"$2a$04$2kQbps.DOYwx1fuV68IHBuzEWJDvBrcbycI3jIQcqY8bADtUjEbv6"
     },
     {
       "username":"tschuy",
       "id": 2,
       "active": true,
-      "password":"$2a$10$6jHQo4XTceYyQ/SzgtdhleQqkuy2G27omuIR8MPvSG8rwN4xyaF5W"
+      "password":"$2a$04$RHFIGczG2prfqYM.0O8jReJa386Gg6E/uznqSRz7Cv86C7pXsQmoa"
     },
     {
       "username":"patcht",
       "id": 3,
       "active": true,
-      "password":"$2a$10$eU9ej31KNqyPL/YntxDU8eRCYygrWWAxFfp0wpMiy4hKRKUDiB0bC"
+      "password":"$2a$04$VjgpGbXzLpNkxZ0px3e8bO6HgFwNVQjTk5CBQuJgT11vd4CSfU8Ci"
     },
     {
       "username":"mrsj",
       "id": 4,
       "active": true,
-      "password":"$2a$10$BLrzGN3kDPFirmRVzSZp1OzoYsvJl4.nmhS37WkOGxpUQEPQCTos6"
+      "password":"$2a$04$P4kOcQrJceC67bNCO6VNQutCsc1UgT80tIcdSkQbfNNMZHJ0UYUQq"
     },
     {
       "username":"thai",
       "id": 5,
       "active": true,
-      "password":"$2a$10$MYmVTpfL16asa4oUyubtu.XdEIWPUGmsJN6J.dQMptHCJhVM4Zkfq"
+      "password":"$2a$04$TOZYq1yKt5pSZZ5X.qQnzuqprDrL2vrw3tdleh1WLpxbq3gzdOi8W"
     },
     {
       "username":"MaraJade",
       "id": 6,
       "active": true,
-      "password":"$2a$10$76JkCW6LQjHUZBtcdwS/fePNlMzqZ5xbRpCBk9Fbife./BMsyAiVK"
+      "password":"$2a$04$OVJfHgDIp3j8ZFlLpWVCP.Jurd5QJIJ9NgEHfpydga6KhQ.QmeU3."
     }
   ],
   "projects":[
