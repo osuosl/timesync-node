@@ -957,6 +957,9 @@ module.exports = function(expect, request, baseUrl) {
           values: ['Not.a!project'],
         };
 
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+
         request.get(baseUrl + 'projects', function(getErr, getRes, getBody) {
           const jsonGetBody = JSON.parse(getBody);
           const expectedGetResult = [
@@ -986,11 +989,9 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(getRes.statusCode).to.equal(200);
           expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
-        });
 
-        expect(res.statusCode).to.equal(400);
-        expect(jsonBody).to.deep.equal(expectedResult);
-        done();
+          done();
+        });
       });
     });
 
@@ -1003,6 +1004,9 @@ module.exports = function(expect, request, baseUrl) {
           text: 'Nonexistent slug',
         };
 
+        expect(res.statusCode).to.equal(404);
+        expect(jsonBody).to.deep.equal(expectedResult);
+
         request.get(baseUrl + 'projects', function(getErr, getRes, getBody) {
           const jsonGetBody = JSON.parse(getBody);
           const expectedGetResult = [
@@ -1032,11 +1036,9 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(getRes.statusCode).to.equal(200);
           expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
+          done();
         });
 
-        expect(res.statusCode).to.equal(404);
-        expect(jsonBody).to.deep.equal(expectedResult);
-        done();
       });
     });
   });
