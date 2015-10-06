@@ -2,7 +2,7 @@
 
 const LdapStrategy = require('passport-ldapauth');
 
-module.exports = function(knex) {
+module.exports = function(app) {
   return new LdapStrategy({
     server: {
       url: process.env.TIMESYNC_LDAP_URL,
@@ -12,6 +12,7 @@ module.exports = function(knex) {
     usernameField: 'auth[username]',
     passwordField: 'auth[password]',
   }, function(ldapUser, done) {
+    const knex = app.get('knex');
     knex('users').where({username: ldapUser.uid}).first().then(function(user) {
       if (!user) {
         done(null, false, { message: 'Incorrect username.' });

@@ -3,7 +3,7 @@
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 
-module.exports = function(knex) {
+module.exports = function(app) {
   return new LocalStrategy(
     {
       usernameField: 'auth[username]',
@@ -13,6 +13,7 @@ module.exports = function(knex) {
       /* done parameters: err, user, information
       authentication succeeds if err is null
       and user is not false. */
+      const knex = app.get('knex');
       knex('users').where({username: username}).first().then(function(user) {
         if (!user) {
           done(null, false, { message: 'Incorrect username.' });

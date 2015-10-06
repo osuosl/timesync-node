@@ -1,7 +1,6 @@
 'use strict';
 
 module.exports = function(app) {
-  const knex = app.get('knex');
   const errors = require('./errors');
   const helpers = require('./helpers')(app);
   const validUrl = require('valid-url');
@@ -9,6 +8,7 @@ module.exports = function(app) {
   const uuid = require('uuid');
 
   app.get(app.get('version') + '/projects', function(req, res) {
+    const knex = app.get('knex');
     knex('projects').then(function(projects) {
       if (projects.length === 0) {
         return res.send([]);
@@ -74,6 +74,7 @@ module.exports = function(app) {
   });
 
   app.get(app.get('version') + '/projects/:slug', function(req, res) {
+    const knex = app.get('knex');
     if (errors.isInvalidSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
@@ -155,6 +156,7 @@ module.exports = function(app) {
   });
 
   authPost(app, app.get('version') + '/projects', function(req, res, user) {
+    const knex = app.get('knex');
     const obj = req.body.object;
 
     // run various checks
@@ -248,7 +250,8 @@ module.exports = function(app) {
           revision: 1,
         };
 
-        knex('projects').insert(insertion).then(function(projects) {
+        knex('projects').insert(insertion).returning('id')
+        .then(function(projects) {
           // project is a list containing the ID of the
           // newly created project
           const project = projects[0];
@@ -272,6 +275,7 @@ module.exports = function(app) {
 
   authPost(app, app.get('version') + '/projects/:slug',
   function(req, res, user) {
+    const knex = app.get('knex');
     const obj = req.body.object;
 
     // valid keys
@@ -464,6 +468,7 @@ module.exports = function(app) {
   });
 
   app.delete(app.get('version') + '/projects/:slug', function(req, res) {
+    const knex = app.get('knex');
     if (!helpers.validateSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);

@@ -3,7 +3,6 @@
 let helpers;
 
 module.exports = function(app) {
-  const knex = app.get('knex');
   helpers = {
     validateSlug: function(slug) {
       /* matches:
@@ -43,6 +42,7 @@ module.exports = function(app) {
     },
 
     checkUser: function(username, authUser) {
+      const knex = app.get('knex');
       return new Promise(function(resolve, reject) {
         if (username === authUser) {
           // .first('id') retrieves and resolves the first record
@@ -95,6 +95,7 @@ module.exports = function(app) {
       // essentially, when the data you want is done resolving.
       // pass it to resolve(). If an error occurs, pass it to
       // reject().
+      const knex = app.get('knex');
       return new Promise(function(resolve, reject) {
         if (!helpers.validateSlug(slug)) {
           return reject({type: 'invalid', value: slug});
@@ -130,6 +131,7 @@ module.exports = function(app) {
     },
 
     checkActivities: function(names) {
+      const knex = app.get('knex');
       return new Promise(function(resolve, reject) {
         knex('activities').where('slug', 'in', names).then(function(slugs) {
           if (names === undefined || names === null) {

@@ -1609,7 +1609,7 @@ module.exports = function(expect, request, baseUrl) {
               duration: 20,
               user: 'tschuy',
               project: ['gwm', 'ganeti-webmgr'],
-              activities: ['dev', 'docs'],
+              activities: ['docs', 'dev'],
               notes: '',
               issue_uri: 'https://github.com/osuosl/gwm/issues/1',
               date_worked: '2015-07-30',
@@ -1621,9 +1621,14 @@ module.exports = function(expect, request, baseUrl) {
               id: 5,
             },
           ]);
+
+          const jsonGetBody = JSON.parse(getBody);
+          expectedResults[expectedResults.length - 1].activities.sort();
+          jsonGetBody[jsonGetBody.length - 1].activities.sort();
+
           expect(getErr).to.be.a('null');
           expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.have
+          expect(jsonGetBody).to.deep.have
           .same.members(expectedResults);
           done();
         });
@@ -2189,7 +2194,7 @@ module.exports = function(expect, request, baseUrl) {
         duration: 20,
         user: 'tschuy',
         project: 'gwm',
-        activities: ['dev', 'docs'],
+        activities: ['docs'],
         notes: '',
         date_worked: '2015-07-30',
       };
@@ -2212,7 +2217,7 @@ module.exports = function(expect, request, baseUrl) {
               duration: 20,
               user: 'tschuy',
               project: ['gwm', 'ganeti-webmgr'],
-              activities: ['dev', 'docs'],
+              activities: ['docs'],
               notes: '',
               issue_uri: null,
               date_worked: '2015-07-30',

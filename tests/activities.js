@@ -734,6 +734,7 @@ module.exports = function(expect, request, baseUrl) {
 
         // Hacky workaround because UUIDs are random
         newActivity.uuid = body.uuid;
+        body.id = initialActivities[initialActivities.length - 1].id + 1;
         expect(body).to.deep.equal(newActivity);
 
         checkListEndpoint(done, newActivity);

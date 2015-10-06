@@ -25,15 +25,7 @@ if (!Array.isArray(auth)) {
 }
 
 
-let knex;
-if (!GLOBAL.knex) {
-  // Load the database (default to development)
-  knex = require('knex')(knexfile[db]);
-} else {
-  // use the knex connection initiated from inside the testing
-  // environment
-  knex = GLOBAL.knex;
-}
+const knex = require('knex')(knexfile[db]);
 
 const app = express();
 app.use(bodyParser.json());
@@ -59,13 +51,13 @@ passport.deserializeUser(function deserializeCallback(user, done) {
 
 app.set('strategies', []);
 if (auth.indexOf('ldap') > -1) {
-  const ldapStrategy = require('./auth/ldap')(knex);
+  const ldapStrategy = require('./auth/ldap')(app);
   passport.use(ldapStrategy);
   app.get('strategies').push('ldapauth');
 }
 
 if (auth.indexOf('password') > -1) {
-  const localStrategy = require('./auth/local')(knex);
+  const localStrategy = require('./auth/local')(app);
   passport.use(localStrategy);
   app.get('strategies').push('local');
 }

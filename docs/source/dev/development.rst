@@ -73,20 +73,26 @@ the filesystem, and in production, it uses a ``PostgreSQL`` database. Since it's
 not a good idea to use a totally different database server without testing it
 first, it's a good idea to make sure your changes work on Postgres as well.
 
-To use the Postgres database, first set your ``NODE_ENV`` to ``production``::
+To use the Postgres database, first set your ``NODE_ENV`` to
+``development_pg``::
 
-    $ export NODE_ENV="production"
+    $ export NODE_ENV="development_pg"
 
 Then, set the ``PG_CONNECTION_STRING`` environment variable to a Postgres
 connection string, which looks something like this::
 
-    $ export PG_CONNECTION_STIRNG="postgres://username:password@server:port/db_name"
+    $ export PG_CONNECTION_STRING="postgres://username:password@server:port/db_name"
 
 For instance, if you're running an instance of Postgres locally with the
 username and password ``timesync`` accessing the database ``timesync``, the
 string should look like this::
 
     postgres://timesync:timesync@localhost:5432/timesync
+
+Then, for testing on Postgres, set the ``TEST_PG_CONNECTION_STRING`` to another
+connection string. To run Postgres tests, run::
+
+    npm run test_pg
 
 Testing
 -------

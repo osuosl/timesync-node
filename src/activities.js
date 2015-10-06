@@ -1,13 +1,13 @@
 'use strict';
 
 module.exports = function(app) {
-  const knex = app.get('knex');
   const errors = require('./errors');
   const helpers = require('./helpers')(app);
   const authPost = require('./authenticatedPost');
   const uuid = require('uuid');
 
   app.get(app.get('version') + '/activities', function(req, res) {
+    const knex = app.get('knex');
     knex('activities').then(function(activities) {
       if (activities.length === 0) {
         return res.send([]);
@@ -21,6 +21,7 @@ module.exports = function(app) {
   });
 
   app.get(app.get('version') + '/activities/:slug', function(req, res) {
+    const knex = app.get('knex');
     if (errors.isInvalidSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
@@ -42,6 +43,7 @@ module.exports = function(app) {
   });
 
   app.delete(app.get('version') + '/activities/:slug', function(req, res) {
+    const knex = app.get('knex');
     if (!helpers.validateSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
@@ -82,6 +84,7 @@ module.exports = function(app) {
   });
 
   authPost(app, app.get('version') + '/activities/:slug', function(req, res) {
+    const knex = app.get('knex');
     const currObj = req.body.object;
 
     const validKeys = ['name', 'slug'];
@@ -171,6 +174,7 @@ module.exports = function(app) {
   });
 
   authPost(app, app.get('version') + '/activities', function(req, res) {
+    const knex = app.get('knex');
     const obj = req.body.object;
 
     const validKeys = ['name', 'slug'];
