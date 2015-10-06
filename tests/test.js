@@ -28,7 +28,13 @@ const transact = function(done) {
         '(SELECT MAX(id) FROM activities));').then(function() {
           newTrx.raw("SELECT setval('projects_id_seq', " +
           '(SELECT MAX(id) FROM projects));').then(function() {
-            done();
+            newTrx.raw("SELECT setval('timesactivities_id_seq', " +
+            '(SELECT MAX(id) FROM timesactivities));').then(function() {
+              newTrx.raw("SELECT setval('projectslugs_id_seq', " +
+              '(SELECT MAX(id) FROM projectslugs));').then(function() {
+                done();
+              });
+            });
           });
         });
       });
@@ -48,7 +54,7 @@ const endTransact = function(done) {
 };
 
 describe('Endpoints', function() {
-  this.timeout(500);
+  this.timeout(1000);
   beforeEach(transact);
   afterEach(endTransact);
 
@@ -62,7 +68,7 @@ describe('Errors', function() {
 });
 
 describe('Helpers', function() {
-  this.timeout(500);
+  this.timeout(1000);
   beforeEach(transact);
   afterEach(endTransact);
 
