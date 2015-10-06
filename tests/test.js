@@ -46,7 +46,7 @@ const endTransact = function(done) {
 };
 
 describe('Endpoints', function() {
-  this.timeout(5000);
+  this.timeout(500);
   beforeEach(transact);
   afterEach(endTransact);
 
@@ -60,7 +60,7 @@ describe('Errors', function() {
 });
 
 describe('Helpers', function() {
-  this.timeout(5000);
+  this.timeout(500);
   beforeEach(transact);
   afterEach(endTransact);
 

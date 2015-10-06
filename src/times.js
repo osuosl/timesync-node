@@ -190,13 +190,13 @@ module.exports = function(app) {
               /* eslint-disable prefer-const */
               for (let time of times) {
               /* eslint-enable prefer-const */
-                time.date_worked = new Date(time.date_worked)
+                time.date_worked = new Date(parseInt(time.date_worked))
                 .toISOString().substring(0, 10);
 
-                time.created_at = new Date(time.created_at)
+                time.created_at = new Date(parseInt(time.created_at))
                 .toISOString().substring(0, 10);
                 if (time.updated_at) {
-                  time.updated_at = new Date(time.updated_at)
+                  time.updated_at = new Date(parseInt(time.updated_at))
                   .toISOString().substring(0, 10);
                 } else {
                   time.updated_at = null;
@@ -332,14 +332,14 @@ module.exports = function(app) {
     .orderBy('revision', 'desc').then(function(time) {
       // get the matching time entry
       if (time) {
-        time.date_worked = new Date(time.date_worked)
+        time.date_worked = new Date(parseInt(time.date_worked))
         .toISOString().substring(0, 10);
 
-        time.created_at = new Date(time.created_at)
+        time.created_at = new Date(parseInt(time.created_at))
         .toISOString().substring(0, 10);
 
         if (time.updated_at) {
-          time.updated_at = new Date(time.updated_at)
+          time.updated_at = new Date(parseInt(time.updated_at))
           .toISOString().substring(0, 10);
         } else {
           time.updated_at = null;
@@ -400,9 +400,9 @@ module.exports = function(app) {
     const badField = helpers.validateFields(time, [
       {name: 'duration', type: 'number', required: true},
       {name: 'project', type: 'string', required: true},
-      {name: 'activities', type: 'array', required: true},
       {name: 'user', type: 'string', required: true},
       {name: 'issue_uri', type: 'string', required: false},
+      {name: 'activities', type: 'array', required: true},
       {name: 'date_worked', type: 'string', required: true},
     ]);
 
@@ -487,7 +487,7 @@ module.exports = function(app) {
               revision: 1,
             };
 
-            knex('times').insert(insertion).then(function(timeIds) {
+            knex('times').insert(insertion).returning('id').then(function(timeIds) {
               const timeId = timeIds[0];
 
               const taInsertion = [];
@@ -669,8 +669,9 @@ module.exports = function(app) {
           time[0].duration = obj.duration || time[0].duration;
           time[0].notes = obj.notes || time[0].notes;
           time[0].issue_uri = obj.issue_uri || time[0].issue_uri;
-          time[0].date_worked = obj.date_worked || time[0].date_worked;
-          time[0].updated_at = new Date().toISOString().substring(0, 10);
+          time[0].date_worked = Date.parse(obj.date_worked) || parseInt(time[0].date_worked);
+          time[0].created_at = parseInt(time[0].created_at); // returned as string by postgres
+          time[0].updated_at = Date.now();
           time[0].revision += 1;
           delete time[0].owner;
           delete time[0].projectName;
@@ -682,7 +683,7 @@ module.exports = function(app) {
           helpers.checkActivities(activityList).then(function(activityIds) {
             knex('times').where({id: oldId})
             .update({'deleted_at': Date.now()}).then(function() {
-              knex('times').insert(time[0]).then(function(id) {
+              knex('times').insert(time[0]).returning('id').then(function(id) {
                 time[0].id = id[0];
 
                 if (helpers.getType(obj.activities) !== 'array' ||

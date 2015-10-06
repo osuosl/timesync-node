@@ -1168,6 +1168,10 @@ module.exports = function(expect, request, baseUrl) {
               slugs: ['timesync', 'ts'],
               owner: 'patcht',
               id: 4,
+              revision: 1,
+              deleted_at: null,
+              updated_at: null,
+              uuid: "1f8788bd-0909-4397-be2c-79047f90c575",
             },
           ];
 
