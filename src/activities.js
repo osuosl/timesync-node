@@ -28,14 +28,14 @@ module.exports = function(app) {
     }
 
     // get matching activity
-    knex('activities').select().where('slug', '=', req.params.slug)
-    .then(function(activity) {
-      if (activity.length === 0) {
+    knex('activities').select().first().where('slug', '=', req.params.slug)
+    .orderBy('revision', 'desc').then(function(activity) {
+      if (!activity) {
         const err = errors.errorObjectNotFound('activity');
         return res.status(err.status).send(err);
       }
 
-      return res.send(activity[0]);
+      return res.send(activity);
     }).catch(function(error) {
       const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
@@ -168,9 +168,10 @@ module.exports = function(app) {
             const err = errors.errorServerError(error);
             return res.status(err.status).send(err);
           });
+        } else {
+          const err = errors.errorObjectNotFound('activity');
+          return res.status(err.status).send(err);
         }
-        const err = errors.errorObjectNotFound('activity');
-        return res.status(err.status).send(err);
       }).catch(function(error) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
@@ -261,7 +262,7 @@ module.exports = function(app) {
         // newly created activity
         const activity = activities[0];
         obj.id = activity;
-        res.send(JSON.stringify(obj));
+        return res.send(JSON.stringify(obj));
       });
     });
   });

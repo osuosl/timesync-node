@@ -88,11 +88,11 @@ module.exports = function(expect, request, baseUrl) {
           revision: 1,
           id: 1,
         };
-        expectedResult.slugs.sort();
-        jsonBody.slugs.sort();
-
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
+
+        expectedResult.slugs.sort();
+        jsonBody.slugs.sort();
 
         expect(jsonBody).to.deep.equal(expectedResult);
         done();
@@ -216,6 +216,7 @@ module.exports = function(expect, request, baseUrl) {
         expectedResults.owner = patchedProject.owner;
         expectedResults.uuid = originalProject.uuid;
         expectedResults.revision = 2;
+        expectedResults.id = 5;
 
         // expect body of post request to be the new state of gwm
         expect(body).to.deep.equal(expectedResults);
@@ -236,6 +237,7 @@ module.exports = function(expect, request, baseUrl) {
         expectedResults.uri = patchedProject.uri;
         expectedResults.uuid = originalProject.uuid;
         expectedResults.revision = 2;
+        expectedResults.id = 5;
 
         expect(body).to.deep.equal(expectedResults);
 
@@ -255,6 +257,7 @@ module.exports = function(expect, request, baseUrl) {
         expectedResults.slugs = patchedProject.slugs;
         expectedResults.uuid = originalProject.uuid;
         expectedResults.revision = 2;
+        expectedResults.id = 5;
 
         expect(body).to.deep.equal(expectedResults);
 
@@ -274,6 +277,7 @@ module.exports = function(expect, request, baseUrl) {
         expectedResults.name = patchedProject.name;
         expectedResults.uuid = originalProject.uuid;
         expectedResults.revision = 2;
+        expectedResults.id = 5;
 
         expect(body).to.deep.equal(expectedResults);
 

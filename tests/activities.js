@@ -400,6 +400,7 @@ module.exports = function(expect, request, baseUrl) {
         expectedResult.name = patchedActivity.name;
         expectedResult.slug = patchedActivity.slug;
         expectedResult.revision = 2;
+        expectedResult.id = 5;
 
         const expectedPost = copyJsonObject(expectedResult);
         delete expectedPost.deleted_at;
@@ -433,6 +434,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.name = patchedName.name;
         expectedResult.revision = 2;
+        expectedResult.id = 5;
 
         const expectedPost = copyJsonObject(expectedResult);
         delete expectedPost.deleted_at;
@@ -465,6 +467,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.slug = patchedSlug.slug;
         expectedResult.revision = 2;
+        expectedResult.id = 5;
 
         const expectedPost = copyJsonObject(expectedResult);
         delete expectedPost.deleted_at;

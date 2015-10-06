@@ -347,8 +347,6 @@ module.exports = function(app) {
       }
     }
 
-    obj.slugs = obj.slugs || [];
-
     // returns the project ID for the project slug
     const projectIdQuery = knex('projectslugs').select('project')
     .where('name', req.params.slug);
@@ -381,8 +379,7 @@ module.exports = function(app) {
         .then(function(slugs) {
           // slugs contains all of the slugs named by the user that
           // currently exist in the database. This list is used to
-          // check that they're not overlapping with existing slugs,
-          // and to calculate which slugs need to be added.
+          // check that they're not overlapping with existing slugs.
 
           // final check: do any of the slugs POSTed to this
           // endpoint already belong to some other project?
@@ -413,33 +410,19 @@ module.exports = function(app) {
 
           delete project.ownerId;
 
-          knex('projects').where({id: project.id})
+          const oldId = project.id;
+          delete project.id;
+
+          knex('projects').where({id: oldId})
           .update({'deleted_at': Date.now()}).then(function() {
             knex('projects').insert(project).then(function(id) {
               project.id = id[0];
 
-              // slugNames contains the list of names of slugs that
-              // overlap with what the user submitted.
-              const slugNames = slugs.map(function(slug) {
-                return slug.name;
-              });
-
-              knex('projectslugs').where({project: project.id})
+              knex('projectslugs').where({project: oldId})
               .then(function(existingSlugObjs) {
                 const existingSlugs = existingSlugObjs.map(function(slug) {
                   return slug.name;
                 });
-                // existingSlugs contains a list of all of slugs
-                // that already belong to the project, by name
-
-                // get list of slugs that is no longer in POST
-                // request
-                let delSlugs = [];
-                if (obj.slugs.length) {
-                  delSlugs = existingSlugs.filter(function(slug) {
-                    return obj.slugs.indexOf(slug) === -1;
-                  });
-                }
 
                 knex.transaction(function(trx) {
                   // trx can be used just like knex, but every call is temporary
@@ -447,48 +430,42 @@ module.exports = function(app) {
                   // separately, and, if something goes wrong, can be rolled
                   // back without side effects.
 
-                  // make a list containing all of the slugs that need
-                  // to be inserted
-                  const newSlugs = obj.slugs.filter(function(objSlug) {
-                    if (slugNames.indexOf(objSlug) === -1) {
-                      return true;
+                  if (helpers.getType(obj.slugs) === 'array') {
+                    const newSlugs = [];
+
+                    newSlugs.push(trx('projectslugs').del()
+                    .where({project: oldId}));
+
+                    /* eslint-disable */
+                    for (let slug of obj.slugs) {
+                    /* eslint-enable */
+                      newSlugs.push(trx('projectslugs')
+                      .insert({project: project.id, name: slug}));
                     }
-                  }).map(function(newSlug) {
-                    return {name: newSlug, project: project.id};
-                  });
 
-                  // make a list containing creation and
-                  // deletion promises
-                  const slugsPromises = [];
-                  if (delSlugs.length) {
-                    slugsPromises.push(trx('projectslugs')
-                    .where('name', 'in', delSlugs).del());
-                  }
-                  if (newSlugs.length) {
-                    slugsPromises.push(trx('projectslugs').insert(newSlugs));
-                  }
-                  if (sameSlugs.length) {
-                    slugsPromises.push(knex('projectslugs')
-                    .where('name', 'in', sameSlugs)
-                    .update({project: project.id}));
-                  }
-
-                  Promise.all(slugsPromises).then(function() {
-                    if (obj.slugs.length) {
+                    Promise.all(newSlugs).then(function() {
                       project.slugs = obj.slugs;
-                    } else {
+                      project.owner = user.username;
+
+                      trx.commit();
+                      res.send(JSON.stringify(project));
+                    }).catch(function(error) {
+                      trx.rollback();
+                      const err = errors.errorServerError(error);
+                      return res.status(err.status).send(err);
+                    });
+                  } else {
+                    trx('projectslugs').update({project: project.id})
+                    .where({project: oldId}).then(function() {
                       project.slugs = existingSlugs;
-                    }
-
-                    project.owner = user.username;
-
-                    trx.commit();
-                    res.send(JSON.stringify(project));
-                  }).catch(function(error) {
-                    trx.rollback();
-                    const err = errors.errorServerError(error);
-                    return res.status(err.status).send(err);
-                  });
+                      project.owner = user.username;
+                      res.send(project);
+                    }).catch(function(error) {
+                      trx.rollback();
+                      const err = errors.errorServerError(error);
+                      return res.status(err.status).send(err);
+                    });
+                  }
                 }).catch(function(error) {
                   const err = errors.errorServerError(error);
                   return res.status(err.status).send(err);
