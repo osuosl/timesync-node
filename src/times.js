@@ -488,6 +488,10 @@ module.exports = function(app) {
             };
 
             knex.transaction(function(trx) {
+              // trx can be used just like knex, but every call is temporary
+              // until trx.commit() is called. Until then, they're stored
+              // separately, and, if something goes wrong, can be rolled back
+              // without side effects.
               trx('times').insert(insertion).returning('id')
               .then(function(timeIds) {
                 const timeId = timeIds[0];
@@ -694,6 +698,10 @@ module.exports = function(app) {
           const activityList = obj.activities || [];
           helpers.checkActivities(activityList).then(function(activityIds) {
             knex.transaction(function(trx) {
+              // trx can be used just like knex, but every call is temporary
+              // until trx.commit() is called. Until then, they're stored
+              // separately, and, if something goes wrong, can be rolled back
+              // without side effects.
               trx('times').where({id: oldId})
               .update({'deleted_at': Date.now()}).then(function() {
                 trx('times').insert(time[0]).returning('id').then(function(id) {

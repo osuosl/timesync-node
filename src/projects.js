@@ -251,6 +251,14 @@ module.exports = function(app) {
         };
 
         knex.transaction(function(trx) {
+          /* "You take the trx.rollback(), the story ends. You wake up in your
+              bed and none of the database calls ever happened. You take the
+              trx.commit(), you stay in wonderland, and everything is saved to
+              the database." */
+
+          // trx can be used just like knex, but every call is temporary until
+          // trx.commit() is called. Until then, they're stored separately, and,
+          // if something goes wrong, can be rolled back without side effects.
           trx('projects').insert(insertion).returning('id')
           .then(function(projects) {
             // project is a list containing the ID of the
@@ -441,6 +449,11 @@ module.exports = function(app) {
               });
 
               knex.transaction(function(trx) {
+                // trx can be used just like knex, but every call is temporary
+                // until trx.commit() is called. Until then, they're stored
+                // separately, and, if something goes wrong, can be rolled back
+                // without side effects.
+
                 // make a list containing creation and
                 // deletion promises
                 const slugsPromises = [];
