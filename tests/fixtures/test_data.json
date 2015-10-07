@@ -8,7 +8,8 @@
       "uuid": "986fe650-4bef-4e36-a99d-ad880b7f6cad",
       "revision": 1,
       "deleted_at": null,
-      "updated_at": null
+      "updated_at": null,
+      "created_at": 1388534400000
     },
     {
       "name":"Development",
@@ -17,7 +18,8 @@
       "uuid": "b0b8c83b-f529-4130-93ef-e4e94e5bc57e",
       "revision": 1,
       "deleted_at": null,
-      "updated_at": null
+      "updated_at": null,
+      "created_at": 1388534400000
     },
     {
       "name":"Systems",
@@ -26,7 +28,8 @@
       "uuid": "504796fd-859d-4edd-b2b8-b4109bb1fdf2",
       "revision": 1,
       "deleted_at": null,
-      "updated_at": null
+      "updated_at": null,
+      "created_at": 1388534400000
     },
     {
       "name":"Meetings",
@@ -35,7 +38,8 @@
       "uuid": "6552d14e-12eb-4f1f-83d5-147f8452614c",
       "revision": 1,
       "deleted_at": null,
-      "updated_at": null
+      "updated_at": null,
+      "created_at": 1388534400000
     }
   ],
   "users":[
@@ -85,7 +89,8 @@
       "uuid": "c285963e-192b-4e99-9d92-a940519f1fbd",
       "revision": 1,
       "deleted_at": null,
-      "updated_at": null
+      "updated_at": null,
+      "created_at": 1388534400000
     },
     {
       "uri":"https:://code.osuosl.org/projects/pgd",
@@ -95,7 +100,8 @@
       "uuid": "e3e25e6a-5e45-4df2-8561-796b07e8f974",
       "revision": 1,
       "deleted_at": null,
-      "updated_at": null
+      "updated_at": null,
+      "created_at": 1388534400000
     },
     {
       "uri":"https:://github.com/osu-cass/whats-fresh-api",
@@ -105,7 +111,8 @@
       "uuid": "9369f959-26f2-490d-8721-2948c49c3c09",
       "revision": 1,
       "deleted_at": null,
-      "updated_at": null
+      "updated_at": null,
+      "created_at": 1388534400000
     },
     {
       "uri":"https:://github.com/osuosl/timesync",
@@ -115,7 +122,8 @@
       "uuid": "1f8788bd-0909-4397-be2c-79047f90c575",
       "revision": 1,
       "deleted_at": null,
-      "updated_at": null
+      "updated_at": null,
+      "created_at": 1388534400000
     }
   ],
   "times":[

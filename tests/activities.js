@@ -19,6 +19,7 @@ module.exports = function(expect, request, baseUrl) {
             slug: 'docs',
             deleted_at: null,
             updated_at: null,
+            created_at: '2014-01-01',
             uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
             revision: 1,
             id: 1,
@@ -28,6 +29,7 @@ module.exports = function(expect, request, baseUrl) {
             slug: 'dev',
             deleted_at: null,
             updated_at: null,
+            created_at: '2014-01-01',
             uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
             revision: 1,
             id: 2,
@@ -37,6 +39,7 @@ module.exports = function(expect, request, baseUrl) {
             slug: 'sys',
             deleted_at: null,
             updated_at: null,
+            created_at: '2014-01-01',
             uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
             revision: 1,
             id: 3,
@@ -46,6 +49,7 @@ module.exports = function(expect, request, baseUrl) {
             slug: 'meeting',
             deleted_at: null,
             updated_at: null,
+            created_at: '2014-01-01',
             uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
             revision: 1,
             id: 4,
@@ -69,6 +73,7 @@ module.exports = function(expect, request, baseUrl) {
           slug: 'sys',
           deleted_at: null,
           updated_at: null,
+          created_at: '2014-01-01',
           uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
           revision: 1,
           id: 3,
@@ -160,6 +165,7 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'docs',
               deleted_at: null,
               updated_at: null,
+              created_at: '2014-01-01',
               uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
               revision: 1,
               id: 1,
@@ -169,6 +175,7 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'dev',
               deleted_at: null,
               updated_at: null,
+              created_at: '2014-01-01',
               uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
               revision: 1,
               id: 2,
@@ -178,6 +185,7 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'sys',
               deleted_at: null,
               updated_at: null,
+              created_at: '2014-01-01',
               uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
               revision: 1,
               id: 3,
@@ -187,6 +195,7 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'meeting',
               deleted_at: null,
               updated_at: null,
+              created_at: '2014-01-01',
               uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
               revision: 1,
               id: 4,
@@ -223,6 +232,7 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'docs',
               deleted_at: null,
               updated_at: null,
+              created_at: '2014-01-01',
               uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
               revision: 1,
               id: 1,
@@ -232,6 +242,7 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'dev',
               deleted_at: null,
               updated_at: null,
+              created_at: '2014-01-01',
               uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
               revision: 1,
               id: 2,
@@ -241,6 +252,7 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'sys',
               deleted_at: null,
               updated_at: null,
+              created_at: '2014-01-01',
               uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
               revision: 1,
               id: 3,
@@ -250,6 +262,7 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'meeting',
               deleted_at: null,
               updated_at: null,
+              created_at: '2014-01-01',
               uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
               revision: 1,
               id: 4,
@@ -287,6 +300,7 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'docs',
               deleted_at: null,
               updated_at: null,
+              created_at: '2014-01-01',
               uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
               revision: 1,
               id: 1,
@@ -296,6 +310,7 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'dev',
               deleted_at: null,
               updated_at: null,
+              created_at: '2014-01-01',
               uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
               revision: 1,
               id: 2,
@@ -305,6 +320,7 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'sys',
               deleted_at: null,
               updated_at: null,
+              created_at: '2014-01-01',
               uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
               revision: 1,
               id: 3,
@@ -314,6 +330,7 @@ module.exports = function(expect, request, baseUrl) {
               slug: 'meeting',
               deleted_at: null,
               updated_at: null,
+              created_at: '2014-01-01',
               uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
               revision: 1,
               id: 4,
@@ -341,6 +358,7 @@ module.exports = function(expect, request, baseUrl) {
       slug: 'docs',
       deleted_at: null,
       updated_at: null,
+      created_at: '2014-01-01',
       uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
       revision: 1,
       id: 1,
@@ -401,10 +419,10 @@ module.exports = function(expect, request, baseUrl) {
         expectedResult.slug = patchedActivity.slug;
         expectedResult.revision = 2;
         expectedResult.id = 5;
+        expectedResult.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResult);
         delete expectedPost.deleted_at;
-        delete expectedPost.updated_at;
 
         expect(body).to.deep.equal(expectedPost);
 
@@ -435,10 +453,10 @@ module.exports = function(expect, request, baseUrl) {
         expectedResult.name = patchedName.name;
         expectedResult.revision = 2;
         expectedResult.id = 5;
+        expectedResult.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResult);
         delete expectedPost.deleted_at;
-        delete expectedPost.updated_at;
 
         expect(body).to.deep.equal(expectedPost);
 
@@ -468,10 +486,10 @@ module.exports = function(expect, request, baseUrl) {
         expectedResult.slug = patchedSlug.slug;
         expectedResult.revision = 2;
         expectedResult.id = 5;
+        expectedResult.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResult);
         delete expectedPost.deleted_at;
-        delete expectedPost.updated_at;
 
         expect(body).to.deep.equal(expectedPost);
 
@@ -640,6 +658,7 @@ module.exports = function(expect, request, baseUrl) {
     const newActivity = {
       slug: 'chef',
       name: 'Chef',
+      created_at: new Date().toISOString().substring(0, 10),
       revision: 1,
       id: 5,
     };
@@ -660,6 +679,7 @@ module.exports = function(expect, request, baseUrl) {
         slug: 'docs',
         deleted_at: null,
         updated_at: null,
+        created_at: '2014-01-01',
         uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
         revision: 1,
         id: 1,
@@ -669,6 +689,7 @@ module.exports = function(expect, request, baseUrl) {
         slug: 'dev',
         deleted_at: null,
         updated_at: null,
+        created_at: '2014-01-01',
         uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
         revision: 1,
         id: 2,
@@ -678,6 +699,7 @@ module.exports = function(expect, request, baseUrl) {
         slug: 'sys',
         deleted_at: null,
         updated_at: null,
+        created_at: '2014-01-01',
         uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
         revision: 1,
         id: 3,
@@ -687,6 +709,7 @@ module.exports = function(expect, request, baseUrl) {
         slug: 'meeting',
         deleted_at: null,
         updated_at: null,
+        created_at: '2014-01-01',
         uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
         revision: 1,
         id: 4,
@@ -710,6 +733,7 @@ module.exports = function(expect, request, baseUrl) {
               name: 'Chef',
               deleted_at: null,
               updated_at: null,
+              created_at: new Date().toISOString().substring(0, 10),
               uuid: newActivityItem.uuid,
               revision: 1,
               id: 5,

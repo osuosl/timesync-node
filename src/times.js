@@ -345,6 +345,13 @@ module.exports = function(app) {
           time.updated_at = null;
         }
 
+        if (time.deleted_at) {
+          time.deleted_at = new Date(parseInt(time.deleted_at, 10))
+          .toISOString().substring(0, 10);
+        } else {
+          time.deleted_at = null;
+        }
+
         knex('users').where({id: time.user}).select('username')
         .then(function(user) {
           // set its user
@@ -689,7 +696,7 @@ module.exports = function(app) {
           if (obj.date_worked) {
             time[0].date_worked = Date.parse(obj.date_worked);
           } else {
-            parseInt(time[0].date_worked, 10);
+            time[0].date_worked = parseInt(time[0].date_worked, 10);
           }
 
           const oldId = time[0].id;
@@ -702,67 +709,61 @@ module.exports = function(app) {
               // until trx.commit() is called. Until then, they're stored
               // separately, and, if something goes wrong, can be rolled back
               // without side effects.
-              trx('times').where({id: oldId})
-              .update({'deleted_at': Date.now()}).then(function() {
-                trx('times').insert(time[0]).returning('id').then(function(id) {
-                  time[0].id = id[0];
 
-                  if (helpers.getType(obj.activities) !== 'array' ||
-                  obj.activities.length) {
-                    if (!obj.activities) {
-                      trx('timesactivities').select('activity')
-                      .where('time', oldId).then(function(activities) {
-                        const taInsertion = [];
-                        /* eslint-disable prefer-const */
-                        for (let activity of activities) {
-                          /* eslint-enable prefer-const */
-                          taInsertion.push({
-                            time: time[0].id,
-                            activity: activity.activity,
-                          });
-                        }
+              trx('times').insert(time[0]).returning('id').then(function(id) {
+                time[0].id = id[0];
 
-                        trx('timesactivities').insert(taInsertion)
-                        .then(function() {
-                          trx.commit();
-                          return res.send(time);
-                        }).catch(function(error) {
-                          trx.rollback();
-                          const err = errors.errorServerError(error);
-                          return res.status(err.status).send(err);
-                        });
-                      }).catch(function(error) {
-                        const err = errors.errorServerError(error);
-                        return res.status(err.status).send(err);
-                      });
-                    } else {
+                if (helpers.getType(obj.activities) !== 'array' ||
+                obj.activities.length) {
+                  if (!obj.activities) {
+                    trx('timesactivities').select('activity')
+                    .where('time', oldId).then(function(activities) {
                       const taInsertion = [];
                       /* eslint-disable prefer-const */
-                      for (let activity of activityIds) {
+                      for (let activity of activities) {
                         /* eslint-enable prefer-const */
                         taInsertion.push({
                           time: time[0].id,
-                          activity: activity,
+                          activity: activity.activity,
                         });
                       }
 
                       trx('timesactivities').insert(taInsertion)
                       .then(function() {
+                        trx.commit();
                         return res.send(time);
                       }).catch(function(error) {
                         trx.rollback();
                         const err = errors.errorServerError(error);
                         return res.status(err.status).send(err);
                       });
-                    }
+                    }).catch(function(error) {
+                      const err = errors.errorServerError(error);
+                      return res.status(err.status).send(err);
+                    });
                   } else {
-                    return res.send(time);
+                    const taInsertion = [];
+                    /* eslint-disable prefer-const */
+                    for (let activity of activityIds) {
+                      /* eslint-enable prefer-const */
+                      taInsertion.push({
+                        time: time[0].id,
+                        activity: activity,
+                      });
+                    }
+
+                    trx('timesactivities').insert(taInsertion)
+                    .then(function() {
+                      return res.send(time);
+                    }).catch(function(error) {
+                      trx.rollback();
+                      const err = errors.errorServerError(error);
+                      return res.status(err.status).send(err);
+                    });
                   }
-                }).catch(function(error) {
-                  trx.rollback();
-                  const err = errors.errorServerError(error);
-                  return res.status(err.status).send(err);
-                });
+                } else {
+                  return res.send(time);
+                }
               }).catch(function(error) {
                 trx.rollback();
                 const err = errors.errorServerError(error);
