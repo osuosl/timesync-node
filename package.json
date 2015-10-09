@@ -10,6 +10,7 @@
     "start": "node --harmony ./src/app.js",
     "devel": "nodemon --harmony ./src/app.js",
     "migrations": "NODE_ENV=mocha knex migrate:latest",
+    "clear-database": "node --harmony ./scripts/clear-database.js",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "linter": "jshint ./src ./tests ./scripts && eslint ./src ./tests ./scripts",
     "fixtures": "node --harmony ./scripts/load_fixtures.js",
