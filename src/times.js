@@ -487,28 +487,37 @@ module.exports = function(app) {
               revision: 1,
             };
 
-            knex('times').insert(insertion).returning('id')
-            .then(function(timeIds) {
-              const timeId = timeIds[0];
+            knex.transaction(function(trx) {
+              // trx can be used just like knex, but every call is temporary
+              // until trx.commit() is called. Until then, they're stored
+              // separately, and, if something goes wrong, can be rolled back
+              // without side effects.
+              trx('times').insert(insertion).returning('id')
+              .then(function(timeIds) {
+                const timeId = timeIds[0];
 
-              const taInsertion = [];
-              /* eslint-disable prefer-const */
-              for (let activityId of activityIds) {
-                /* eslint-enable prefer-const */
-                taInsertion.push({
-                  time: timeId,
-                  activity: activityId,
-                });
-              }
+                const taInsertion = [];
+                /* eslint-disable prefer-const */
+                for (let activityId of activityIds) {
+                  /* eslint-enable prefer-const */
+                  taInsertion.push({
+                    time: timeId,
+                    activity: activityId,
+                  });
+                }
 
-              knex('timesactivities').insert(taInsertion).then(function() {
-                time.id = timeId;
-                return res.send(JSON.stringify(time));
-              }).catch(function(error) {
-                knex('times').del().where({id: timeId}).then(function() {
+                trx('timesactivities').insert(taInsertion).then(function() {
+                  time.id = timeId;
+                  return res.send(JSON.stringify(time));
+                }).catch(function(error) {
+                  trx.rollback();
                   const err = errors.errorServerError(error);
                   return res.status(err.status).send(err);
                 });
+              }).catch(function(error) {
+                trx.rollback();
+                const err = errors.errorServerError(error);
+                return res.status(err.status).send(err);
               });
             }).catch(function(error) {
               const err = errors.errorServerError(error);
@@ -688,60 +697,74 @@ module.exports = function(app) {
 
           const activityList = obj.activities || [];
           helpers.checkActivities(activityList).then(function(activityIds) {
-            knex('times').where({id: oldId})
-            .update({'deleted_at': Date.now()}).then(function() {
-              knex('times').insert(time[0]).returning('id').then(function(id) {
-                time[0].id = id[0];
+            knex.transaction(function(trx) {
+              // trx can be used just like knex, but every call is temporary
+              // until trx.commit() is called. Until then, they're stored
+              // separately, and, if something goes wrong, can be rolled back
+              // without side effects.
+              trx('times').where({id: oldId})
+              .update({'deleted_at': Date.now()}).then(function() {
+                trx('times').insert(time[0]).returning('id').then(function(id) {
+                  time[0].id = id[0];
 
-                if (helpers.getType(obj.activities) !== 'array' ||
-                obj.activities.length) {
-                  if (!obj.activities) {
-                    knex('timesactivities').select('activity')
-                    .where('time', oldId).then(function(activities) {
-                      const taInsertion = [];
-                      /* eslint-disable prefer-const */
-                      for (let activity of activities) {
-                        /* eslint-enable prefer-const */
-                        taInsertion.push({
-                          time: time[0].id,
-                          activity: activity.activity,
+                  if (helpers.getType(obj.activities) !== 'array' ||
+                  obj.activities.length) {
+                    if (!obj.activities) {
+                      trx('timesactivities').select('activity')
+                      .where('time', oldId).then(function(activities) {
+                        const taInsertion = [];
+                        /* eslint-disable prefer-const */
+                        for (let activity of activities) {
+                          /* eslint-enable prefer-const */
+                          taInsertion.push({
+                            time: time[0].id,
+                            activity: activity.activity,
+                          });
+                        }
+
+                        trx('timesactivities').insert(taInsertion)
+                        .then(function() {
+                          trx.commit();
+                          return res.send(time);
+                        }).catch(function(error) {
+                          trx.rollback();
+                          const err = errors.errorServerError(error);
+                          return res.status(err.status).send(err);
                         });
-                      }
-
-                      knex('timesactivities').insert(taInsertion)
-                      .then(function() {
-                        return res.send(time);
                       }).catch(function(error) {
                         const err = errors.errorServerError(error);
                         return res.status(err.status).send(err);
                       });
-                    }).catch(function(error) {
-                      const err = errors.errorServerError(error);
-                      return res.status(err.status).send(err);
-                    });
-                  } else {
-                    const taInsertion = [];
-                    /* eslint-disable prefer-const */
-                    for (let activity of activityIds) {
-                      /* eslint-enable prefer-const */
-                      taInsertion.push({
-                        time: time[0].id,
-                        activity: activity,
+                    } else {
+                      const taInsertion = [];
+                      /* eslint-disable prefer-const */
+                      for (let activity of activityIds) {
+                        /* eslint-enable prefer-const */
+                        taInsertion.push({
+                          time: time[0].id,
+                          activity: activity,
+                        });
+                      }
+
+                      trx('timesactivities').insert(taInsertion)
+                      .then(function() {
+                        return res.send(time);
+                      }).catch(function(error) {
+                        trx.rollback();
+                        const err = errors.errorServerError(error);
+                        return res.status(err.status).send(err);
                       });
                     }
-
-                    knex('timesactivities').insert(taInsertion)
-                    .then(function() {
-                      return res.send(time);
-                    }).catch(function(error) {
-                      const err = errors.errorServerError(error);
-                      return res.status(err.status).send(err);
-                    });
+                  } else {
+                    return res.send(time);
                   }
-                } else {
-                  return res.send(time);
-                }
+                }).catch(function(error) {
+                  trx.rollback();
+                  const err = errors.errorServerError(error);
+                  return res.status(err.status).send(err);
+                });
               }).catch(function(error) {
+                trx.rollback();
                 const err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
               });
