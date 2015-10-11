@@ -3148,25 +3148,22 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Test invalid user (invalid formatting)
-    /*
     it('unsuccessfully patches time with just invalid user string',
-       function(done) {
+    function(done) {
       const postObj = {user: invalidTimeValue.user2};
-      const expectedResults = copyJsonObject(originalTime);
-      let error = 'Bad object';
-      const statusCode = 400;
+      const expectedResults = copyJsonObject(getOriginalTime);
+      const error = 'Invalid foreign key';
+      const statusCode = 409;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field user of time should be username but was sent ' +
-            'as string.'
-      }];
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The time does not contain a valid user reference.',
+        }];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
-                 statusCode, postBody);
+                   statusCode, postBody);
     });
-    */
 
     // Test invalid project foreign key
     it('unsuccessfully patches time with just invalid project foreign key',
@@ -3207,45 +3204,41 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Test invalid activities (not in the database)
-    /*
     it('unsuccessfully patches time with just invalid activities foreign ' +
-       'key', function(done) {
+       'key',
+    function(done) {
       const postObj = {activities: invalidTimeValue.activities1};
-      const expectedResults = copyJsonObject(originalTime);
-      let error = 'Invalid foreign key';
+      const expectedResults = copyJsonObject(getOriginalTime);
+      const error = 'Invalid foreign key';
       const statusCode = 409;
       const postBody = [
-      {
-        status: 409,
-        error: 'Bad object',
-        text: 'The time does not contain a valid activities reference'
-      }];
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The time does not contain a valid activities reference.',
+        }];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
     });
-    */
 
     // Test invalid activities (invalid formatting)
-    /*
     it('unsuccessfully patches time with just invalid activities string',
-       function(done) {
+    function(done) {
       const postObj = {user: invalidTimeValue.activities2};
-      const expectedResults = copyJsonObject(originalTime);
-      let error = 'Bad object';
+      const expectedResults = copyJsonObject(getOriginalTime);
+      const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field activites of time should be array of activities ' +
-            'but was sent as array of strings.'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field user of time should be string but was sent as array',
+        }];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
     });
-    */
 
     // Test bad issue uri (formatting)
     it('unsuccessfully patches time with just invalid issue_uri',
@@ -3268,24 +3261,22 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Test bad date (formatting)
-    /*
     it('unsuccessfully patches time with just invalid date_worked',
-       function(done) {
+    function(done) {
       const postObj = {date_worked: invalidTimeValue.date_worked};
-      const expectedResults = copyJsonObject(originalTime);
-      let error = 'Bad object';
+      const expectedResults = copyJsonObject(getOriginalTime);
+      const error = 'Bad object';
       const statusCode = 400;
       const postBody = [
-      {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field date_worked of time should be date but was ' +
-            'sent as string.'
-      }];
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field date_worked of time should be ISO-8601 date but was ' +
+                  'sent as April 29, 1995',
+        }];
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
     });
-    */
   });
 };
