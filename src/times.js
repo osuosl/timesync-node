@@ -632,7 +632,9 @@ module.exports = function(app) {
     }
 
     // Test date worked value
-    if (obj.date_worked !== undefined && !Date.parse(obj.date_worked)) {
+    if (obj.date_worked !== undefined &&
+        (!/\d{4}-\d{2}-\d{2}/.test(obj.date_worked) ||
+        !Date.parse(obj.date_worked))) {
       const err = errors.errorBadObjectInvalidField('time', 'date_worked',
       'ISO-8601 date', obj.date_worked);
       return res.status(err.status).send(err);
