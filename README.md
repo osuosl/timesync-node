@@ -87,6 +87,12 @@ TimeSync supports a development ``sqlite`` backend and a production ``postgres``
 backend. The default development and testing environment uses ``sqlite``; to use
 Postgres, see the development documentation.
 
+To run migrations on a particular backend, run:
+
+```
+$ NODE_ENV=backend npm run migrations
+```
+
 Documentation
 -------------
 
