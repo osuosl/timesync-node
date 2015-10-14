@@ -104,7 +104,8 @@ and run migrations. These containers can be easily managed with
 ```
 # First start the postgres container
 $ docker-compose up postgres
-# Then run migrations
+# Then create the database and run migrations
+$ createdb timesync-prod -h localhost -U timesync
 $ export PG_CONNECTION_STRING=postgresql://timesync:pass@localhost:5432/timesync-prod
 $ export NODE_ENV=production
 $ npm run migrations
