@@ -11,8 +11,9 @@ exports.up = function(knex) {
     table.string('name').notNullable();
     table.string('uri');
     table.integer('owner').references('id').inTable('users').notNullable();
-    table.integer('updated_at').defaultTo(null);
-    table.integer('deleted_at').defaultTo(null);
+    table.bigInteger('created_at').notNullable();
+    table.bigInteger('updated_at').defaultTo(null);
+    table.bigInteger('deleted_at').defaultTo(null);
     table.uuid('uuid');
     table.integer('revision').defaultTo(1);
   }).createTable('times', function(table) {
@@ -30,10 +31,11 @@ exports.up = function(knex) {
     table.integer('revision').defaultTo(1);
   }).createTable('activities', function(table) {
     table.increments('id').primary();
-    table.string('name').unique().notNullable();
-    table.string('slug').unique().notNullable();
-    table.integer('deleted_at').defaultTo(null);
-    table.integer('updated_at').defaultTo(null);
+    table.string('name').notNullable();
+    table.string('slug').notNullable();
+    table.bigInteger('created_at').notNullable();
+    table.bigInteger('updated_at').defaultTo(null);
+    table.bigInteger('deleted_at').defaultTo(null);
     table.uuid('uuid');
     table.integer('revision').defaultTo(1);
   }).createTable('projectslugs', function(table) {

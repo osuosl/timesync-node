@@ -2543,12 +2543,8 @@ module.exports = function(expect, request, baseUrl) {
      * Without this function you would see this exact code pretty 26
      * times over.
      */
-    function checkPostToEndpoint(done,
-                  postObj,
-                  expectedResults,
-                  error,
-                  statusCode,
-                  postBodies) {
+    function checkPostToEndpoint(done, postObj, expectedResults, error,
+    statusCode, postBodies) {
       postArg.object = postObj;
       requestOptions.form = postArg;
 

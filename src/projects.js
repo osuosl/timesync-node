@@ -14,6 +14,25 @@ module.exports = function(app) {
         return res.send([]);
       }
 
+      /* eslint-disable prefer-const */
+      for (let project of projects) {
+      /* eslint-enable prefer-const */
+        project.created_at = new Date(parseInt(project.created_at, 10))
+        .toISOString().substring(0, 10);
+        if (project.updated_at) {
+          project.updated_at = new Date(parseInt(project.updated_at, 10))
+          .toISOString().substring(0, 10);
+        } else {
+          project.updated_at = null;
+        }
+        if (project.deleted_at) {
+          project.deleted_at = new Date(parseInt(project.deleted_at, 10))
+          .toISOString().substring(0, 10);
+        } else {
+          project.deleted_at = null;
+        }
+      }
+
       // only return the project once both
       // users and slugs have finished processing
       let usersDone = false;
@@ -124,8 +143,9 @@ module.exports = function(app) {
 
     knex('projectslugs').select('projects.id as id',
     'projects.name as name', 'projects.uri as uri', 'projects.uuid as uuid',
-    'projects.revision as revision', 'users.username as owner',
-    'projectslugs.name as slug')
+    'projects.revision as revision', 'projects.created_at as created_at',
+    'projects.updated_at as updated_at', 'projects.deleted_at as deleted_at',
+    'users.username as owner', 'projectslugs.name as slug')
     .where('projectslugs.project', '=', slugsSubquery)
     .innerJoin('projects', 'projectslugs.project', 'projects.id')
     .innerJoin('users', 'users.id', 'projects.owner')
@@ -137,7 +157,24 @@ module.exports = function(app) {
         */
         const project = {id: results[0].id, name: results[0].name,
           owner: results[0].owner, uri: results[0].uri, uuid: results[0].uuid,
-          revision: results[0].revision, slugs: []};
+          revision: results[0].revision, created_at: results[0].created_at,
+          updated_at: results[0].updated_at, deleted_at: results[0].deleted_at,
+          slugs: []};
+
+        project.created_at = new Date(parseInt(project.created_at, 10))
+        .toISOString().substring(0, 10);
+        if (project.updated_at) {
+          project.updated_at = new Date(parseInt(project.updated_at, 10))
+          .toISOString().substring(0, 10);
+        } else {
+          project.updated_at = null;
+        }
+        if (project.deleted_at) {
+          project.deleted_at = new Date(parseInt(project.deleted_at, 10))
+          .toISOString().substring(0, 10);
+        } else {
+          project.deleted_at = null;
+        }
 
         for (let i = 0, len = results.length; i < len; i++) {
           // add slugs to project
@@ -239,6 +276,7 @@ module.exports = function(app) {
         }
 
         obj.uuid = uuid.v4();
+        obj.created_at = Date.now();
         obj.revision = 1;
 
         // create object to insert into database
@@ -247,6 +285,7 @@ module.exports = function(app) {
           owner: userId,
           name: obj.name,
           uuid: obj.uuid,
+          created_at: obj.created_at,
           revision: 1,
         };
 
@@ -270,6 +309,9 @@ module.exports = function(app) {
 
             trx('projectslugs').insert(projectSlugs).then(function() {
               obj.id = project;
+              obj.created_at = new Date(obj.created_at)
+              .toISOString().substring(0, 10);
+
               trx.commit();
               res.send(JSON.stringify(obj));
             }).catch(function(error) {
@@ -347,8 +389,6 @@ module.exports = function(app) {
       }
     }
 
-    obj.slugs = obj.slugs || [];
-
     // returns the project ID for the project slug
     const projectIdQuery = knex('projectslugs').select('project')
     .where('name', req.params.slug);
@@ -361,6 +401,7 @@ module.exports = function(app) {
     knex('projects').first().select('projects.id as id',
     'projects.name as name', 'projects.uri as uri',
     'projects.uuid as uuid', 'projects.revision as revision',
+    'projects.created_at as created_at',
     'users.username as owner', 'users.id as ownerId')
     .where('projects.id', '=', projectIdQuery)
     .innerJoin('users', 'users.id', 'projects.owner')
@@ -381,8 +422,7 @@ module.exports = function(app) {
         .then(function(slugs) {
           // slugs contains all of the slugs named by the user that
           // currently exist in the database. This list is used to
-          // check that they're not overlapping with existing slugs,
-          // and to calculate which slugs need to be added.
+          // check that they're not overlapping with existing slugs.
 
           // final check: do any of the slugs POSTed to this
           // endpoint already belong to some other project?
@@ -410,81 +450,82 @@ module.exports = function(app) {
           project.owner = project.ownerId;
           project.name = obj.name || project.name;
           project.revision += 1;
+          project.created_at = parseInt(project.created_at, 10);
+          project.updated_at = Date.now();
 
           delete project.ownerId;
 
-          knex('projects').where({id: project.id}).update(project)
-          .then(function() {
-            // slugNames contains the list of names of slugs that
-            // overlap with what the user submitted.
-            const slugNames = slugs.map(function(slug) {
-              return slug.name;
-            });
+          const oldId = project.id;
+          delete project.id;
 
-            knex('projectslugs').where({project: project.id})
+          knex('projects').insert(project).returning('id').then(function(id) {
+            project.id = id[0];
+            project.owner = user.username;
+
+            project.created_at = new Date(project.created_at)
+            .toISOString().substring(0, 10);
+            project.updated_at = new Date(project.updated_at)
+            .toISOString().substring(0, 10);
+
+            knex('projectslugs').where({project: oldId})
             .then(function(existingSlugObjs) {
               const existingSlugs = existingSlugObjs.map(function(slug) {
                 return slug.name;
-              });
-              // existingSlugs contains a list of all of slugs
-              // that already belong to the project, by name
-
-              // get list of slugs that is no longer in POST
-              // request
-              let delSlugs = [];
-              if (obj.slugs.length) {
-                delSlugs = existingSlugs.filter(function(slug) {
-                  return obj.slugs.indexOf(slug) === -1;
-                });
-              }
-
-              // make a list containing all of the slugs that need
-              // to be inserted
-              const newSlugs = obj.slugs.filter(function(objSlug) {
-                if (slugNames.indexOf(objSlug) === -1) {
-                  return true;
-                }
-              }).map(function(newSlug) {
-                return {name: newSlug, project: project.id};
               });
 
               knex.transaction(function(trx) {
                 // trx can be used just like knex, but every call is temporary
                 // until trx.commit() is called. Until then, they're stored
-                // separately, and, if something goes wrong, can be rolled back
-                // without side effects.
+                // separately, and, if something goes wrong, can be rolled
+                // back without side effects.
 
-                // make a list containing creation and
-                // deletion promises
-                const slugsPromises = [];
-                if (delSlugs.length) {
-                  slugsPromises.push(trx('projectslugs')
-                  .where('name', 'in', delSlugs).del());
-                }
-                if (newSlugs.length) {
-                  slugsPromises.push(trx('projectslugs').insert(newSlugs));
-                }
+                if (helpers.getType(obj.slugs) === 'array') {
+                  const newSlugs = [];
 
-                Promise.all(slugsPromises).then(function() {
-                  if (obj.slugs.length) {
-                    project.slugs = obj.slugs;
-                  } else {
-                    project.slugs = existingSlugs;
+                  newSlugs.push(trx('projectslugs').del()
+                  .where({project: oldId}));
+
+                  /* eslint-disable */
+                  for (let slug of obj.slugs) {
+                  /* eslint-enable */
+                    newSlugs.push(trx('projectslugs')
+                    .insert({project: project.id, name: slug}));
                   }
 
-                  project.owner = user.username;
-                  trx.commit();
-                  res.send(JSON.stringify(project));
-                }).catch(function(error) {
-                  trx.rollback();
-                  const err = errors.errorServerError(error);
-                  return res.status(err.status).send(err);
-                });
+                  Promise.all(newSlugs).then(function() {
+                    project.slugs = obj.slugs;
+                    project.owner = user.username;
+
+                    trx.commit();
+                    res.send(JSON.stringify(project));
+                  }).catch(function(error) {
+                    trx.rollback();
+                    const err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
+                  });
+                } else {
+                  trx('projectslugs').update({project: project.id})
+                  .where({project: oldId}).then(function() {
+                    project.slugs = existingSlugs;
+                    project.owner = user.username;
+                    res.send(project);
+                  }).catch(function(error) {
+                    trx.rollback();
+                    const err = errors.errorServerError(error);
+                    return res.status(err.status).send(err);
+                  });
+                }
               }).catch(function(error) {
                 const err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
               });
+            }).catch(function(error) {
+              const err = errors.errorServerError(error);
+              return res.status(err.status).send(err);
             });
+          }).catch(function(error) {
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
           });
         }).catch(function(error) {
           const err = errors.errorServerError(error);
@@ -494,6 +535,9 @@ module.exports = function(app) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
+    }).catch(function(error) {
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
     });
   });
 
