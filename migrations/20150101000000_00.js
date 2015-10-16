@@ -32,7 +32,7 @@ exports.up = function(knex) {
   }).createTable('activities', function(table) {
     table.increments('id').primary();
     table.string('name').notNullable();
-    table.string('slug').notNullable();
+    table.string('slug');
     table.bigInteger('created_at').notNullable();
     table.bigInteger('updated_at').defaultTo(null);
     table.bigInteger('deleted_at').defaultTo(null);

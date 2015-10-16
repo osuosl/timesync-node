@@ -83,37 +83,56 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    const activityId = knex('activities').select('id')
-    .where('slug', req.params.slug);
-
-    // Check timesactivities to see if an activity (id) is being referenced
-    knex('timesactivities').select('id').where('activity', '=', activityId)
-    .then(function(activity) {
-      /* If the length of the activity array is greater than 0, then
-      the activity id is being referenced by timesactivities */
-      if (activity.length > 0) {
-        res.set('Allow', 'GET, POST');
-        const err = errors.errorRequestFailure('activity');
+    knex('activities').select('id', 'name').where('slug', req.params.slug)
+    .first().then(function(activity) {
+      if (!activity) {
+        const err = errors.errorObjectNotFound('slug', req.params.slug);
         return res.status(err.status).send(err);
       }
 
-      // delete activity after running through the checks
-      knex('activities').where('slug', req.params.slug).del()
-      .then(function(numObj) {
-        /* When deleting something from the table, the number of
-        objects deleted is returned. So to confirm that deletion was
-        successful, make sure that the number returned is at least
-        one. */
-        if (numObj >= 1) {
-          return res.send();
+      knex('timesactivities').select('id').where('activity', activity.id)
+      .then(function(tas) {
+        /* If the length of the array is greater than 0, then the activity id
+        is being referenced by timesactivities */
+        if (tas.length > 0) {
+          res.set('Allow', 'GET, POST');
+          const err = errors.errorRequestFailure('activity');
+          return res.status(err.status).send(err);
         }
 
-        const err = errors.errorObjectNotFound('slug', req.params.slug);
-        return res.status(err.status).send(err);
+        knex.transaction(function(trx) {
+          // delete activity after running through the checks
+          trx('activities').where('slug', req.params.slug)
+          .update({'deleted_at': Date.now(), 'slug': null})
+          .then(function(numObj) {
+            /* When deleting something from the table, the number of
+            objects deleted is returned. So to confirm that deletion was
+            successful, make sure that the number returned is at least
+            one. */
+            if (numObj >= 1) {
+              trx.commit();
+              return res.send();
+            }
+
+            trx.rollback();
+            const err = errors.errorObjectNotFound('slug', req.params.slug);
+            return res.status(err.status).send(err);
+          }).catch(function(error) {
+            trx.rollback();
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+          });
+        }).catch(function(error) {
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
+        });
       }).catch(function(error) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
+    }).catch(function(error) {
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
     });
   });
 
