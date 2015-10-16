@@ -572,40 +572,36 @@ module.exports = function(app) {
         /*
          * Once auth is provided on DELETE requests, compare user ID to ensure
          * they have either 'project manager' rights on the project, or admin
-         * rights on the system.
+         * rights on the system, similar to as follows:
+         *
+         * knex('userroles').where({project: project.id, user: userId})
+         * .first().select('manager').then(function(role) {
+         *   if (!role || !role.manager) {
+         *     const err = errors.errorAuthorizationFailure(user.name,
+         *                                    'delete project ' + project.name);
+         *     return res.status(err.status).send(err);
+         *   }
          */
-        knex('userroles').where({project: project.id, user: 0 /* userId */ })
-        .select('manager').then(function(role) {
-          if (!role || !role.manager) {
-            // const err = errors.errorAuthorizationFailure(user.name,
-            //                                'delete project ' + project.name);
-            // return res.status(err.status).send(err);
-          }
 
-          knex.transaction(function(trx) {
-            trx('projects').where('id', '=', project.id)
-            .update({deleted_at: Date.now()}).then(function(numObj) {
-              /* When deleting something from the table, the number of
-              objects deleted is returned. So to confirm that deletion
-              was successful, make sure that the number returned is at
-              least one. */
-              if (numObj !== 1) {
-                trx.rollback();
-                const err = errors.errorObjectNotFound('slug', req.params.slug);
-                return res.status(err.status).send(err);
-              }
+        knex.transaction(function(trx) {
+          trx('projects').where('id', '=', project.id)
+          .update({deleted_at: Date.now()}).then(function(numObj) {
+            /* When deleting something from the table, the number of
+            objects deleted is returned. So to confirm that deletion
+            was successful, make sure that the number returned is at
+            least one. */
+            if (numObj !== 1) {
+              trx.rollback();
+              const err = errors.errorObjectNotFound('slug', req.params.slug);
+              return res.status(err.status).send(err);
+            }
 
-              trx('projectslugs').where('project', project.id).del()
+            trx('projectslugs').where('project', project.id).del()
+            .then(function() {
+              trx('userroles').where('project', project.id).del()
               .then(function() {
-                trx('userroles').where('project', project.id).del()
-                .then(function() {
-                  trx.commit();
-                  return res.send();
-                }).catch(function(error) {
-                  trx.rollback();
-                  const err = errors.errorServerError(error);
-                  return res.status(err.status).send(err);
-                });
+                trx.commit();
+                return res.send();
               }).catch(function(error) {
                 trx.rollback();
                 const err = errors.errorServerError(error);
@@ -617,6 +613,7 @@ module.exports = function(app) {
               return res.status(err.status).send(err);
             });
           }).catch(function(error) {
+            trx.rollback();
             const err = errors.errorServerError(error);
             return res.status(err.status).send(err);
           });
