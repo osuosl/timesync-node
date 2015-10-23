@@ -2531,7 +2531,7 @@ module.exports = function(expect, request, baseUrl) {
     function copyJsonObject(obj) {
       // This allows us to change object properties
       // without effecting other tests
-      return JSON.parse(JSON.stringify(obj));
+      return JSON.parse(JSON.parse(obj));
     }
 
     /*
@@ -3284,16 +3284,16 @@ module.exports = function(expect, request, baseUrl) {
         text: 'Nonexistent time',
       };
 
-      request.del(baseUrl + '/times/32764929-1bea-4a17-8c8a-22d7fb144941',
+      request.del(baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
       function(err, res, body) {
         expect(body.error).to.equal(undefined);
-        expect(res.statusCode).to.equal(200);
+        expect(res.statusCode).to.deep.equal(200);
 
-        request.get(baseUrl + '/times/32764929-1bea-4a17-8c8a-22d7fb144941',
+        request.get(baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
         function(getErr, getRes, getBody) {
           // TODO: GET should only return 200 when ?revisions=true is passed.
-          expect(getRes.statusCode).to.equal(404);
-          expect(getBody).to.equal(expectedResults);
+          expect(getRes.statusCode).to.deep.equal(404);
+          expect(JSON.parse(getBody)).to.equal(expectedResults);
           done();
         });
       });
@@ -3303,11 +3303,11 @@ module.exports = function(expect, request, baseUrl) {
       const expectedError = {
         status: 404,
         error: 'Object not found',
-        text: 'Nonexistent time',
+        text: 'Nonexistent uuid',
       };
-      request.del(baseUrl + '/times/66666666-6666-6666-6666-666666666666',
+      request.del(baseUrl + 'times/66666666-6666-6666-6666-666666666666',
       function(err, res, body) {
-        expect(body).to.equal(expectedError);
+        expect(JSON.parse(body)).to.deep.equal(expectedError);
         expect(res.statusCode).to.equal(404);
         done();
       });
@@ -3315,16 +3315,16 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails to delete the object with an invalid uuid', function(done) {
       const expectedError = {
-        status: 400,
-        error: 'The provided identifier was invalid',
-        text: 'Expected UUID but received myuuid',
+        'status': 400,
+        'error': 'The provided identifier was invalid',
+        'text': 'Expected uuid but received myuuid',
+        'values': ['myuuid']
       };
-      request.del(baseUrl + '/times/myuuid', function(err, res, body) {
-        expect(body).to.equal(expectedError);
+      request.del(baseUrl + 'times/myuuid', function(err, res, body) {
+        expect(JSON.parse(body)).to.deep.equal(expectedError);
         expect(res.statusCode).to.equal(400);
         done();
       });
     });
   });
-
 };

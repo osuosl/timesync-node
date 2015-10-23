@@ -795,9 +795,18 @@ module.exports = function(app) {
   });
 
   app.delete(app.get('version') + '/times/:uuid', function(req, res) {
-    const kenx = app.get('knex');
+    const knex = app.get('knex');
     if (!helpers.validateUUID(req.params.uuid)) {
-      const err = errors.errorInvalidUUID('uuid', req.params.slug);
+      const err = errors.errorInvalidIdentifier('uuid', req.params.uuid);
       return res.status(err.status).send(err);
     }
+
+    knex('activities').select('id').where('uuid', req.params.uuid).first()
+    .then(function(time) {
+      if (!time) {
+        const err = errors.errorObjectNotFound('uuid', req.params.uuid);
+        return res.status(err.status).send(err)
+      }
+    });
+  });
 };
