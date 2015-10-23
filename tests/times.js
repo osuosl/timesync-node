@@ -3275,4 +3275,56 @@ module.exports = function(expect, request, baseUrl) {
                  statusCode, postBody);
     });
   });
+
+  describe('DELETE /times/:uuid', function() {
+    it('deletes the object with a valid uuid', function(done) {
+      const expectedResults = {
+        status: 404,
+        error: 'Object not found',
+        text: 'Nonexistent time',
+      };
+
+      request.del(baseUrl + '/times/32764929-1bea-4a17-8c8a-22d7fb144941',
+      function(err, res, body) {
+        expect(body.error).to.equal(undefined);
+        expect(res.statusCode).to.equal(200);
+
+        request.get(baseUrl + '/times/32764929-1bea-4a17-8c8a-22d7fb144941',
+        function(getErr, getRes, getBody) {
+          // TODO: GET should only return 200 when ?revisions=true is passed.
+          expect(getRes.statusCode).to.equal(404);
+          expect(getBody).to.equal(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it('fails to delete the object with a non-existent uuid', function(done) {
+      const expectedError = {
+        status: 404,
+        error: 'Object not found',
+        text: 'Nonexistent time',
+      };
+      request.del(baseUrl + '/times/66666666-6666-6666-6666-666666666666',
+      function(err, res, body) {
+        expect(body).to.equal(expectedError);
+        expect(res.statusCode).to.equal(404);
+        done();
+      });
+    });
+
+    it('fails to delete the object with an invalid uuid', function(done) {
+      const expectedError = {
+        status: 400,
+        error: 'The provided identifier was invalid',
+        text: 'Expected UUID but received myuuid',
+      };
+      request.del(baseUrl + '/times/myuuid', function(err, res, body) {
+        expect(body).to.equal(expectedError);
+        expect(res.statusCode).to.equal(400);
+        done();
+      });
+    });
+  });
+
 };

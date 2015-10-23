@@ -793,4 +793,11 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     });
   });
+
+  app.delete(app.get('version') + '/times/:uuid', function(req, res) {
+    const kenx = app.get('knex');
+    if (!helpers.validateUUID(req.params.uuid)) {
+      const err = errors.errorInvalidUUID('uuid', req.params.slug);
+      return res.status(err.status).send(err);
+    }
 };
