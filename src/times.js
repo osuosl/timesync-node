@@ -801,12 +801,39 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    knex('activities').select('id').where('uuid', req.params.uuid).first()
+    knex('times').select('id').where('uuid', req.params.uuid).first()
     .then(function(time) {
       if (!time) {
         const err = errors.errorObjectNotFound('uuid', req.params.uuid);
         return res.status(err.status).send(err)
       }
+
+      knex.transaction(function(trx) {
+        // Delete time after running through checks.
+        trx('times').where('uuid', req.params.uuid)
+        // This line will change when we decide to add the ?include_deleted param
+        .update({'deleted_at': Date.now(), 'uuid': null})
+        .then(function(numObj) {
+          if (numObject >= 1) {
+            trx.commit();
+            return res.send();
+          }
+
+          trx.rollback();
+          const err = errors.errorObjectNotFound('uuid', req.params.uuid);
+          return res.status(err.status).send(err);
+        }).catch(function(error) {
+          trx.rollback();
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
+        });
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
+      });
+    }).catch(function(error) {
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
     });
   });
 };

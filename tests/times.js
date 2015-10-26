@@ -2531,7 +2531,7 @@ module.exports = function(expect, request, baseUrl) {
     function copyJsonObject(obj) {
       // This allows us to change object properties
       // without effecting other tests
-      return JSON.parse(JSON.parse(obj));
+      return JSON.parse(JSON.stringify(obj));
     }
 
     /*
@@ -3287,13 +3287,13 @@ module.exports = function(expect, request, baseUrl) {
       request.del(baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
       function(err, res, body) {
         expect(body.error).to.equal(undefined);
-        expect(res.statusCode).to.deep.equal(200);
+        expect(res.statusCode).to.equal(200);
 
         request.get(baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
         function(getErr, getRes, getBody) {
           // TODO: GET should only return 200 when ?revisions=true is passed.
-          expect(getRes.statusCode).to.deep.equal(404);
-          expect(JSON.parse(getBody)).to.equal(expectedResults);
+          expect(getRes.statusCode).to.equal(404);
+          expect(JSON.parse(getBody)).to.deep.equal(expectedResults);
           done();
         });
       });
