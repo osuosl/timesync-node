@@ -809,14 +809,12 @@ module.exports = function(app) {
       }
 
       knex.transaction(function(trx) {
-        // Delete time after running through checks.
         trx('times').where('uuid', req.params.uuid)
-        // This line will change when we decide to add the ?include_deleted param
         .update({'deleted_at': Date.now(), 'uuid': null})
         .then(function(numObj) {
-          if (numObject >= 1) {
+          if (numObj >= 1) {
             trx.commit();
-            return res.send();
+            return res.send()
           }
 
           trx.rollback();
