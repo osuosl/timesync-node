@@ -805,7 +805,7 @@ module.exports = function(app) {
     .then(function(time) {
       if (!time) {
         const err = errors.errorObjectNotFound('uuid', req.params.uuid);
-        return res.status(err.status).send(err)
+        return res.status(err.status).send(err);
       }
 
       knex.transaction(function(trx) {
@@ -814,7 +814,7 @@ module.exports = function(app) {
         .then(function(numObj) {
           if (numObj >= 1) {
             trx.commit();
-            return res.send()
+            return res.send();
           }
 
           trx.rollback();

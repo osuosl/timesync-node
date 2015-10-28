@@ -3318,7 +3318,7 @@ module.exports = function(expect, request, baseUrl) {
         'status': 400,
         'error': 'The provided identifier was invalid',
         'text': 'Expected uuid but received myuuid',
-        'values': ['myuuid']
+        'values': ['myuuid'],
       };
       request.del(baseUrl + 'times/myuuid', function(err, res, body) {
         expect(JSON.parse(body)).to.deep.equal(expectedError);
