@@ -810,6 +810,7 @@ module.exports = function(app) {
 
       knex.transaction(function(trx) {
         trx('times').where('uuid', req.params.uuid).first()
+        .orderBy('revision', 'desc')
         .update({'deleted_at': Date.now()})
         .then(function(numObj) {
           if (numObj >= 1) {
