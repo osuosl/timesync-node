@@ -28,6 +28,7 @@
     "it",
     "beforeEach",
     "afterEach",
-    "before"
+    "before",
+    "after"
   ]
 }

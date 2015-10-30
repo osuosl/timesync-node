@@ -4,7 +4,7 @@ module.exports = function(app) {
   const errors = require('./errors');
   const helpers = require('./helpers')(app);
   const validUrl = require('valid-url');
-  const authPost = require('./authenticatedPost');
+  const authRequest = require('./authenticatedRequest');
   const uuid = require('uuid');
 
   function compileTime(time, project, activities, res) {
@@ -325,7 +325,8 @@ module.exports = function(app) {
     return info;
   }
 
-  app.get(app.get('version') + '/times', function(req, res) {
+  authRequest.get(app, app.get('version') + '/times',
+  function(req, res) {
     // Include_revisions is an included param or is explicityly set to true
     if (req.query.include_revisions === '' ||
         req.query.include_revisions === 'true') {
@@ -389,7 +390,11 @@ module.exports = function(app) {
     }
   });
 
-  app.get(app.get('version') + '/times/:uuid', function(req, res) {
+  authRequest.get(app, app.get('version') + '/times/:uuid',
+  function(req, res) {
+    const knex = app.get('knex');
+    let timesQ;
+
     if (!helpers.validateUUID(req.params.uuid)) {
       const err = errors.errorInvalidIdentifier('UUID', req.params.uuid);
       return res.status(err.status).send(err);
@@ -454,7 +459,8 @@ module.exports = function(app) {
     }
   });
 
-  authPost(app, app.get('version') + '/times', function(req, res, user) {
+  authRequest.post(app, app.get('version') + '/times',
+  function(req, res, user) {
     const knex = app.get('knex');
     const time = req.body.object;
 
@@ -605,7 +611,8 @@ module.exports = function(app) {
   });
 
   // Patch times
-  authPost(app, app.get('version') + '/times/:uuid', function(req, res, user) {
+  authRequest.post(app, app.get('version') + '/times/:uuid',
+  function(req, res, user) {
     const knex = app.get('knex');
     if (!helpers.validateUUID(req.params.uuid)) {
       const err = errors.errorInvalidIdentifier('UUID', req.params.uuid);

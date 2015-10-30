@@ -3,7 +3,7 @@
 module.exports = function(app) {
   const errors = require('./errors');
   const helpers = require('./helpers')(app);
-  const authPost = require('./authenticatedPost');
+  const authRequest = require('./authenticatedRequest');
   const uuid = require('uuid');
 
   function constructActivity(activity, res) {
@@ -33,7 +33,8 @@ module.exports = function(app) {
     return activity;
   }
 
-  app.get(app.get('version') + '/activities', function(req, res) {
+  authRequest.get(app, app.get('version') + '/activities',
+  function(req, res) {
     const knex = app.get('knex');
     let activitiesQ;
 
@@ -92,7 +93,8 @@ module.exports = function(app) {
     }
   });
 
-  app.get(app.get('version') + '/activities/:slug', function(req, res) {
+  authRequest.get(app, app.get('version') + '/activities/:slug',
+  function(req, res) {
     const knex = app.get('knex');
     if (errors.isInvalidSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
@@ -135,7 +137,8 @@ module.exports = function(app) {
     }
   });
 
-  app.delete(app.get('version') + '/activities/:slug', function(req, res) {
+  authRequest.delete(app, app.get('version') + '/activities/:slug',
+  function(req, res) {
     const knex = app.get('knex');
     if (!helpers.validateSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
@@ -195,7 +198,8 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app, app.get('version') + '/activities/:slug', function(req, res) {
+  authRequest.post(app, app.get('version') + '/activities/:slug',
+  function(req, res) {
     const knex = app.get('knex');
     const currObj = req.body.object;
 
@@ -300,7 +304,8 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app, app.get('version') + '/activities', function(req, res) {
+  authRequest.post(app, app.get('version') + '/activities',
+  function(req, res) {
     const knex = app.get('knex');
     const obj = req.body.object;
 

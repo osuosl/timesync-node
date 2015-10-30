@@ -16,13 +16,13 @@ module.exports = function(app) {
       const knex = app.get('knex');
       knex('users').where({username: username}).first().then(function(user) {
         if (!user) {
-          done(null, false, { message: 'Incorrect username.' });
+          done(null, false, { message: 'Incorrect username or password' });
         } else {
           bcrypt.compare(password, user.password, function(err, res) {
             if (res) {
               done(null, user);
             } else {
-              done(null, false, { message: 'Incorrect password.' });
+              done(null, false, { message: 'Incorrect username or password' });
             }
           });
         }

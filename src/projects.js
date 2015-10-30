@@ -4,7 +4,7 @@ module.exports = function(app) {
   const errors = require('./errors');
   const helpers = require('./helpers')(app);
   const validUrl = require('valid-url');
-  const authPost = require('./authenticatedPost');
+  const authRequest = require('./authenticatedRequest');
   const uuid = require('uuid');
 
   function constructProject(inProject, res, slugs) {
@@ -39,7 +39,8 @@ module.exports = function(app) {
     return outProject;
   }
 
-  app.get(app.get('version') + '/projects', function(req, res) {
+  authRequest.get(app, app.get('version') + '/projects',
+  function(req, res) {
     const knex = app.get('knex');
     let projectsQ;
 
@@ -131,7 +132,8 @@ module.exports = function(app) {
     }
   });
 
-  app.get(app.get('version') + '/projects/:slug', function(req, res) {
+  authRequest.get(app, app.get('version') + '/projects/:slug',
+  function(req, res) {
     const knex = app.get('knex');
     if (errors.isInvalidSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
@@ -222,7 +224,8 @@ module.exports = function(app) {
     }
   });
 
-  authPost(app, app.get('version') + '/projects', function(req, res, user) {
+  authRequest.post(app, app.get('version') + '/projects',
+  function(req, res, authUser) {
     const knex = app.get('knex');
     const obj = req.body.object;
 
@@ -290,7 +293,7 @@ module.exports = function(app) {
 
     // check validity of owner -- it must match the submitting user
     // if checkUser fails, the user submitting the request doesn't match
-    helpers.checkUser(user.username, obj.owner).then(function(userId) {
+    helpers.checkUser(authUser.username, obj.owner).then(function(userId) {
       // select any slugs that match the ones submitted
       // this is to check that none of the submitted slugs are
       // currently in use.
@@ -348,22 +351,29 @@ module.exports = function(app) {
               const err = errors.errorServerError(error);
               return res.status(err.status).send(err);
             });
+          }).catch(function(error) {
+            trx.rollback();
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
           });
         }).catch(function(error) {
           const err = errors.errorServerError(error);
           return res.status(err.status).send(err);
         });
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
       });
     }).catch(function() {
       // checkUser failed, meaning the user is not authorized
-      const err = errors.errorAuthorizationFailure(req.body.auth.username,
+      const err = errors.errorAuthorizationFailure(authUser.username,
         'create objects for ' + obj.owner);
       return res.status(err.status).send(err);
     });
   });
 
-  authPost(app, app.get('version') + '/projects/:slug',
-  function(req, res, user) {
+  authRequest.post(app, app.get('version') + '/projects/:slug',
+  function(req, res, authUser) {
     const knex = app.get('knex');
     const obj = req.body.object;
 
@@ -439,10 +449,10 @@ module.exports = function(app) {
       // user is updating
 
       // access userroles, check if user is participating in project
-      knex('userroles').where({user: user.id, project: project.id})
+      knex('userroles').where({user: authUser.id, project: project.id})
       .then(function(roles) {
         if (roles.length === 0 || roles[0].manager === false) {
-          const err = errors.errorAuthorizationFailure(user.username,
+          const err = errors.errorAuthorizationFailure(authUser.username,
             'make changes to ' + project.name);
           return res.status(err.status).send(err);
         }
@@ -481,6 +491,7 @@ module.exports = function(app) {
           project.revision += 1;
           project.created_at = parseInt(project.created_at, 10);
           project.updated_at = Date.now();
+          project.newest = true;
 
           delete project.ownerId;
 
@@ -492,7 +503,7 @@ module.exports = function(app) {
             knex('projects').insert(project).returning('id')
             .then(function(id) {
               project.id = id[0];
-              project.owner = user.username;
+              project.owner = authUser.username;
 
               project.created_at = new Date(project.created_at)
               .toISOString().substring(0, 10);
@@ -580,7 +591,8 @@ module.exports = function(app) {
     });
   });
 
-  app.delete(app.get('version') + '/projects/:slug', function(req, res) {
+  authRequest.delete(app, app.get('version') + '/projects/:slug',
+  function(req, res) {
     const knex = app.get('knex');
     if (!helpers.validateSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);

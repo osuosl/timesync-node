@@ -4,7 +4,7 @@ const requestBuilder = require('request');
 const expect = require('chai').expect;
 const SqlFixtures = require('sql-fixtures');
 
-const request = requestBuilder.defaults({encoding: null});
+const request = requestBuilder.defaults({encoding: null, jar: true});
 const testData = require('./fixtures/test_data');
 const knexfile = require('../knexfile');
 const knex = require('knex')(knexfile[process.env.NODE_ENV]);
@@ -84,10 +84,24 @@ describe('Helpers', function() {
   beforeEach(transact);
   afterEach(endTransact);
 
+  before(function(done) {
+    knex.migrate.latest().then(function() {
+      done();
+    });
+  });
+
+  require('./helpers')(expect, app);
+});
+
+describe('Login', function() {
+  this.timeout(1000);
+  beforeEach(transact);
+  afterEach(endTransact);
+
   const localPassport = require('../src/auth/local')(app);
   const ldapPassport = require('../src/auth/ldap')(app);
 
   require('./login/password')(expect, localPassport);
   require('./login/ldap')(expect, ldapPassport);
-  require('./helpers')(expect, app);
+  require('./login/token')(expect, request, baseUrl);
 });

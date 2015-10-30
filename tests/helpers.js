@@ -9,6 +9,7 @@ module.exports = function(expect, app) {
         done();
       });
     });
+
     // Later: Include a test that checks if username is admin
     it('Returns false if username !== user', function(done) {
       helpers.checkUser('notauser', 'tschuy').then().catch(function(err) {
@@ -267,6 +268,9 @@ module.exports = function(expect, app) {
     it('throws when passed a null slug', function(done) {
       helpers.checkActivities(null).then().catch(function(err) {
         expect(err).to.deep.equal({type: 'invalid', value: null});
+        done();
+      }).catch(function(error) {
+        expect(error).to.equal({}); // Obviously will fail, but gives an error
         done();
       });
     });
