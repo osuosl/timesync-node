@@ -30,7 +30,7 @@ module.exports = function(app) {
     }
 
     userQuery.then(function(userObj) {
-      let timesQ = knex('times');
+      let timesQ = knex('times').where({deleted_at: null});
       if (usersList !== undefined) {
         const usernames = userObj.map(function(user) {
           return user.username;
@@ -328,7 +328,7 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    knex('times').first().where({uuid: req.params.uuid})
+    knex('times').first().where({uuid: req.params.uuid, deleted_at: null})
     .orderBy('revision', 'desc').then(function(time) {
       // get the matching time entry
       if (time) {
@@ -809,8 +809,8 @@ module.exports = function(app) {
       }
 
       knex.transaction(function(trx) {
-        trx('times').where('uuid', req.params.uuid)
-        .update({'deleted_at': Date.now(), 'uuid': null})
+        trx('times').where('uuid', req.params.uuid).first()
+        .update({'deleted_at': Date.now()})
         .then(function(numObj) {
           if (numObj >= 1) {
             trx.commit();
