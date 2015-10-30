@@ -4,10 +4,11 @@ module.exports = function(app) {
   const errors = require('./errors');
   const helpers = require('./helpers')(app);
   const validUrl = require('valid-url');
-  const authPost = require('./authenticatedPost');
+  const authRequest = require('./authenticatedRequest');
   const uuid = require('uuid');
 
-  app.get(app.get('version') + '/times', function(req, res) {
+  authRequest.get(app, app.get('version') + '/times',
+  function(req, res) {
     const knex = app.get('knex');
     let activitiesList = req.query.activity;
     if (typeof activitiesList === 'string') {
@@ -337,7 +338,8 @@ module.exports = function(app) {
     });
   });
 
-  app.get(app.get('version') + '/times/:uuid', function(req, res) {
+  authRequest.get(app, app.get('version') + '/times/:uuid',
+  function(req, res) {
     const knex = app.get('knex');
     let timesQ;
 
@@ -426,7 +428,8 @@ module.exports = function(app) {
     });
   });
 
-  authPost(app, app.get('version') + '/times', function(req, res, user) {
+  authRequest.post(app, app.get('version') + '/times',
+  function(req, res, user) {
     const knex = app.get('knex');
     const time = req.body.object;
 
@@ -578,7 +581,8 @@ module.exports = function(app) {
   });
 
   // Patch times
-  authPost(app, app.get('version') + '/times/:uuid', function(req, res, user) {
+  authRequest.post(app, app.get('version') + '/times/:uuid',
+  function(req, res, user) {
     const knex = app.get('knex');
     if (!helpers.validateUUID(req.params.uuid)) {
       const err = errors.errorInvalidIdentifier('UUID', req.params.uuid);
