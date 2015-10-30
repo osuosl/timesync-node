@@ -9,7 +9,7 @@ module.exports = function(app) {
 
   app.get(app.get('version') + '/projects', function(req, res) {
     const knex = app.get('knex');
-    knex('projects').then(function(projects) {
+    knex('projects').where('deleted_at', null).then(function(projects) {
       if (projects.length === 0) {
         return res.send([]);
       }
@@ -146,7 +146,7 @@ module.exports = function(app) {
     'projects.revision as revision', 'projects.created_at as created_at',
     'projects.updated_at as updated_at', 'projects.deleted_at as deleted_at',
     'users.username as owner', 'projectslugs.name as slug')
-    .where('projectslugs.project', '=', slugsSubquery)
+    .where({'projectslugs.project': slugsSubquery, 'projects.deleted_at': null})
     .innerJoin('projects', 'projectslugs.project', 'projects.id')
     .innerJoin('users', 'users.id', 'projects.owner')
     .then(function(results) {
@@ -508,6 +508,7 @@ module.exports = function(app) {
                   .where({project: oldId}).then(function() {
                     project.slugs = existingSlugs;
                     project.owner = user.username;
+                    trx.commit();
                     res.send(project);
                   }).catch(function(error) {
                     trx.rollback();
@@ -549,32 +550,77 @@ module.exports = function(app) {
     }
 
     // Get project id
-    const projectId = knex('projectslugs').select('project').where('name',
-    req.params.slug);
-
-    // Get times associated with project
-    knex('times').where('project', '=', projectId).then(function(times) {
-      // If there are times associated, return an error
-      if (times.length > 0) {
-        res.set('Allow', 'GET, POST');
-        const err = errors.errorRequestFailure('project');
+    knex('projectslugs').select('projects.id as id', 'projects.name as name')
+    .first().where('projectslugs.name', req.params.slug)
+    .innerJoin('projects', 'projectslugs.project', 'projects.id')
+    .then(function(project) {
+      if (!project) {
+        const err = errors.errorObjectNotFound('slug', req.params.slug);
         return res.status(err.status).send(err);
-        // Otherwise delete project
       }
 
-      knex('projects').where('id', '=', projectId)
-      .del().then(function(numObj) {
-        /* When deleting something from the table, the number of
-        objects deleted is returned. So to confirm that deletion
-        was successful, make sure that the number returned is at
-        least one. */
-        if (numObj >= 1) {
-          return res.send();
+      // Get times associated with project
+      knex('times').where('project', '=', project.id).then(function(times) {
+        // If there are times associated, return an error
+        if (times.length > 0) {
+          res.set('Allow', 'GET, POST');
+          const err = errors.errorRequestFailure('project');
+          return res.status(err.status).send(err);
+          // Otherwise delete project
         }
 
-        const err = errors.errorObjectNotFound('slug',
-        req.params.slug);
-        return res.status(err.status).send(err);
+        /*
+         * Once auth is provided on DELETE requests, compare user ID to ensure
+         * they have either 'project manager' rights on the project, or admin
+         * rights on the system, similar to as follows:
+         *
+         * knex('userroles').where({project: project.id, user: userId})
+         * .first().select('manager').then(function(role) {
+         *   if (!role || !role.manager) {
+         *     const err = errors.errorAuthorizationFailure(user.name,
+         *                                    'delete project ' + project.name);
+         *     return res.status(err.status).send(err);
+         *   }
+         */
+
+        knex.transaction(function(trx) {
+          trx('projects').where('id', '=', project.id)
+          .update({deleted_at: Date.now()}).then(function(numObj) {
+            /* When deleting something from the table, the number of
+            objects deleted is returned. So to confirm that deletion
+            was successful, make sure that the number returned is at
+            least one. */
+            if (numObj !== 1) {
+              trx.rollback();
+              const err = errors.errorObjectNotFound('slug', req.params.slug);
+              return res.status(err.status).send(err);
+            }
+
+            trx('projectslugs').where('project', project.id).del()
+            .then(function() {
+              trx('userroles').where('project', project.id).del()
+              .then(function() {
+                trx.commit();
+                return res.send();
+              }).catch(function(error) {
+                trx.rollback();
+                const err = errors.errorServerError(error);
+                return res.status(err.status).send(err);
+              });
+            }).catch(function(error) {
+              trx.rollback();
+              const err = errors.errorServerError(error);
+              return res.status(err.status).send(err);
+            });
+          }).catch(function(error) {
+            trx.rollback();
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+          });
+        }).catch(function(error) {
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
+        });
       }).catch(function(error) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
