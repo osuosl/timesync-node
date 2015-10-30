@@ -1245,4 +1245,41 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
   });
+
+  describe('GET /projects/?include_revisions=true', function() {
+
+    // Tests that include_revisions includes revisions
+    it('gets projects + revisions when include_revions=true', function(done) {
+      done();
+    });
+
+    // Tests that include_revisions isn't always set to true
+    it('gets just projects when include_revions=false', function(done) {
+      done();
+    });
+
+    // Tests that include_revisions defaults to false
+    it('gets just projects when include_revisions is not set', function(done) {
+      done();
+    });
+  });
+
+  describe('GET /projects/:uuid?include_revisions=true', function() {
+
+    // Tests that include_revisions includes revisions
+    it('gets project + revisions when include_revisions=true',
+    function(done) {
+      done();
+    });
+
+    // Tests that include_revisions isn't always set to true
+    it('gets just project when include_revisions=false', function(done) {
+      done();
+    });
+
+    // Tests that include_revisions defaults to false
+    it('gets just project when include_revisions is not set', function(done) {
+      done();
+    });
+  });
 };

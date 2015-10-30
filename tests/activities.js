@@ -889,4 +889,43 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
   });
+
+  describe('GET /activities/?include_revisions=true', function() {
+    // Tests that include_revisions includes revisions
+    it('gets activities + revisions when include_revions=true',
+    function(done) {
+      done();
+    });
+
+    // Tests that include_revisions isn't always set to true
+    it('gets just activities when include_revions=false', function(done) {
+      done();
+    });
+
+    // Tests that include_revisions defaults to false
+    it('gets just activities when include_revisions is not set',
+    function(done) {
+      done();
+    });
+
+  });
+  describe('GET /activities/:slug?include_revisions=true', function() {
+
+    // Tests that include_revisions includes revisions
+    it('gets activity + revisions when include_revisions=true',
+    function(done) {
+      done();
+    });
+
+    // Tests that include_revisions isn't always set to true
+    it('gets just acitivity when include_revisions=false', function(done) {
+      done();
+    });
+
+    // Tests that include_revisions defaults to false
+    it('gets just acitivity when include_revisions is not set',
+    function(done) {
+      done();
+    });
+  });
 };
