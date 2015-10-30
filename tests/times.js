@@ -10,7 +10,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -20,12 +20,11 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -35,7 +34,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
           {
             duration: 12,
@@ -50,7 +48,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
-            id: 3,
           },
           {
             duration: 12,
@@ -65,7 +62,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
-            id: 4,
           },
         ];
 
@@ -86,7 +82,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -96,7 +92,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
           {
             duration: 12,
@@ -111,7 +106,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
-            id: 3,
           },
         ];
 
@@ -157,7 +151,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -167,12 +161,11 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -182,7 +175,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
         ];
 
@@ -228,7 +220,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -238,12 +230,11 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -253,7 +244,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
         ];
 
@@ -299,7 +289,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -309,7 +299,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
           {
             duration: 12,
@@ -324,7 +313,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
-            id: 3,
           },
           {
             duration: 12,
@@ -339,7 +327,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
-            id: 4,
           },
         ];
 
@@ -402,7 +389,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -412,12 +399,11 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -427,7 +413,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
           {
             duration: 12,
@@ -442,7 +427,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
-            id: 3,
           },
         ];
 
@@ -488,7 +472,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -498,7 +482,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
           {
             duration: 12,
@@ -513,7 +496,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
-            id: 3,
           },
         ];
 
@@ -561,7 +543,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -571,7 +553,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
           {
             duration: 12,
@@ -586,7 +567,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
-            id: 3,
           },
           {
             duration: 12,
@@ -601,7 +581,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
-            id: 4,
           },
         ];
 
@@ -630,7 +609,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -640,7 +619,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
         ];
 
@@ -670,7 +648,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -680,7 +658,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
         ];
 
@@ -719,7 +696,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
-            id: 3,
           },
         ];
 
@@ -748,7 +724,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -758,7 +734,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
         ];
 
@@ -788,7 +763,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -798,7 +773,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
         ];
 
@@ -827,7 +801,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -837,12 +811,11 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -852,7 +825,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
         ];
 
@@ -882,7 +854,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -892,7 +864,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
         ];
 
@@ -922,7 +893,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -932,7 +903,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
         ];
 
@@ -962,7 +932,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -972,12 +942,11 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -987,7 +956,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
         ];
 
@@ -1018,7 +986,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -1028,12 +996,11 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             revision: 1,
-            id: 1,
           },
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -1043,7 +1010,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
         ];
 
@@ -1072,7 +1038,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -1082,12 +1048,11 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -1097,7 +1062,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
           {
             duration: 12,
@@ -1112,7 +1076,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
-            id: 4,
           },
         ];
 
@@ -1152,7 +1115,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
-            id: 4,
           },
         ];
 
@@ -1182,7 +1144,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -1192,7 +1154,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
         ];
 
@@ -1223,7 +1184,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -1233,7 +1194,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
         ];
 
@@ -1257,15 +1217,18 @@ module.exports = function(expect, request, baseUrl) {
   'start=:start&end=:end', function() {
     it('returns all times for a user, project, and activity ' +
     'between two dates', function(done) {
-      request.get(baseUrl + 'times?user=tschuy&project=gwm&' +
-      'activity=docs' + '&start=2015-04-20&end=2015-04-22',
+      request.get(baseUrl + 'times?user=tschuy' +
+                            '&project=gwm' +
+                            '&activity=docs' +
+                            '&start=2015-04-20' +
+                            '&end=2015-04-22',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
         const expectedResults = [
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -1275,7 +1238,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
         ];
 
@@ -1307,7 +1269,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -1317,12 +1279,11 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
           {
             duration: 12,
             user: 'tschuy',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -1332,7 +1293,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            id: 2,
           },
         ];
 
@@ -1364,7 +1324,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -1374,7 +1334,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
         ];
 
@@ -1406,7 +1365,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             duration: 12,
             user: 'deanj',
-            project: ['gwm', 'ganeti-webmgr'],
+            project: ['ganeti-webmgr', 'gwm'],
             activities: ['docs', 'dev'],
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -1416,7 +1375,6 @@ module.exports = function(expect, request, baseUrl) {
             deleted_at: null,
             revision: 1,
             uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            id: 1,
           },
         ];
 
@@ -1441,14 +1399,13 @@ module.exports = function(expect, request, baseUrl) {
       {
         duration: 12,
         user: 'tschuy',
-        project: ['gwm', 'ganeti-webmgr'],
+        project: ['ganeti-webmgr', 'gwm'],
         activities: ['docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
         date_worked: '2015-04-20',
         created_at: '2015-04-20',
         updated_at: null,
-        id: 5,
         uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
         revision: 1,
         deleted_at: '2015-07-04',
@@ -1463,7 +1420,6 @@ module.exports = function(expect, request, baseUrl) {
         date_worked: '2015-04-22',
         created_at: '2015-04-22',
         updated_at: null,
-        id: 6,
         uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
         revision: 1,
         deleted_at: '2015-08-12',
@@ -1487,14 +1443,13 @@ module.exports = function(expect, request, baseUrl) {
     const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
-      id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
@@ -1557,7 +1512,6 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
-      id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
@@ -1620,7 +1574,6 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
-      id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
@@ -1681,7 +1634,6 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
-      id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
@@ -1735,14 +1687,13 @@ module.exports = function(expect, request, baseUrl) {
     const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
-      id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
@@ -1781,14 +1732,13 @@ module.exports = function(expect, request, baseUrl) {
     const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
-      id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
@@ -1820,7 +1770,6 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
-      id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
@@ -1845,14 +1794,13 @@ module.exports = function(expect, request, baseUrl) {
     const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
-      id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
@@ -1882,7 +1830,6 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
-      id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
@@ -1905,14 +1852,13 @@ module.exports = function(expect, request, baseUrl) {
     const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
-      id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
@@ -1942,7 +1888,6 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
-      id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
@@ -1973,7 +1918,6 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
-      id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
@@ -1997,14 +1941,13 @@ module.exports = function(expect, request, baseUrl) {
     const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
-      id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
@@ -2029,14 +1972,13 @@ module.exports = function(expect, request, baseUrl) {
     const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
-      id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
@@ -2061,14 +2003,13 @@ module.exports = function(expect, request, baseUrl) {
     const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
-      id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
@@ -2092,14 +2033,13 @@ module.exports = function(expect, request, baseUrl) {
     const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
-      id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
@@ -2129,7 +2069,6 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
-      id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
@@ -2159,7 +2098,6 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
-      id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
@@ -2190,7 +2128,6 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
-      id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
@@ -2213,14 +2150,13 @@ module.exports = function(expect, request, baseUrl) {
     const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
-      id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
@@ -2243,14 +2179,13 @@ module.exports = function(expect, request, baseUrl) {
     const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
-      id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
@@ -2273,14 +2208,13 @@ module.exports = function(expect, request, baseUrl) {
     const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
-      id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
@@ -2311,7 +2245,6 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
-      id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
@@ -2342,7 +2275,6 @@ module.exports = function(expect, request, baseUrl) {
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
-      id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
@@ -2370,7 +2302,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = {
           duration: 12,
           user: 'deanj',
-          project: ['gwm', 'ganeti-webmgr'],
+          project: ['ganeti-webmgr', 'gwm'],
           activities: ['docs', 'dev'],
           notes: '',
           issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -2380,7 +2312,6 @@ module.exports = function(expect, request, baseUrl) {
           deleted_at: null,
           uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
           revision: 1,
-          id: 1,
         };
 
         expect(err).to.be.a('null');
@@ -2436,14 +2367,13 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = {
           duration: 12,
           user: 'tschuy',
-          project: ['gwm', 'ganeti-webmgr'],
+          project: ['ganeti-webmgr', 'gwm'],
           activities: ['docs'],
           notes: '',
           issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
           date_worked: '2015-04-20',
           created_at: '2015-04-20',
           updated_at: null,
-          id: 5,
           uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
           revision: 1,
           deleted_at: '2015-07-04',
@@ -2513,7 +2443,7 @@ module.exports = function(expect, request, baseUrl) {
       {
         duration: 12,
         user: 'deanj',
-        project: ['gwm', 'ganeti-webmgr'],
+        project: ['ganeti-webmgr', 'gwm'],
         activities: ['docs', 'dev'],
         notes: '',
         issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -2523,12 +2453,11 @@ module.exports = function(expect, request, baseUrl) {
         deleted_at: null,
         uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
         revision: 1,
-        id: 1,
       },
       {
         duration: 12,
         user: 'tschuy',
-        project: ['gwm', 'ganeti-webmgr'],
+        project: ['ganeti-webmgr', 'gwm'],
         activities: ['docs'],
         notes: '',
         issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -2538,7 +2467,6 @@ module.exports = function(expect, request, baseUrl) {
         deleted_at: null,
         uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
         revision: 1,
-        id: 2,
       },
       {
         duration: 12,
@@ -2553,7 +2481,6 @@ module.exports = function(expect, request, baseUrl) {
         deleted_at: null,
         uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
         revision: 1,
-        id: 3,
       },
       {
         duration: 12,
@@ -2568,7 +2495,6 @@ module.exports = function(expect, request, baseUrl) {
         deleted_at: null,
         uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
         revision: 1,
-        id: 4,
       },
     ];
 
@@ -2589,7 +2515,6 @@ module.exports = function(expect, request, baseUrl) {
         expect(postErr).to.equal(null);
         expect(postRes.statusCode).to.equal(200);
 
-        time.id = postBody.id;
         time.uuid = postBody.uuid;
         time.revision = 1;
 
@@ -2601,7 +2526,7 @@ module.exports = function(expect, request, baseUrl) {
             {
               duration: 20,
               user: 'tschuy',
-              project: ['gwm', 'ganeti-webmgr'],
+              project: ['ganeti-webmgr', 'gwm'],
               activities: ['docs', 'dev'],
               notes: '',
               issue_uri: 'https://github.com/osuosl/gwm/issues/1',
@@ -2611,7 +2536,6 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               uuid: time.uuid,
               revision: 1,
-              id: 7,
             },
           ]);
 
@@ -3198,7 +3122,6 @@ module.exports = function(expect, request, baseUrl) {
         expect(postErr).to.equal(null);
         expect(postRes.statusCode).to.equal(200);
 
-        time.id = postBody.id;
         time.uuid = postBody.uuid;
         time.revision = 1;
         expect(postBody).to.deep.equal(time);
@@ -3209,7 +3132,7 @@ module.exports = function(expect, request, baseUrl) {
             {
               duration: 20,
               user: 'tschuy',
-              project: ['gwm', 'ganeti-webmgr'],
+              project: ['ganeti-webmgr', 'gwm'],
               activities: ['docs'],
               notes: '',
               issue_uri: null,
@@ -3219,7 +3142,6 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               uuid: time.uuid,
               revision: 1,
-              id: 7,
             },
           ]);
           expect(getErr).to.be.a('null');
@@ -3430,7 +3352,7 @@ module.exports = function(expect, request, baseUrl) {
     const postOriginalTime = {
       duration: 12,
       user: 'deanj',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       notes: '',
       activities: ['docs', 'dev'],
       issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -3442,7 +3364,7 @@ module.exports = function(expect, request, baseUrl) {
     const getOriginalTime = {
       duration: 12,
       user: 'deanj',
-      project: ['gwm', 'ganeti-webmgr'],
+      project: ['ganeti-webmgr', 'gwm'],
       notes: '',
       activities: ['docs', 'dev'],
       issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
@@ -3452,7 +3374,6 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: null,
       uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
       revision: 1,
-      id: 1,
     };
 
     // A completely patched version of the above time entry
@@ -3562,7 +3483,6 @@ module.exports = function(expect, request, baseUrl) {
           expect(body0.error).to.equal(undefined);
           expect(res0.statusCode).to.equal(200);
           const jsonBody = JSON.parse(body0);
-          expectedResults.id = jsonBody.id;
           expect(jsonBody).to.deep.equal(expectedResults);
           done();
         });
@@ -4266,6 +4186,237 @@ module.exports = function(expect, request, baseUrl) {
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
+    });
+  });
+
+  describe('GET /times/?include_revisions=true', function() {
+    const currentTime = new Date().toISOString().substring(0, 10);
+
+    const noParentsData = {
+      duration: 13,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'],
+      activities: ['docs'],
+      notes: 'forgot to add last hour',
+      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: currentTime,
+      deleted_at: null,
+      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+      revision: 2,
+    };
+
+    const withParentsData = {
+      duration: 13,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'],
+      activities: ['docs'],
+      notes: 'forgot to add last hour',
+      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: currentTime,
+      deleted_at: null,
+      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+      revision: 2,
+      parents: [
+        {
+          duration: 12,
+          user: 'tschuy',
+          project: ['ganeti-webmgr', 'gwm'],
+          activities: ['docs'],
+          notes: '',
+          issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+          date_worked: '2015-04-20',
+          created_at: '2015-04-20',
+          updated_at: null,
+          deleted_at: null,
+          uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+          revision: 1,
+        },
+      ],
+    };
+
+    beforeEach(function(done) {
+      function getPostObject(uri, obj) {
+        return {
+          uri: uri,
+          json: true,
+          body: {
+            auth: {
+              type: 'password',
+              username: 'tschuy',
+              password: 'password',
+            },
+            object: obj,
+          },
+        };
+      }
+
+      const time = 'e0326905-ef25-46a0-bacd-4391155aca4a';
+      const postTime = {
+        duration: 13,
+        notes: 'forgot to add last hour',
+      };
+      const postArg = getPostObject(baseUrl + 'times/' + time, postTime);
+
+      request.post(postArg, function() {
+        done();
+      });
+    });
+
+    // Tests that include_revisions includes revisions
+    it('gets times + revisions when include_revisions=true', function(done) {
+      request.get(baseUrl + 'times/?include_revisions=true',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(withParentsData);
+        done();
+      });
+    });
+
+    // Tests that include_revisions includes revisions
+    it('gets times + revisions when include_revisions is an empty parameter',
+    function(done) {
+      request.get(baseUrl + 'times/?include_revisions',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(withParentsData);
+        done();
+      });
+    });
+
+    // Tests that include_revisions isn't always set to true
+    it('gets just times when include_revisions=false', function(done) {
+      request.get(baseUrl + 'times/?include_revisions=false',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(noParentsData);
+        done();
+      });
+    });
+
+    // Tests that include_revisions defaults to false
+    it('gets just times when include_revisions is not set', function(done) {
+      request.get(baseUrl + 'times/',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(noParentsData);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times/:uuid?include_revisions=true', function() {
+    const currentTime = new Date().toISOString().substring(0, 10);
+    const time = 'e0326905-ef25-46a0-bacd-4391155aca4a';
+
+    const noParentsData = {
+      duration: 13,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'],
+      activities: ['docs'],
+      notes: 'forgot to add last hour',
+      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: currentTime,
+      deleted_at: null,
+      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+      revision: 2,
+    };
+
+    const withParentsData = {
+      duration: 13,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'],
+      activities: ['docs'],
+      notes: 'forgot to add last hour',
+      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: currentTime,
+      deleted_at: null,
+      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+      revision: 2,
+      parents: [
+        {
+          duration: 12,
+          user: 'tschuy',
+          project: ['ganeti-webmgr', 'gwm'],
+          activities: ['docs'],
+          notes: '',
+          issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+          date_worked: '2015-04-20',
+          created_at: '2015-04-20',
+          updated_at: null,
+          deleted_at: null,
+          uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+          revision: 1,
+        },
+      ],
+    };
+
+    beforeEach(function(done) {
+      function getPostObject(uri, obj) {
+        return {
+          uri: uri,
+          json: true,
+          body: {
+            auth: {
+              type: 'password',
+              username: 'tschuy',
+              password: 'password',
+            },
+            object: obj,
+          },
+        };
+      }
+
+      const postTime = {
+        duration: 13,
+        notes: 'forgot to add last hour',
+      };
+      const postArg = getPostObject(baseUrl + 'times/' + time, postTime);
+
+      request.post(postArg, function() {
+        done();
+      });
+    });
+
+    // Tests that include_revisions includes revisions
+    it('gets time + revisions when include_revisions=true', function(done) {
+      request.get(baseUrl + 'times/' + time + '?include_revisions=true',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.deep.equal(withParentsData);
+        expect(JSON.parse(body)).to.not.deep.equal(noParentsData);
+        done();
+      });
+    });
+
+    // Tests that include_revisions includes revisions
+    it('gets times + revisions when include_revisions is an empty parameter',
+    function(done) {
+      request.get(baseUrl + 'times/' + time + '?include_revisions',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.deep.equal(withParentsData);
+        expect(JSON.parse(body)).to.not.deep.equal(noParentsData);
+        done();
+      });
+    });
+
+    // Tests that include_revisions isn't always set to true
+    it('gets just time when include_revisions=false', function(done) {
+      request.get(baseUrl + 'times/' + time + '?include_revisions=false',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.deep.equal(noParentsData);
+        done();
+      });
+    });
+
+    // Tests that include_revisions defaults to false
+    it('gets just time when include_revisions is not set', function(done) {
+      request.get(baseUrl + 'times/' + time, function(err, res, body) {
+        expect(JSON.parse(body)).to.deep.equal(noParentsData);
+        done();
+      });
     });
   });
 

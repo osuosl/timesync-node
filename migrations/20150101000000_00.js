@@ -16,6 +16,7 @@ exports.up = function(knex) {
     table.bigInteger('deleted_at').defaultTo(null);
     table.uuid('uuid');
     table.integer('revision').defaultTo(1);
+    table.boolean('newest').defaultTo(true);
   }).createTable('times', function(table) {
     table.increments('id').primary();
     table.integer('duration').notNullable();
@@ -29,6 +30,7 @@ exports.up = function(knex) {
     table.bigInteger('deleted_at').defaultTo(null);
     table.uuid('uuid');
     table.integer('revision').defaultTo(1);
+    table.boolean('newest').defaultTo(true);
   }).createTable('activities', function(table) {
     table.increments('id').primary();
     table.string('name').notNullable();
@@ -38,6 +40,7 @@ exports.up = function(knex) {
     table.bigInteger('deleted_at').defaultTo(null);
     table.uuid('uuid');
     table.integer('revision').defaultTo(1);
+    table.boolean('newest').defaultTo(true);
   }).createTable('projectslugs', function(table) {
     table.increments('id').primary();
     table.string('name').unique().notNullable();
