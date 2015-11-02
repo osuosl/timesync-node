@@ -1247,39 +1247,239 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('GET /projects/?include_revisions=true', function() {
+    const currentTime = new Date().toISOString().substring(0, 10);
+
+    const noParentsData = {
+      'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
+      'name': 'GANETI WEB MANAGER',
+      'owner': 'tschuy',
+      'id': 5,
+      'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      'revision': 2,
+      'deleted_at': null,
+      'updated_at': currentTime,
+      'created_at': '2014-01-01',
+      'slugs': [
+        'gwm',
+        'ganeti-webmgr',
+      ],
+    };
+
+    const withParentsData = {
+      'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
+      'name': 'GANETI WEB MANAGER',
+      'owner': 'tschuy',
+      'id': 5,
+      'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      'revision': 2,
+      'deleted_at': null,
+      'updated_at': currentTime,
+      'created_at': '2014-01-01',
+      'slugs': [
+        'gwm',
+        'ganeti-webmgr',
+      ],
+      'parents': [
+        {
+          'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
+          'name': 'Ganeti Web Manager',
+          'owner': 'tschuy',
+          'id': 1,
+          'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
+          'revision': 1,
+          'deleted_at': null,
+          'updated_at': null,
+          'created_at': '2014-01-01',
+          'slugs': [
+            'gwm',
+            'ganeti-webmgr',
+          ],
+        },
+      ],
+    };
+
+    beforeEach(function(done) {
+      function getPostObject(uri, obj) {
+        return {
+          uri: uri,
+          json: true,
+          body: {
+            auth: {
+              type: 'password',
+              username: 'tschuy',
+              password: 'password',
+            },
+            object: obj,
+          },
+        };
+      }
+
+      const project = 'gwm';
+      const postProject = {
+        name: 'GANETI WEB MANAGER',
+      };
+      const postArg = getPostObject(baseUrl + 'projects/' + project,
+                      postProject);
+
+      request.post(postArg, function() {
+        done();
+      });
+    });
+
+    // Tests that include_revisions=true includes revisions
+    it('gets projects + revisions when include_revions=true', function(done) {
+      request.get(baseUrl + 'projects/?include_revisions=true',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(withParentsData);
+        expect(JSON.parse(body)).to.not.include(noParentsData);
+        done();
+      });
+    });
 
     // Tests that include_revisions includes revisions
-    it('gets projects + revisions when include_revions=true', function(done) {
-      done();
+    it('gets projects + revisions when include_revions is an empty parameter',
+    function(done) {
+      request.get(baseUrl + 'projects/?include_revisions',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(withParentsData);
+        expect(JSON.parse(body)).to.not.include(noParentsData);
+        done();
+      });
     });
 
     // Tests that include_revisions isn't always set to true
     it('gets just projects when include_revions=false', function(done) {
-      done();
+      request.get(baseUrl + 'projects/?include_revisions=false',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(noParentsData);
+        done();
+      });
     });
 
     // Tests that include_revisions defaults to false
     it('gets just projects when include_revisions is not set', function(done) {
-      done();
+      request.get(baseUrl + 'projects/', function(err, res, body) {
+        expect(JSON.parse(body)).to.include(noParentsData);
+        done();
+      });
     });
   });
 
   describe('GET /projects/:uuid?include_revisions=true', function() {
+    const currentTime = new Date().toISOString().substring(0, 10);
+    const project = 'gwm';
 
-    // Tests that include_revisions includes revisions
+    const noParentsData = {
+      'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
+      'name': 'GANETI WEB MANAGER',
+      'owner': 'tschuy',
+      'id': 5,
+      'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      'revision': 2,
+      'deleted_at': null,
+      'updated_at': currentTime,
+      'created_at': '2014-01-01',
+      'slugs': [
+        'gwm',
+        'ganeti-webmgr',
+      ],
+    };
+
+    const withParentsData = {
+      'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
+      'name': 'GANETI WEB MANAGER',
+      'owner': 'tschuy',
+      'id': 5,
+      'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      'revision': 2,
+      'deleted_at': null,
+      'updated_at': currentTime,
+      'created_at': '2014-01-01',
+      'slugs': [
+        'gwm',
+        'ganeti-webmgr',
+      ],
+      'parents': [
+        {
+          'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
+          'name': 'Ganeti Web Manager',
+          'owner': 'tschuy',
+          'id': 1,
+          'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
+          'revision': 1,
+          'deleted_at': null,
+          'updated_at': null,
+          'created_at': '2014-01-01',
+          'slugs': [
+            'gwm',
+            'ganeti-webmgr',
+          ],
+        },
+      ],
+    };
+
+    beforeEach(function(done) {
+      function getPostObject(uri, obj) {
+        return {
+          uri: uri,
+          json: true,
+          body: {
+            auth: {
+              type: 'password',
+              username: 'tschuy',
+              password: 'password',
+            },
+            object: obj,
+          },
+        };
+      }
+
+      const postProject = {
+        name: 'GANETI WEB MANAGER',
+      };
+      const postArg = getPostObject(baseUrl + 'projects/' + project,
+                      postProject);
+
+      request.post(postArg, function() {
+        done();
+      });
+    });
+
+    // Tests that include_revisions=true includes revisions
     it('gets project + revisions when include_revisions=true',
     function(done) {
-      done();
+      request.get(baseUrl + 'projects/' + project + '?include_revisions=true',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.deep.equal(withParentsData);
+        done();
+      });
+    });
+
+    // Tests that include_revisions includes revisions
+    it('gets project + revisions when include_revisions',
+    function(done) {
+      request.get(baseUrl + 'projects/' + project + '?include_revisions',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.deep.equal(withParentsData);
+        done();
+      });
     });
 
     // Tests that include_revisions isn't always set to true
     it('gets just project when include_revisions=false', function(done) {
-      done();
+      request.get(baseUrl + 'projects/' + project + '?include_revisions=false',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.deep.equal(noParentsData);
+        done();
+      });
     });
 
     // Tests that include_revisions defaults to false
     it('gets just project when include_revisions is not set', function(done) {
-      done();
+      request.get(baseUrl + 'projects/' + project, function(err, res, body) {
+        expect(JSON.parse(body)).to.deep.equal(noParentsData);
+        done();
+      });
     });
   });
 };

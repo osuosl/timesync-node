@@ -891,41 +891,216 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('GET /activities/?include_revisions=true', function() {
-    // Tests that include_revisions includes revisions
-    it('gets activities + revisions when include_revions=true',
+    const currentTime = new Date().toISOString().substring(0, 10);
+
+    const noParentsData = {
+      'name': 'Documentationification',
+      'slug': 'docs',
+      'id': 5,
+      'uuid': '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+      'revision': 2,
+      'deleted_at': null,
+      'updated_at': currentTime,
+      'created_at': '2014-01-01',
+    };
+
+    const withParentsData = {
+      'name': 'Documentationification',
+      'slug': 'docs',
+      'id': 5,
+      'uuid': '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+      'revision': 2,
+      'deleted_at': null,
+      'updated_at': currentTime,
+      'created_at': '2014-01-01',
+      'parents': [
+        {
+          'name': 'Documentation',
+          'slug': 'docs',
+          'id': 1,
+          'uuid': '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+          'revision': 1,
+          'deleted_at': null,
+          'updated_at': null,
+          'created_at': '2014-01-01',
+        },
+      ],
+    };
+
+    beforeEach(function(done) {
+      function getPostObject(uri, obj) {
+        return {
+          uri: uri,
+          json: true,
+          body: {
+            auth: {
+              type: 'password',
+              username: 'tschuy',
+              password: 'password',
+            },
+            object: obj,
+          },
+        };
+      }
+
+      const activity = 'docs';
+      const postActivity = {
+        'name': 'Documentationification',
+      };
+      const postArg = getPostObject(baseUrl + 'activities/' + activity,
+                      postActivity);
+
+      request.post(postArg, function() {
+        done();
+      });
+    });
+
+    // Tests that `include_revisions=true` includes revisions
+    it('gets activities + revisions when include_revions=true is passed',
     function(done) {
-      done();
+      request.get(baseUrl + 'activities/?include_revisions=true',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(withParentsData);
+        expect(JSON.parse(body)).to.not.include(noParentsData);
+        done();
+      });
+    });
+
+    // Tests that `include_revisions` includes revisions
+    it('gets activities + revisions when include_revions is passed',
+    function(done) {
+      request.get(baseUrl + 'activities/?include_revisions',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(withParentsData);
+        expect(JSON.parse(body)).to.not.include(noParentsData);
+        done();
+      });
     });
 
     // Tests that include_revisions isn't always set to true
     it('gets just activities when include_revions=false', function(done) {
-      done();
+      request.get(baseUrl + 'activities/?include_revisions=false',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(noParentsData);
+        done();
+      });
     });
 
     // Tests that include_revisions defaults to false
     it('gets just activities when include_revisions is not set',
     function(done) {
-      done();
+      request.get(baseUrl + 'activities/',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(noParentsData);
+        done();
+      });
+    });
+  });
+
+  describe('GET /activities/:slug?include_revisions=true', function() {
+    const currentTime = new Date().toISOString().substring(0, 10);
+    const activity = 'docs';
+
+    const noParentsData = {
+      'name': 'Documentationification',
+      'slug': 'docs',
+      'id': 5,
+      'uuid': '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+      'revision': 2,
+      'deleted_at': null,
+      'updated_at': currentTime,
+      'created_at': '2014-01-01',
+    };
+
+    const withParentsData = {
+      'name': 'Documentationification',
+      'slug': 'docs',
+      'id': 5,
+      'uuid': '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+      'revision': 2,
+      'deleted_at': null,
+      'updated_at': currentTime,
+      'created_at': '2014-01-01',
+      'parents': [
+        {
+          'name': 'Documentation',
+          'slug': 'docs',
+          'id': 1,
+          'uuid': '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+          'revision': 1,
+          'deleted_at': null,
+          'updated_at': null,
+          'created_at': '2014-01-01',
+        },
+      ],
+    };
+
+    beforeEach(function(done) {
+      function getPostObject(uri, obj) {
+        return {
+          uri: uri,
+          json: true,
+          body: {
+            auth: {
+              type: 'password',
+              username: 'tschuy',
+              password: 'password',
+            },
+            object: obj,
+          },
+        };
+      }
+
+      const postActivity = {
+        'name': 'Documentationification',
+      };
+      const postArg = getPostObject(baseUrl + 'activities/' + activity,
+                      postActivity);
+
+      request.post(postArg, function() {
+        done();
+      });
     });
 
-  });
-  describe('GET /activities/:slug?include_revisions=true', function() {
+    // Tests that include_revisions=true includes revisions
+    it('gets activity + revisions when include_revisions=true is passed',
+    function(done) {
+      request.get(baseUrl + 'activities/' + activity +
+      '?include_revisions=true', function(err, res, body) {
+        expect(JSON.parse(body)).to.include(withParentsData);
+        expect(JSON.parse(body)).to.not.include(noParentsData);
+        done();
+      });
+    });
 
     // Tests that include_revisions includes revisions
-    it('gets activity + revisions when include_revisions=true',
+    it('gets activity + revisions when include_revisions is passed',
     function(done) {
-      done();
+      request.get(baseUrl + 'activities/' + activity + '?include_revisions',
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(withParentsData);
+        expect(JSON.parse(body)).to.not.include(noParentsData);
+        done();
+      });
     });
 
     // Tests that include_revisions isn't always set to true
     it('gets just acitivity when include_revisions=false', function(done) {
-      done();
+      request.get(baseUrl + 'activities/' + activity +
+      '?include_revisions=false', function(err, res, body) {
+        expect(JSON.parse(body)).to.include(noParentsData);
+        done();
+      });
     });
 
     // Tests that include_revisions defaults to false
     it('gets just acitivity when include_revisions is not set',
     function(done) {
-      done();
+      request.get(baseUrl + 'activities/' + activity,
+      function(err, res, body) {
+        expect(JSON.parse(body)).to.include(noParentsData);
+        done();
+      });
     });
   });
 };
