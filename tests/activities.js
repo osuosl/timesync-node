@@ -395,7 +395,7 @@ module.exports = function(expect, request, baseUrl) {
           },
           {
             name: 'Code Review',
-            slug: 'revuew',
+            slug: 'review',
             deleted_at: '2014-02-01',
             updated_at: null,
             created_at: '2014-01-01',
@@ -463,7 +463,7 @@ module.exports = function(expect, request, baseUrl) {
           },
           {
             name: 'Code Review',
-            slug: 'revuew',
+            slug: 'review',
             deleted_at: '2014-02-01',
             updated_at: null,
             created_at: '2014-01-01',
