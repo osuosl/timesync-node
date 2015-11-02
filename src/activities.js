@@ -8,7 +8,7 @@ module.exports = function(app) {
 
   app.get(app.get('version') + '/activities', function(req, res) {
     const knex = app.get('knex');
-    knex('activities').then(function(activities) {
+    knex('activities').whereNull('deleted_at').then(function(activities) {
       if (activities.length === 0) {
         return res.send([]);
       }

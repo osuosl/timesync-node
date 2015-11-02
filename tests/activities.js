@@ -570,7 +570,7 @@ module.exports = function(expect, request, baseUrl) {
         expectedResult.name = patchedActivity.name;
         expectedResult.slug = patchedActivity.slug;
         expectedResult.revision = 2;
-        expectedResult.id = 5;
+        expectedResult.id = 6;
         expectedResult.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResult);
@@ -604,7 +604,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.name = patchedName.name;
         expectedResult.revision = 2;
-        expectedResult.id = 5;
+        expectedResult.id = 6;
         expectedResult.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResult);
@@ -637,7 +637,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.slug = patchedSlug.slug;
         expectedResult.revision = 2;
-        expectedResult.id = 5;
+        expectedResult.id = 6;
         expectedResult.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResult);
@@ -888,7 +888,7 @@ module.exports = function(expect, request, baseUrl) {
               created_at: new Date().toISOString().substring(0, 10),
               uuid: newActivityItem.uuid,
               revision: 1,
-              id: 5,
+              id: 6,
             },
           ]);
         } else {
