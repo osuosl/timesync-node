@@ -347,6 +347,90 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
+  ///*
+  describe('GET /activities?include_deleted=:bool', function() {
+    it('returns a list of all active and deleted activities', function(done) {
+      request.get(baseUrl + 'activities?include_deleted=true',
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
+          {
+            name: 'Documentation',
+            slug: 'docs',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+            revision: 1,
+            id: 1,
+          },
+          {
+            name: 'Development',
+            slug: 'dev',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
+            revision: 1,
+            id: 2,
+          },
+          {
+            name: 'Systems',
+            slug: 'sys',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
+            revision: 1,
+            id: 3,
+          },
+          {
+            name: 'Development',
+            slug: 'dev',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+            revision: 1,
+            id: 4,
+          },
+        ];
+
+      });
+    });
+
+    // Refer to API Docs: Bad Query Value - Should this just ignore the
+    // activityslug parameter and return a list of activities?
+    it('returns an error if user specifies with an activityslug parameter',
+    function(done) {
+      request.get(baseUrl +
+      'activities?activity=review&include_deleted=true',
+      function(getErr, getRes, getBody) {
+
+      });
+    });
+
+    it('returns an error if user specifies with /activities/:slug endpoint',
+    function(done) {
+      request.get(baseUrl + 'activities/review?include_deleted=true',
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        
+        // Would this require a different error?
+        const expectedResult = {
+          status: 404,
+          error: 'Object not found',
+          text: 'Nonexistent activity'
+        };
+
+        expect(jsonBody).to.deep.equal(expectedResult);
+        expect(getRes.statusCode).to.equal(404);
+        done();
+      });
+    });
+  });
+  //*/
+
   describe('POST /activities/:slug', function() {
     const patchedActivity = {
       name: 'TimeSync Documentation',
