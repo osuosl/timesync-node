@@ -30,7 +30,7 @@ module.exports = function(app) {
     }
 
     userQuery.then(function(userObj) {
-      let timesQ = knex('times');
+      let timesQ = knex('times').where({deleted_at: null});
       if (usersList !== undefined) {
         const usernames = userObj.map(function(user) {
           return user.username;
@@ -328,7 +328,7 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    knex('times').first().where({uuid: req.params.uuid})
+    knex('times').first().where({uuid: req.params.uuid, deleted_at: null})
     .orderBy('revision', 'desc').then(function(time) {
       // get the matching time entry
       if (time) {
@@ -786,6 +786,48 @@ module.exports = function(app) {
         });
       }).catch(function() {
         const err = errors.errorInvalidForeignKey('time', 'user');
+        return res.status(err.status).send(err);
+      });
+    }).catch(function(error) {
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
+    });
+  });
+
+  app.delete(app.get('version') + '/times/:uuid', function(req, res) {
+    const knex = app.get('knex');
+    if (!helpers.validateUUID(req.params.uuid)) {
+      const err = errors.errorInvalidIdentifier('uuid', req.params.uuid);
+      return res.status(err.status).send(err);
+    }
+
+    knex('times').select('id').where('uuid', req.params.uuid).first()
+    .then(function(time) {
+      if (!time) {
+        const err = errors.errorObjectNotFound('uuid', req.params.uuid);
+        return res.status(err.status).send(err);
+      }
+
+      knex.transaction(function(trx) {
+        trx('times').where('uuid', req.params.uuid).first()
+        .orderBy('revision', 'desc')
+        .update({'deleted_at': Date.now()})
+        .then(function(numObj) {
+          if (numObj >= 1) {
+            trx.commit();
+            return res.send();
+          }
+
+          trx.rollback();
+          const err = errors.errorObjectNotFound('uuid', req.params.uuid);
+          return res.status(err.status).send(err);
+        }).catch(function(error) {
+          trx.rollback();
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
+        });
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
     }).catch(function(error) {
