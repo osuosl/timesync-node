@@ -3357,7 +3357,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Tests that include_revisions includes revisions
-    it('gets times + revisions when include_revions=true', function(done) {
+    it('gets times + revisions when include_revisions=true', function(done) {
       request.get(baseUrl + 'times/?include_revisions=true',
       function(err, res, body) {
         expect(JSON.parse(body)).to.include(withParentsData);
@@ -3366,7 +3366,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Tests that include_revisions includes revisions
-    it('gets times + revisions when include_revions is an empty parameter',
+    it('gets times + revisions when include_revisions is an empty parameter',
     function(done) {
       request.get(baseUrl + 'times/?include_revisions',
       function(err, res, body) {
@@ -3376,7 +3376,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Tests that include_revisions isn't always set to true
-    it('gets just times when include_revions=false', function(done) {
+    it('gets just times when include_revisions=false', function(done) {
       request.get(baseUrl + 'times/?include_revisions=false',
       function(err, res, body) {
         expect(JSON.parse(body)).to.include(noParentsData);
@@ -3485,7 +3485,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Tests that include_revisions includes revisions
-    it('gets times + revisions when include_revions is an empty parameter',
+    it('gets times + revisions when include_revisions is an empty parameter',
     function(done) {
       request.get(baseUrl + 'times/' + time + '?include_revisions',
       function(err, res, body) {

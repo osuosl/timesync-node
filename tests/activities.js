@@ -956,7 +956,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Tests that `include_revisions=true` includes revisions
-    it('gets activities + revisions when include_revions=true is passed',
+    it('gets activities + revisions when include_revisions=true is passed',
     function(done) {
       request.get(baseUrl + 'activities/?include_revisions=true',
       function(err, res, body) {
@@ -967,7 +967,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Tests that `include_revisions` includes revisions
-    it('gets activities + revisions when include_revions is passed',
+    it('gets activities + revisions when include_revisions is passed',
     function(done) {
       request.get(baseUrl + 'activities/?include_revisions',
       function(err, res, body) {
@@ -978,7 +978,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Tests that include_revisions isn't always set to true
-    it('gets just activities when include_revions=false', function(done) {
+    it('gets just activities when include_revisions=false', function(done) {
       request.get(baseUrl + 'activities/?include_revisions=false',
       function(err, res, body) {
         expect(JSON.parse(body)).to.include(noParentsData);
