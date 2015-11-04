@@ -43,7 +43,7 @@
     },
     {
       "name":"Code Review",
-      "slug":"review",
+      "slug": null,
       "id": 5,
       "uuid": "384e8177-2123-4578-8201-031199a3a58f",
       "revision": 1,

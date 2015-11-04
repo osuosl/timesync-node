@@ -384,8 +384,8 @@ module.exports = function(expect, request, baseUrl) {
             id: 3,
           },
           {
-            name: 'Development',
-            slug: 'dev',
+            name: 'Meetings',
+            slug: 'meeting',
             deleted_at: null,
             updated_at: null,
             created_at: '2014-01-01',
@@ -395,8 +395,8 @@ module.exports = function(expect, request, baseUrl) {
           },
           {
             name: 'Code Review',
-            slug: 'review',
-            deleted_at: '2014-02-01',
+            slug: null,
+            deleted_at: '2014-03-01',
             updated_at: null,
             created_at: '2014-01-01',
             uuid: '384e8177-2123-4578-8201-031199a3a58f',
@@ -452,8 +452,8 @@ module.exports = function(expect, request, baseUrl) {
             id: 3,
           },
           {
-            name: 'Development',
-            slug: 'dev',
+            name: 'Meetings',
+            slug: 'meeting',
             deleted_at: null,
             updated_at: null,
             created_at: '2014-01-01',
@@ -463,8 +463,8 @@ module.exports = function(expect, request, baseUrl) {
           },
           {
             name: 'Code Review',
-            slug: 'review',
-            deleted_at: '2014-02-01',
+            slug: null,
+            deleted_at: '2014-03-01',
             updated_at: null,
             created_at: '2014-01-01',
             uuid: '384e8177-2123-4578-8201-031199a3a58f',
@@ -485,7 +485,6 @@ module.exports = function(expect, request, baseUrl) {
       request.get(baseUrl + 'activities/review?include_deleted=true',
       function(getErr, getRes, getBody) {
         const jsonBody = JSON.parse(getBody);
-          // Would this require a different error?
         const expectedResult = {
           status: 404,
           error: 'Object not found',
