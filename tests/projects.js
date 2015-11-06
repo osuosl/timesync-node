@@ -136,7 +136,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             uri: 'https://github.com/osuosl/chiliproject',
             name: 'Chili Project',
-            slugs: null,
+            slugs: [],
             owner: 'MaraJade',
             deleted_at: '2014-01-01',
             updated_at: null,
@@ -212,7 +212,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             uri: 'https://github.com/osuosl/chiliproject',
             name: 'Chili Project',
-            slugs: null,
+            slugs: [],
             owner: 'MaraJade',
             deleted_at: '2014-01-01',
             updated_at: null,
