@@ -155,6 +155,11 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    /* Tests that a nonexistent query parameter is ignored
+     *
+     * Users cannot query for a project by its slug in a querystring parameter.
+     * But querying for deleted projects is similar to querying for times, so
+     * the mistake may be relatively easy to make. Hence, the following. */
     it('ignores extra param if user specifies query with a projectslug',
     function(done) {
       request.get(baseUrl + 'projects?project=chili&include_deleted=true',
@@ -231,6 +236,8 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    // Soft-deleted projects don't have any associated slugs, which makes the
+    // following query invalid
     it('returns an error if user specifies with /projects/:slug endpoint',
     function(done) {
       request.get(baseUrl + 'projects/chili?include_deleted=true',
