@@ -347,6 +347,157 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
+  describe('GET /activities?include_deleted=:bool', function() {
+    it('returns a list of all active and deleted activities', function(done) {
+      request.get(baseUrl + 'activities?include_deleted=true',
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
+          {
+            name: 'Documentation',
+            slug: 'docs',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+            revision: 1,
+            id: 1,
+          },
+          {
+            name: 'Development',
+            slug: 'dev',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
+            revision: 1,
+            id: 2,
+          },
+          {
+            name: 'Systems',
+            slug: 'sys',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
+            revision: 1,
+            id: 3,
+          },
+          {
+            name: 'Meetings',
+            slug: 'meeting',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+            revision: 1,
+            id: 4,
+          },
+          {
+            name: 'Code Review',
+            slug: null,
+            deleted_at: '2014-03-01',
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '384e8177-2123-4578-8201-031199a3a58f',
+            revision: 1,
+            id: 5,
+          },
+        ];
+
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.equal(expectedResults);
+        done();
+      });
+    });
+
+    // Refer to API Docs: Bad Query Value - The activityslug parameter is
+    // ignored, but since 'include_deleted=true', return the list of activities
+    it('ignores extra param if user specifies query with an activityslug',
+    function(done) {
+      request.get(baseUrl +
+      'activities?activity=review&include_deleted=true',
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResults = [
+          {
+            name: 'Documentation',
+            slug: 'docs',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+            revision: 1,
+            id: 1,
+          },
+          {
+            name: 'Development',
+            slug: 'dev',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
+            revision: 1,
+            id: 2,
+          },
+          {
+            name: 'Systems',
+            slug: 'sys',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
+            revision: 1,
+            id: 3,
+          },
+          {
+            name: 'Meetings',
+            slug: 'meeting',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+            revision: 1,
+            id: 4,
+          },
+          {
+            name: 'Code Review',
+            slug: null,
+            deleted_at: '2014-03-01',
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '384e8177-2123-4578-8201-031199a3a58f',
+            revision: 1,
+            id: 5,
+          },
+        ];
+
+        expect(getErr).to.equal(null);
+        expect(getRes.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.equal(expectedResults);
+        done();
+      });
+    });
+
+    it('returns an error if user specifies with /activities/:slug endpoint',
+    function(done) {
+      request.get(baseUrl + 'activities/review?include_deleted=true',
+      function(getErr, getRes, getBody) {
+        const jsonBody = JSON.parse(getBody);
+        const expectedResult = {
+          status: 404,
+          error: 'Object not found',
+          text: 'Nonexistent activity',
+        };
+
+        expect(jsonBody).to.deep.equal(expectedResult);
+        expect(getRes.statusCode).to.equal(404);
+        done();
+      });
+    });
+  });
+
   describe('POST /activities/:slug', function() {
     const patchedActivity = {
       name: 'TimeSync Documentation',
@@ -418,7 +569,7 @@ module.exports = function(expect, request, baseUrl) {
         expectedResult.name = patchedActivity.name;
         expectedResult.slug = patchedActivity.slug;
         expectedResult.revision = 2;
-        expectedResult.id = 5;
+        expectedResult.id = 6;
         expectedResult.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResult);
@@ -452,7 +603,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.name = patchedName.name;
         expectedResult.revision = 2;
-        expectedResult.id = 5;
+        expectedResult.id = 6;
         expectedResult.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResult);
@@ -485,7 +636,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = copyJsonObject(originalActivity);
         expectedResult.slug = patchedSlug.slug;
         expectedResult.revision = 2;
-        expectedResult.id = 5;
+        expectedResult.id = 6;
         expectedResult.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResult);
@@ -736,7 +887,7 @@ module.exports = function(expect, request, baseUrl) {
               created_at: new Date().toISOString().substring(0, 10),
               uuid: newActivityItem.uuid,
               revision: 1,
-              id: 5,
+              id: 6,
             },
           ]);
         } else {

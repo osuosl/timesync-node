@@ -8,7 +8,18 @@ module.exports = function(app) {
 
   app.get(app.get('version') + '/activities', function(req, res) {
     const knex = app.get('knex');
-    knex('activities').then(function(activities) {
+    let activitiesQ;
+
+    /* Only query for activities that have not been soft-deleted
+     * If the include_deleted param is true, query for all activities
+     * regardless of 'deleted' status */
+    if (req.query.include_deleted) {
+      activitiesQ = knex('activities');
+    } else {
+      activitiesQ = knex('activities').whereNull('deleted_at');
+    }
+
+    activitiesQ.then(function(activities) {
       if (activities.length === 0) {
         return res.send([]);
       }
