@@ -4822,17 +4822,21 @@ module.exports = function(expect, request, baseUrl) {
         text: 'Nonexistent time',
       };
 
-      request.del(baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
-      function(err, res, body) {
-        expect(body.error).to.equal(undefined);
-        expect(res.statusCode).to.equal(200);
+      getAPIToken().then(function(token) {
+        request.del(baseUrl +
+        'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
+        function(err, res, body) {
+          expect(body.error).to.equal(undefined);
+          expect(res.statusCode).to.equal(200);
 
-        request.get(baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
-        function(getErr, getRes, getBody) {
-          // TODO: GET should only return 200 when ?revisions=true is passed.
-          expect(getRes.statusCode).to.equal(404);
-          expect(JSON.parse(getBody)).to.deep.equal(expectedResults);
-          done();
+          request.get(baseUrl +
+          'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
+          function(getErr, getRes, getBody) {
+            // TODO: GET should only return 200 when ?revisions=true is passed.
+            expect(getRes.statusCode).to.equal(404);
+            expect(JSON.parse(getBody)).to.deep.equal(expectedResults);
+            done();
+          });
         });
       });
     });
@@ -4843,11 +4847,14 @@ module.exports = function(expect, request, baseUrl) {
         error: 'Object not found',
         text: 'Nonexistent uuid',
       };
-      request.del(baseUrl + 'times/66666666-6666-6666-6666-666666666666',
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.deep.equal(expectedError);
-        expect(res.statusCode).to.equal(404);
-        done();
+      getAPIToken().then(function(token) {
+        request.del(baseUrl +
+        'times/66666666-6666-6666-6666-666666666666?token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(404);
+          done();
+        });
       });
     });
 
@@ -4858,10 +4865,13 @@ module.exports = function(expect, request, baseUrl) {
         'text': 'Expected uuid but received myuuid',
         'values': ['myuuid'],
       };
-      request.del(baseUrl + 'times/myuuid', function(err, res, body) {
-        expect(JSON.parse(body)).to.deep.equal(expectedError);
-        expect(res.statusCode).to.equal(400);
-        done();
+      getAPIToken().then(function(token) {
+        request.del(baseUrl + 'times/myuuid?token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(400);
+          done();
+        });
       });
     });
   });
