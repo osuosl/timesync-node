@@ -4,7 +4,7 @@ const requestBuilder = require('request');
 const expect = require('chai').expect;
 const SqlFixtures = require('sql-fixtures');
 
-const request = requestBuilder.defaults({encoding: null, jar: true});
+const request = requestBuilder.defaults({encoding: null});
 const testData = require('./fixtures/test_data');
 const knexfile = require('../knexfile');
 const knex = require('knex')(knexfile[process.env.NODE_ENV]);
