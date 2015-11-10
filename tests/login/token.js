@@ -20,7 +20,6 @@ module.exports = function(expect, request, baseUrl) {
       };
 
       const now = Date.now();
-      const j = request.jar();
       request.post(requestOptions, function(err, res, body) {
         expect(err).to.be.a('null');
         expect(res.statusCode).to.equal(200);
@@ -46,12 +45,6 @@ module.exports = function(expect, request, baseUrl) {
           const token = encoded + '.' + signature;
 
           expect(body).to.equal(token);
-
-          const cookies = j.getCookies(baseUrl + 'login');
-          expect(cookies.length).to.equal(1);
-
-          expect(cookies[0].key).to.equal('token');
-          expect(cookies[0].value).to.equal(token);
         });
         done();
       });

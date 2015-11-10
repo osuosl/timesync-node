@@ -4,7 +4,6 @@
 // Library requirements
 const express = require('express');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
 const knexfile = require('../knexfile');
 const db = process.env.NODE_ENV || 'development';
 let auth;
@@ -31,7 +30,6 @@ const knex = require('knex')(knexfile[db]);
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser(process.env.SECRET_KEY));
 app.set('knex', knex);
 
 // Set API version prefix
