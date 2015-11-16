@@ -1085,7 +1085,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Tests that include_revisions isn't always set to true
-    it('gets just acitivity when include_revisions=false', function(done) {
+    it('gets just activity when include_revisions=false', function(done) {
       request.get(baseUrl + 'activities/' + activity +
       '?include_revisions=false', function(err, res, body) {
         expect(JSON.parse(body)).to.include(noParentsData);
@@ -1094,7 +1094,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Tests that include_revisions defaults to false
-    it('gets just acitivity when include_revisions is not set',
+    it('gets just activity when include_revisions is not set',
     function(done) {
       request.get(baseUrl + 'activities/' + activity,
       function(err, res, body) {
