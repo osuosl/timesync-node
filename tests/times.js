@@ -1436,6 +1436,229 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
+  describe('GET /times?include_deleted=true', function() {
+    // have at least one other time entry
+    // with different project, activity, and user
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['test'],
+      notes: '',
+      issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-05-01',
+      created_at: '2015-05-01',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-05-02',
+    };
+
+    it('it returns a list of all active and deleted times', function(done) {
+      request.get(baseUrl + 'times?include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['test'],
+      notes: '',
+      issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48', 
+      date_worked: '2015-05-01',
+      created_at: '2015-05-01',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-05-02',
+    };
+
+    it('returns all active and deleted times for the specified user when ' +
+    'include_deleted=true', function(done) {
+      request.get(baseUrl + 'times?user=tschuy&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+
+    // If include_deleted=true, return a list of all active and deleted times
+    // ignore the user param if the specified user has no times
+    it('fails if given a nonexistent user',
+    function(done) {
+      request.get(baseUrl + 'times?user=notauser&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter user contained invalid value notauser',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+
+    it('fails when given an invalid user', function(done) {
+      request.get(baseUrl + 'times?user=wh4t3v3n.isTh%s&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter user contained invalid value wh4t3v3n.isTh%s',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activityslug&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['test'],
+      notes: '',
+      issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-05-01',
+      created_at: '2015-05-01',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-05-02',
+    };
+
+    it('returns all active and deleted times for the specified activity ' +
+    'when include_deleted=true', function(done) {
+      request.get(baseUrl + 'times?activity=docs&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+
+    it('fails when given a nonexistent activityslug',
+    function(done) {
+      request.get(baseUrl + 'times?activity=review&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter activity contained invalid value review',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+
+    it('fails if given an invalid activityslug', function(done) {
+      request.get(baseUrl + 'times?activity=w_hA.t&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter activity contained invalid value w_hA.t',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?project=:projectslug?include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['test'],
+      notes: '',
+      issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-05-01',
+      created_at: '2015-05-01',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-05-02',
+    };
+
+    it('returns all active and deleted times for the specified project ' +
+    'when include_deleted=true', function(done) {
+      request.get(baseUrl + 'times?project=gwm&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+
+    it('fails when given a nonexistent projectslug', function(done) {
+      request.get(baseUrl + 'times?project=chili&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter project contained invalid value chili',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+
+    it('fails when given an invalid projectslug', function(done) {
+      request.get(baseUrl + 'times?project=not@slug!&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter project contained invalid value not@slug!',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+  });
+
   describe('GET /times/:uuid', function() {
     it('returns times by uuid', function(done) {
       request.get(baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
@@ -1495,6 +1718,73 @@ module.exports = function(expect, request, baseUrl) {
         expect(jsonBody).to.deep.equal(expectedResult);
         expect(getRes.statusCode).to.equal(400);
 
+        done();
+      });
+    });
+  });
+
+  describe('GET /times/:uuid?include_deleted=true', function() {
+    it('returns the soft-deleted time that corresponds with the given uuid',
+    function(done) {
+      request.get(baseUrl +
+      'times/b6ac75fb-7872-403f-ab71-e5542fae4212?include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          duration: 12,
+          user: 'tschuy',
+          project: ['gwm', 'ganeti-webmgr'],
+          activities: ['test'],
+          notes: '',
+          issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48',
+          date_worked: '2015-05-01',
+          created_at: '2015-05-01',
+          updated_at: null,
+          id: 5,
+          uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+          revision: 1,
+          deleted_at: '2015-05-02',
+        };
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+
+    it('fails with Object Not Found error when given a nonexistent uuid',
+    function(done) {
+      request.get(baseUrl +
+      'times/00000000-0000-0000-0000-000000000000?include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 404,
+          error: 'Object not found',
+          text: 'Nonexistent time',
+        };
+
+        expect(res.statusCode).to.equal(404);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+
+    it('fails with Invalid Identifier error when given an invalid uuid',
+    function(done) {
+      request.get(baseUrl + 'times/nope?include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult =  {
+          status: 400,
+          error: 'The provided identifier was invalid',
+          text: 'Expected UUID but received nope',
+          values: ['nope'],
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
         done();
       });
     });
