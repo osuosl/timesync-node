@@ -504,7 +504,7 @@ module.exports = function(expect, request, baseUrl) {
       slug: 'dev-docs',
     };
 
-    const originalActivity =  {
+    const originalActivity = {
       name: 'Documentation',
       slug: 'docs',
       deleted_at: null,
