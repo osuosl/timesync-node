@@ -9,7 +9,15 @@ module.exports = function(app) {
 
   app.get(app.get('version') + '/projects', function(req, res) {
     const knex = app.get('knex');
-    knex('projects').where('deleted_at', null).then(function(projects) {
+    let projectsQ;
+
+    if (req.query.include_deleted) {
+      projectsQ = knex('projects');
+    } else {
+      projectsQ = knex('projects').whereNull('deleted_at');
+    }
+
+    projectsQ.then(function(projects) {
       if (projects.length === 0) {
         return res.send([]);
       }

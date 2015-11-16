@@ -79,6 +79,183 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
+  describe('GET /projects?include_deleted=:bool', function() {
+    it('returns a list of all active and deleted projects', function(done) {
+      request.get(baseUrl + 'projects?include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResults = [
+          {
+            uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+            name: 'Ganeti Web Manager',
+            slugs: ['gwm', 'ganeti-webmgr'],
+            owner: 'tschuy',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+            revision: 1,
+            id: 1,
+          },
+          {
+            uri: 'https://code.osuosl.org/projects/pgd',
+            name: 'Protein Geometry Database',
+            slugs: ['pgd'],
+            owner: 'deanj',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
+            revision: 1,
+            id: 2,
+          },
+          {
+            uri: 'https://github.com/osu-cass/whats-fresh-api',
+            name: 'Whats Fresh',
+            slugs: ['wf'],
+            owner: 'tschuy',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
+            revision: 1,
+            id: 3,
+          },
+          {
+            uri: 'https://github.com/osuosl/timesync',
+            name: 'Timesync',
+            slugs: ['timesync', 'ts'],
+            owner: 'patcht',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
+            revision: 1,
+            id: 4,
+          },
+          {
+            uri: 'https://github.com/osuosl/chiliproject',
+            name: 'Chili Project',
+            slugs: [],
+            owner: 'MaraJade',
+            deleted_at: '2014-01-01',
+            updated_at: null,
+            created_at: '2009-07-07',
+            uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
+            revision: 1,
+            id: 5,
+          },
+        ];
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+
+        expect(jsonBody).to.deep.equal(expectedResults);
+        done();
+      });
+    });
+
+    /* Tests that a nonexistent query parameter is ignored
+     *
+     * Users cannot query for a project by its slug in a querystring parameter.
+     * But querying for deleted projects is similar to querying for times, so
+     * the mistake may be relatively easy to make. Hence, the following. */
+    it('ignores extra param if user specifies query with a projectslug',
+    function(done) {
+      request.get(baseUrl + 'projects?project=chili&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResults = [
+          {
+            uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+            name: 'Ganeti Web Manager',
+            slugs: ['gwm', 'ganeti-webmgr'],
+            owner: 'tschuy',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+            revision: 1,
+            id: 1,
+          },
+          {
+            uri: 'https://code.osuosl.org/projects/pgd',
+            name: 'Protein Geometry Database',
+            slugs: ['pgd'],
+            owner: 'deanj',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
+            revision: 1,
+            id: 2,
+          },
+          {
+            uri: 'https://github.com/osu-cass/whats-fresh-api',
+            name: 'Whats Fresh',
+            slugs: ['wf'],
+            owner: 'tschuy',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
+            revision: 1,
+            id: 3,
+          },
+          {
+            uri: 'https://github.com/osuosl/timesync',
+            name: 'Timesync',
+            slugs: ['timesync', 'ts'],
+            owner: 'patcht',
+            deleted_at: null,
+            updated_at: null,
+            created_at: '2014-01-01',
+            uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
+            revision: 1,
+            id: 4,
+          },
+          {
+            uri: 'https://github.com/osuosl/chiliproject',
+            name: 'Chili Project',
+            slugs: [],
+            owner: 'MaraJade',
+            deleted_at: '2014-01-01',
+            updated_at: null,
+            created_at: '2009-07-07',
+            uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
+            revision: 1,
+            id: 5,
+          },
+        ];
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+
+        expect(jsonBody).to.deep.equal(expectedResults);
+        done();
+      });
+    });
+
+    // Soft-deleted projects don't have any associated slugs, which makes the
+    // following query invalid
+    it('returns an error if user specifies with /projects/:slug endpoint',
+    function(done) {
+      request.get(baseUrl + 'projects/chili?include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 404,
+          error: 'Object not found',
+          text: 'Nonexistent project',
+        };
+
+        expect(jsonBody).to.deep.equal(expectedResult);
+        expect(res.statusCode).to.equal(404);
+        done();
+      });
+    });
+  });
+
   describe('GET /projects/:slug', function() {
     it('should return projects by slug', function(done) {
       request.get(baseUrl + 'projects/gwm', function(err, res, body) {
@@ -226,7 +403,7 @@ module.exports = function(expect, request, baseUrl) {
         expectedResults.owner = patchedProject.owner;
         expectedResults.uuid = originalProject.uuid;
         expectedResults.revision = 2;
-        expectedResults.id = 5;
+        expectedResults.id = 6;
         expectedResults.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResults);
@@ -251,7 +428,7 @@ module.exports = function(expect, request, baseUrl) {
         expectedResults.uri = patchedProject.uri;
         expectedResults.uuid = originalProject.uuid;
         expectedResults.revision = 2;
-        expectedResults.id = 5;
+        expectedResults.id = 6;
         expectedResults.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResults);
@@ -276,7 +453,7 @@ module.exports = function(expect, request, baseUrl) {
         expectedResults.slugs = patchedProject.slugs;
         expectedResults.uuid = originalProject.uuid;
         expectedResults.revision = 2;
-        expectedResults.id = 5;
+        expectedResults.id = 6;
         expectedResults.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResults);
@@ -301,7 +478,7 @@ module.exports = function(expect, request, baseUrl) {
         expectedResults.name = patchedProject.name;
         expectedResults.uuid = originalProject.uuid;
         expectedResults.revision = 2;
-        expectedResults.id = 5;
+        expectedResults.id = 6;
         expectedResults.updated_at = new Date().toISOString().substring(0, 10);
 
         const expectedPost = copyJsonObject(expectedResults);
@@ -641,7 +818,7 @@ module.exports = function(expect, request, baseUrl) {
       name: 'TimeSync Node',
       revision: 1,
       created_at: new Date().toISOString().substring(0, 10),
-      id: 5,
+      id: 6,
     };
 
     // the base POST JSON
@@ -748,7 +925,7 @@ module.exports = function(expect, request, baseUrl) {
               created_at: new Date().toISOString().substring(0, 10),
               revision: 1,
               uuid: addedProject.uuid,
-              id: 5,
+              id: 6,
             },
           ]);
 
@@ -793,7 +970,7 @@ module.exports = function(expect, request, baseUrl) {
               created_at: new Date().toISOString().substring(0, 10),
               revision: 1,
               uuid: addedProject.uuid,
-              id: 5,
+              id: 6,
             },
           ]);
 

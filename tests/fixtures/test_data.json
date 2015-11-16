@@ -134,6 +134,17 @@
       "deleted_at": null,
       "updated_at": null,
       "created_at": 1388534400000
+    },
+    {
+      "uri":"https:://github.com/osuosl/chiliproject",
+      "name":"Chili Project",
+      "owner":"users:5",
+      "id": 5,
+      "uuid": "6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29",
+      "revision": 1,
+      "deleted_at": "1388534400000",
+      "updated_at": null,
+      "created_at": 1246924800000
     }
   ],
   "times":[
