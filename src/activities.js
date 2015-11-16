@@ -43,7 +43,6 @@ module.exports = function(app) {
     if (!activity) {
       const err = errors.errorObjectNotFound('activity');
       return err;
-      // return res.status(err.status);
     }
 
     activity.created_at = new Date(parseInt(activity.created_at, 10))
@@ -78,21 +77,24 @@ module.exports = function(app) {
       // get matching activity
       knex('activities').select().where('slug', '=', req.params.slug)
       .orderBy('revision', 'desc').then(function(activity) {
-        let a = JSON.parse(JSON.stringify(activity));
+        let activityCopy = JSON.parse(JSON.stringify(activity));
         // create the processesd activity
-        const act = constructActivity(a.splice(0,1)[0], res);
+        const firstActivity = activityCopy.splice(0,1)[0]
+        const returnActivity = constructActivity(firstActivity, res);
         // If the activity is an error
-        if (act.status) {
-          return res.status(act.status).send(act);
+        if (returnActivity.status) {
+          return res.status(returnActivity.status).send(returnActivity);
         }
-        act.parents = [];
-        for (i=0 ; i<a.len ; i++) {
-          act.parents[i] = constructActivity(a[i]);
-          if (act.parents[i].status) {
-            return res.status(act.parents[i].status).send(act.parents[i]);
+        returnActivity.parents = [];
+        for (let i=0 ; i<activityCopy.length ; i++) {
+          const pActivity = constructActivity(activityCopy[i])
+          if (pActivity.status) {
+            return res.status(pActivity.status).send(pActivity);
           }
+          returnActivity.parents[i] = pActivity;
         }
-        return res.send(act);
+        // console.log(returnActivity);
+        return res.send(returnActivity);
       }).catch(function(error) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
@@ -102,13 +104,13 @@ module.exports = function(app) {
       knex('activities').select().first().where('slug', '=', req.params.slug)
       .orderBy('revision', 'desc').then(function(activity) {
         // create the processesd activity
-        const act = constructActivity(activity, res);
+        const returnActivity = constructActivity(activity, res);
         // If the activity is an error
-        if (act.status) {
-          return res.status(act.status).send(act);
+        if (returnActivity.status) {
+          return res.status(returnActivity.status).send(returnActivity);
         }
         // Otherwise send the (complete and valid) activity
-        return res.send(act);
+        return res.send(returnActivity);
       }).catch(function(error) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
