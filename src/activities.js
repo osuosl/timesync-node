@@ -39,41 +39,81 @@ module.exports = function(app) {
     });
   });
 
+  function constructActivity(activity, res) {
+    if (!activity) {
+      const err = errors.errorObjectNotFound('activity');
+      return err;
+      // return res.status(err.status);
+    }
+
+    activity.created_at = new Date(parseInt(activity.created_at, 10))
+    .toISOString().substring(0, 10);
+    if (activity.updated_at) {
+      activity.updated_at = new Date(parseInt(activity.updated_at, 10))
+      .toISOString().substring(0, 10);
+    } else {
+      activity.updated_at = null;
+    }
+    if (activity.deleted_at) {
+      activity.deleted_at = new Date(parseInt(activity.deleted_at, 10))
+      .toISOString().substring(0, 10);
+    } else {
+      activity.deleted_at = null;
+    }
+
+    return activity;
+  }
+
   app.get(app.get('version') + '/activities/:slug', function(req, res) {
     const knex = app.get('knex');
     if (errors.isInvalidSlug(req.params.slug)) {
+      console.log(req.params.slug);
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
     }
 
-    // get matching activity
-    knex('activities').select().first().where('slug', '=', req.params.slug)
-    .orderBy('revision', 'desc').then(function(activity) {
-      if (!activity) {
-        const err = errors.errorObjectNotFound('activity');
+    // include_revisions parameter was passed
+    if (req.query.include_revisions !== undefined &&
+        req.query.include_revisions !== 'false') {
+      // get matching activity
+      knex('activities').select().where('slug', '=', req.params.slug)
+      .orderBy('revision', 'desc').then(function(activity) {
+        let a = JSON.parse(JSON.stringify(activity));
+        // create the processesd activity
+        const act = constructActivity(a.splice(0,1)[0], res);
+        // If the activity is an error
+        if (act.status) {
+          return res.status(act.status).send(act);
+        }
+        act.parents = [];
+        for (i=0 ; i<a.len ; i++) {
+          act.parents[i] = constructActivity(a[i]);
+          if (act.parents[i].status) {
+            return res.status(act.parents[i].status).send(act.parents[i]);
+          }
+        }
+        return res.send(act);
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
-      }
-
-      activity.created_at = new Date(parseInt(activity.created_at, 10))
-      .toISOString().substring(0, 10);
-      if (activity.updated_at) {
-        activity.updated_at = new Date(parseInt(activity.updated_at, 10))
-        .toISOString().substring(0, 10);
-      } else {
-        activity.updated_at = null;
-      }
-      if (activity.deleted_at) {
-        activity.deleted_at = new Date(parseInt(activity.deleted_at, 10))
-        .toISOString().substring(0, 10);
-      } else {
-        activity.deleted_at = null;
-      }
-
-      return res.send(activity);
-    }).catch(function(error) {
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
-    });
+      });
+    } else {
+      // get matching activity
+      knex('activities').select().first().where('slug', '=', req.params.slug)
+      .orderBy('revision', 'desc').then(function(activity) {
+        // create the processesd activity
+        const act = constructActivity(activity, res);
+        // If the activity is an error
+        if (act.status) {
+          return res.status(act.status).send(act);
+        }
+        // Otherwise send the (complete and valid) activity
+        return res.send(act);
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
+      });
+    }
   });
 
   app.delete(app.get('version') + '/activities/:slug', function(req, res) {
