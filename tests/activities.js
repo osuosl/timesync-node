@@ -87,7 +87,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('should fail with invalid object not found error', function(done) {
+    it('should fail with object not found error', function(done) {
       request.get(baseUrl + 'activities/404', function(err, res, body) {
         const jsonBody = JSON.parse(body);
         const expectedResult = {

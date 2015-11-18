@@ -8,30 +8,65 @@ module.exports = function(app) {
 
   app.get(app.get('version') + '/activities', function(req, res) {
     const knex = app.get('knex');
-    knex('activities').then(function(activities) {
+
+    knex('activities').orderBy('revision', 'desc').then(function(activities) {
       if (activities.length === 0) {
         return res.send([]);
       }
 
-      /* eslint-disable prefer-const */
-      for (let activity of activities) {
-      /* eslint-enable prefer-const */
-        activity.created_at = new Date(parseInt(activity.created_at, 10))
-        .toISOString().substring(0, 10);
-        if (activity.updated_at) {
-          activity.updated_at = new Date(parseInt(activity.updated_at, 10))
-          .toISOString().substring(0, 10);
-        } else {
-          activity.updated_at = null;
+      // Include revisions parameter was passed
+      if (req.query.include_revisions !== undefined &&
+          req.query.include_revisions !== 'false') {
+        // iterate over all activity entries
+        //  NOTE: I'm pretty sure there's a way to do this block with nested
+        //  maps. (replace the `for` loops with maps over activitites` I tried
+        //  for ~30 mintues but couldn't get the tests to pass.  Let me know if
+        //  you get that to work.
+        for (let i=0 ; i<activities.length ; i++) {
+          // Process the given activity
+          let returnActivity = constructActivity(activities[i], res);
+          // Check for errors
+          if (returnActivity.status) {
+            return res.status(returnActivity.status).send(returnActivity);
+          }
+          // Initialize the parent's field
+          returnActivity.parents = []
+          // Check if the object has been modified before
+          if (returnActivity.revision > 1) {
+            // remove the activity we just processed so we don't get duplicates
+            activities.splice(i,i+1);
+            // Iterate over every other activity
+            for (let j=i ; j<activities.length ; j++) {
+              // if the uuid's match add it to the parent's list
+              if (activities[j].uuid === returnActivity.uuid) {
+                let p = constructActivity(activities[j], res);
+                if (p.status) {
+                  return res.status(returnActivity.status).send(returnActivity);
+                }
+                returnActivity.parents.push(p);
+                // remove the parent from the activities list, again so we
+                // don't get duplicates.
+                activities.splice(j,j+1);
+              }
+            }
+          }
+          // Set the newly processed activity to the activities list at the
+          // appropriate index
+          activities[i] = returnActivity;
         }
-        if (activity.deleted_at) {
-          activity.deleted_at = new Date(parseInt(activity.deleted_at, 10))
-          .toISOString().substring(0, 10);
-        } else {
-          activity.deleted_at = null;
+      } else {
+        for (let i=0 ; i<activities.length ; i++) {
+          // Make a copy of the current activity
+          let returnActivity = constructActivity(activities[i], res);
+          if (returnActivity.status) {
+            return res.status(returnActivity.status).send(returnActivity);
+          }
+          // Set the activity to the successfully constructed acvitity
+          activities[i] = returnActivity;
         }
       }
-
+      // After all activities are processed completely, send them off to the
+      // user.
       return res.send(activities);
     }).catch(function(error) {
       const err = errors.errorServerError(error);
@@ -66,7 +101,6 @@ module.exports = function(app) {
   app.get(app.get('version') + '/activities/:slug', function(req, res) {
     const knex = app.get('knex');
     if (errors.isInvalidSlug(req.params.slug)) {
-      console.log(req.params.slug);
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
     }
@@ -76,25 +110,25 @@ module.exports = function(app) {
         req.query.include_revisions !== 'false') {
       // get matching activity
       knex('activities').select().where('slug', '=', req.params.slug)
-      .orderBy('revision', 'desc').then(function(activity) {
-        let activityCopy = JSON.parse(JSON.stringify(activity));
+      .orderBy('revision', 'desc').then(function(activities) {
         // create the processesd activity
-        const firstActivity = activityCopy.splice(0,1)[0]
-        const returnActivity = constructActivity(firstActivity, res);
+        const mainActivity = constructActivity(activities.splice(0,1)[0], res);
         // If the activity is an error
-        if (returnActivity.status) {
-          return res.status(returnActivity.status).send(returnActivity);
+        if (mainActivity.status) {
+          return res.status(mainActivity.status).send(mainActivity);
         }
-        returnActivity.parents = [];
-        for (let i=0 ; i<activityCopy.length ; i++) {
-          const pActivity = constructActivity(activityCopy[i])
-          if (pActivity.status) {
-            return res.status(pActivity.status).send(pActivity);
+        // set parents to the past revisions of an object in descending order.
+        mainActivity.parents = activities.map(function(a) {;
+          // construct the activity
+          a =  constructActivity(a)
+          // Check if there is an error
+          if (a.status) {
+            return res.status(a.status).send(a);
           }
-          returnActivity.parents[i] = pActivity;
-        }
-        // console.log(returnActivity);
-        return res.send(returnActivity);
+          // return it to the map function
+          return a;
+        });
+        return res.send(mainActivity);
       }).catch(function(error) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
@@ -104,13 +138,13 @@ module.exports = function(app) {
       knex('activities').select().first().where('slug', '=', req.params.slug)
       .orderBy('revision', 'desc').then(function(activity) {
         // create the processesd activity
-        const returnActivity = constructActivity(activity, res);
+        activity = constructActivity(activity, res);
         // If the activity is an error
-        if (returnActivity.status) {
-          return res.status(returnActivity.status).send(returnActivity);
+        if (activity.status) {
+          return res.status(activity.status).send(activity);
         }
         // Otherwise send the (complete and valid) activity
-        return res.send(returnActivity);
+        return res.send(activity);
       }).catch(function(error) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
