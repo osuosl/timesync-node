@@ -1437,25 +1437,40 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('GET /times?include_deleted=true', function() {
-    // have at least one other time entry
-    // with different project, activity, and user
-    const softDeletedTimes = {
-      duration: 12,
-      user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
-      activities: ['test'],
-      notes: '',
-      issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48',
-      date_worked: '2015-05-01',
-      created_at: '2015-05-01',
-      updated_at: null,
-      id: 5,
-      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
-      revision: 1,
-      deleted_at: '2015-05-02',
-    };
+    const softDeletedTimes = [
+      {
+        duration: 12,
+        user: 'tschuy',
+        project: ['gwm', 'ganeti-webmgr'],
+        activities: ['test'],
+        notes: '',
+        issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48',
+        date_worked: '2015-05-01',
+        created_at: '2015-05-01',
+        updated_at: null,
+        id: 5,
+        uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+        revision: 1,
+        deleted_at: '2015-05-02',
+      },
+      {
+        duration: 12,
+        user: 'patcht',
+        project: ['pgd'],
+        activities: ['meeting'],
+        notes: '',
+        issue_uri: 'https://github.com/osuosl/pgd/issues/44',
+        date_worked: '2015-08-10',
+        created_at: '2015-08-10',
+        updated_at: null,
+        id: 6,
+        uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+        revision: 1,
+        deleted_at: '2015-08-12',
+      },
+    ];
 
-    it('it returns a list of all active and deleted times', function(done) {
+    it('returns a list of all active and deleted times', function(done) {
       request.get(baseUrl + 'times?include_deleted=true',
       function(err, res, body) {
         const jsonBody = JSON.parse(body);
@@ -1474,7 +1489,7 @@ module.exports = function(expect, request, baseUrl) {
       project: ['gwm', 'ganeti-webmgr'],
       activities: ['test'],
       notes: '',
-      issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48', 
+      issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48',
       date_worked: '2015-05-01',
       created_at: '2015-05-01',
       updated_at: null,
@@ -1482,7 +1497,7 @@ module.exports = function(expect, request, baseUrl) {
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-05-02',
-    };
+    }; 
 
     it('returns all active and deleted times for the specified user when ' +
     'include_deleted=true', function(done) {
@@ -1496,8 +1511,6 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    // If include_deleted=true, return a list of all active and deleted times
-    // ignore the user param if the specified user has no times
     it('fails if given a nonexistent user',
     function(done) {
       request.get(baseUrl + 'times?user=notauser&include_deleted=true',
@@ -1536,23 +1549,23 @@ module.exports = function(expect, request, baseUrl) {
   function() {
     const softDeletedTimes = {
       duration: 12,
-      user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
-      activities: ['test'],
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['meeting'],
       notes: '',
-      issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48',
-      date_worked: '2015-05-01',
-      created_at: '2015-05-01',
+      issue_uri: 'https://github.com/osuosl/pgd/issues/44',
+      date_worked: '2015-08-10',
+      created_at: '2015-08-10',
       updated_at: null,
-      id: 5,
-      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
-      deleted_at: '2015-05-02',
+      deleted_at: '2015-08-12',
     };
 
     it('returns all active and deleted times for the specified activity ' +
     'when include_deleted=true', function(done) {
-      request.get(baseUrl + 'times?activity=docs&include_deleted=true',
+      request.get(baseUrl + 'times?activity=meeting&include_deleted=true',
       function(err, res, body) {
         const jsonBody = JSON.parse(body);
         expect(err).to.equal(null);
@@ -1600,23 +1613,23 @@ module.exports = function(expect, request, baseUrl) {
   function() {
     const softDeletedTimes = {
       duration: 12,
-      user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'],
-      activities: ['test'],
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['meeting'],
       notes: '',
-      issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48',
-      date_worked: '2015-05-01',
-      created_at: '2015-05-01',
+      issue_uri: 'https://github.com/osuosl/pgd/issues/44',
+      date_worked: '2015-08-10',
+      created_at: '2015-08-10',
       updated_at: null,
-      id: 5,
-      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
-      deleted_at: '2015-05-02',
+      deleted_at: '2015-08-12',
     };
 
     it('returns all active and deleted times for the specified project ' +
     'when include_deleted=true', function(done) {
-      request.get(baseUrl + 'times?project=gwm&include_deleted=true',
+      request.get(baseUrl + 'times?project=pgd&include_deleted=true',
       function(err, res, body) {
         const jsonBody = JSON.parse(body);
         expect(err).to.equal(null);
