@@ -1497,7 +1497,7 @@ module.exports = function(expect, request, baseUrl) {
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-05-02',
-    }; 
+    };
 
     it('returns all active and deleted times for the specified user when ' +
     'include_deleted=true', function(done) {
@@ -1921,7 +1921,7 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               uuid: time.uuid,
               revision: 1,
-              id: 5,
+              id: 7,
             },
           ]);
 
@@ -2529,7 +2529,7 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               uuid: time.uuid,
               revision: 1,
-              id: 5,
+              id: 7,
             },
           ]);
           expect(getErr).to.be.a('null');
