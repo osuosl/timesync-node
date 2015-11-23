@@ -30,7 +30,17 @@ module.exports = function(app) {
     }
 
     userQuery.then(function(userObj) {
-      let timesQ = knex('times').where({deleted_at: null});
+      let timesQ;
+
+      // Query for soft-deleted times when include_deleted=true or if the param
+      // is passed (and not set to anything)
+      if (req.query.include_deleted === 'true' ||
+          req.query.include_deleted === '') {
+        timesQ = knex('times');
+      } else {
+        timesQ = knex('times').where({deleted_at: null});
+      }
+
       if (usersList !== undefined) {
         const usernames = userObj.map(function(user) {
           return user.username;
@@ -201,6 +211,12 @@ module.exports = function(app) {
                 } else {
                   time.updated_at = null;
                 }
+                if (time.deleted_at) {
+                  time.deleted_at = new Date(parseInt(time.deleted_at, 10))
+                  .toISOString().substring(0, 10);
+                } else {
+                  time.deleted_at = null;
+                }
               }
 
               knex('users').select('id', 'username').then(function(users) {
@@ -323,13 +339,24 @@ module.exports = function(app) {
 
   app.get(app.get('version') + '/times/:uuid', function(req, res) {
     const knex = app.get('knex');
+    let timesQ;
+
     if (!helpers.validateUUID(req.params.uuid)) {
       const err = errors.errorInvalidIdentifier('UUID', req.params.uuid);
       return res.status(err.status).send(err);
     }
 
-    knex('times').first().where({uuid: req.params.uuid, deleted_at: null})
-    .orderBy('revision', 'desc').then(function(time) {
+    // Query for soft-deleted times when include_deleted=true or if the param
+    // is passed (and not set to anything)
+    if (req.query.include_deleted === 'true' ||
+        req.query.include_deleted === '') {
+      timesQ = knex('times').first().where({uuid: req.params.uuid});
+    } else {
+      timesQ = knex('times').first().
+      where({uuid: req.params.uuid, deleted_at: null});
+    }
+
+    timesQ.orderBy('revision', 'desc').then(function(time) {
       // get the matching time entry
       if (time) {
         time.date_worked = new Date(parseInt(time.date_worked, 10))

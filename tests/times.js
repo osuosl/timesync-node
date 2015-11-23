@@ -1748,16 +1748,16 @@ module.exports = function(expect, request, baseUrl) {
           duration: 12,
           user: 'tschuy',
           project: ['gwm', 'ganeti-webmgr'],
-          activities: ['test'],
+          activities: ['docs'],
           notes: '',
           issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
-          date_worked: '2015-05-01',
-          created_at: '2015-05-01',
+          date_worked: '2015-07-03',
+          created_at: '2015-07-03',
           updated_at: null,
           id: 5,
           uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
           revision: 1,
-          deleted_at: '2015-05-02',
+          deleted_at: '2015-07-04',
         };
 
         expect(err).to.equal(null);
