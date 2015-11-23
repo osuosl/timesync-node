@@ -17,7 +17,7 @@ module.exports = function(app) {
         req.query.include_deleted === '') {
       activitiesQ = knex('activities');
     } else {
-      activitiesQ = knex('activities').whereNull('deleted_at');
+      activitiesQ = knex('activities').where({deleted_at: null});
     }
 
     activitiesQ.then(function(activities) {
