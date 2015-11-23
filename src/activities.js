@@ -13,7 +13,8 @@ module.exports = function(app) {
     /* Only query for activities that have not been soft-deleted
      * If the include_deleted param is true, query for all activities
      * regardless of 'deleted' status */
-    if (req.query.include_deleted) {
+    if (req.query.include_deleted === 'true' ||
+        req.query.include_deleted === '') {
       activitiesQ = knex('activities');
     } else {
       activitiesQ = knex('activities').whereNull('deleted_at');
