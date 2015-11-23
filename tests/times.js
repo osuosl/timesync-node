@@ -1442,22 +1442,22 @@ module.exports = function(expect, request, baseUrl) {
         duration: 12,
         user: 'tschuy',
         project: ['gwm', 'ganeti-webmgr'],
-        activities: ['test'],
+        activities: ['docs'],
         notes: '',
-        issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48',
-        date_worked: '2015-05-01',
-        created_at: '2015-05-01',
+        issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+        date_worked: '2015-07-03',
+        created_at: '2015-07-03',
         updated_at: null,
         id: 5,
         uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
         revision: 1,
-        deleted_at: '2015-05-02',
+        deleted_at: '2015-07-04',
       },
       {
         duration: 12,
         user: 'patcht',
         project: ['pgd'],
-        activities: ['meeting'],
+        activities: ['dev'],
         notes: '',
         issue_uri: '',
         date_worked: '2015-08-10',
@@ -1476,7 +1476,8 @@ module.exports = function(expect, request, baseUrl) {
         const jsonBody = JSON.parse(body);
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
-        expect(jsonBody).to.include(softDeletedTimes);
+        expect(jsonBody).to.include(softDeletedTimes[0]);
+        expect(jsonBody).to.include(softDeletedTimes[1]);
         done();
       });
     });
@@ -1487,16 +1488,16 @@ module.exports = function(expect, request, baseUrl) {
       duration: 12,
       user: 'tschuy',
       project: ['gwm', 'ganeti-webmgr'],
-      activities: ['test'],
+      activities: ['docs'],
       notes: '',
-      issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48',
-      date_worked: '2015-05-01',
-      created_at: '2015-05-01',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-07-03',
+      created_at: '2015-07-03',
       updated_at: null,
       id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
-      deleted_at: '2015-05-02',
+      deleted_at: '2015-07-04',
     };
 
     it('returns all active and deleted times for the specified user when ' +
@@ -1551,7 +1552,7 @@ module.exports = function(expect, request, baseUrl) {
       duration: 12,
       user: 'patcht',
       project: ['pgd'],
-      activities: ['meeting'],
+      activities: ['dev'],
       notes: '',
       issue_uri: '',
       date_worked: '2015-08-10',
@@ -1565,7 +1566,7 @@ module.exports = function(expect, request, baseUrl) {
 
     it('returns all active and deleted times for the specified activity ' +
     'when include_deleted=true', function(done) {
-      request.get(baseUrl + 'times?activity=meeting&include_deleted=true',
+      request.get(baseUrl + 'times?activity=dev&include_deleted=true',
       function(err, res, body) {
         const jsonBody = JSON.parse(body);
         expect(err).to.equal(null);
@@ -1615,7 +1616,7 @@ module.exports = function(expect, request, baseUrl) {
       duration: 12,
       user: 'patcht',
       project: ['pgd'],
-      activities: ['meeting'],
+      activities: ['dev'],
       notes: '',
       issue_uri: '',
       date_worked: '2015-08-10',
@@ -1749,7 +1750,7 @@ module.exports = function(expect, request, baseUrl) {
           project: ['gwm', 'ganeti-webmgr'],
           activities: ['test'],
           notes: '',
-          issue_uri: 'http://github.com/osuosl/ganeti_webmgr/issues/48',
+          issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
           date_worked: '2015-05-01',
           created_at: '2015-05-01',
           updated_at: null,
