@@ -516,12 +516,12 @@ module.exports = function(app) {
       {name: 'project', type: 'string', required: true},
       {name: 'user', type: 'string', required: true},
       {name: 'issue_uri', type: 'string', required: false},
-      {name: 'activities', type: 'array', required: true},
+      {name: 'activities', type: 'array', required: false},
       {name: 'date_worked', type: 'string', required: true},
     ]);
 
     if (badField) {
-      if (badField.actualType === 'undefined') {
+      if (badField.missing) {
         const err = errors.errorBadObjectMissingField('time',
         badField.name);
         return res.status(err.status).send(err);
@@ -545,18 +545,20 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    // Test each activity
-    /* eslint-disable prefer-const */
-    for (let activity of time.activities) {
-      /* eslint-enable prefer-const */
-      if (helpers.getType(activity) !== 'string') {
-        const err = errors.errorBadObjectInvalidField('time', 'activities',
-        'slugs', 'array containing at least 1 ' + helpers.getType(activity));
-        return res.status(err.status).send(err);
-      } else if (!helpers.validateSlug(activity)) {
-        const err = errors.errorBadObjectInvalidField('time', 'activities',
-        'slugs', 'array containing at least 1 invalid slug');
-        return res.status(err.status).send(err);
+    if (time.activities) {
+      // Test each activity
+      /* eslint-disable prefer-const */
+      for (let activity of time.activities) {
+        /* eslint-enable prefer-const */
+        if (helpers.getType(activity) !== 'string') {
+          const err = errors.errorBadObjectInvalidField('time', 'activities',
+          'slugs', 'array containing at least 1 ' + helpers.getType(activity));
+          return res.status(err.status).send(err);
+        } else if (!helpers.validateSlug(activity)) {
+          const err = errors.errorBadObjectInvalidField('time', 'activities',
+          'slugs', 'array containing at least 1 invalid slug');
+          return res.status(err.status).send(err);
+        }
       }
     }
 
@@ -574,19 +576,18 @@ module.exports = function(app) {
       'ISO-8601 date', time.date_worked);
       return res.status(err.status).send(err);
     }
-
     // Finish checks for user, project, and activity
     helpers.checkUser(user.username, time.user).then(function(userId) {
       helpers.checkProject(time.project).then(function(projectId) {
-        knex('userroles').first().where({user: userId, project: projectId})
-        .then(function(roles) {
-          if ((!roles || roles.member === false) && !user.site_admin) {
-            const err = errors.errorAuthorizationFailure(user.username,
-              'create time entries for project ' + time.project + '.');
-            return res.status(err.status).send(err);
-          }
-          helpers.checkActivities(time.activities)
-          .then(function(activityIds) {
+        const insert = function(activityIds) {
+          knex('userroles').first().where({user: userId, project: projectId})
+          .then(function(roles) {
+            if ((!roles || roles.member === false) && !user.site_admin) {
+              const err = errors.errorAuthorizationFailure(user.username,
+                'create time entries for project ' + time.project + '.');
+              return res.status(err.status).send(err);
+            }
+
             time.uuid = uuid.v4();
             time.revision = 1;
             const insertion = {
@@ -610,25 +611,30 @@ module.exports = function(app) {
               .then(function(timeIds) {
                 const timeId = timeIds[0];
 
-                const taInsertion = [];
-                /* eslint-disable prefer-const */
-                for (let activityId of activityIds) {
-                  /* eslint-enable prefer-const */
-                  taInsertion.push({
-                    time: timeId,
-                    activity: activityId,
-                  });
-                }
+                if (activityIds) {
+                  const taInsertion = [];
+                  /* eslint-disable prefer-const */
+                  for (let activityId of activityIds) {
+                    /* eslint-enable prefer-const */
+                    taInsertion.push({
+                      time: timeId,
+                      activity: activityId,
+                    });
+                  }
 
-                trx('timesactivities').insert(taInsertion).then(function() {
+                  trx('timesactivities').insert(taInsertion).then(function() {
+                    trx.commit();
+                    return res.send(JSON.stringify(time));
+                  }).catch(function(error) {
+                    log.error(req, 'Error creating activity references for ' +
+                                                              'time: ' + error);
+                    trx.rollback();
+                  });
+                } else {
                   trx.commit();
                   time.activities = time.activities.sort();
                   return res.send(JSON.stringify(time));
-                }).catch(function(error) {
-                  log.error(req, 'Error creating activity references for ' +
-                                                              'time: ' + error);
-                  trx.rollback();
-                });
+                }
               }).catch(function(error) {
                 log.error(req, 'Error inserting updated time entry: ' + error);
                 trx.rollback();
@@ -638,16 +644,34 @@ module.exports = function(app) {
               const err = errors.errorServerError(error);
               return res.status(err.status).send(err);
             });
-          }).catch(function() {
+          }).catch(function(error) {
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+          });
+        };
+
+        if (time.activities) {
+          helpers.checkActivities(time.activities).then(insert)
+          .catch(function() {
             const err = errors.errorInvalidForeignKey('time', 'activities');
             return res.status(err.status).send(err);
           });
-        }).catch(function(error) {
-          log.error(req, 'Error retrieving user roles for creating time: ' +
-                                                                        error);
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
-        });
+        } else {
+          knex('projects').select('default_activity').first()
+          .where('id', projectId).then(function(activityId) {
+            if (activityId.default_activity) {
+              insert([activityId.default_activity]);
+            } else {
+              const err = errors.errorBadObjectMissingField('time',
+                                                            'activities');
+              return res.status(err.status).send(err);
+            }
+          }).catch(function(error) {
+            log.error(req, 'Error selecting default activity.');
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
+          });
+        }
       }).catch(function() {
         const err = errors.errorInvalidForeignKey('time', 'project');
         return res.status(err.status).send(err);
