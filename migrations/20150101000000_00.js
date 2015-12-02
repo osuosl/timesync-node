@@ -15,6 +15,16 @@ exports.up = function(knex) {
     table.bigInteger('updated_at').defaultTo(null);
     table.bigInteger('deleted_at').defaultTo(null);
     table.text('meta');
+  }).createTable('activities', function(table) {
+    table.increments('id').primary();
+    table.string('name').notNullable();
+    table.string('slug');
+    table.bigInteger('created_at').notNullable();
+    table.bigInteger('updated_at').defaultTo(null);
+    table.bigInteger('deleted_at').defaultTo(null);
+    table.uuid('uuid');
+    table.integer('revision').defaultTo(1);
+    table.boolean('newest').defaultTo(true);
   }).createTable('projects', function(table) {
     table.increments('id').primary();
     table.string('name').notNullable();
@@ -34,16 +44,6 @@ exports.up = function(knex) {
     table.string('notes');
     table.string('issue_uri');
     table.bigInteger('date_worked');
-    table.bigInteger('created_at').notNullable();
-    table.bigInteger('updated_at').defaultTo(null);
-    table.bigInteger('deleted_at').defaultTo(null);
-    table.uuid('uuid');
-    table.integer('revision').defaultTo(1);
-    table.boolean('newest').defaultTo(true);
-  }).createTable('activities', function(table) {
-    table.increments('id').primary();
-    table.string('name').notNullable();
-    table.string('slug');
     table.bigInteger('created_at').notNullable();
     table.bigInteger('updated_at').defaultTo(null);
     table.bigInteger('deleted_at').defaultTo(null);
