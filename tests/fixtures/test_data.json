@@ -99,7 +99,6 @@
     {
       "uri":"https:://code.osuosl.org/projects/ganeti-webmgr",
       "name":"Ganeti Web Manager",
-      "owner":"users:1",
       "id": 1,
       "uuid": "c285963e-192b-4e99-9d92-a940519f1fbd",
       "revision": 1,
@@ -111,7 +110,6 @@
     {
       "uri":"https:://code.osuosl.org/projects/pgd",
       "name":"Protein Geometry Database",
-      "owner":"users:0",
       "id": 2,
       "uuid": "e3e25e6a-5e45-4df2-8561-796b07e8f974",
       "revision": 1,
@@ -123,7 +121,6 @@
     {
       "uri":"https:://github.com/osu-cass/whats-fresh-api",
       "name":"Whats Fresh",
-      "owner":"users:1",
       "id": 3,
       "uuid": "9369f959-26f2-490d-8721-2948c49c3c09",
       "revision": 1,
@@ -135,7 +132,6 @@
     {
       "uri":"https:://github.com/osuosl/timesync",
       "name":"Timesync",
-      "owner":"users:2",
       "id": 4,
       "uuid": "1f8788bd-0909-4397-be2c-79047f90c575",
       "revision": 1,
@@ -147,7 +143,6 @@
     {
       "uri":"https:://github.com/osuosl/chiliproject",
       "name":"Chili Project",
-      "owner":"users:5",
       "id": 5,
       "uuid": "6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29",
       "revision": 1,
@@ -347,6 +342,13 @@
       "spectator": true
     },
     {
+      "project":"projects:2",
+      "user":"users:1",
+      "manager": true,
+      "member": true,
+      "spectator": true
+    },
+    {
       "project":"projects:1",
       "user":"users:2",
       "manager": false,
@@ -365,6 +367,20 @@
       "user":"users:4",
       "manager": false,
       "member": false,
+      "spectator": true
+    },
+    {
+      "project":"projects:3",
+      "user":"users:2",
+      "manager": true,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:4",
+      "user":"users:5",
+      "manager": true,
+      "member": true,
       "spectator": true
     }
   ]

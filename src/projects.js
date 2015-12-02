@@ -231,7 +231,7 @@ module.exports = function(app) {
 
     // run various checks
     // valid keys
-    const validKeys = ['name', 'uri', 'owner', 'slugs'];
+    const validKeys = ['name', 'uri', 'slugs'];
     /* eslint-disable prefer-const */
     for (let key in obj) {
       /* eslint-enable prefer-const */
@@ -259,7 +259,6 @@ module.exports = function(app) {
     const fields = [
       {name: 'name', type: 'string', required: true},
       {name: 'uri', type: 'string', required: false},
-      {name: 'owner', type: 'string', required: true},
       {name: 'slugs', type: 'array', required: true},
     ];
 
@@ -291,56 +290,63 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    // check validity of owner -- it must match the submitting user
-    // if checkUser fails, the user submitting the request doesn't match
-    helpers.checkUser(authUser.username, obj.owner).then(function(userId) {
-      // select any slugs that match the ones submitted
-      // this is to check that none of the submitted slugs are
-      // currently in use.
-      knex('projectslugs').where('name', 'in', obj.slugs)
-      .then(function(slugs) {
-        // if any slugs match the slugs passed to us, error out
-        if (slugs.length) {
-          const err = errors.errorSlugsAlreadyExist(slugs.map(function(slug) {
-            return slug.name;
-          }));
+    // select any slugs that match the ones submitted
+    // this is to check that none of the submitted slugs are
+    // currently in use.
+    knex('projectslugs').where('name', 'in', obj.slugs)
+    .then(function(slugs) {
+      // if any slugs match the slugs passed to us, error out
+      if (slugs.length) {
+        const err = errors.errorSlugsAlreadyExist(slugs.map(function(slug) {
+          return slug.name;
+        }));
 
-          return res.status(err.status).send(err);
-        }
+        return res.status(err.status).send(err);
+      }
 
-        obj.uuid = uuid.v4();
-        obj.created_at = Date.now();
-        obj.revision = 1;
+      obj.uuid = uuid.v4();
+      obj.created_at = Date.now();
+      obj.revision = 1;
 
-        // create object to insert into database
-        const insertion = {
-          uri: obj.uri,
-          owner: userId,
-          name: obj.name,
-          uuid: obj.uuid,
-          created_at: obj.created_at,
-          revision: 1,
-        };
+      // create object to insert into database
+      const insertion = {
+        uri: obj.uri,
+        name: obj.name,
+        uuid: obj.uuid,
+        created_at: obj.created_at,
+        revision: 1,
+      };
 
-        knex.transaction(function(trx) {
-          /* 'You take the trx.rollback(), the story ends. You wake up in your
-              bed and none of the database calls ever happened. You take the
-              trx.commit(), you stay in wonderland, and everything is saved to
-              the database.' */
+      knex.transaction(function(trx) {
+        /* 'You take the trx.rollback(), the story ends. You wake up in your
+            bed and none of the database calls ever happened. You take the
+            trx.commit(), you stay in wonderland, and everything is saved to
+            the database.' */
 
-          // trx can be used just like knex, but every call is temporary until
-          // trx.commit() is called. Until then, they're stored separately, and,
-          // if something goes wrong, can be rolled back without side effects.
-          trx('projects').insert(insertion).returning('id')
-          .then(function(projects) {
-            // project is a list containing the ID of the
-            // newly created project
-            const project = projects[0];
-            const projectSlugs = obj.slugs.map(function(slug) {
-              return {name: slug, project: project};
-            });
+        // trx can be used just like knex, but every call is temporary until
+        // trx.commit() is called. Until then, they're stored separately, and,
+        // if something goes wrong, can be rolled back without side effects.
+        trx('projects').insert(insertion).returning('id')
+        .then(function(projects) {
+          // project is a list containing the ID of the
+          // newly created project
+          const project = projects[0];
+          const projectSlugs = obj.slugs.map(function(slug) {
+            return {name: slug, project: project};
+          });
 
-            trx('projectslugs').insert(projectSlugs).then(function() {
+          trx('projectslugs').insert(projectSlugs).then(function() {
+            // The creating user must now be made project manager
+            const managerRole = {
+              project: project,
+              user: authUser.id,
+              manager: true,
+              spectator: true,
+              member: true,
+            };
+
+            trx('userroles').insert(managerRole).then(function() {
+              obj.id = project;
               obj.created_at = new Date(obj.created_at)
               .toISOString().substring(0, 10);
 
@@ -357,6 +363,7 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
           });
         }).catch(function(error) {
+          trx.rollback();
           const err = errors.errorServerError(error);
           return res.status(err.status).send(err);
         });
@@ -364,10 +371,8 @@ module.exports = function(app) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
-    }).catch(function() {
-      // checkUser failed, meaning the user is not authorized
-      const err = errors.errorAuthorizationFailure(authUser.username,
-        'create objects for ' + obj.owner);
+    }).catch(function(error) {
+      const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });
   });
@@ -378,7 +383,7 @@ module.exports = function(app) {
     const obj = req.body.object;
 
     // valid keys
-    const validKeys = ['name', 'uri', 'owner', 'slugs'];
+    const validKeys = ['name', 'uri', 'slugs'];
     /* eslint-disable prefer-const */
     for (let key in obj) {
       /* eslint-enable prefer-const */
@@ -394,7 +399,6 @@ module.exports = function(app) {
     const fields = [
       {name: 'name', type: 'string', required: false},
       {name: 'uri', type: 'string', required: false},
-      {name: 'owner', type: 'string', required: false},
       {name: 'slugs', type: 'array', required: false},
     ];
 
@@ -440,10 +444,8 @@ module.exports = function(app) {
     knex('projects').first().select('projects.id as id',
     'projects.name as name', 'projects.uri as uri',
     'projects.uuid as uuid', 'projects.revision as revision',
-    'projects.created_at as created_at',
-    'users.username as owner', 'users.id as ownerId')
+    'projects.created_at as created_at')
     .where('projects.id', '=', projectIdQuery)
-    .innerJoin('users', 'users.id', 'projects.owner')
     .then(function(project) {
       // project contains all of the information about the project the
       // user is updating
@@ -486,7 +488,6 @@ module.exports = function(app) {
           // when using knex.update() I have better luck updating
           // the entire object, even fields that aren't changed
           project.uri = obj.uri || project.uri;
-          project.owner = project.ownerId;
           project.name = obj.name || project.name;
           project.revision += 1;
           project.created_at = parseInt(project.created_at, 10);
@@ -498,13 +499,16 @@ module.exports = function(app) {
           const oldId = project.id;
           delete project.id;
 
+          // trx can be used just like knex, but every call is temporary
+          // until trx.commit() is called. Until then, they're stored
+          // separately, and, if something goes wrong, can be rolled
+          // back without side effects.
           knex.transaction(function(trx) {
             trx('projects').update({newest: false}).where({id: oldId})
             .then(function() {
               trx('projects').insert(project).returning('id')
               .then(function(id) {
                 project.id = id[0];
-                project.owner = authUser.username;
 
                 project.created_at = new Date(project.created_at)
                 .toISOString().substring(0, 10);
