@@ -17,7 +17,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
             name: 'Ganeti Web Manager',
-            slugs: ['gwm', 'ganeti-webmgr'],
+            slugs: ['gwm', 'ganeti-webmgr'].sort(),
             owner: 'tschuy',
             deleted_at: null,
             updated_at: null,
@@ -53,7 +53,7 @@ module.exports = function(expect, request, baseUrl) {
           {
             uri: 'https://github.com/osuosl/timesync',
             name: 'Timesync',
-            slugs: ['timesync', 'ts'],
+            slugs: ['timesync', 'ts'].sort(),
             owner: 'patcht',
             deleted_at: null,
             updated_at: null,
@@ -86,7 +86,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedResult = {
           uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
           name: 'Ganeti Web Manager',
-          slugs: ['gwm', 'ganeti-webmgr'],
+          slugs: ['gwm', 'ganeti-webmgr'].sort(),
           owner: 'tschuy',
           deleted_at: null,
           updated_at: null,
@@ -97,9 +97,6 @@ module.exports = function(expect, request, baseUrl) {
         };
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
-
-        expectedResult.slugs.sort();
-        jsonBody.slugs.sort();
 
         expect(jsonBody).to.deep.equal(expectedResult);
         done();
@@ -145,7 +142,7 @@ module.exports = function(expect, request, baseUrl) {
     const patchedProject = {
       name: 'Ganeti Web Mgr',
       owner: 'tschuy',
-      slugs: ['gwm', 'gan-web'],
+      slugs: ['gwm', 'gan-web'].sort(),
       uri: 'https://code.osuosl.org/projects/',
     };
 
@@ -153,7 +150,7 @@ module.exports = function(expect, request, baseUrl) {
       id: 1,
       name: 'Ganeti Web Manager',
       owner: 'tschuy',
-      slugs: ['gwm', 'ganeti-webmgr'],
+      slugs: ['gwm', 'ganeti-webmgr'].sort(),
       deleted_at: null,
       updated_at: null,
       created_at: '2014-01-01',
@@ -258,6 +255,7 @@ module.exports = function(expect, request, baseUrl) {
         delete expectedPost.deleted_at;
 
         // expect body of post request to be the new state of gwm
+        body.slugs.sort();
         expect(body).to.deep.equal(expectedPost);
 
         checkListEndpoint(done, expectedResults);
@@ -282,6 +280,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedPost = copyJsonObject(expectedResults);
         delete expectedPost.deleted_at;
 
+        body.slugs.sort();
         // expect body of post request to be the new state of gwm
         expect(body).to.deep.equal(expectedPost);
 
@@ -307,6 +306,7 @@ module.exports = function(expect, request, baseUrl) {
         const expectedPost = copyJsonObject(expectedResults);
         delete expectedPost.deleted_at;
 
+        body.slugs.sort();
         // expect body of post request to be the new state of gwm
         expect(body).to.deep.equal(expectedPost);
 
@@ -629,7 +629,7 @@ module.exports = function(expect, request, baseUrl) {
     const project = {
       uri: 'https://github.com/osuosl/timesync-node',
       owner: 'tschuy',
-      slugs: ['tsn', 'timesync-node'],
+      slugs: ['tsn', 'timesync-node'].sort(),
       name: 'TimeSync Node',
     };
 
@@ -637,7 +637,7 @@ module.exports = function(expect, request, baseUrl) {
     const newProject = {
       uri: 'https://github.com/osuosl/timesync-node',
       owner: 'tschuy',
-      slugs: ['tsn', 'timesync-node'],
+      slugs: ['tsn', 'timesync-node'].sort(),
       name: 'TimeSync Node',
       revision: 1,
       created_at: new Date().toISOString().substring(0, 10),
@@ -659,7 +659,7 @@ module.exports = function(expect, request, baseUrl) {
         uri: 'https://code.osuosl.org/projects/' +
         'ganeti-webmgr',
         name: 'Ganeti Web Manager',
-        slugs: ['gwm', 'ganeti-webmgr'],
+        slugs: ['gwm', 'ganeti-webmgr'].sort(),
         owner: 'tschuy',
         deleted_at: null,
         updated_at: null,
@@ -695,7 +695,7 @@ module.exports = function(expect, request, baseUrl) {
       {
         uri: 'https://github.com/osuosl/timesync',
         name: 'Timesync',
-        slugs: ['timesync', 'ts'],
+        slugs: ['timesync', 'ts'].sort(),
         owner: 'patcht',
         deleted_at: null,
         updated_at: null,
@@ -741,7 +741,7 @@ module.exports = function(expect, request, baseUrl) {
             {
               owner: 'tschuy',
               uri: 'https://github.com/osuosl/timesync-node',
-              slugs: ['tsn', 'timesync-node'],
+              slugs: ['tsn', 'timesync-node'].sort(),
               name: 'TimeSync Node',
               deleted_at: null,
               updated_at: null,
@@ -786,7 +786,7 @@ module.exports = function(expect, request, baseUrl) {
             {
               owner: 'tschuy',
               uri: null,
-              slugs: ['tsn', 'timesync-node'],
+              slugs: ['tsn', 'timesync-node'].sort(),
               name: 'TimeSync Node',
               deleted_at: null,
               updated_at: null,
@@ -823,7 +823,6 @@ module.exports = function(expect, request, baseUrl) {
           expect(getRes.statusCode).to.equal(200);
 
           const jsonGetBody = JSON.parse(getBody);
-          // the projects/ list shouldn't have changed
           expect(jsonGetBody).to.deep.have.same.members(initialProjects);
           done();
         });
@@ -889,7 +888,7 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails to create a new project with an existing slug', function(done) {
       const postExistingSlug = copyJsonObject(postArg);
-      postExistingSlug.object.slugs = ['gwm', 'ganeti-webmgr', 'dog'];
+      postExistingSlug.object.slugs = ['gwm', 'ganeti-webmgr', 'dog'].sort();
       requestOptions.form = postExistingSlug;
 
       request.post(requestOptions, function(err, res, body) {
@@ -1117,7 +1116,7 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://code.osuosl.org/projects/ganeti-' +
               'webmgr',
               name: 'Ganeti Web Manager',
-              slugs: ['gwm', 'ganeti-webmgr'],
+              slugs: ['gwm', 'ganeti-webmgr'].sort(),
               owner: 'tschuy',
               deleted_at: null,
               updated_at: null,
@@ -1153,7 +1152,7 @@ module.exports = function(expect, request, baseUrl) {
             {
               uri: 'https://github.com/osuosl/timesync',
               name: 'Timesync',
-              slugs: ['timesync', 'ts'],
+              slugs: ['timesync', 'ts'].sort(),
               owner: 'patcht',
               deleted_at: null,
               updated_at: null,
@@ -1191,7 +1190,7 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://code.osuosl.org/projects/ganeti-' +
               'webmgr',
               name: 'Ganeti Web Manager',
-              slugs: ['gwm', 'ganeti-webmgr'],
+              slugs: ['gwm', 'ganeti-webmgr'].sort(),
               owner: 'tschuy',
               deleted_at: null,
               updated_at: null,
@@ -1227,7 +1226,7 @@ module.exports = function(expect, request, baseUrl) {
             {
               uri: 'https://github.com/osuosl/timesync',
               name: 'Timesync',
-              slugs: ['timesync', 'ts'],
+              slugs: ['timesync', 'ts'].sort(),
               owner: 'patcht',
               id: 4,
               revision: 1,
@@ -1246,7 +1245,7 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /projects/?include_revisions=true', function() {
+  describe('GET /projects/?include_revisions', function() {
     const currentTime = new Date().toISOString().substring(0, 10);
 
     const noParentsData = {
@@ -1259,10 +1258,7 @@ module.exports = function(expect, request, baseUrl) {
       'deleted_at': null,
       'updated_at': currentTime,
       'created_at': '2014-01-01',
-      'slugs': [
-        'gwm',
-        'ganeti-webmgr',
-      ],
+      'slugs': ['gwm', 'ganeti-webmgr'].sort(),
     };
 
     const withParentsData = {
@@ -1275,10 +1271,7 @@ module.exports = function(expect, request, baseUrl) {
       'deleted_at': null,
       'updated_at': currentTime,
       'created_at': '2014-01-01',
-      'slugs': [
-        'gwm',
-        'ganeti-webmgr',
-      ],
+      'slugs': ['gwm', 'ganeti-webmgr'].sort(),
       'parents': [
         {
           'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
@@ -1290,10 +1283,6 @@ module.exports = function(expect, request, baseUrl) {
           'deleted_at': null,
           'updated_at': null,
           'created_at': '2014-01-01',
-          'slugs': [
-            'gwm',
-            'ganeti-webmgr',
-          ],
         },
       ],
     };
@@ -1365,7 +1354,7 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /projects/:uuid?include_revisions=true', function() {
+  describe('GET /projects/:uuid?include_revisions', function() {
     const currentTime = new Date().toISOString().substring(0, 10);
     const project = 'gwm';
 
@@ -1379,10 +1368,7 @@ module.exports = function(expect, request, baseUrl) {
       'deleted_at': null,
       'updated_at': currentTime,
       'created_at': '2014-01-01',
-      'slugs': [
-        'gwm',
-        'ganeti-webmgr',
-      ],
+      'slugs': ['gwm', 'ganeti-webmgr'].sort(),
     };
 
     const withParentsData = {
@@ -1395,10 +1381,7 @@ module.exports = function(expect, request, baseUrl) {
       'deleted_at': null,
       'updated_at': currentTime,
       'created_at': '2014-01-01',
-      'slugs': [
-        'gwm',
-        'ganeti-webmgr',
-      ],
+      'slugs': ['gwm', 'ganeti-webmgr'].sort(),
       'parents': [
         {
           'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
@@ -1410,10 +1393,6 @@ module.exports = function(expect, request, baseUrl) {
           'deleted_at': null,
           'updated_at': null,
           'created_at': '2014-01-01',
-          'slugs': [
-            'gwm',
-            'ganeti-webmgr',
-          ],
         },
       ],
     };
