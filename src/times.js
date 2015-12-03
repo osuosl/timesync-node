@@ -515,6 +515,7 @@ module.exports = function(app) {
 
                 trx('timesactivities').insert(taInsertion).then(function() {
                   time.id = timeId;
+                  trx.commit();
                   return res.send(JSON.stringify(time));
                 }).catch(function(error) {
                   trx.rollback();
