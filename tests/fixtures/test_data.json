@@ -210,8 +210,8 @@
       "project":"projects:0",
       "notes":"",
       "issue_uri":"https:://github.com/osuosl/ganeti_webmgr/issues/48",
-      "date_worked": 1435881600000,
-      "created_at": 1435881600000,
+      "date_worked":1429488000000,
+      "created_at":1429488000000,
       "updated_at": null,
       "id": 5,
       "uuid": "b6ac75fb-7872-403f-ab71-e5542fae4212",
@@ -224,13 +224,13 @@
       "project":"projects:1",
       "notes":"",
       "issue_uri":"",
-      "date_worked": 1439164800000,
-      "created_at": 1439164800000,
+      "date_worked":1429660800000,
+      "created_at":1429660800000,
       "updated_at": null,
       "id": 6,
       "uuid": "58e07b73-596d-472b-adcc-ea68599657f7",
       "revision": 1,
-      "deleted_at": 1439337600000
+      "deleted_at":1439337600000
     }  
   ],
   "projectslugs":[

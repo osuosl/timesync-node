@@ -1445,8 +1445,8 @@ module.exports = function(expect, request, baseUrl) {
         activities: ['docs'],
         notes: '',
         issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
-        date_worked: '2015-07-03',
-        created_at: '2015-07-03',
+        date_worked: '2015-04-20',
+        created_at: '2015-04-20',
         updated_at: null,
         id: 5,
         uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
@@ -1460,8 +1460,8 @@ module.exports = function(expect, request, baseUrl) {
         activities: ['dev'],
         notes: '',
         issue_uri: '',
-        date_worked: '2015-08-10',
-        created_at: '2015-08-10',
+        date_worked: '2015-04-22',
+        created_at: '2015-04-22',
         updated_at: null,
         id: 6,
         uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
@@ -1491,8 +1491,8 @@ module.exports = function(expect, request, baseUrl) {
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
-      date_worked: '2015-07-03',
-      created_at: '2015-07-03',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
       updated_at: null,
       id: 5,
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
@@ -1555,8 +1555,8 @@ module.exports = function(expect, request, baseUrl) {
       activities: ['dev'],
       notes: '',
       issue_uri: '',
-      date_worked: '2015-08-10',
-      created_at: '2015-08-10',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
       updated_at: null,
       id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
@@ -1619,8 +1619,8 @@ module.exports = function(expect, request, baseUrl) {
       activities: ['dev'],
       notes: '',
       issue_uri: '',
-      date_worked: '2015-08-10',
-      created_at: '2015-08-10',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
       updated_at: null,
       id: 6,
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
@@ -1664,6 +1664,114 @@ module.exports = function(expect, request, baseUrl) {
           status: 400,
           error: 'Bad Query Value',
           text: 'Parameter project contained invalid value not@slug!',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?start=:start&included_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all active and deleted times after the specified start date',
+    function(done) {
+      request.get(baseUrl + 'times?start=2015-04-22&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+
+    it('fails when given an invalid start date', function(done) {
+      request.get(baseUrl + 'times?start=notaday&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter start contained invalid value notaday',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+
+    it('fails when given a future start date', function(done) {
+      request.get(baseUrl + 'times?start=3015-04-22&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter start contained invalid value 3015-04-22',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?end=:end&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all active/deleted times before the specified date',
+    function(done) {
+      request.get(baseUrl + 'times?end=2015-04-20&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+
+    it('fails if given an invalid end date', function(done) {
+      request.get(baseUrl + 'times?end=theend&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter end contained invalid value theend',
         };
 
         expect(res.statusCode).to.equal(400);
@@ -1751,8 +1859,8 @@ module.exports = function(expect, request, baseUrl) {
           activities: ['docs'],
           notes: '',
           issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
-          date_worked: '2015-07-03',
-          created_at: '2015-07-03',
+          date_worked: '2015-04-20',
+          created_at: '2015-04-20',
           updated_at: null,
           id: 5,
           uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
