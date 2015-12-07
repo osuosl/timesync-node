@@ -1436,6 +1436,932 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
+  describe('GET /times?include_deleted=true', function() {
+    const softDeletedTimes = [
+      {
+        duration: 12,
+        user: 'tschuy',
+        project: ['gwm', 'ganeti-webmgr'],
+        activities: ['docs'],
+        notes: '',
+        issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+        date_worked: '2015-04-20',
+        created_at: '2015-04-20',
+        updated_at: null,
+        id: 5,
+        uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+        revision: 1,
+        deleted_at: '2015-07-04',
+      },
+      {
+        duration: 12,
+        user: 'patcht',
+        project: ['pgd'],
+        activities: ['dev'],
+        notes: '',
+        issue_uri: '',
+        date_worked: '2015-04-22',
+        created_at: '2015-04-22',
+        updated_at: null,
+        id: 6,
+        uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+        revision: 1,
+        deleted_at: '2015-08-12',
+      },
+    ];
+
+    it('returns a list of all active and deleted times', function(done) {
+      request.get(baseUrl + 'times?include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes[0]);
+        expect(jsonBody).to.include(softDeletedTimes[1]);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all times for a user', function(done) {
+      request.get(baseUrl + 'times?user=tschuy&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+
+    it('fails when given a nonexistent user',
+    function(done) {
+      request.get(baseUrl + 'times?user=notauser&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter user contained invalid value notauser',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+
+    it('fails when given an invalid user', function(done) {
+      request.get(baseUrl + 'times?user=wh4t3v3n.isTh%s&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter user contained invalid value wh4t3v3n.isTh%s',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all times for an activity', function(done) {
+      request.get(baseUrl + 'times?activity=dev&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+
+    it('fails when given a nonexistent activity',
+    function(done) {
+      request.get(baseUrl + 'times?activity=review&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter activity contained invalid value review',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+
+    it('fails when given an invalid activity', function(done) {
+      request.get(baseUrl + 'times?activity=w_hA.t&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter activity contained invalid value w_hA.t',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?project=:project?include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all times for a project', function(done) {
+      request.get(baseUrl + 'times?project=pgd&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+
+    it('fails when given a nonexistent project', function(done) {
+      request.get(baseUrl + 'times?project=chili&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter project contained invalid value chili',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+
+    it('fails when given an invalid project', function(done) {
+      request.get(baseUrl + 'times?project=not@slug!&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter project contained invalid value not@slug!',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?start=:start&included_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all times after a date', function(done) {
+      request.get(baseUrl + 'times?start=2015-04-22&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+
+    it('fails when given an invalid start date', function(done) {
+      request.get(baseUrl + 'times?start=notaday&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter start contained invalid value notaday',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+
+    it('fails when given a future start date', function(done) {
+      request.get(baseUrl + 'times?start=3015-04-22&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter start contained invalid value 3015-04-22',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?end=:end&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all times before a date', function(done) {
+      request.get(baseUrl + 'times?end=2015-04-20&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+
+    it('fails if given an invalid end date', function(done) {
+      request.get(baseUrl + 'times?end=theend&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 400,
+          error: 'Bad Query Value',
+          text: 'Parameter end contained invalid value theend',
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&activity=:activity&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all times that match the given user and activity',
+    function(done) {
+      request.get(baseUrl +
+      'times?user=tschuy&activity=docs&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&project=project&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all times that match the given user and project',
+    function(done) {
+      request.get(baseUrl +
+                  'times?user=patcht&project=pgd&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&start:=start&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all times for a user after a date', function(done) {
+      request.get(baseUrl + 'times?user=tschuy&start=2015-04-20&' +
+      'include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&end=:end&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all times for a user before a date', function(done) {
+      request.get(baseUrl + 'times?user=patcht&end=2015-04-22&' +
+      'include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&start:=start&end=:end&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all times for a user within a date range', function(done) {
+      request.get(baseUrl + 'times?user=tschuy&start=2015-04-20&' +
+      'end=:2015-04-25&include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&activitiy=:activity&project=:project&' +
+  'include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all times that match the given user, activity, and project',
+    function(done) {
+      request.get(baseUrl + 'times?user=patcht&activity=dev&project=pgd&' +
+      'include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&activitiy=:activity&project=:project&' +
+  'start=:start&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all times that match the given parameters after a date',
+    function(done) {
+      request.get(baseUrl + 'times?user=patcht&activity=dev&project=pgd&' +
+      '&start=2015-04-22&include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&activitiy=:activity&project=:project&' +
+  'end=:end&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all times that match the given parameters before a date',
+    function(done) {
+      request.get(baseUrl + 'times?user=tschuy&activity=docs&project=gwm&' +
+      'end=2015-04-22&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&activitiy=:activity&project=:project&' +
+  'start=:start&end=:end&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all times that match the given parameters within a date ' +
+    'range', function(done) {
+      request.get(baseUrl + 'times?user=tschuy&activity=docs&project=gwm&' +
+      '&start=2015-04-19&end=2015-04-22&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&project=:project&' +
+  'include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all times that match the given activity and project',
+    function(done) {
+      request.get(baseUrl + 'times?activity=docs&project=gwm&' +
+      'include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&start=:start&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all times for an activity after a date', function(done) {
+      request.get(baseUrl + 'times?activity=docs&start=:2015-04-17&' +
+      'include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activitiy=:activity&end=:end&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all times for an activity before a date', function(done) {
+      request.get(baseUrl + 'times?activity=dev&end=2015-04-25&' +
+      'include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activitiy=:activity&start=:start&end=:end&' +
+  'include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all times for an activity within a date range',
+    function(done) {
+      request.get(baseUrl + 'times?activity=dev&start=2015-04-22&' +
+      'end=2015-04-25&include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?project=:project&start=:start&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all times for a project after a date', function(done) {
+      request.get(baseUrl + 'times?project=pgd&start=2015-04-20&' +
+      'include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?project=:project&end=:end&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all times for a project before a date', function(done) {
+      request.get(baseUrl + 'times?project=gwm&end=2015-04-20&' +
+      'include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?project=:project&start=:start&end=:end&' +
+  'include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all times for a project within a date range', function(done) {
+      request.get(baseUrl + 'times?project=gwm&start=2015-04-20&' +
+      'end=2015-04-25&include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&project=:project&start=:start&' +
+  'include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['gwm', 'ganeti-webmgr'],
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      id: 5,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
+
+    it('returns all times that match the given activity and project after ' +
+    'a date', function(done) {
+      request.get(baseUrl + 'times?activity=docs&project=gwm&' +
+      'start=2015-04-17&include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&project=:project&end=:end&' +
+  'include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all times that match the given activity and project before ' +
+    'a date', function(done) {
+      request.get(baseUrl + 'times?activity=dev&project=pgd&' +
+      'end=2015-04-25&include_deleted=true', function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&project=:project&start=:start&' +
+  'end=:end&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      id: 6,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
+
+    it('returns all times that match the given activity and project within ' +
+    'a date range', function(done) {
+      request.get(baseUrl + 'times?activity=dev&project=pgd&' +
+      'start=2015-04-21&end=2015-04-25&include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.include(softDeletedTimes);
+        done();
+      });
+    });
+  });
+
   describe('GET /times/:uuid', function() {
     it('returns times by uuid', function(done) {
       request.get(baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
@@ -1495,6 +2421,73 @@ module.exports = function(expect, request, baseUrl) {
         expect(jsonBody).to.deep.equal(expectedResult);
         expect(getRes.statusCode).to.equal(400);
 
+        done();
+      });
+    });
+  });
+
+  describe('GET /times/:uuid?include_deleted=true', function() {
+    it('returns the soft-deleted time that corresponds with the given uuid',
+    function(done) {
+      request.get(baseUrl +
+      'times/b6ac75fb-7872-403f-ab71-e5542fae4212?include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          duration: 12,
+          user: 'tschuy',
+          project: ['gwm', 'ganeti-webmgr'],
+          activities: ['docs'],
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+          date_worked: '2015-04-20',
+          created_at: '2015-04-20',
+          updated_at: null,
+          id: 5,
+          uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+          revision: 1,
+          deleted_at: '2015-07-04',
+        };
+
+        expect(err).to.equal(null);
+        expect(res.statusCode).to.equal(200);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+
+    it('fails with Object Not Found error when given a nonexistent uuid',
+    function(done) {
+      request.get(baseUrl +
+      'times/00000000-0000-0000-0000-000000000000?include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult = {
+          status: 404,
+          error: 'Object not found',
+          text: 'Nonexistent time',
+        };
+
+        expect(res.statusCode).to.equal(404);
+        expect(jsonBody).to.deep.equal(expectedResult);
+        done();
+      });
+    });
+
+    it('fails with Invalid Identifier error when given an invalid uuid',
+    function(done) {
+      request.get(baseUrl + 'times/nope?include_deleted=true',
+      function(err, res, body) {
+        const jsonBody = JSON.parse(body);
+        const expectedResult =  {
+          status: 400,
+          error: 'The provided identifier was invalid',
+          text: 'Expected UUID but received nope',
+          values: ['nope'],
+        };
+
+        expect(res.statusCode).to.equal(400);
+        expect(jsonBody).to.deep.equal(expectedResult);
         done();
       });
     });
@@ -1618,7 +2611,7 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               uuid: time.uuid,
               revision: 1,
-              id: 5,
+              id: 7,
             },
           ]);
 
@@ -2226,7 +3219,7 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               uuid: time.uuid,
               revision: 1,
-              id: 5,
+              id: 7,
             },
           ]);
           expect(getErr).to.be.a('null');

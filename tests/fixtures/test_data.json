@@ -142,7 +142,7 @@
       "id": 5,
       "uuid": "6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29",
       "revision": 1,
-      "deleted_at": "1388534400000",
+      "deleted_at": 1388534400000,
       "updated_at": null,
       "created_at": 1246924800000
     }
@@ -203,7 +203,35 @@
       "uuid": "d24c191f-305c-4646-824d-433bbd86fcec",
       "revision": 1,
       "deleted_at": null
-    }
+    },
+    {
+      "duration":12,
+      "user":"users:1",
+      "project":"projects:0",
+      "notes":"",
+      "issue_uri":"https:://github.com/osuosl/ganeti_webmgr/issues/48",
+      "date_worked":1429488000000,
+      "created_at":1429488000000,
+      "updated_at": null,
+      "id": 5,
+      "uuid": "b6ac75fb-7872-403f-ab71-e5542fae4212",
+      "revision": 1,
+      "deleted_at": 1435968000000
+    },
+    {
+      "duration":12,
+      "user":"users:2",
+      "project":"projects:1",
+      "notes":"",
+      "issue_uri":"",
+      "date_worked":1429660800000,
+      "created_at":1429660800000,
+      "updated_at": null,
+      "id": 6,
+      "uuid": "58e07b73-596d-472b-adcc-ea68599657f7",
+      "revision": 1,
+      "deleted_at":1439337600000
+    }  
   ],
   "projectslugs":[
     {
@@ -267,6 +295,16 @@
     {
       "id": 5,
       "time": "times:3",
+      "activity": "activities:1"
+    },
+    {
+      "id": 6,
+      "time": "times:4",
+      "activity": "activities:0"
+    },
+    {
+      "id": 7,
+      "time": "times:5",
       "activity": "activities:1"
     }
   ],

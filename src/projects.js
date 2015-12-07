@@ -11,10 +11,11 @@ module.exports = function(app) {
     const knex = app.get('knex');
     let projectsQ;
 
-    if (req.query.include_deleted) {
+    if (req.query.include_deleted === 'true' ||
+        req.query.include_deleted === '') {
       projectsQ = knex('projects');
     } else {
-      projectsQ = knex('projects').whereNull('deleted_at');
+      projectsQ = knex('projects').where({deleted_at: null});
     }
 
     projectsQ.then(function(projects) {
