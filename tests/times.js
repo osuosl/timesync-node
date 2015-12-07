@@ -1500,8 +1500,7 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-07-04',
     };
 
-    it('returns all active and deleted times for the specified user when ' +
-    'include_deleted=true', function(done) {
+    it('returns all times for a user', function(done) {
       request.get(baseUrl + 'times?user=tschuy&include_deleted=true',
       function(err, res, body) {
         const jsonBody = JSON.parse(body);
@@ -1512,7 +1511,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('fails if given a nonexistent user',
+    it('fails when given a nonexistent user',
     function(done) {
       request.get(baseUrl + 'times?user=notauser&include_deleted=true',
       function(err, res, body) {
@@ -1564,8 +1563,7 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-08-12',
     };
 
-    it('returns all active and deleted times for the specified activity ' +
-    'when include_deleted=true', function(done) {
+    it('returns all times for an activity', function(done) {
       request.get(baseUrl + 'times?activity=dev&include_deleted=true',
       function(err, res, body) {
         const jsonBody = JSON.parse(body);
@@ -1593,7 +1591,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('fails if given an invalid activity', function(done) {
+    it('fails when given an invalid activity', function(done) {
       request.get(baseUrl + 'times?activity=w_hA.t&include_deleted=true',
       function(err, res, body) {
         const jsonBody = JSON.parse(body);
@@ -1628,8 +1626,7 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-08-12',
     };
 
-    it('returns all active and deleted times for the specified project ' +
-    'when include_deleted=true', function(done) {
+    it('returns all times for a project', function(done) {
       request.get(baseUrl + 'times?project=pgd&include_deleted=true',
       function(err, res, body) {
         const jsonBody = JSON.parse(body);
@@ -1690,8 +1687,7 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-08-12',
     };
 
-    it('returns all active and deleted times after the specified start date',
-    function(done) {
+    it('returns all times after a date', function(done) {
       request.get(baseUrl + 'times?start=2015-04-22&include_deleted=true',
       function(err, res, body) {
         const jsonBody = JSON.parse(body);
@@ -1752,8 +1748,7 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-07-04',
     };
 
-    it('returns all active/deleted times before the specified date',
-    function(done) {
+    it('returns all times before a date', function(done) {
       request.get(baseUrl + 'times?end=2015-04-20&include_deleted=true',
       function(err, res, body) {
         const jsonBody = JSON.parse(body);
@@ -1863,7 +1858,7 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-07-04',
     };
 
-    it('returns all times for a user after a start date', function(done) {
+    it('returns all times for a user after a date', function(done) {
       request.get(baseUrl + 'times?user=tschuy&start=2015-04-20&' +
       'include_deleted=true', function(err, res, body) {
         const jsonBody = JSON.parse(body);
@@ -1893,7 +1888,7 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-08-12',
     };
 
-    it('returns all times for a user after a end date', function(done) {
+    it('returns all times for a user before a date', function(done) {
       request.get(baseUrl + 'times?user=patcht&end=2015-04-22&' +
       'include_deleted=true', function(err, res, body) {
         const jsonBody = JSON.parse(body);
@@ -1953,7 +1948,8 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-08-12',
     };
 
-    it('returns all times that match the given parameters', function(done) {
+    it('returns all times that match the given user, activity, and project',
+    function(done) {
       request.get(baseUrl + 'times?user=patcht&activity=dev&project=pgd&' +
       'include_deleted=true', function(err, res, body) {
         const jsonBody = JSON.parse(body);
@@ -2046,7 +2042,7 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-07-04',
     };
 
-    it('returns all times that match the given parameters within a date' +
+    it('returns all times that match the given parameters within a date ' +
     'range', function(done) {
       request.get(baseUrl + 'times?user=tschuy&activity=docs&project=gwm&' +
       '&start=2015-04-19&end=2015-04-22&include_deleted=true',
@@ -2169,7 +2165,7 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-08-12',
     };
 
-    it('returns all times for an activity within the date range',
+    it('returns all times for an activity within a date range',
     function(done) {
       request.get(baseUrl + 'times?activity=dev&start=2015-04-22&' +
       'end=2015-04-25&include_deleted=true', function(err, res, body) {
@@ -2290,8 +2286,8 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-07-04',
     };
 
-    it('returns all times that match the given activity and project',
-    function(done) {
+    it('returns all times that match the given activity and project after ' +
+    'a date', function(done) {
       request.get(baseUrl + 'times?activity=docs&project=gwm&' +
       'start=2015-04-17&include_deleted=true', function(err, res, body) {
         const jsonBody = JSON.parse(body);
@@ -2321,8 +2317,8 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-08-12',
     };
 
-    it('returns all times that match the given activity and project',
-    function(done) {
+    it('returns all times that match the given activity and project before ' +
+    'a date', function(done) {
       request.get(baseUrl + 'times?activity=dev&project=pgd&' +
       'end=2015-04-25&include_deleted=true', function(err, res, body) {
         const jsonBody = JSON.parse(body);
@@ -2352,9 +2348,11 @@ module.exports = function(expect, request, baseUrl) {
       deleted_at: '2015-08-12',
     };
 
-    it('returns all times that match the given parameters', function(done) {
-      request.get(baseUrl + 'times?activity=dev&project=pgd&start=2015-04-21&' +
-      'end=2015-04-25&include_deleted=true', function(err, res, body) {
+    it('returns all times that match the given activity and project within ' +
+    'a date range', function(done) {
+      request.get(baseUrl + 'times?activity=dev&project=pgd&' +
+      'start=2015-04-21&end=2015-04-25&include_deleted=true',
+      function(err, res, body) {
         const jsonBody = JSON.parse(body);
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
