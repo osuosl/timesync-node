@@ -87,7 +87,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('should fail with invalid slug error', function(done) {
+    it('should fail with object not found error', function(done) {
       request.get(baseUrl + 'activities/404', function(err, res, body) {
         const jsonBody = JSON.parse(body);
         const expectedResult = {
@@ -1067,8 +1067,8 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       request.get(baseUrl + 'activities/' + activity +
       '?include_revisions=true', function(err, res, body) {
-        expect(JSON.parse(body)).to.include(withParentsData);
-        expect(JSON.parse(body)).to.not.include(noParentsData);
+        expect(JSON.parse(body)).to.deep.equal(withParentsData);
+        expect(JSON.parse(body)).to.deep.not.equal(noParentsData);
         done();
       });
     });
@@ -1078,8 +1078,8 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       request.get(baseUrl + 'activities/' + activity + '?include_revisions',
       function(err, res, body) {
-        expect(JSON.parse(body)).to.include(withParentsData);
-        expect(JSON.parse(body)).to.not.include(noParentsData);
+        expect(JSON.parse(body)).to.deep.equal(withParentsData);
+        expect(JSON.parse(body)).to.deep.not.equal(noParentsData);
         done();
       });
     });
