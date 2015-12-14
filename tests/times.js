@@ -2479,7 +2479,7 @@ module.exports = function(expect, request, baseUrl) {
       request.get(baseUrl + 'times/nope?include_deleted=true',
       function(err, res, body) {
         const jsonBody = JSON.parse(body);
-        const expectedResult =  {
+        const expectedResult = {
           status: 400,
           error: 'The provided identifier was invalid',
           text: 'Expected UUID but received nope',
