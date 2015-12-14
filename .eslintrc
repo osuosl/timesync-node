@@ -9,5 +9,8 @@
   "ecmaFeatures": {
     "modules": false
   },
+  "env": {
+    "node": true
+  },
   "root": true,
 }
