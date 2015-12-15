@@ -14,12 +14,13 @@ module.exports = function(app) {
       return err;
     }
 
-    const fields = ['created_at', 'updated_at', 'deleted_at', 'date_worked']
+    const fields = ['created_at', 'updated_at', 'deleted_at', 'date_worked'];
 
     fields.map(function(f) {
       if (time[f]) {
         if (typeof time[f] === 'number') {
-          time[f] = new Date(parseInt(time[f], 10)).toISOString().substring(0, 10);
+          time[f] = new Date(parseInt(time[f], 10)).toISOString()
+                    .substring(0, 10);
         } else if (typeof time[f] === 'string') {
           time[f] = time[f];
         } else {
@@ -349,7 +350,8 @@ module.exports = function(app) {
               return pt.uuid === time.uuid;
             });
             const pMeta = timesMetadata(pTimes);
-            return JSON.stringify(compileTime(pTime, pMeta.project, pMeta.activities, res));
+            return JSON.stringify(compileTime(pTime, pMeta.project,
+                                              pMeta.activities, res));
           }).filter(function(pTime, index, self) {
             return self.indexOf(pTime) === index;
           }).map(function(pTime) {
@@ -392,9 +394,6 @@ module.exports = function(app) {
 
   authRequest.get(app, app.get('version') + '/times/:uuid',
   function(req, res) {
-    const knex = app.get('knex');
-    let timesQ;
-
     if (!helpers.validateUUID(req.params.uuid)) {
       const err = errors.errorInvalidIdentifier('UUID', req.params.uuid);
       return res.status(err.status).send(err);
@@ -447,7 +446,8 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
       });
     } else {
-      compileTimesQueryPromise(req, res, {'times.newest': true, 'times.uuid': req.params.uuid})
+      compileTimesQueryPromise(req, res, {'times.newest': true,
+                                          'times.uuid': req.params.uuid})
       .then(function(times) {
         const metadata = timesMetadata(times);
         return res.send(compileTime(times.pop(), metadata.project,

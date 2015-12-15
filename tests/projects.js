@@ -1,3 +1,4 @@
+'use strict';
 
 function copyJsonObject(obj) {
   // This allows us to change object properties
@@ -365,7 +366,7 @@ module.exports = function(expect, request, baseUrl) {
     const patchedProject = {
       name: 'Ganeti Web Mgr',
       owner: 'tschuy',
-      slugs: ['gwm', 'gan-web'].sort(),
+      slugs: ['gan-web', 'gwm'],
       uri: 'https://code.osuosl.org/projects/',
     };
 

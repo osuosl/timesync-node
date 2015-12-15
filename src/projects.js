@@ -537,7 +537,7 @@ module.exports = function(app) {
 
                     Promise.all(newSlugs).then(function() {
                       project.slugs = obj.slugs;
-                      project.owner = user.username;
+                      project.owner = authUser.username;
                       delete project.id;
 
                       trx.commit();
@@ -551,7 +551,7 @@ module.exports = function(app) {
                     trx('projectslugs').update({project: project.id})
                     .where({project: oldId}).then(function() {
                       project.slugs = existingSlugs;
-                      project.owner = user.username;
+                      project.owner = authUser.username;
                       delete project.id;
                       trx.commit();
                       res.send(project);
