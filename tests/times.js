@@ -1591,17 +1591,9 @@ module.exports = function(expect, request, baseUrl) {
             id: 1,
           };
 
-          expect(jsonBody).to.have.length(expectedResult.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResult[i].project.sort();
-            expectedResult[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
           expect(err).to.be.a('null');
           expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResult);
+          expect(jsonBody).to.eql(expectedResult);
           done();
         });
       });
@@ -2865,7 +2857,7 @@ module.exports = function(expect, request, baseUrl) {
                 deleted_at: null,
                 uuid: time.uuid,
                 revision: 1,
-                id: 5,
+                id: 7,
               },
             ]);
 
@@ -2875,8 +2867,7 @@ module.exports = function(expect, request, baseUrl) {
 
             expect(getErr).to.be.a('null');
             expect(getRes.statusCode).to.equal(200);
-            expect(jsonGetBody).to.deep.have
-            .same.members(expectedResults);
+            expect(jsonGetBody).to.deep.have.same.members(expectedResults);
             done();
           });
         });
@@ -3526,31 +3517,34 @@ module.exports = function(expect, request, baseUrl) {
           date_worked: '2015-07-30',
         };
 
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
+
         const createdAt = new Date().toISOString().substring(0, 10);
-        request.get(baseUrl + 'times?token=' + token,
-        function(getErr, getRes, getBody) {
-          const expectedResults = initialData.concat([
-            {
-              duration: 20,
-              user: 'tschuy',
-              project: ['gwm', 'ganeti-webmgr'],
-              activities: ['docs'],
-              notes: '',
-              issue_uri: null,
-              date_worked: '2015-07-30',
-              created_at: createdAt,
-              updated_at: null,
-              deleted_at: null,
-              uuid: time.uuid,
-              revision: 1,
-              id: 7,
-            },
-          ]);
-          expect(getErr).to.be.a('null');
-          expect(getRes.statusCode).to.equal(200);
-          expect(JSON.parse(getBody)).to.deep.have
-          .same.members(expectedResults);
-          done();
+        request.post(postArg, function(postErr, postRes, postBody) {
+          const expectedResults = initialData.concat([{
+            duration: 20,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: null,
+            date_worked: '2015-07-30',
+            created_at: createdAt,
+            updated_at: null,
+            deleted_at: null,
+            uuid: postBody.uuid,
+            revision: 1,
+            id: 7,
+          }]);
+
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.eql(expectedResults);
+            done();
+          });
         });
       });
     });
