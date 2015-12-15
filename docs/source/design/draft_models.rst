@@ -15,6 +15,7 @@ Projects:
     name, # string
     owner, # foreign key to User id
     uri # nullable string
+    newest # bool
 
 ProjectSlugs:
 -------------
@@ -32,6 +33,7 @@ Activities:
 
     id, # auto-incrementing primary key
     name # string
+    newest # bool
 
 ActivitySlugs:
 --------------
@@ -55,6 +57,7 @@ Times:
     notes, # string
     issue_uri, # string
     date_worked # datetime
+    newest # bool
 
 User:
 -----

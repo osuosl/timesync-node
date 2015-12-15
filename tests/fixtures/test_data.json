@@ -9,7 +9,8 @@
       "revision": 1,
       "deleted_at": null,
       "updated_at": null,
-      "created_at": 1388534400000
+      "created_at": 1388534400000,
+      "newest": true
     },
     {
       "name":"Development",
@@ -19,7 +20,8 @@
       "revision": 1,
       "deleted_at": null,
       "updated_at": null,
-      "created_at": 1388534400000
+      "created_at": 1388534400000,
+      "newest": true
     },
     {
       "name":"Systems",
@@ -29,7 +31,8 @@
       "revision": 1,
       "deleted_at": null,
       "updated_at": null,
-      "created_at": 1388534400000
+      "created_at": 1388534400000,
+      "newest": true
     },
     {
       "name":"Meetings",
@@ -39,7 +42,8 @@
       "revision": 1,
       "deleted_at": null,
       "updated_at": null,
-      "created_at": 1388534400000
+      "created_at": 1388534400000,
+      "newest": true
     },
     {
       "name":"Code Review",
@@ -49,7 +53,8 @@
       "revision": 1,
       "deleted_at": 1393632000000,
       "updated_at": null,
-      "created_at": 1388534400000
+      "created_at": 1388534400000,
+      "newest": true
     }
   ],
   "users":[
@@ -100,7 +105,8 @@
       "revision": 1,
       "deleted_at": null,
       "updated_at": null,
-      "created_at": 1388534400000
+      "created_at": 1388534400000,
+      "newest": true
     },
     {
       "uri":"https:://code.osuosl.org/projects/pgd",
@@ -111,7 +117,8 @@
       "revision": 1,
       "deleted_at": null,
       "updated_at": null,
-      "created_at": 1388534400000
+      "created_at": 1388534400000,
+      "newest": true
     },
     {
       "uri":"https:://github.com/osu-cass/whats-fresh-api",
@@ -122,7 +129,8 @@
       "revision": 1,
       "deleted_at": null,
       "updated_at": null,
-      "created_at": 1388534400000
+      "created_at": 1388534400000,
+      "newest": true
     },
     {
       "uri":"https:://github.com/osuosl/timesync",
@@ -133,7 +141,8 @@
       "revision": 1,
       "deleted_at": null,
       "updated_at": null,
-      "created_at": 1388534400000
+      "created_at": 1388534400000,
+      "newest": true
     },
     {
       "uri":"https:://github.com/osuosl/chiliproject",
@@ -144,7 +153,8 @@
       "revision": 1,
       "deleted_at": 1388534400000,
       "updated_at": null,
-      "created_at": 1246924800000
+      "created_at": 1246924800000,
+      "newest": true
     }
   ],
   "times":[
@@ -160,7 +170,8 @@
       "id": 1,
       "uuid": "32764929-1bea-4a17-8c8a-22d7fb144941",
       "revision": 1,
-      "deleted_at": null
+      "deleted_at": null,
+      "newest": true
     },
     {
       "duration":12,
@@ -174,7 +185,8 @@
       "id": 2,
       "uuid": "e0326905-ef25-46a0-bacd-4391155aca4a",
       "revision": 1,
-      "deleted_at": null
+      "deleted_at": null,
+      "newest": true
     },
     {
       "duration":12,
@@ -188,7 +200,8 @@
       "id": 3,
       "uuid": "4bfd7dcf-3fda-4488-a530-60b65d9e77a9",
       "revision": 1,
-      "deleted_at": null
+      "deleted_at": null,
+      "newest": true
     },
     {
       "duration":12,
@@ -202,7 +215,8 @@
       "id": 4,
       "uuid": "d24c191f-305c-4646-824d-433bbd86fcec",
       "revision": 1,
-      "deleted_at": null
+      "deleted_at": null,
+      "newest": true
     },
     {
       "duration":12,
@@ -216,7 +230,8 @@
       "id": 5,
       "uuid": "b6ac75fb-7872-403f-ab71-e5542fae4212",
       "revision": 1,
-      "deleted_at": 1435968000000
+      "deleted_at": 1435968000000,
+      "newest": true
     },
     {
       "duration":12,
@@ -230,8 +245,9 @@
       "id": 6,
       "uuid": "58e07b73-596d-472b-adcc-ea68599657f7",
       "revision": 1,
-      "deleted_at":1439337600000
-    }  
+      "deleted_at":1439337600000,
+      "newest": true
+    }
   ],
   "projectslugs":[
     {
