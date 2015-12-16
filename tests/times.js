@@ -27,7 +27,7 @@ module.exports = function(expect, request, baseUrl) {
         expect(err).to.be.a('null');
         expect(res.statusCode).to.equal(200);
 
-        resolve(body.toString());
+        resolve(body.token);
       });
     });
   }

@@ -44,7 +44,7 @@ module.exports = function(expect, request, baseUrl) {
 
           const token = encoded + '.' + signature;
 
-          expect(body).to.equal(token);
+          expect(body).to.equal({'token': token});
         });
         done();
       });
