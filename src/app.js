@@ -62,10 +62,14 @@ if (auth.indexOf('password') > -1) {
   app.get('strategies').push('local');
 }
 
+// Don't register because it's invalid on login
+passport.use(require('./auth/token')(app));
+
 // Load local functions
 require('./projects')(app);
 require('./activities')(app);
 require('./times')(app);
+require('./login')(app);
 
 module.exports = app;
 

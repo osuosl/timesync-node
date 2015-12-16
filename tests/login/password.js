@@ -22,7 +22,7 @@ module.exports = function(expect, localPassport) {
     it('returns invalid username message for bad user', function(done) {
       chai.passport.use(localPassport).fail(function(challenge) {
         // Called when passport fails to log in
-        expect(challenge.message).to.equal('Incorrect username.');
+        expect(challenge.message).to.equal('Incorrect username or password');
         done();
       }).req(function(req) {
         req.body = {};
@@ -36,7 +36,7 @@ module.exports = function(expect, localPassport) {
     it('returns invalid password message for bad pass', function(done) {
       chai.passport.use(localPassport).fail(function(challenge) {
         // Called when passport fails to log in
-        expect(challenge.message).to.equal('Incorrect password.');
+        expect(challenge.message).to.equal('Incorrect username or password');
         done();
       }).req(function(req) {
         req.body = {};
