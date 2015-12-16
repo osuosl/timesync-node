@@ -3073,7 +3073,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('creates a new time with activities', function(done) {
+    it('creates a new time with default activity', function(done) {
       getAPIToken().then(function(token) {
         const time = {
           duration: 20,
