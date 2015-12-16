@@ -81,6 +81,21 @@ module.exports = function(app) {
     passport.authenticate(authType, caller)(req, res, next);
   });
 
+  const clearTokens = function() {
+    if (tokens.length > 0) {
+      /* eslint-disable prefer-const */
+      for (let key in tokens) {
+      /* eslint-enable prefer-const */
+        if (tokens[key].created + MAX_AGE < Date.now()) {
+          delete tokens[key];
+        }
+      }
+    }
+    setTimeout(clearTokens, 1000 * 60 * 60);
+  };
+
+  setTimeout(clearTokens, 1000 * 60 * 60);
+
   return {
     authToken: function(unescapedToken) {
       return new Promise(function(resolve, reject) {
