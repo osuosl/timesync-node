@@ -302,10 +302,10 @@ module.exports = function(app) {
         };
 
         knex.transaction(function(trx) {
-          /* "You take the trx.rollback(), the story ends. You wake up in your
+          /* 'You take the trx.rollback(), the story ends. You wake up in your
               bed and none of the database calls ever happened. You take the
               trx.commit(), you stay in wonderland, and everything is saved to
-              the database." */
+              the database.' */
 
           // trx can be used just like knex, but every call is temporary until
           // trx.commit() is called. Until then, they're stored separately, and,
@@ -477,69 +477,78 @@ module.exports = function(app) {
           const oldId = project.id;
           delete project.id;
 
-          knex('projects').insert(project).returning('id').then(function(id) {
-            project.id = id[0];
-            project.owner = authUser.username;
+          knex.transaction(function(trx) {
+            // trx can be used just like knex, but every call is temporary
+            // until trx.commit() is called. Until then, they're stored
+            // separately, and, if something goes wrong, can be rolled
+            // back without side effects.
 
-            project.created_at = new Date(project.created_at)
-            .toISOString().substring(0, 10);
-            project.updated_at = new Date(project.updated_at)
-            .toISOString().substring(0, 10);
+            trx('projects').insert(project).returning('id').then(function(id) {
+              project.id = id[0];
+              project.owner = authUser.username;
 
-            knex('projectslugs').where({project: oldId})
-            .then(function(existingSlugObjs) {
-              const existingSlugs = existingSlugObjs.map(function(slug) {
-                return slug.name;
-              });
+              project.created_at = new Date(project.created_at)
+              .toISOString().substring(0, 10);
+              project.updated_at = new Date(project.updated_at)
+              .toISOString().substring(0, 10);
 
-              knex.transaction(function(trx) {
-                // trx can be used just like knex, but every call is temporary
-                // until trx.commit() is called. Until then, they're stored
-                // separately, and, if something goes wrong, can be rolled
-                // back without side effects.
+              trx('userroles').where({project: oldId})
+              .update({project: project.id}).then(function() {
+                trx('projectslugs').where({project: oldId})
+                .then(function(existingSlugObjs) {
+                  const existingSlugs = existingSlugObjs.map(function(slug) {
+                    return slug.name;
+                  });
 
-                if (helpers.getType(obj.slugs) === 'array') {
-                  const newSlugs = [];
+                  if (helpers.getType(obj.slugs) === 'array') {
+                    const newSlugs = [];
 
-                  newSlugs.push(trx('projectslugs').del()
-                  .where({project: oldId}));
+                    newSlugs.push(trx('projectslugs').del()
+                    .where({project: oldId}));
 
-                  /* eslint-disable */
-                  for (let slug of obj.slugs) {
-                  /* eslint-enable */
-                    newSlugs.push(trx('projectslugs')
-                    .insert({project: project.id, name: slug}));
+                    /* eslint-disable */
+                    for (let slug of obj.slugs) {
+                    /* eslint-enable */
+                      newSlugs.push(trx('projectslugs')
+                      .insert({project: project.id, name: slug}));
+                    }
+
+                    Promise.all(newSlugs).then(function() {
+                      project.slugs = obj.slugs;
+                      project.owner = authUser.username;
+
+                      trx.commit();
+                      res.send(JSON.stringify(project));
+                    }).catch(function(error) {
+                      trx.rollback();
+                      const err = errors.errorServerError(error);
+                      return res.status(err.status).send(err);
+                    });
+                  } else {
+                    trx('projectslugs').update({project: project.id})
+                    .where({project: oldId}).then(function() {
+                      project.slugs = existingSlugs;
+                      project.owner = authUser.username;
+                      trx.commit();
+                      res.send(project);
+                    }).catch(function(error) {
+                      trx.rollback();
+                      const err = errors.errorServerError(error);
+                      return res.status(err.status).send(err);
+                    });
                   }
-
-                  Promise.all(newSlugs).then(function() {
-                    project.slugs = obj.slugs;
-                    project.owner = authUser.username;
-
-                    trx.commit();
-                    res.send(JSON.stringify(project));
-                  }).catch(function(error) {
-                    trx.rollback();
-                    const err = errors.errorServerError(error);
-                    return res.status(err.status).send(err);
-                  });
-                } else {
-                  trx('projectslugs').update({project: project.id})
-                  .where({project: oldId}).then(function() {
-                    project.slugs = existingSlugs;
-                    project.owner = authUser.username;
-                    trx.commit();
-                    res.send(project);
-                  }).catch(function(error) {
-                    trx.rollback();
-                    const err = errors.errorServerError(error);
-                    return res.status(err.status).send(err);
-                  });
-                }
+                }).catch(function(error) {
+                  trx.rollback();
+                  const err = errors.errorServerError(error);
+                  return res.status(err.status).send(err);
+                });
               }).catch(function(error) {
+                trx.rollback();
                 const err = errors.errorServerError(error);
                 return res.status(err.status).send(err);
               });
             }).catch(function(error) {
+              trx.rollback();
               const err = errors.errorServerError(error);
               return res.status(err.status).send(err);
             });
