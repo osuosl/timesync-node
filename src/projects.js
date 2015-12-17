@@ -420,14 +420,20 @@ module.exports = function(app) {
     }
 
     // check validity of slugs
-    if (obj.slugs && obj.slugs.length) {
-      const invalidSlugs = obj.slugs.filter(function(slug) {
-        return !helpers.validateSlug(slug);
-      });
+    if (obj.slugs) {
+      if (obj.slugs.length) {
+        const invalidSlugs = obj.slugs.filter(function(slug) {
+          return !helpers.validateSlug(slug);
+        });
 
-      if (invalidSlugs.length) {
+        if (invalidSlugs.length) {
+          const err = errors.errorBadObjectInvalidField('project', 'slugs',
+            'slugs', 'non-slug strings');
+          return res.status(err.status).send(err);
+        }
+      } else { // Slugs was passed as an empty array
         const err = errors.errorBadObjectInvalidField('project', 'slugs',
-          'slugs', 'non-slug strings');
+          'array of slugs', 'empty array');
         return res.status(err.status).send(err);
       }
     }
