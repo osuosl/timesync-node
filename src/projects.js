@@ -438,9 +438,6 @@ module.exports = function(app) {
 
     // retrieves the project from the database, selecting the project
     // where its ID matches the slug's project (the projectIdQuery).
-
-    // also makes the owner field the username so it can be checked, and
-    // puts the ownerId into the ownerId field.
     knex('projects').first().select('projects.id as id',
     'projects.name as name', 'projects.uri as uri',
     'projects.uuid as uuid', 'projects.revision as revision',
