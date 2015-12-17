@@ -871,7 +871,8 @@ module.exports = function(expect, request, baseUrl) {
         request.post(requestOptions, function(err, res, body) {
           expect(body.error).to.equal('Bad object');
           expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('The project is missing a slugs');
+          expect(body.text).to.equal('Field slugs of project should be array ' +
+          'of slugs but was sent as empty array');
 
           const expectedResults = copyJsonObject(originalProject);
           checkListEndpoint(done, expectedResults, token);
