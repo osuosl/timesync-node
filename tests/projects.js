@@ -854,6 +854,32 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it("doesn't patch a project with missing slugs", function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(originalProject);
+        delete requestOptions.body.object.id;
+        delete requestOptions.body.object.uuid;
+        delete requestOptions.body.object.revision;
+        delete requestOptions.body.object.deleted_at;
+        delete requestOptions.body.object.updated_at;
+        delete requestOptions.body.object.created_at;
+        requestOptions.body.object.slugs = [];
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(body.error).to.equal('Bad object');
+          expect(res.statusCode).to.equal(400);
+          expect(body.text).to.equal('The project is missing a slugs');
+
+          const expectedResults = copyJsonObject(originalProject);
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+
     it("doesn't patch a project with wrong-type name", function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
