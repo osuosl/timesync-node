@@ -45,7 +45,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
               name: 'Ganeti Web Manager',
               slugs: ['gwm', 'ganeti-webmgr'],
-              owner: 'tschuy',
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
@@ -57,7 +56,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://code.osuosl.org/projects/pgd',
               name: 'Protein Geometry Database',
               slugs: ['pgd'],
-              owner: 'deanj',
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
@@ -69,7 +67,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://github.com/osu-cass/whats-fresh-api',
               name: 'Whats Fresh',
               slugs: ['wf'],
-              owner: 'tschuy',
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
@@ -81,7 +78,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://github.com/osuosl/timesync',
               name: 'Timesync',
               slugs: ['timesync', 'ts'],
-              owner: 'patcht',
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
@@ -118,7 +114,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
               name: 'Ganeti Web Manager',
               slugs: ['gwm', 'ganeti-webmgr'],
-              owner: 'tschuy',
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
@@ -130,7 +125,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://code.osuosl.org/projects/pgd',
               name: 'Protein Geometry Database',
               slugs: ['pgd'],
-              owner: 'deanj',
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
@@ -142,7 +136,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://github.com/osu-cass/whats-fresh-api',
               name: 'Whats Fresh',
               slugs: ['wf'],
-              owner: 'tschuy',
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
@@ -154,7 +147,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://github.com/osuosl/timesync',
               name: 'Timesync',
               slugs: ['timesync', 'ts'],
-              owner: 'patcht',
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
@@ -166,7 +158,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://github.com/osuosl/chiliproject',
               name: 'Chili Project',
               slugs: [],
-              owner: 'MaraJade',
               deleted_at: '2014-01-01',
               updated_at: null,
               created_at: '2009-07-07',
@@ -201,7 +192,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
               name: 'Ganeti Web Manager',
               slugs: ['gwm', 'ganeti-webmgr'],
-              owner: 'tschuy',
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
@@ -213,7 +203,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://code.osuosl.org/projects/pgd',
               name: 'Protein Geometry Database',
               slugs: ['pgd'],
-              owner: 'deanj',
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
@@ -225,7 +214,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://github.com/osu-cass/whats-fresh-api',
               name: 'Whats Fresh',
               slugs: ['wf'],
-              owner: 'tschuy',
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
@@ -237,7 +225,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://github.com/osuosl/timesync',
               name: 'Timesync',
               slugs: ['timesync', 'ts'],
-              owner: 'patcht',
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
@@ -249,7 +236,6 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://github.com/osuosl/chiliproject',
               name: 'Chili Project',
               slugs: [],
-              owner: 'MaraJade',
               deleted_at: '2014-01-01',
               updated_at: null,
               created_at: '2009-07-07',
@@ -301,7 +287,6 @@ module.exports = function(expect, request, baseUrl) {
             uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
             name: 'Ganeti Web Manager',
             slugs: ['gwm', 'ganeti-webmgr'],
-            owner: 'tschuy',
             deleted_at: null,
             updated_at: null,
             created_at: '2014-01-01',
@@ -365,15 +350,13 @@ module.exports = function(expect, request, baseUrl) {
   describe('POST /projects/:slug', function() {
     const patchedProject = {
       name: 'Ganeti Web Mgr',
-      owner: 'tschuy',
-      slugs: ['gan-web', 'gwm'],
+      slugs: ['gwm', 'gan-web'],
       uri: 'https://code.osuosl.org/projects/',
     };
 
     const originalProject = {
       id: 1,
       name: 'Ganeti Web Manager',
-      owner: 'tschuy',
       slugs: ['gwm', 'ganeti-webmgr'],
       deleted_at: null,
       updated_at: null,
@@ -384,20 +367,17 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const patchedProjectName = {name: patchedProject.name};
-    // const patchedProjectOwner = {owner: patchedProject.owner};
     const patchedProjectUri = {uri: patchedProject.uri};
     const patchedProjectSlugs = {slugs: patchedProject.slugs};
 
     const badProject = {
       name: ['a name'],
-      owner: ['a owner'],
       uri: ['a website'],
       slugs: 'a slug',
       key: 'value',
     };
 
     const badProjectName = {name: badProject.name};
-    const badProjectOwner = {owner: badProject.owner};
     const badProjectUri = {uri: badProject.uri};
     const badProjectSlugs = {slugs: badProject.slugs};
     const badProjectKey = {key: 'value' };
@@ -429,7 +409,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     };
 
-    it("successfully patches a project's uri, slugs, owner, and name",
+    it("successfully patches a project's uri, slugs, and name",
     function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
@@ -446,7 +426,6 @@ module.exports = function(expect, request, baseUrl) {
           expectedResults.name = patchedProject.name;
           expectedResults.uri = patchedProject.uri;
           expectedResults.slugs = patchedProject.slugs;
-          expectedResults.owner = patchedProject.owner;
           expectedResults.uuid = originalProject.uuid;
           expectedResults.revision = 2;
           expectedResults.id = 6;
@@ -554,30 +533,6 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    // This test should be reenabled when administrator users are added
-    // it("successfully patches a project's owner", function(done) {
-    //   getAPIToken().then(function(token) {
-    //     postArg.object = copyJsonObject(patchedProjectOwner);
-    //     requestOptions.body = copyJsonObject(postArg);
-    //
-    //     requestOptions.body.auth.token = token;
-    //
-    //     request.post(requestOptions, function(err, res, body) {
-    //         expect(err).to.be.a('null');
-    //         expect(res.statusCode).to.equal(200);
-    //
-    //         const expectedResults = copyJsonObject(originalProject);
-    //         expectedResults.owner = patchedProject.owner;
-    //
-    //         body = JSON.parse(body);
-    //
-    //         expect(body).to.equal(expectedResults);
-    //
-    //         checkListEndpoint(done, expectedResults, token);
-    //     });
-    //   });
-    // });
-
     it("doesn't patch a project with bad authentication", function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
@@ -625,7 +580,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it("doesn't patch a project with bad uri, name, slugs, and owner",
+    it("doesn't patch a project with bad uri, name, and slugs",
     function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
@@ -641,8 +596,6 @@ module.exports = function(expect, request, baseUrl) {
             'Field uri of project should be string but was sent as ' +
             'array',
             'Field name of project should be string but was sent as ' +
-            'array',
-            'Field owner of project should be string but was sent as ' +
             'array',
             'Field slugs of project should be array but was sent as ' +
             'string',
@@ -704,25 +657,6 @@ module.exports = function(expect, request, baseUrl) {
           expect(body.error).to.equal('Bad object');
           expect(res.statusCode).to.equal(400);
           expect(body.text).to.equal('Field name of' +
-          ' project should be string but was sent as array');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
-    });
-
-    it("doesn't patch a project with just bad owner", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(badProjectOwner);
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field owner of' +
           ' project should be string but was sent as array');
 
           const expectedResults = copyJsonObject(originalProject);
@@ -907,32 +841,6 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it("doesn't patch a project with wrong-type owner", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.id;
-        delete requestOptions.body.object.uuid;
-        delete requestOptions.body.object.revision;
-        delete requestOptions.body.object.deleted_at;
-        delete requestOptions.body.object.updated_at;
-        delete requestOptions.body.object.created_at;
-        requestOptions.body.object.owner = badProject.owner;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field owner of' +
-          ' project should be string but was sent as array');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
-    });
-
     it("doesn't patch a project with invalid key", function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
@@ -964,7 +872,6 @@ module.exports = function(expect, request, baseUrl) {
     // the project object to attempt to add
     const project = {
       uri: 'https://github.com/osuosl/timesync-node',
-      owner: 'tschuy',
       slugs: ['tsn', 'timesync-node'],
       name: 'TimeSync Node',
     };
@@ -972,7 +879,6 @@ module.exports = function(expect, request, baseUrl) {
     // the project as added to the database
     const newProject = {
       uri: 'https://github.com/osuosl/timesync-node',
-      owner: 'tschuy',
       slugs: ['tsn', 'timesync-node'],
       name: 'TimeSync Node',
       revision: 1,
@@ -994,7 +900,6 @@ module.exports = function(expect, request, baseUrl) {
         'ganeti-webmgr',
         name: 'Ganeti Web Manager',
         slugs: ['gwm', 'ganeti-webmgr'],
-        owner: 'tschuy',
         deleted_at: null,
         updated_at: null,
         created_at: '2014-01-01',
@@ -1006,7 +911,6 @@ module.exports = function(expect, request, baseUrl) {
         uri: 'https://code.osuosl.org/projects/pgd',
         name: 'Protein Geometry Database',
         slugs: ['pgd'],
-        owner: 'deanj',
         deleted_at: null,
         updated_at: null,
         created_at: '2014-01-01',
@@ -1018,7 +922,6 @@ module.exports = function(expect, request, baseUrl) {
         uri: 'https://github.com/osu-cass/whats-fresh-api',
         name: 'Whats Fresh',
         slugs: ['wf'],
-        owner: 'tschuy',
         deleted_at: null,
         updated_at: null,
         created_at: '2014-01-01',
@@ -1030,7 +933,6 @@ module.exports = function(expect, request, baseUrl) {
         uri: 'https://github.com/osuosl/timesync',
         name: 'Timesync',
         slugs: ['timesync', 'ts'],
-        owner: 'patcht',
         deleted_at: null,
         updated_at: null,
         created_at: '2014-01-01',
@@ -1078,7 +980,6 @@ module.exports = function(expect, request, baseUrl) {
             // the projects/ endpoint should now have one more project
             const expectedGetResults = initialProjects.concat([
               {
-                owner: 'tschuy',
                 uri: 'https://github.com/osuosl/timesync-node',
                 slugs: ['tsn', 'timesync-node'],
                 name: 'TimeSync Node',
@@ -1128,7 +1029,6 @@ module.exports = function(expect, request, baseUrl) {
             // the projects/ endpoint should now have one more project
             const expectedGetResults = initialProjects.concat([
               {
-                owner: 'tschuy',
                 uri: null,
                 slugs: ['tsn', 'timesync-node'],
                 name: 'TimeSync Node',
@@ -1350,57 +1250,6 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('fails to create a new project with an owner different from auth',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const postOtherOwner = copyJsonObject(postArg);
-        postOtherOwner.object.owner = 'deanj';
-        requestOptions.body = postOtherOwner;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 401,
-            error: 'Authorization failure',
-            text: 'tschuy is not authorized to create objects for deanj',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(401);
-
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialProjects);
-            done();
-          });
-        });
-      });
-    });
-
-    it('fails to create a project with bad owner datatype', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object.owner = ['test'];
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field owner of' +
-          ' project should be string but was sent as array');
-
-          checkListEndpoint(done, token);
-        });
-      });
-    });
-
     it('fails to create a project with bad slugs datatype', function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
@@ -1522,7 +1371,6 @@ module.exports = function(expect, request, baseUrl) {
                 'webmgr',
                 name: 'Ganeti Web Manager',
                 slugs: ['gwm', 'ganeti-webmgr'],
-                owner: 'tschuy',
                 deleted_at: null,
                 updated_at: null,
                 created_at: '2014-01-01',
@@ -1534,7 +1382,6 @@ module.exports = function(expect, request, baseUrl) {
                 uri: 'https://code.osuosl.org/projects/pgd',
                 name: 'Protein Geometry Database',
                 slugs: ['pgd'],
-                owner: 'deanj',
                 deleted_at: null,
                 updated_at: null,
                 created_at: '2014-01-01',
@@ -1546,7 +1393,6 @@ module.exports = function(expect, request, baseUrl) {
                 uri: 'https://github.com/osu-cass/whats-fresh-api',
                 name: 'Whats Fresh',
                 slugs: ['wf'],
-                owner: 'tschuy',
                 deleted_at: null,
                 updated_at: null,
                 created_at: '2014-01-01',
@@ -1558,7 +1404,6 @@ module.exports = function(expect, request, baseUrl) {
                 uri: 'https://github.com/osuosl/timesync',
                 name: 'Timesync',
                 slugs: ['timesync', 'ts'],
-                owner: 'patcht',
                 deleted_at: null,
                 updated_at: null,
                 created_at: '2014-01-01',
@@ -1600,7 +1445,6 @@ module.exports = function(expect, request, baseUrl) {
                 'webmgr',
                 name: 'Ganeti Web Manager',
                 slugs: ['gwm', 'ganeti-webmgr'],
-                owner: 'tschuy',
                 deleted_at: null,
                 updated_at: null,
                 created_at: '2014-01-01',
@@ -1612,7 +1456,6 @@ module.exports = function(expect, request, baseUrl) {
                 uri: 'https://code.osuosl.org/projects/pgd',
                 name: 'Protein Geometry Database',
                 slugs: ['pgd'],
-                owner: 'deanj',
                 deleted_at: null,
                 updated_at: null,
                 created_at: '2014-01-01',
@@ -1624,7 +1467,6 @@ module.exports = function(expect, request, baseUrl) {
                 uri: 'https://github.com/osu-cass/whats-fresh-api',
                 name: 'Whats Fresh',
                 slugs: ['wf'],
-                owner: 'tschuy',
                 deleted_at: null,
                 updated_at: null,
                 created_at: '2014-01-01',
@@ -1636,7 +1478,6 @@ module.exports = function(expect, request, baseUrl) {
                 uri: 'https://github.com/osuosl/timesync',
                 name: 'Timesync',
                 slugs: ['timesync', 'ts'],
-                owner: 'patcht',
                 id: 4,
                 revision: 1,
                 deleted_at: null,
