@@ -186,7 +186,6 @@ module.exports = function(app) {
         }).map(function(proj) {
           return proj.slug;
         });
-
         return res.send(project.filter(function(proj) {
           return proj.newest;
         }).map(function(proj) {
@@ -496,8 +495,6 @@ module.exports = function(app) {
           project.created_at = parseInt(project.created_at, 10);
           project.updated_at = Date.now();
           project.newest = true;
-
-          delete project.ownerId;
 
           const oldId = project.id;
           delete project.id;
