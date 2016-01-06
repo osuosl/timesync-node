@@ -43,34 +43,6 @@ module.exports = function(app) {
         }
       }
 
-      // only return the project once both
-      // users and slugs have finished processing
-      let usersDone = false;
-      let slugsDone = false;
-
-      knex('users').then(function(users) {
-        const idUserMap = {};
-        for (let i = 0, len = users.length; i < len; i++) {
-          // make a map of every user id to their username
-          idUserMap[users[i].id] = users[i].username;
-        }
-
-        for (let i = 0, len = projects.length; i < len; i++) {
-          // using that user id, get the username and set it
-          // to the project owner
-          projects[i].owner = idUserMap[projects[i].owner];
-        }
-
-        // processing finished. Return if slugs are also finished
-        usersDone = true;
-        if (slugsDone) {
-          return res.send(projects);
-        }
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
-      });
-
       knex('projectslugs').then(function(slugs) {
         const idProjectMap = {};
         for (let i = 0, len = projects.length; i < len; i++) {
@@ -87,11 +59,7 @@ module.exports = function(app) {
           idProjectMap[slugs[i].project].slugs.push(slugs[i].name);
         }
 
-        // processing finished. Return if users are also finished
-        slugsDone = true;
-        if (usersDone) {
-          return res.send(projects);
-        }
+        return res.send(projects);
       }).catch(function(error) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
@@ -137,10 +105,9 @@ module.exports = function(app) {
     * Equivalent SQL:
     *       SELECT projects.id AS id, projects.name AS name,
     *              projects.uri AS uri, projects.uuid as uuid,
-    *              projects.revision AS revision, users.username AS owner,
+    *              projects.revision AS revision,
     *              projectslugs.name AS slug FROM projectslugs
     *       INNER JOIN projects ON projectslugs.project = projects.id
-    *       INNER JOIN users ON users.id = projects.owner
     *       WHERE projectslugs.project =
     *               (SELECT id FROM projects WHERE id =
     *                   (SELECT project FROM projectslugs
@@ -473,8 +440,6 @@ module.exports = function(app) {
           project.revision += 1;
           project.created_at = parseInt(project.created_at, 10);
           project.updated_at = Date.now();
-
-          delete project.ownerId;
 
           const oldId = project.id;
           delete project.id;
