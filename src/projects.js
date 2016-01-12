@@ -350,21 +350,15 @@ module.exports = function(app) {
               .toISOString().substring(0, 10);
 
               trx.commit();
-              res.send(JSON.stringify(obj));
-            }).catch(function(error) {
+              return res.send(JSON.stringify(obj));
+            }).catch(function() {
               trx.rollback();
-              const err = errors.errorServerError(error);
-              return res.status(err.status).send(err);
             });
-          }).catch(function(error) {
+          }).catch(function() {
             trx.rollback();
-            const err = errors.errorServerError(error);
-            return res.status(err.status).send(err);
           });
-        }).catch(function(error) {
+        }).catch(function() {
           trx.rollback();
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
         });
       }).catch(function(error) {
         const err = errors.errorServerError(error);
@@ -568,18 +562,12 @@ module.exports = function(app) {
                   });
                 }).catch(function(error) {
                   trx.rollback();
-                  const err = errors.errorServerError(error);
-                  return res.status(err.status).send(err);
                 });
-              }).catch(function(error) {
+              }).catch(function() {
                 trx.rollback();
-                const err = errors.errorServerError(error);
-                return res.status(err.status).send(err);
               });
-            }).catch(function(error) {
+            }).catch(function() {
               trx.rollback();
-              const err = errors.errorServerError(error);
-              return res.status(err.status).send(err);
             });
           }).catch(function(error) {
             const err = errors.errorServerError(error);
@@ -650,8 +638,6 @@ module.exports = function(app) {
             least one. */
             if (numObj !== 1) {
               trx.rollback();
-              const err = errors.errorObjectNotFound('slug', req.params.slug);
-              return res.status(err.status).send(err);
             }
 
             trx('projectslugs').where('project', project.id).del()
@@ -660,20 +646,14 @@ module.exports = function(app) {
               .then(function() {
                 trx.commit();
                 return res.send();
-              }).catch(function(error) {
+              }).catch(function() {
                 trx.rollback();
-                const err = errors.errorServerError(error);
-                return res.status(err.status).send(err);
               });
-            }).catch(function(error) {
+            }).catch(function() {
               trx.rollback();
-              const err = errors.errorServerError(error);
-              return res.status(err.status).send(err);
             });
-          }).catch(function(error) {
+          }).catch(function() {
             trx.rollback();
-            const err = errors.errorServerError(error);
-            return res.status(err.status).send(err);
           });
         }).catch(function(error) {
           const err = errors.errorServerError(error);

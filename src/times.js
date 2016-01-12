@@ -577,15 +577,11 @@ module.exports = function(app) {
                 trx('timesactivities').insert(taInsertion).then(function() {
                   trx.commit();
                   return res.send(JSON.stringify(time));
-                }).catch(function(error) {
+                }).catch(function() {
                   trx.rollback();
-                  const err = errors.errorServerError(error);
-                  return res.status(err.status).send(err);
                 });
-              }).catch(function(error) {
+              }).catch(function() {
                 trx.rollback();
-                const err = errors.errorServerError(error);
-                return res.status(err.status).send(err);
               });
             }).catch(function(error) {
               const err = errors.errorServerError(error);
@@ -786,33 +782,25 @@ module.exports = function(app) {
                 trx('times').insert(time[0]).returning('id').then(function(id) {
                   time[0].id = id[0];
 
-                  if (helpers.getType(obj.activities) !== 'array' ||
+                  if (helpers.getType(obj.activities) !== 'array' &&
                   obj.activities.length) {
                     if (!obj.activities) {
-                      trx('timesactivities').select('activity')
-                      .where('time', oldId).then(function(activities) {
-                        const taInsertion = [];
-                        /* eslint-disable prefer-const */
-                        for (let activity of activities) {
-                          /* eslint-enable prefer-const */
-                          taInsertion.push({
-                            time: time[0].id,
-                            activity: activity.activity,
-                          });
-                        }
-
-                        trx('timesactivities').insert(taInsertion)
-                        .then(function() {
-                          trx.commit();
-                          return res.send(time);
-                        }).catch(function(error) {
-                          trx.rollback();
-                          const err = errors.errorServerError(error);
-                          return res.status(err.status).send(err);
+                      const taInsertion = [];
+                      /* eslint-disable prefer-const */
+                      for (let activity of activities) {
+                        /* eslint-enable prefer-const */
+                        taInsertion.push({
+                          time: time[0].id,
+                          activity: activity.activity,
                         });
+                      }
+
+                      trx('timesactivities').insert(taInsertion)
+                      .then(function() {
+                        trx.commit();
+                        return res.send(time);
                       }).catch(function(error) {
-                        const err = errors.errorServerError(error);
-                        return res.status(err.status).send(err);
+                        trx.rollback();
                       });
                     } else {
                       const taInsertion = [];
@@ -827,20 +815,18 @@ module.exports = function(app) {
 
                       trx('timesactivities').insert(taInsertion)
                       .then(function() {
+                        trx.commit();
                         return res.send(time);
                       }).catch(function(error) {
                         trx.rollback();
-                        const err = errors.errorServerError(error);
-                        return res.status(err.status).send(err);
                       });
                     }
                   } else {
+                    trx.commit()
                     return res.send(time);
                   }
                 }).catch(function(error) {
                   trx.rollback();
-                  const err = errors.errorServerError(error);
-                  return res.status(err.status).send(err);
                 });
               }).catch(function(error) {
                 const err = errors.errorServerError(error);
@@ -887,19 +873,11 @@ module.exports = function(app) {
         trx('times').where('uuid', req.params.uuid).first()
         .orderBy('revision', 'desc')
         .update({'deleted_at': Date.now()})
-        .then(function(numObj) {
-          if (numObj >= 1) {
-            trx.commit();
-            return res.send();
-          }
-
+        .then(function() {
+          trx.commit();
+          return res.send();
+        }).catch(function() {
           trx.rollback();
-          const err = errors.errorObjectNotFound('uuid', req.params.uuid);
-          return res.status(err.status).send(err);
-        }).catch(function(error) {
-          trx.rollback();
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
         });
       }).catch(function(error) {
         const err = errors.errorServerError(error);
