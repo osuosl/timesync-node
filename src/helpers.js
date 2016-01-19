@@ -3,6 +3,7 @@
 let helpers;
 
 module.exports = function(app) {
+  const log = app.get('log');
   helpers = {
     validateSlug: function(slug) {
       /* matches:
@@ -53,6 +54,8 @@ module.exports = function(app) {
               return resolve(user.id);
             }
             return reject();
+          }).catch(function(error) {
+            log.error('helpers.checkUser', 'Error checking user: ' + error);
           });
         } else {
           return reject();
@@ -112,6 +115,8 @@ module.exports = function(app) {
             resolve(project[0].project);
           }
         }).catch(function(err) {
+          log.error('helpers.checkProject', 'Error requesting project to' +
+            ' check: ' + err);
           reject({type: 'database', value: err});
         });
       });
@@ -160,6 +165,8 @@ module.exports = function(app) {
             }
           }
         }).catch(function(err) {
+          log.error('helpers.checkActivities', 'Error requesting activities ' +
+            'to check: ' + err);
           reject({type: 'database', value: err});
         });
       });

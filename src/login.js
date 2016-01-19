@@ -8,7 +8,13 @@ const tokens = {};
 const MAX_AGE = 30 * 60 * 1000;
 
 module.exports = function(app) {
+  const log = app.get('log');
   let authType;
+
+  if (!process.env.INSTANCE_NAME || !process.env.SECRET_KEY) {
+    log.error('login.js', 'INSTANCE_NAME or SECRET_KEY not set!');
+    process.exit(1);
+  }
 
   app.post(app.get('version') + '/login', function(req, res, next) {
     if (!req.body.auth) {

@@ -4,6 +4,7 @@ const APIKeyStrategy = require('passport-localapikey').Strategy;
 const loginFunc = require('../login');
 
 module.exports = function(app) {
+  const log = app.get('log');
   return new APIKeyStrategy(
     {
       apiKeyField: 'token',
@@ -23,6 +24,7 @@ module.exports = function(app) {
             done(null, user);
           }
         }).catch(function(err) {
+          log.error('auth/token.js', 'User lookup failed after token auth.');
           done(err);
         });
       }).catch(function(error) {

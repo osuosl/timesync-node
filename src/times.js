@@ -6,6 +6,7 @@ module.exports = function(app) {
   const validUrl = require('valid-url');
   const authRequest = require('./authenticatedRequest');
   const uuid = require('uuid');
+  const log = app.get('log');
 
   function compileTime(inTime, project, activities, res) {
     if (!inTime) {
@@ -200,6 +201,7 @@ module.exports = function(app) {
                 reject(res.status(err.status).send(err));
               }
             }).catch(function(error) {
+              log.error(req, 'Error selecting users for filter: ' + error);
               const err = errors.errorServerError(error);
               reject(res.status(err.status).send(err));
             });
@@ -240,6 +242,10 @@ module.exports = function(app) {
                   if (flags.userSet && flags.projectSet && flags.activitySet) {
                     resolve(timesQ);
                   }
+                }).catch(function(error) {
+                  log.error(req, 'Error getting projects for filter: ' + error);
+                  const err = errors.errorServerError(error);
+                  reject(res.status(err.status).send(err));
                 });
               } else {
                 // Send an error if the user is not found in the database
@@ -248,6 +254,7 @@ module.exports = function(app) {
                 reject(res.status(err.status).send(err));
               }
             }).catch(function(error) {
+              log.error(req, 'Error getting project slugs to filter: ' + error);
               const err = errors.errorServerError(error);
               reject(res.status(err.status).send(err));
             });
@@ -290,6 +297,10 @@ module.exports = function(app) {
                   if (flags.userSet && flags.projectSet && flags.activitySet) {
                     resolve(timesQ);
                   }
+                }).catch(function(error) {
+                  log.error(req, 'Error getting filter activities: ' + error);
+                  const err = errors.errorServerError(error);
+                  reject(res.status(err.status).send(err));
                 });
               } else {
                 // Send an error if the user is not found in the database
@@ -298,6 +309,7 @@ module.exports = function(app) {
                 reject(res.status(err.status).send(err));
               }
             }).catch(function(error) {
+              log.error(req, 'Error retrieving activities: ' + error);
               const err = errors.errorServerError(error);
               reject(res.status(err.status).send(err));
             });
@@ -394,6 +406,7 @@ module.exports = function(app) {
           return JSON.parse(time);
         }));
       }).catch(function(error) {
+        log.error(req, 'Error getting times with revisions: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
@@ -419,6 +432,7 @@ module.exports = function(app) {
           return JSON.parse(time);
         }));
       }).catch(function(error) {
+        log.error(req, 'Error getting times: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
@@ -478,9 +492,9 @@ module.exports = function(app) {
           childTime.parents.push(compileTime(pCurr[0], pCurrMeta.project,
                                  pCurrMeta.activities, res));
         }
-
         return res.send(childTime);
       }).catch(function(error) {
+        log.error(req, 'Error getting time with revisions: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
@@ -492,6 +506,7 @@ module.exports = function(app) {
         res.send(compileTime(times.pop(), metadata.project,
                                     metadata.activities, res));
       }).catch(function(error) {
+        log.error(req, 'Error getting time: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
@@ -617,13 +632,17 @@ module.exports = function(app) {
                   trx.commit();
                   time.activities = time.activities.sort();
                   return res.send(JSON.stringify(time));
-                }).catch(function() {
+                }).catch(function(error) {
+                  log.error(req, 'Error creating activity references for ' +
+                                                              'time: ' + error);
                   trx.rollback();
                 });
-              }).catch(function() {
+              }).catch(function(error) {
+                log.error(req, 'Error inserting updated time entry: ' + error);
                 trx.rollback();
               });
             }).catch(function(error) {
+              log.error(req, 'Rolling back transaction.');
               const err = errors.errorServerError(error);
               return res.status(err.status).send(err);
             });
@@ -632,6 +651,8 @@ module.exports = function(app) {
             return res.status(err.status).send(err);
           });
         }).catch(function(error) {
+          log.error(req, 'Error retrieving user roles for creating time: ' +
+                                                                        error);
           const err = errors.errorServerError(error);
           return res.status(err.status).send(err);
         });
@@ -839,10 +860,14 @@ module.exports = function(app) {
                       .then(function() {
                         trx.commit();
                         return res.send(time);
-                      }).catch(function() {
+                      }).catch(function(error) {
+                        log.error(req, 'Error copying old time activities: ' +
+                                  error);
                         trx.rollback();
                       });
-                    }).catch(function() {
+                    }).catch(function(error) {
+                      log.error(req, 'Error retrieving old activities: ' +
+                                error);
                       trx.rollback();
                     });
                   } else if (helpers.getType(obj.activities) === 'array') {
@@ -861,7 +886,9 @@ module.exports = function(app) {
                       .then(function() {
                         trx.commit();
                         return res.send(time);
-                      }).catch(function() {
+                      }).catch(function(error) {
+                        log.error(req, 'Error inserting new time activities: ' +
+                                  error);
                         trx.rollback();
                       });
                     } else {
@@ -869,13 +896,16 @@ module.exports = function(app) {
                       return res.send(time);
                     }
                   }
-                }).catch(function() {
+                }).catch(function(error) {
+                  log.error(req, 'Error inserting updated time: ' + error);
                   trx.rollback();
                 });
-              }).catch(function() {
+              }).catch(function(error) {
+                log.error(req, 'Error deprecating old time: ' + error);
                 trx.rollback();
               });
             }).catch(function(error) {
+              log.error(req, 'Rolling back transaction.');
               const err = errors.errorServerError(error);
               return res.status(err.status).send(err);
             });
@@ -893,6 +923,7 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
       });
     }).catch(function(error) {
+      log.error(req, 'Error retrieving time to update: ' + error);
       const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });
@@ -919,14 +950,17 @@ module.exports = function(app) {
         .then(function() {
           trx.commit();
           return res.send();
-        }).catch(function() {
+        }).catch(function(error) {
+          log.error(req, 'Error deleting time entry: ' + error);
           trx.rollback();
         });
       }).catch(function(error) {
+        log.error(req, 'Rolling back transaction.');
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
     }).catch(function(error) {
+      log.error(req, 'Error retrieving time to delete: ' + error);
       const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });

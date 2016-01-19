@@ -24,13 +24,19 @@ if (!Array.isArray(auth)) {
   process.exit(1);
 }
 
-
 const knex = require('knex')(knexfile[db]);
+
+const Log = require('log');
+const Ain = require('ain2');
+const fs = require('fs');
+
+const log = require('./log')(Log, Ain, fs);
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('knex', knex);
+app.set('log', log);
 
 // Set API version prefix
 app.set('version', '/v1');
@@ -64,6 +70,14 @@ if (auth.indexOf('password') > -1) {
 
 // Don't register because it's invalid on login
 passport.use(require('./auth/token')(app));
+
+// Access logging
+app.use(function(req, res, next) {
+  res.on('finish', function() {
+    log.access(req, res);
+  });
+  next();
+});
 
 // Load local functions
 require('./projects')(app);

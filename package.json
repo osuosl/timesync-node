@@ -7,17 +7,17 @@
     "doc": "docs"
   },
   "scripts": {
-    "start": "node --harmony ./src/app.js",
+    "start": "INSTANCE_NAME=timesync SECRET_KEY=secret node --harmony ./src/app.js",
     "devel": "nodemon --harmony ./src/app.js",
     "migrations": "knex migrate:latest",
     "clear-database": "node --harmony ./scripts/clear-database.js",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
     "linter": "jshint ./src ./tests ./scripts && eslint ./src ./tests ./scripts",
     "fixtures": "node --harmony ./scripts/load_fixtures.js",
-    "test": "INSTANCE_NAME=timesync SECRET_KEY=secret NODE_ENV=mocha_sqlite TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
-    "test_pg": "INSTANCE_NAME=timesync SECRET_KEY=secret NODE_ENV=mocha knex migrate:latest && NODE_ENV=mocha TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
+    "test": "TEST=true INSTANCE_NAME=timesync SECRET_KEY=secret NODE_ENV=mocha_sqlite TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
+    "test_pg": "TEST=true INSTANCE_NAME=timesync SECRET_KEY=secret NODE_ENV=mocha knex migrate:latest && NODE_ENV=mocha TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
     "latte": "sh ./scripts/latte.sh",
-    "coverage": "INSTANCE_NAME=timesync SECRET_KEY=secret NODE_ENV=mocha_sqlite TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
+    "coverage": "TEST=true INSTANCE_NAME=timesync SECRET_KEY=secret NODE_ENV=mocha_sqlite TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
     "create-account": "node --harmony ./scripts/create-account.js"
   },
   "repository": {
@@ -34,6 +34,7 @@
     "url": "https://github.com/osuosl/timesync-node/issues"
   },
   "dependencies": {
+    "ain2": "^1.5.3",
     "babel-eslint": "^4.1.5",
     "bcrypt": "^0.8.5",
     "body-parser": "^1.14.1",
@@ -43,11 +44,12 @@
     "express": "^4.13.3",
     "knex": "^0.8.6",
     "ldapjs": "mcavage/node-ldapjs",
+    "log": "^1.4.0",
     "passport": "^0.3.2",
     "passport-ldapauth": "^0.4.0",
     "passport-local": "^1.0.0",
-    "pg": "^4.4.3",
     "passport-localapikey": "^0.0.3",
+    "pg": "^4.4.3",
     "prompt": "^0.2.14",
     "sqlite3": "^3.1.1",
     "uuid": "^2.0.1",
