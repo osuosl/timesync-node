@@ -119,23 +119,11 @@ module.exports = function(app) {
           // delete activity after running through the checks
           trx('activities').where('slug', req.params.slug)
           .update({'deleted_at': Date.now(), 'slug': null})
-          .then(function(numObj) {
-            /* When deleting something from the table, the number of
-            objects deleted is returned. So to confirm that deletion was
-            successful, make sure that the number returned is at least
-            one. */
-            if (numObj >= 1) {
-              trx.commit();
-              return res.send();
-            }
-
+          .then(function() {
+            trx.commit();
+            return res.send();
+          }).catch(function() {
             trx.rollback();
-            const err = errors.errorObjectNotFound('slug', req.params.slug);
-            return res.status(err.status).send(err);
-          }).catch(function(error) {
-            trx.rollback();
-            const err = errors.errorServerError(error);
-            return res.status(err.status).send(err);
           });
         }).catch(function(error) {
           const err = errors.errorServerError(error);
