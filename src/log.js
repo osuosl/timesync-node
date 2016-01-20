@@ -8,17 +8,32 @@ module.exports = function(Log, Ain, fs) {
   let error = null;
   let debug = null;
 
+  const LogMode = Object.freeze({console: 1, file: 2, syslog: 3});
+  let mode;
+
   function setup() {
     if (process.env.LOG_DIR) {
+      mode = LogMode.file;
       access = new Log('info', fs.createWriteStream(process.env.LOG_DIR +
         '/access.log', {flags: 'a'}));
       error = new Log('error', fs.createWriteStream(process.env.LOG_DIR +
         '/error.log', {flags: 'a'}));
     } else if (process.env.CONSOLE) {
+      mode = LogMode.console;
       access = new Log('info');
       error = new Log('error');
     } else {
-      fs.mkdir('log');
+      mode = LogMode.file;
+      try {
+        const stat = fs.statSync('log');
+        if (!stat.isDirectory()) {
+          fs.unlinkSync('log');
+          fs.mkdirSync('log');
+        }
+      } catch (e) {
+        fs.mkdirSync('log');
+      }
+
       access = new Log('info', fs.createWriteStream('log/access.log',
         {flags: 'a'}));
       error = new Log('error', fs.createWriteStream('log/error.log',
