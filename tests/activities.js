@@ -102,7 +102,6 @@ module.exports = function(expect, request, baseUrl) {
             created_at: '2014-01-01',
             uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
             revision: 1,
-            id: 3,
           };
 
           expect(err).to.equal(null);
@@ -207,7 +206,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
                 revision: 1,
-                id: 1,
               },
               {
                 name: 'Development',
@@ -217,7 +215,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
                 revision: 1,
-                id: 2,
               },
               {
                 name: 'Systems',
@@ -227,7 +224,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
                 revision: 1,
-                id: 3,
               },
               {
                 name: 'Meetings',
@@ -237,7 +233,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
                 revision: 1,
-                id: 4,
               },
             ];
 
@@ -278,7 +273,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
                 revision: 1,
-                id: 1,
               },
               {
                 name: 'Development',
@@ -288,7 +282,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
                 revision: 1,
-                id: 2,
               },
               {
                 name: 'Systems',
@@ -298,7 +291,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
                 revision: 1,
-                id: 3,
               },
               {
                 name: 'Meetings',
@@ -308,7 +300,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
                 revision: 1,
-                id: 4,
               },
             ];
 
@@ -350,7 +341,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
                 revision: 1,
-                id: 1,
               },
               {
                 name: 'Development',
@@ -360,7 +350,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
                 revision: 1,
-                id: 2,
               },
               {
                 name: 'Systems',
@@ -370,7 +359,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
                 revision: 1,
-                id: 3,
               },
               {
                 name: 'Meetings',
@@ -380,7 +368,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
                 revision: 1,
-                id: 4,
               },
             ];
 
@@ -410,7 +397,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
               revision: 1,
-              id: 1,
             },
             {
               name: 'Development',
@@ -420,7 +406,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
               revision: 1,
-              id: 2,
             },
             {
               name: 'Systems',
@@ -430,7 +415,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
               revision: 1,
-              id: 3,
             },
             {
               name: 'Meetings',
@@ -440,7 +424,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
               revision: 1,
-              id: 4,
             },
             {
               name: 'Code Review',
@@ -450,7 +433,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '384e8177-2123-4578-8201-031199a3a58f',
               revision: 1,
-              id: 5,
             },
           ];
 
@@ -480,7 +462,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
               revision: 1,
-              id: 1,
             },
             {
               name: 'Development',
@@ -490,7 +471,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
               revision: 1,
-              id: 2,
             },
             {
               name: 'Systems',
@@ -500,7 +480,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
               revision: 1,
-              id: 3,
             },
             {
               name: 'Meetings',
@@ -510,7 +489,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
               revision: 1,
-              id: 4,
             },
             {
               name: 'Code Review',
@@ -520,7 +498,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '384e8177-2123-4578-8201-031199a3a58f',
               revision: 1,
-              id: 5,
             },
           ];
 
@@ -623,7 +600,6 @@ module.exports = function(expect, request, baseUrl) {
           expectedResult.name = patchedActivity.name;
           expectedResult.slug = patchedActivity.slug;
           expectedResult.revision = 2;
-          expectedResult.id = 6;
           expectedResult.updated_at = new Date().toISOString().substring(0, 10);
 
           const expectedPost = copyJsonObject(expectedResult);
@@ -661,7 +637,6 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = copyJsonObject(originalActivity);
           expectedResult.name = patchedName.name;
           expectedResult.revision = 2;
-          expectedResult.id = 6;
           expectedResult.updated_at = new Date().toISOString().substring(0, 10);
 
           const expectedPost = copyJsonObject(expectedResult);
@@ -697,7 +672,6 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = copyJsonObject(originalActivity);
           expectedResult.slug = patchedSlug.slug;
           expectedResult.revision = 2;
-          expectedResult.id = 6;
           expectedResult.updated_at = new Date().toISOString().substring(0, 10);
 
           const expectedPost = copyJsonObject(expectedResult);
@@ -997,7 +971,6 @@ module.exports = function(expect, request, baseUrl) {
 
           // Hacky workaround because UUIDs are random
           newActivity.uuid = body.uuid;
-          body.id = initialActivities[initialActivities.length - 1].id + 1;
           expect(body).to.deep.equal(newActivity);
 
           checkListEndpoint(done, newActivity, token);
@@ -1195,9 +1168,7 @@ module.exports = function(expect, request, baseUrl) {
           json: true,
           body: {
             auth: {
-              type: 'password',
-              username: 'tschuy',
-              password: 'password',
+              type: 'token',
             },
             object: obj,
           },
@@ -1211,49 +1182,62 @@ module.exports = function(expect, request, baseUrl) {
       const postArg = getPostObject(baseUrl + 'activities/' + activity,
                       postActivity);
 
-      request.post(postArg, function() {
-        done();
+      getAPIToken().then(function(token) {
+        postArg.body.auth.token = token;
+        request.post(postArg, function() {
+          done();
+        });
       });
     });
 
     // Tests that `include_revisions=true` includes revisions
     it('gets activities + revisions when include_revisions=true is passed',
     function(done) {
-      request.get(baseUrl + 'activities/?include_revisions=true',
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.include(withParentsData);
-        expect(JSON.parse(body)).to.not.include(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'activities/?include_revisions=true&token=' +
+        token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(withParentsData);
+          expect(JSON.parse(body)).to.not.include(noParentsData);
+          done();
+        });
       });
     });
 
     // Tests that `include_revisions` includes revisions
     it('gets activities + revisions when include_revisions is passed',
     function(done) {
-      request.get(baseUrl + 'activities/?include_revisions',
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.include(withParentsData);
-        expect(JSON.parse(body)).to.not.include(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'activities/?include_revisions&token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(withParentsData);
+          expect(JSON.parse(body)).to.not.include(noParentsData);
+          done();
+        });
       });
     });
 
     // Tests that include_revisions isn't always set to true
     it('gets just activities when include_revisions=false', function(done) {
-      request.get(baseUrl + 'activities/?include_revisions=false',
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.include(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'activities/?include_revisions=false&token=' +
+        token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(noParentsData);
+          done();
+        });
       });
     });
 
     // Tests that include_revisions defaults to false
     it('gets just activities when include_revisions is not set',
     function(done) {
-      request.get(baseUrl + 'activities/',
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.include(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'activities/?token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(noParentsData);
+          done();
+        });
       });
     });
   });
@@ -1300,9 +1284,7 @@ module.exports = function(expect, request, baseUrl) {
           json: true,
           body: {
             auth: {
-              type: 'password',
-              username: 'tschuy',
-              password: 'password',
+              type: 'token',
             },
             object: obj,
           },
@@ -1315,49 +1297,60 @@ module.exports = function(expect, request, baseUrl) {
       const postArg = getPostObject(baseUrl + 'activities/' + activity,
                       postActivity);
 
-      request.post(postArg, function() {
-        done();
+      getAPIToken().then(function(token) {
+        postArg.body.auth.token = token;
+        request.post(postArg, function() {
+          done();
+        });
       });
     });
 
     // Tests that include_revisions=true includes revisions
     it('gets activity + revisions when include_revisions=true is passed',
     function(done) {
-      request.get(baseUrl + 'activities/' + activity +
-      '?include_revisions=true', function(err, res, body) {
-        expect(JSON.parse(body)).to.deep.equal(withParentsData);
-        expect(JSON.parse(body)).to.deep.not.equal(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'activities/' + activity +
+        '?include_revisions=true&token=' + token, function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(withParentsData);
+          expect(JSON.parse(body)).to.deep.not.equal(noParentsData);
+          done();
+        });
       });
     });
 
     // Tests that include_revisions includes revisions
     it('gets activity + revisions when include_revisions is passed',
     function(done) {
-      request.get(baseUrl + 'activities/' + activity + '?include_revisions',
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.deep.equal(withParentsData);
-        expect(JSON.parse(body)).to.deep.not.equal(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'activities/' + activity +
+        '?include_revisions&token=' + token, function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(withParentsData);
+          expect(JSON.parse(body)).to.deep.not.equal(noParentsData);
+          done();
+        });
       });
     });
 
     // Tests that include_revisions isn't always set to true
     it('gets just activity when include_revisions=false', function(done) {
-      request.get(baseUrl + 'activities/' + activity +
-      '?include_revisions=false', function(err, res, body) {
-        expect(JSON.parse(body)).to.include(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'activities/' + activity +
+        '?include_revisions=false&token=' + token, function(err, res, body) {
+          expect(JSON.parse(body)).to.include(noParentsData);
+          done();
+        });
       });
     });
 
     // Tests that include_revisions defaults to false
     it('gets just activity when include_revisions is not set',
     function(done) {
-      request.get(baseUrl + 'activities/' + activity,
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.include(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'activities/' + activity + '?token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(noParentsData);
+          done();
+        });
       });
     });
   });

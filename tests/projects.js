@@ -44,13 +44,12 @@ module.exports = function(expect, request, baseUrl) {
             {
               uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
               name: 'Ganeti Web Manager',
-              slugs: ['gwm', 'ganeti-webmgr'],
+              slugs: ['ganeti-webmgr', 'gwm'],
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
               uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
               revision: 1,
-              id: 1,
             },
             {
               uri: 'https://code.osuosl.org/projects/pgd',
@@ -61,7 +60,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
               revision: 1,
-              id: 2,
             },
             {
               uri: 'https://github.com/osu-cass/whats-fresh-api',
@@ -72,7 +70,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
               revision: 1,
-              id: 3,
             },
             {
               uri: 'https://github.com/osuosl/timesync',
@@ -83,7 +80,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
               revision: 1,
-              id: 4,
             },
           ];
 
@@ -113,13 +109,12 @@ module.exports = function(expect, request, baseUrl) {
             {
               uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
               name: 'Ganeti Web Manager',
-              slugs: ['gwm', 'ganeti-webmgr'],
+              slugs: ['ganeti-webmgr', 'gwm'],
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
               uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
               revision: 1,
-              id: 1,
             },
             {
               uri: 'https://code.osuosl.org/projects/pgd',
@@ -130,7 +125,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
               revision: 1,
-              id: 2,
             },
             {
               uri: 'https://github.com/osu-cass/whats-fresh-api',
@@ -141,7 +135,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
               revision: 1,
-              id: 3,
             },
             {
               uri: 'https://github.com/osuosl/timesync',
@@ -152,7 +145,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
               revision: 1,
-              id: 4,
             },
             {
               uri: 'https://github.com/osuosl/chiliproject',
@@ -163,7 +155,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2009-07-07',
               uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
               revision: 1,
-              id: 5,
             },
           ];
 
@@ -191,13 +182,12 @@ module.exports = function(expect, request, baseUrl) {
             {
               uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
               name: 'Ganeti Web Manager',
-              slugs: ['gwm', 'ganeti-webmgr'],
+              slugs: ['ganeti-webmgr', 'gwm'],
               deleted_at: null,
               updated_at: null,
               created_at: '2014-01-01',
               uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
               revision: 1,
-              id: 1,
             },
             {
               uri: 'https://code.osuosl.org/projects/pgd',
@@ -208,7 +198,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
               revision: 1,
-              id: 2,
             },
             {
               uri: 'https://github.com/osu-cass/whats-fresh-api',
@@ -219,7 +208,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
               revision: 1,
-              id: 3,
             },
             {
               uri: 'https://github.com/osuosl/timesync',
@@ -230,7 +218,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
               revision: 1,
-              id: 4,
             },
             {
               uri: 'https://github.com/osuosl/chiliproject',
@@ -241,7 +228,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2009-07-07',
               uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
               revision: 1,
-              id: 5,
             },
           ];
 
@@ -286,13 +272,12 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
             name: 'Ganeti Web Manager',
-            slugs: ['gwm', 'ganeti-webmgr'],
+            slugs: ['ganeti-webmgr', 'gwm'],
             deleted_at: null,
             updated_at: null,
             created_at: '2014-01-01',
             uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
             revision: 1,
-            id: 1,
           };
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
@@ -350,13 +335,13 @@ module.exports = function(expect, request, baseUrl) {
   describe('POST /projects/:slug', function() {
     const patchedProject = {
       name: 'Ganeti Web Mgr',
-      slugs: ['gwm', 'gan-web'],
+      slugs: ['gan-web', 'gwm'],
       uri: 'https://code.osuosl.org/projects/',
     };
 
     const originalProject = {
       name: 'Ganeti Web Manager',
-      slugs: ['gwm', 'ganeti-webmgr'],
+      slugs: ['ganeti-webmgr', 'gwm'],
       deleted_at: null,
       updated_at: null,
       created_at: '2014-01-01',
@@ -427,7 +412,6 @@ module.exports = function(expect, request, baseUrl) {
           expectedResults.slugs = patchedProject.slugs;
           expectedResults.uuid = originalProject.uuid;
           expectedResults.revision = 2;
-          expectedResults.id = 6;
           expectedResults.updated_at = new Date().toISOString()
                                                  .substring(0, 10);
 
@@ -457,7 +441,6 @@ module.exports = function(expect, request, baseUrl) {
           expectedResults.uri = patchedProject.uri;
           expectedResults.uuid = originalProject.uuid;
           expectedResults.revision = 2;
-          expectedResults.id = 6;
           expectedResults.updated_at = new Date().toISOString()
                                                  .substring(0, 10);
 
@@ -487,7 +470,6 @@ module.exports = function(expect, request, baseUrl) {
           expectedResults.slugs = patchedProject.slugs;
           expectedResults.uuid = originalProject.uuid;
           expectedResults.revision = 2;
-          expectedResults.id = 6;
           expectedResults.updated_at = new Date().toISOString()
                                                  .substring(0, 10);
 
@@ -517,7 +499,6 @@ module.exports = function(expect, request, baseUrl) {
           expectedResults.name = patchedProject.name;
           expectedResults.uuid = originalProject.uuid;
           expectedResults.revision = 2;
-          expectedResults.id = 6;
           expectedResults.updated_at = new Date().toISOString()
                                                  .substring(0, 10);
 
@@ -687,7 +668,6 @@ module.exports = function(expect, request, baseUrl) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.id;
         delete requestOptions.body.object.uuid;
         delete requestOptions.body.object.revision;
         delete requestOptions.body.object.deleted_at;
@@ -713,7 +693,6 @@ module.exports = function(expect, request, baseUrl) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.id;
         delete requestOptions.body.object.uuid;
         delete requestOptions.body.object.revision;
         delete requestOptions.body.object.deleted_at;
@@ -739,7 +718,6 @@ module.exports = function(expect, request, baseUrl) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.id;
         delete requestOptions.body.object.uuid;
         delete requestOptions.body.object.revision;
         delete requestOptions.body.object.deleted_at;
@@ -765,7 +743,6 @@ module.exports = function(expect, request, baseUrl) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.id;
         delete requestOptions.body.object.uuid;
         delete requestOptions.body.object.revision;
         delete requestOptions.body.object.deleted_at;
@@ -791,7 +768,6 @@ module.exports = function(expect, request, baseUrl) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.id;
         delete requestOptions.body.object.uuid;
         delete requestOptions.body.object.revision;
         delete requestOptions.body.object.deleted_at;
@@ -818,7 +794,6 @@ module.exports = function(expect, request, baseUrl) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.id;
         delete requestOptions.body.object.uuid;
         delete requestOptions.body.object.revision;
         delete requestOptions.body.object.deleted_at;
@@ -844,7 +819,6 @@ module.exports = function(expect, request, baseUrl) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.id;
         delete requestOptions.body.object.uuid;
         delete requestOptions.body.object.revision;
         delete requestOptions.body.object.deleted_at;
@@ -871,14 +845,14 @@ module.exports = function(expect, request, baseUrl) {
     // the project object to attempt to add
     const project = {
       uri: 'https://github.com/osuosl/timesync-node',
-      slugs: ['tsn', 'timesync-node'],
+      slugs: ['timesync-node', 'tsn'],
       name: 'TimeSync Node',
     };
 
     // the project as added to the database
     const newProject = {
       uri: 'https://github.com/osuosl/timesync-node',
-      slugs: ['tsn', 'timesync-node'],
+      slugs: ['timesync-node', 'tsn'],
       name: 'TimeSync Node',
       revision: 1,
       created_at: new Date().toISOString().substring(0, 10),
@@ -897,7 +871,7 @@ module.exports = function(expect, request, baseUrl) {
         uri: 'https://code.osuosl.org/projects/' +
         'ganeti-webmgr',
         name: 'Ganeti Web Manager',
-        slugs: ['gwm', 'ganeti-webmgr'],
+        slugs: ['ganeti-webmgr', 'gwm'],
         deleted_at: null,
         updated_at: null,
         created_at: '2014-01-01',
@@ -975,14 +949,13 @@ module.exports = function(expect, request, baseUrl) {
             const expectedGetResults = initialProjects.concat([
               {
                 uri: 'https://github.com/osuosl/timesync-node',
-                slugs: ['tsn', 'timesync-node'],
+                slugs: ['timesync-node', 'tsn'],
                 name: 'TimeSync Node',
                 deleted_at: null,
                 updated_at: null,
                 created_at: new Date().toISOString().substring(0, 10),
                 revision: 1,
                 uuid: addedProject.uuid,
-                id: 6,
               },
             ]);
 
@@ -1024,14 +997,13 @@ module.exports = function(expect, request, baseUrl) {
             const expectedGetResults = initialProjects.concat([
               {
                 uri: null,
-                slugs: ['tsn', 'timesync-node'],
+                slugs: ['timesync-node', 'tsn'],
                 name: 'TimeSync Node',
                 deleted_at: null,
                 updated_at: null,
                 created_at: new Date().toISOString().substring(0, 10),
                 revision: 1,
                 uuid: addedProject.uuid,
-                id: 6,
               },
             ]);
 
@@ -1143,7 +1115,7 @@ module.exports = function(expect, request, baseUrl) {
     it('fails to create a new project with an existing slug', function(done) {
       getAPIToken().then(function(token) {
         const postExistingSlug = copyJsonObject(postArg);
-        postExistingSlug.object.slugs = ['gwm', 'ganeti-webmgr', 'dog'];
+        postExistingSlug.object.slugs = ['dog', 'ganeti-webmgr', 'gwm'];
         requestOptions.body = postExistingSlug;
 
         requestOptions.body.auth.token = token;
@@ -1153,7 +1125,7 @@ module.exports = function(expect, request, baseUrl) {
             status: 409,
             error: 'The slug provided already exists',
             text: 'slugs gwm, ganeti-webmgr already exist',
-            values: ['gwm', 'ganeti-webmgr'],
+            values: ['ganeti-webmgr', 'gwm'],
           };
 
           body.values.sort();
@@ -1364,13 +1336,12 @@ module.exports = function(expect, request, baseUrl) {
                 uri: 'https://code.osuosl.org/projects/ganeti-' +
                 'webmgr',
                 name: 'Ganeti Web Manager',
-                slugs: ['gwm', 'ganeti-webmgr'],
+                slugs: ['ganeti-webmgr', 'gwm'],
                 deleted_at: null,
                 updated_at: null,
                 created_at: '2014-01-01',
                 uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
                 revision: 1,
-                id: 1,
               },
               {
                 uri: 'https://code.osuosl.org/projects/pgd',
@@ -1381,7 +1352,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
                 revision: 1,
-                id: 2,
               },
               {
                 uri: 'https://github.com/osu-cass/whats-fresh-api',
@@ -1392,7 +1362,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
                 revision: 1,
-                id: 3,
               },
               {
                 uri: 'https://github.com/osuosl/timesync',
@@ -1403,7 +1372,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
                 revision: 1,
-                id: 4,
               },
             ];
 
@@ -1438,13 +1406,12 @@ module.exports = function(expect, request, baseUrl) {
                 uri: 'https://code.osuosl.org/projects/ganeti-' +
                 'webmgr',
                 name: 'Ganeti Web Manager',
-                slugs: ['gwm', 'ganeti-webmgr'],
+                slugs: ['ganeti-webmgr', 'gwm'],
                 deleted_at: null,
                 updated_at: null,
                 created_at: '2014-01-01',
                 uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
                 revision: 1,
-                id: 1,
               },
               {
                 uri: 'https://code.osuosl.org/projects/pgd',
@@ -1455,7 +1422,6 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
                 revision: 1,
-                id: 2,
               },
               {
                 uri: 'https://github.com/osu-cass/whats-fresh-api',
@@ -1466,13 +1432,11 @@ module.exports = function(expect, request, baseUrl) {
                 created_at: '2014-01-01',
                 uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
                 revision: 1,
-                id: 3,
               },
               {
                 uri: 'https://github.com/osuosl/timesync',
                 name: 'Timesync',
                 slugs: ['timesync', 'ts'],
-                id: 4,
                 revision: 1,
                 deleted_at: null,
                 updated_at: null,
@@ -1496,30 +1460,27 @@ module.exports = function(expect, request, baseUrl) {
     const noParentsData = {
       'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
       'name': 'GANETI WEB MANAGER',
-      'owner': 'tschuy',
       'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
       'revision': 2,
       'deleted_at': null,
       'updated_at': currentTime,
       'created_at': '2014-01-01',
-      'slugs': ['gwm', 'ganeti-webmgr'].sort(),
+      'slugs': ['ganeti-webmgr', 'gwm'],
     };
 
     const withParentsData = {
       'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
       'name': 'GANETI WEB MANAGER',
-      'owner': 'tschuy',
       'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
       'revision': 2,
       'deleted_at': null,
       'updated_at': currentTime,
       'created_at': '2014-01-01',
-      'slugs': ['gwm', 'ganeti-webmgr'].sort(),
+      'slugs': ['ganeti-webmgr', 'gwm'],
       'parents': [
         {
           'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
           'name': 'Ganeti Web Manager',
-          'owner': 'tschuy',
           'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
           'revision': 1,
           'deleted_at': null,
@@ -1536,9 +1497,7 @@ module.exports = function(expect, request, baseUrl) {
           json: true,
           body: {
             auth: {
-              type: 'password',
-              username: 'tschuy',
-              password: 'password',
+              type: 'token',
             },
             object: obj,
           },
@@ -1552,81 +1511,91 @@ module.exports = function(expect, request, baseUrl) {
       const postArg = getPostObject(baseUrl + 'projects/' + project,
                       postProject);
 
-      request.post(postArg, function() {
-        done();
+      getAPIToken().then(function(token) {
+        postArg.body.auth.token = token;
+        request.post(postArg, function() {
+          done();
+        });
       });
     });
 
     // Tests that include_revisions=true includes revisions
     it('gets projects + revisions when include_revisions=true', function(done) {
-      request.get(baseUrl + 'projects/?include_revisions=true',
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.include(withParentsData);
-        expect(JSON.parse(body)).to.not.include(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'projects/?include_revisions=true&token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(withParentsData);
+          expect(JSON.parse(body)).to.not.include(noParentsData);
+          done();
+        });
       });
     });
 
     // Tests that include_revisions includes revisions
     it('gets projects + revisions when include_revisions is an empty parameter',
     function(done) {
-      request.get(baseUrl + 'projects/?include_revisions',
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.include(withParentsData);
-        expect(JSON.parse(body)).to.not.include(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'projects/?include_revisions&token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(withParentsData);
+          expect(JSON.parse(body)).to.not.include(noParentsData);
+          done();
+        });
       });
     });
 
     // Tests that include_revisions isn't always set to true
     it('gets just projects when include_revisions=false', function(done) {
-      request.get(baseUrl + 'projects/?include_revisions=false',
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.include(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'projects/?include_revisions=false&token=' +
+        token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(noParentsData);
+          done();
+        });
       });
     });
 
     // Tests that include_revisions defaults to false
     it('gets just projects when include_revisions is not set', function(done) {
-      request.get(baseUrl + 'projects/', function(err, res, body) {
-        expect(JSON.parse(body)).to.include(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'projects?token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(noParentsData);
+          done();
+        });
       });
     });
   });
 
-  describe('GET /projects/:uuid?include_revisions', function() {
+  describe('GET /projects/:slug?include_revisions', function() {
     const currentTime = new Date().toISOString().substring(0, 10);
     const project = 'gwm';
 
     const noParentsData = {
       'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
       'name': 'GANETI WEB MANAGER',
-      'owner': 'tschuy',
       'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
       'revision': 2,
       'deleted_at': null,
       'updated_at': currentTime,
       'created_at': '2014-01-01',
-      'slugs': ['gwm', 'ganeti-webmgr'].sort(),
+      'slugs': ['ganeti-webmgr', 'gwm'],
     };
 
     const withParentsData = {
       'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
       'name': 'GANETI WEB MANAGER',
-      'owner': 'tschuy',
       'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
       'revision': 2,
       'deleted_at': null,
       'updated_at': currentTime,
       'created_at': '2014-01-01',
-      'slugs': ['gwm', 'ganeti-webmgr'].sort(),
+      'slugs': ['ganeti-webmgr', 'gwm'],
       'parents': [
         {
           'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
           'name': 'Ganeti Web Manager',
-          'owner': 'tschuy',
           'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
           'revision': 1,
           'deleted_at': null,
@@ -1643,9 +1612,7 @@ module.exports = function(expect, request, baseUrl) {
           json: true,
           body: {
             auth: {
-              type: 'password',
-              username: 'tschuy',
-              password: 'password',
+              type: 'token',
             },
             object: obj,
           },
@@ -1658,45 +1625,60 @@ module.exports = function(expect, request, baseUrl) {
       const postArg = getPostObject(baseUrl + 'projects/' + project,
                       postProject);
 
-      request.post(postArg, function() {
-        done();
+      getAPIToken().then(function(token) {
+        postArg.body.auth.token = token;
+        request.post(postArg, function() {
+          done();
+        });
       });
     });
 
     // Tests that include_revisions=true includes revisions
     it('gets project + revisions when include_revisions=true',
     function(done) {
-      request.get(baseUrl + 'projects/' + project + '?include_revisions=true',
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.deep.equal(withParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'projects/' + project + '?include_revisions=' +
+          'true&token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(withParentsData);
+          done();
+        });
       });
     });
 
     // Tests that include_revisions includes revisions
     it('gets project + revisions when include_revisions',
     function(done) {
-      request.get(baseUrl + 'projects/' + project + '?include_revisions',
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.deep.equal(withParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'projects/' + project + '?include_revisions' +
+          '&token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(withParentsData);
+          done();
+        });
       });
     });
 
     // Tests that include_revisions isn't always set to true
     it('gets just project when include_revisions=false', function(done) {
-      request.get(baseUrl + 'projects/' + project + '?include_revisions=false',
-      function(err, res, body) {
-        expect(JSON.parse(body)).to.deep.equal(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'projects/' + project + '?include_revisions=' +
+          'false&token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(noParentsData);
+          done();
+        });
       });
     });
 
     // Tests that include_revisions defaults to false
     it('gets just project when include_revisions is not set', function(done) {
-      request.get(baseUrl + 'projects/' + project, function(err, res, body) {
-        expect(JSON.parse(body)).to.deep.equal(noParentsData);
-        done();
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'projects/' + project + '?token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(noParentsData);
+          done();
+        });
       });
     });
   });

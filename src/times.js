@@ -29,8 +29,8 @@ module.exports = function(app) {
       }
     });
 
-    time.project = project;
-    time.activities = activities;
+    time.project = project.sort();
+    time.activities = activities.sort();
 
     delete time.activity;
     delete time.id;
@@ -294,7 +294,8 @@ module.exports = function(app) {
         }
       }
 
-      if (flags.userSet && flags.projectSet && flags.activitySet) {
+      if (!req.query || (flags.userSet && flags.projectSet &&
+                                                          flags.activitySet)) {
         resolve(timesQ);
       }
     });
@@ -576,6 +577,7 @@ module.exports = function(app) {
 
                 trx('timesactivities').insert(taInsertion).then(function() {
                   trx.commit();
+                  time.activities = time.activities.sort();
                   return res.send(JSON.stringify(time));
                 }).catch(function() {
                   trx.rollback();
@@ -712,85 +714,85 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    knex('times').where({uuid: req.params.uuid, newest: true})
-    .update({newest: false}).then(function() {
-      // retrieves the time from the database
-      knex('times').select(
-        'times.duration as duration',
-        'times.user as user',
-        'times.project as project',
-        'times.notes as notes',
-        'times.issue_uri as issue_uri',
-        'times.date_worked as date_worked',
-        'times.created_at as created_at',
-        'times.updated_at as updated_at',
-        'times.id as id',
-        'times.uuid as uuid',
-        'times.revision as revision',
-        'users.username as owner',
-        'projectslugs.name as projectName')
-      .where('times.uuid', '=', req.params.uuid)
-      .innerJoin('users', 'users.id', 'times.user')
-      .innerJoin('projectslugs', 'projectslugs.id',
-                 'times.project')
-      .orderBy('times.revision', 'desc')
-      .then(function(time) {
-        if (user.username !== time[0].owner) {
-          const err = errors.errorAuthorizationFailure(user.username,
-            'create objects for ' + time[0].owner);
-          return res.status(err.status).send(err);
+    // retrieves the time from the database
+    knex('times').first().select(
+      'times.duration as duration',
+      'times.user as user',
+      'times.project as project',
+      'times.notes as notes',
+      'times.issue_uri as issue_uri',
+      'times.date_worked as date_worked',
+      'times.created_at as created_at',
+      'times.updated_at as updated_at',
+      'times.id as id',
+      'times.uuid as uuid',
+      'times.revision as revision',
+      'users.username as owner',
+      'projectslugs.name as projectName')
+    .where('times.uuid', '=', req.params.uuid)
+    .innerJoin('users', 'users.id', 'times.user')
+    .innerJoin('projectslugs', 'projectslugs.id',
+               'times.project')
+    .orderBy('times.revision', 'desc')
+    .then(function(time) {
+      if (user.username !== time.owner) {
+        const err = errors.errorAuthorizationFailure(user.username,
+          'create objects for ' + time.owner);
+        return res.status(err.status).send(err);
+      }
+
+      const username = obj.user || time.owner;
+      helpers.checkUser(username, username).then(function(userId) {
+        if (userId !== undefined) {
+          time.user = userId;
+        } else {
+          time.user = time.user;
         }
 
-        const username = obj.user || time[0].owner;
-        helpers.checkUser(username, username).then(function(userId) {
-          if (userId !== undefined) {
-            time[0].user = userId;
+        const projectName = obj.project || time.projectName;
+        helpers.checkProject(projectName).then(function(projectId) {
+          time.project = projectId || time.project;
+          time.duration = obj.duration || time.duration;
+          time.notes = obj.notes || time.notes;
+          time.issue_uri = obj.issue_uri || time.issue_uri;
+          // created_at is returned as string by postgres
+          time.created_at = parseInt(time.created_at, 10);
+          time.updated_at = Date.now();
+          time.revision += 1;
+          delete time.owner;
+          delete time.projectName;
+
+          if (obj.date_worked) {
+            time.date_worked = Date.parse(obj.date_worked);
           } else {
-            time[0].user = time[0].user;
+            time.date_worked = parseInt(time.date_worked, 10);
           }
 
-          const projectName = obj.project || time[0].projectName;
-          helpers.checkProject(projectName).then(function(projectId) {
-            time[0].project = projectId || time[0].project;
-            time[0].duration = obj.duration || time[0].duration;
-            time[0].notes = obj.notes || time[0].notes;
-            time[0].issue_uri = obj.issue_uri || time[0].issue_uri;
-            // created_at is returned as string by postgres
-            time[0].created_at = parseInt(time[0].created_at, 10);
-            time[0].updated_at = Date.now();
-            time[0].revision += 1;
-            delete time[0].owner;
-            delete time[0].projectName;
+          const oldId = time.id;
+          delete time.id;
 
-            if (obj.date_worked) {
-              time[0].date_worked = Date.parse(obj.date_worked);
-            } else {
-              time[0].date_worked = parseInt(time[0].date_worked, 10);
-            }
+          const activityList = obj.activities || [];
+          helpers.checkActivities(activityList).then(function(activityIds) {
+            knex.transaction(function(trx) {
+              // trx can be used just like knex, but every call is temporary
+              // until trx.commit() is called. Until then, they're stored
+              // separately, and, if something goes wrong, can be rolled back
+              // without side effects.
 
-            const oldId = time[0].id;
-            delete time[0].id;
+              trx('times').where({uuid: req.params.uuid, newest: true})
+              .update({newest: false}).then(function() {
+                trx('times').insert(time).returning('id').then(function(id) {
+                  time.id = id[0];
 
-            const activityList = obj.activities || [];
-            helpers.checkActivities(activityList).then(function(activityIds) {
-              knex.transaction(function(trx) {
-                // trx can be used just like knex, but every call is temporary
-                // until trx.commit() is called. Until then, they're stored
-                // separately, and, if something goes wrong, can be rolled back
-                // without side effects.
-
-                trx('times').insert(time[0]).returning('id').then(function(id) {
-                  time[0].id = id[0];
-
-                  if (helpers.getType(obj.activities) !== 'array' &&
-                  obj.activities.length) {
-                    if (!obj.activities) {
+                  if (!obj.activities) {
+                    knex('timesactivities').select('activity')
+                    .where('time', oldId).then(function(activities) {
                       const taInsertion = [];
                       /* eslint-disable prefer-const */
                       for (let activity of activities) {
                         /* eslint-enable prefer-const */
                         taInsertion.push({
-                          time: time[0].id,
+                          time: time.id,
                           activity: activity.activity,
                         });
                       }
@@ -799,16 +801,20 @@ module.exports = function(app) {
                       .then(function() {
                         trx.commit();
                         return res.send(time);
-                      }).catch(function(error) {
+                      }).catch(function() {
                         trx.rollback();
                       });
-                    } else {
+                    }).catch(function() {
+                      trx.rollback();
+                    });
+                  } else if (helpers.getType(obj.activities) === 'array') {
+                    if (obj.activities.length) {
                       const taInsertion = [];
                       /* eslint-disable prefer-const */
                       for (let activity of activityIds) {
                         /* eslint-enable prefer-const */
                         taInsertion.push({
-                          time: time[0].id,
+                          time: time.id,
                           activity: activity,
                         });
                       }
@@ -817,36 +823,35 @@ module.exports = function(app) {
                       .then(function() {
                         trx.commit();
                         return res.send(time);
-                      }).catch(function(error) {
+                      }).catch(function() {
                         trx.rollback();
                       });
+                    } else {
+                      trx.commit();
+                      return res.send(time);
                     }
-                  } else {
-                    trx.commit()
-                    return res.send(time);
                   }
-                }).catch(function(error) {
+                }).catch(function() {
                   trx.rollback();
                 });
-              }).catch(function(error) {
-                const err = errors.errorServerError(error);
-                return res.status(err.status).send(err);
+              }).catch(function() {
+                trx.rollback();
               });
-            }).catch(function() {
-              const err = errors.errorInvalidForeignKey('time',
-                      'activities');
+            }).catch(function(error) {
+              const err = errors.errorServerError(error);
               return res.status(err.status).send(err);
             });
           }).catch(function() {
-            const err = errors.errorInvalidForeignKey('time', 'project');
+            const err = errors.errorInvalidForeignKey('time',
+                    'activities');
             return res.status(err.status).send(err);
           });
         }).catch(function() {
-          const err = errors.errorInvalidForeignKey('time', 'user');
+          const err = errors.errorInvalidForeignKey('time', 'project');
           return res.status(err.status).send(err);
         });
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
+      }).catch(function() {
+        const err = errors.errorInvalidForeignKey('time', 'user');
         return res.status(err.status).send(err);
       });
     }).catch(function(error) {

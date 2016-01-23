@@ -15,7 +15,7 @@ module.exports = function(app) {
     }
 
     // manually create our project object from inProject.
-    const outProject = {name: inProject.name, owner: inProject.owner, uri:
+    const outProject = {name: inProject.name, uri:
     inProject.uri, uuid: inProject.uuid, revision: inProject.revision,
     created_at: inProject.created_at, updated_at: inProject.updated_at,
     deleted_at: inProject.deleted_at};
@@ -52,8 +52,6 @@ module.exports = function(app) {
     }
 
     projectsQ = projectsQ.select(
-      // select the owner to be the users username
-      'users.username as owner',
       // Select the 'slugs' to be the projectslugs name
       'projectslugs.name as slug',
       // Explicitly select everything else from projects
@@ -67,8 +65,6 @@ module.exports = function(app) {
       'projects.newest as newest')
     // Order them from most recently updated to last updated
     .orderBy('revision')
-    // Join users with projects on the ownerId
-    .join('users', 'projects.owner', 'users.id')
     // Do a left join so we keep projects without a slug field
     // https://en.wikipedia.org/wiki/Join_(SQL)#Left_outer_join for more info.
     .leftOuterJoin('projectslugs', 'projects.id', 'projectslugs.project');
@@ -153,8 +149,6 @@ module.exports = function(app) {
     // This is a doozy so let's break it down
     // Select from the 'projects' table
     const projectQ = knex('projects').select(
-      // select the owner to be the users username
-      'users.username as owner',
       // Select the 'slugs' to be the projectslugs name
       'projectslugs.name as slug',
       // Explicitly select everything else from projects
@@ -168,8 +162,6 @@ module.exports = function(app) {
       'projects.newest as newest')
     // Order them from most recently updated to last updated
     .orderBy('revision', 'desc')
-    // Join users with projects on the ownerId
-    .join('users', 'projects.owner', 'users.id')
     // Do a left join so we keep projects without a slug field
     // https://en.wikipedia.org/wiki/Join_(SQL)#Left_outer_join for more info.
     .leftOuterJoin('projectslugs', 'projects.id', 'projectslugs.project')
@@ -345,7 +337,6 @@ module.exports = function(app) {
             };
 
             trx('userroles').insert(managerRole).then(function() {
-              obj.id = project;
               obj.created_at = new Date(obj.created_at)
               .toISOString().substring(0, 10);
 
@@ -531,9 +522,9 @@ module.exports = function(app) {
                       }
 
                       Promise.all(newSlugs).then(function() {
-                        project.slugs = obj.slugs;
-                        project.owner = authUser.username;
+                        project.slugs = obj.slugs.sort();
                         delete project.id;
+                        delete project.newest;
                         trx.commit();
                         res.send(JSON.stringify(project));
                       }).catch(function(error) {
@@ -544,9 +535,9 @@ module.exports = function(app) {
                     } else {
                       trx('projectslugs').update({project: project.id})
                       .where({project: oldId}).then(function() {
-                        project.slugs = existingSlugs;
-                        project.owner = authUser.username;
+                        project.slugs = existingSlugs.sort();
                         delete project.id;
+                        delete project.newest;
                         trx.commit();
                         res.send(project);
                       }).catch(function(error) {
@@ -560,7 +551,7 @@ module.exports = function(app) {
                     const err = errors.errorServerError(error);
                     return res.status(err.status).send(err);
                   });
-                }).catch(function(error) {
+                }).catch(function() {
                   trx.rollback();
                 });
               }).catch(function() {
