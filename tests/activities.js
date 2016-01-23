@@ -49,7 +49,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
               revision: 1,
-              id: 1,
             },
             {
               name: 'Development',
@@ -59,7 +58,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
               revision: 1,
-              id: 2,
             },
             {
               name: 'Systems',
@@ -69,7 +67,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
               revision: 1,
-              id: 3,
             },
             {
               name: 'Meetings',
@@ -79,7 +76,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: '2014-01-01',
               uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
               revision: 1,
-              id: 4,
             },
           ];
 
@@ -548,7 +544,6 @@ module.exports = function(expect, request, baseUrl) {
       created_at: '2014-01-01',
       uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
       revision: 1,
-      id: 1,
     };
 
     const patchedName = { name: patchedActivity.name };
@@ -879,7 +874,6 @@ module.exports = function(expect, request, baseUrl) {
       name: 'Chef',
       created_at: new Date().toISOString().substring(0, 10),
       revision: 1,
-      id: 5,
     };
 
     // the base POST JSON
@@ -899,7 +893,6 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2014-01-01',
         uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
         revision: 1,
-        id: 1,
       },
       {
         name: 'Development',
@@ -909,7 +902,6 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2014-01-01',
         uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
         revision: 1,
-        id: 2,
       },
       {
         name: 'Systems',
@@ -919,7 +911,6 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2014-01-01',
         uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
         revision: 1,
-        id: 3,
       },
       {
         name: 'Meetings',
@@ -929,7 +920,6 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2014-01-01',
         uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
         revision: 1,
-        id: 4,
       },
     ];
 
@@ -954,7 +944,6 @@ module.exports = function(expect, request, baseUrl) {
               created_at: new Date().toISOString().substring(0, 10),
               uuid: newActivityItem.uuid,
               revision: 1,
-              id: 6,
             },
           ]);
         } else {

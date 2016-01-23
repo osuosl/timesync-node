@@ -340,7 +340,6 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const originalProject = {
-      id: 1,
       name: 'Ganeti Web Manager',
       slugs: ['ganeti-webmgr', 'gwm'],
       deleted_at: null,
@@ -857,7 +856,6 @@ module.exports = function(expect, request, baseUrl) {
       name: 'TimeSync Node',
       revision: 1,
       created_at: new Date().toISOString().substring(0, 10),
-      id: 6,
     };
 
     // the base POST JSON
@@ -879,7 +877,6 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2014-01-01',
         uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
         revision: 1,
-        id: 1,
       },
       {
         uri: 'https://code.osuosl.org/projects/pgd',
@@ -890,7 +887,6 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2014-01-01',
         uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
         revision: 1,
-        id: 2,
       },
       {
         uri: 'https://github.com/osu-cass/whats-fresh-api',
@@ -901,7 +897,6 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2014-01-01',
         uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
         revision: 1,
-        id: 3,
       },
       {
         uri: 'https://github.com/osuosl/timesync',
@@ -912,7 +907,6 @@ module.exports = function(expect, request, baseUrl) {
         created_at: '2014-01-01',
         uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
         revision: 1,
-        id: 4,
       },
     ];
 

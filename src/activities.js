@@ -6,6 +6,33 @@ module.exports = function(app) {
   const authRequest = require('./authenticatedRequest');
   const uuid = require('uuid');
 
+  function constructActivity(activity, res) {
+    if (!activity) {
+      const err = errors.errorObjectNotFound('activity');
+      res.status(err.status);
+      return err;
+    }
+
+    activity.created_at = new Date(parseInt(activity.created_at, 10))
+    .toISOString().substring(0, 10);
+    if (activity.updated_at) {
+      activity.updated_at = new Date(parseInt(activity.updated_at, 10))
+      .toISOString().substring(0, 10);
+    } else {
+      activity.updated_at = null;
+    }
+    if (activity.deleted_at) {
+      activity.deleted_at = new Date(parseInt(activity.deleted_at, 10))
+      .toISOString().substring(0, 10);
+    } else {
+      activity.deleted_at = null;
+    }
+    delete activity.id;
+    delete activity.newest;
+
+    return activity;
+  }
+
   authRequest.get(app, app.get('version') + '/activities',
   function(req, res) {
     const knex = app.get('knex');
@@ -21,35 +48,49 @@ module.exports = function(app) {
       activitiesQ = knex('activities').where({deleted_at: null});
     }
 
-    activitiesQ.then(function(activities) {
-      if (activities.length === 0) {
-        return res.send([]);
-      }
-
-      /* eslint-disable prefer-const */
-      for (let activity of activities) {
-      /* eslint-enable prefer-const */
-        activity.created_at = new Date(parseInt(activity.created_at, 10))
-        .toISOString().substring(0, 10);
-        if (activity.updated_at) {
-          activity.updated_at = new Date(parseInt(activity.updated_at, 10))
-          .toISOString().substring(0, 10);
-        } else {
-          activity.updated_at = null;
+    // Include revisions parameter was passed
+    if (req.query.include_revisions === 'true' ||
+        req.query.include_revisions === '') {
+      // The activitiesQ query is all we need, no further filtering
+      activitiesQ.then(function(activities) {
+        if (activities.length === 0) {
+          return res.send([]);
         }
-        if (activity.deleted_at) {
-          activity.deleted_at = new Date(parseInt(activity.deleted_at, 10))
-          .toISOString().substring(0, 10);
-        } else {
-          activity.deleted_at = null;
+        // Send all activities fitlered on the 'newest' field
+        return res.send(activities.filter(function(a) {
+          return a.newest;
+        // Map the 'constructActivity' function to each activity
+        }).map(function(a) {
+          const child = constructActivity(a, res);
+          // Set the child's parent field to a similar map,
+          // filter on them having the same uuid and different revisions
+          child.parents = activities.filter(function(p) {
+            return a.uuid === p.uuid && a.revision !== p.revision;
+          }).map(function(p) {
+            return constructActivity(p, res);
+          });
+          return child;
+        }));
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
+      });
+    // Include revisions parameter was not included
+    } else {
+      // Add the 'newest === true' filter to the db query
+      activitiesQ.where({newest: true}).then(function(activities) {
+        if (activities.length === 0) {
+          return res.send([]);
         }
-      }
-
-      return res.send(activities);
-    }).catch(function(error) {
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
-    });
+        // Send the processed objects, pretty straight forward.
+        return res.send(activities.map(function(activity) {
+          return constructActivity(activity, res);
+        }));
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
+      });
+    }
   });
 
   authRequest.get(app, app.get('version') + '/activities/:slug',
@@ -60,34 +101,40 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    // get matching activity
-    knex('activities').select().first().where('slug', '=', req.params.slug)
-    .orderBy('revision', 'desc').then(function(activity) {
-      if (!activity) {
-        const err = errors.errorObjectNotFound('activity');
+    const activityQ = knex('activities').where({slug: req.params.slug})
+                    .orderBy('revision', 'desc');
+
+    // Include revisions parameter was passed
+    if (req.query.include_revisions === 'true' ||
+        req.query.include_revisions === '') {
+      // The activitiesQ query is all we need, no further filtering
+      activityQ.then(function(activity) {
+        // Send the newest activity
+        return res.send(activity.filter(function(a) {
+          return a.newest;
+        }).map(function(a) {
+          const child = constructActivity(a, res);
+          // With the parents field filled out (or equal to [])
+          child.parents = activity.filter(function(p) {
+            return p.revision !== a.revision;
+          }).map(function(p) {
+            return constructActivity(p, res);
+          });
+          return child;
+        // Return the frist element since this is a 1 element array
+        }).pop());
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
-      }
-
-      activity.created_at = new Date(parseInt(activity.created_at, 10))
-      .toISOString().substring(0, 10);
-      if (activity.updated_at) {
-        activity.updated_at = new Date(parseInt(activity.updated_at, 10))
-        .toISOString().substring(0, 10);
-      } else {
-        activity.updated_at = null;
-      }
-      if (activity.deleted_at) {
-        activity.deleted_at = new Date(parseInt(activity.deleted_at, 10))
-        .toISOString().substring(0, 10);
-      } else {
-        activity.deleted_at = null;
-      }
-
-      return res.send(activity);
-    }).catch(function(error) {
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
-    });
+      });
+    } else {
+      activityQ.where({newest: true}).first().then(function(activity) {
+        return res.send(constructActivity(activity, res));
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
+      });
+    }
   });
 
   authRequest.delete(app, app.get('version') + '/activities/:slug',
@@ -194,43 +241,54 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    knex('activities').first().select('activities.name as name',
-    'activities.slug as slug', 'activities.id as id',
-    'activities.uuid as uuid', 'activities.revision as rev',
-    'activities.created_at as created_at')
-    .where('slug', '=', req.params.slug).then(function(obj) {
-      if (!obj) {
-        const err = errors.errorObjectNotFound('activity');
-        return res.status(err.status).send(err);
-      }
+    knex('activities').first().where({slug: req.params.slug})
+    .update({newest: false}).then(function() {
+      knex('activities').first().select(
+        'activities.name as name',
+        'activities.slug as slug',
+        'activities.uuid as uuid',
+        'activities.revision as rev',
+        'activities.created_at as created_at',
+        'activities.newest as newest')
+      .where('slug', '=', req.params.slug).then(function(obj) {
+        if (!obj) {
+          const err = errors.errorObjectNotFound('activity');
+          return res.status(err.status).send(err);
+        }
 
-      /* currObj.name = updated name
-         obj.name = name remains unchanged
+        /* currObj.name = updated name
+           obj.name = name remains unchanged
 
-         currObj.slug = updated slug
-         obj.slug = slug remains unchanged */
-      const activity = {
-        name: currObj.name || obj.name,
-        slug: currObj.slug || obj.slug,
-        uuid: obj.uuid,
-        revision: obj.rev + 1,
-        updated_at: Date.now(),
-        created_at: parseInt(obj.created_at, 10),
-      };
+           currObj.slug = updated slug
+           obj.slug = slug remains unchanged */
+        const activity = {
+          name: currObj.name || obj.name,
+          slug: currObj.slug || obj.slug,
+          uuid: obj.uuid,
+          revision: obj.rev + 1,
+          updated_at: Date.now(),
+          created_at: parseInt(obj.created_at, 10),
+        };
 
-      knex('activities').insert(activity).returning('id').then(function(id) {
-        activity.id = id[0];
-        activity.created_at = new Date(activity.created_at)
-        .toISOString().substring(0, 10);
+        knex('activities').insert(activity).returning('id').then(function() {
+          activity.created_at = new Date(activity.created_at)
+          .toISOString().substring(0, 10);
 
-        activity.updated_at = new Date(activity.updated_at)
-        .toISOString().substring(0, 10);
+          activity.updated_at = new Date(activity.updated_at)
+          .toISOString().substring(0, 10);
 
-        return res.send(activity);
+          return res.send(activity);
+        }).catch(function(error) {
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
+        });
       }).catch(function(error) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
+    }).catch(function(error) {
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
     });
   });
 
@@ -314,11 +372,9 @@ module.exports = function(app) {
       obj.revision = 1;
       obj.created_at = Date.now();
 
-      knex('activities').insert(obj).returning('id').then(function(activities) {
+      knex('activities').insert(obj).returning('id').then(function() {
         // activities is a list containing the ID of the
         // newly created activity
-        const activity = activities[0];
-        obj.id = activity;
         obj.created_at = new Date(obj.created_at)
         .toISOString().substring(0, 10);
 
