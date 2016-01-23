@@ -7,6 +7,38 @@ module.exports = function(app) {
   const authRequest = require('./authenticatedRequest');
   const uuid = require('uuid');
 
+  function constructProject(inProject, res, slugs) {
+    if (!inProject) {
+      const err = errors.errorObjectNotFound('project');
+      res.status(err.status);
+      return err;
+    }
+
+    // manually create our project object from inProject.
+    const outProject = {name: inProject.name, uri:
+    inProject.uri, uuid: inProject.uuid, revision: inProject.revision,
+    created_at: inProject.created_at, updated_at: inProject.updated_at,
+    deleted_at: inProject.deleted_at};
+    if (slugs) { outProject.slugs = slugs.sort(); }
+
+    outProject.created_at = new Date(parseInt(outProject.created_at, 10))
+    .toISOString().substring(0, 10);
+    if (outProject.updated_at) {
+      outProject.updated_at = new Date(parseInt(outProject.updated_at, 10))
+      .toISOString().substring(0, 10);
+    } else {
+      outProject.updated_at = null;
+    }
+    if (outProject.deleted_at) {
+      outProject.deleted_at = new Date(parseInt(outProject.deleted_at, 10))
+      .toISOString().substring(0, 10);
+    } else {
+      outProject.deleted_at = null;
+    }
+
+    return outProject;
+  }
+
   authRequest.get(app, app.get('version') + '/projects',
   function(req, res) {
     const knex = app.get('knex');
@@ -19,55 +51,81 @@ module.exports = function(app) {
       projectsQ = knex('projects').where({deleted_at: null});
     }
 
-    projectsQ.then(function(projects) {
-      if (projects.length === 0) {
-        return res.send([]);
-      }
+    projectsQ = projectsQ.select(
+      // Select the 'slugs' to be the projectslugs name
+      'projectslugs.name as slug',
+      // Explicitly select everything else from projects
+      'projects.uri as uri',
+      'projects.name as name',
+      'projects.uuid as uuid',
+      'projects.revision as revision',
+      'projects.deleted_at as deleted_at',
+      'projects.updated_at as updated_at',
+      'projects.created_at as created_at',
+      'projects.newest as newest')
+    // Order them from most recently updated to last updated
+    .orderBy('revision')
+    // Do a left join so we keep projects without a slug field
+    // https://en.wikipedia.org/wiki/Join_(SQL)#Left_outer_join for more info.
+    .leftOuterJoin('projectslugs', 'projects.id', 'projectslugs.project');
+    // Yes this code is duplicated in both GET endpoints. If you have strong
+    // feelings about this, change it. kthnkxby
 
-      /* eslint-disable prefer-const */
-      for (let project of projects) {
-      /* eslint-enable prefer-const */
-        project.created_at = new Date(parseInt(project.created_at, 10))
-        .toISOString().substring(0, 10);
-        if (project.updated_at) {
-          project.updated_at = new Date(parseInt(project.updated_at, 10))
-          .toISOString().substring(0, 10);
-        } else {
-          project.updated_at = null;
+    // The 'include_revisions' query  parameter was included
+    if (req.query.include_revisions === 'true' ||
+        req.query.include_revisions === '') {
+      projectsQ.then(function(projects) {
+        if (projects.length === 0) {
+          return res.send([]);
         }
-        if (project.deleted_at) {
-          project.deleted_at = new Date(parseInt(project.deleted_at, 10))
-          .toISOString().substring(0, 10);
-        } else {
-          project.deleted_at = null;
-        }
-      }
+        return res.send(projects.filter(function(proj) {
+          return proj.newest;
+        }).map(function(proj) {
+          const slugs = projects.filter(function(p) {
+            return p.uuid === proj.uuid && p.slug;
+          }).map(function(p) {
+            return p.slug;
+          });
 
-      knex('projectslugs').then(function(slugs) {
-        const idProjectMap = {};
-        for (let i = 0, len = projects.length; i < len; i++) {
-          // add slugs field to every project
-          projects[i].slugs = [];
-          /* make a map of every project id to the whole project
-          this is used to allow us to add slugs to projects
-          by project id */
-          idProjectMap[projects[i].id] = projects[i];
-        }
+          const child = constructProject(proj, res, slugs);
+          child.parents = projects.filter(function(p) {
+            return p.uuid === proj.uuid && !p.newest;
+          }).map(function(p) {
+            return constructProject(p, res);
+          });
 
-        for (let i = 0, len = slugs.length; i < len; i++) {
-          // add slugs to project by project id
-          idProjectMap[slugs[i].project].slugs.push(slugs[i].name);
+          return JSON.stringify(child);
+        }).filter(function(proj, index, self) {
+          return index === self.indexOf(proj);
+        }).map(function(proj) {
+          return JSON.parse(proj);
+        }));
+      });
+    } else {
+      // If the 'slugs' field is null that means the object is a parent
+      // Children may have empty slug fields `[]` but not null.
+      projectsQ.where({newest: true}).then(function(projects) {
+        if (projects.length === 0) {
+          return res.send([]);
         }
+        return res.send(projects.map(function(proj) {
+          const slugs = projects.filter(function(p) {
+            return p.uuid === proj.uuid && p.slug;
+          }).map(function(p) {
+            return p.slug;
+          });
 
-        return res.send(projects);
+          return JSON.stringify(constructProject(proj, res, slugs));
+        }).filter(function(proj, index, self) {
+          return index === self.indexOf(proj);
+        }).map(function(proj) {
+          return JSON.parse(proj);
+        }));
       }).catch(function(error) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
-    }).catch(function(error) {
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
-    });
+    }
   });
 
   authRequest.get(app, app.get('version') + '/projects/:slug',
@@ -78,95 +136,83 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    /*
-    * Gets an project and list of slugs from a slug.
-    *
-    * First selects an project from the name of a slug (from the URI).
-    * Then selects all slug names which match that project.
-    * Resulting table will look like this:
-    *
-    * +----+---------+----------------------+-------------+
-    * | id |   name  |          uri         |     slug    |
-    * +----+---------+----------------------+-------------+
-    * |  4 | Example | http://example.com/1 |      ex     |
-    * |  4 | Example | http://example.com/1 |   example   |
-    * |  4 | Example | http://example.com/1 |    sample   |
-    * |  4 | Example | http://example.com/1 |   Beispiel  |
-    * +----+---------+----------------------+-------------+
-    * --------------------------------------+----------+
-    *                  uuid                 | Revision |
-    * --------------------------------------+----------+
-    *  986fe650-4bef-4e36-a99d-ad880b7f6cad |     1    |
-    *  986fe650-4bef-4e36-a99d-ad880b7f6cad |     1    |
-    *  986fe650-4bef-4e36-a99d-ad880b7f6cad |     1    |
-    *  986fe650-4bef-4e36-a99d-ad880b7f6cad |     1    |
-    * --------------------------------------+----------+
-    *
-    * Equivalent SQL:
-    *       SELECT projects.id AS id, projects.name AS name,
-    *              projects.uri AS uri, projects.uuid as uuid,
-    *              projects.revision AS revision,
-    *              projectslugs.name AS slug FROM projectslugs
-    *       INNER JOIN projects ON projectslugs.project = projects.id
-    *       WHERE projectslugs.project =
-    *               (SELECT id FROM projects WHERE id =
-    *                   (SELECT project FROM projectslugs
-    *                    WHERE name = $slug)
-    *               )
-    */
-    const projectSubquery = knex('projectslugs').select('project')
-    .where('name', req.params.slug);
-    const slugsSubquery = knex('projects').select('id')
-    .where('id', '=', projectSubquery);
+    // Finds UUID of project with the requested slug
+    const uuidSubquery = knex('projectslugs')
+                       // Join on projects w/ the same id as the slug's project
+                       .join('projects', 'projectslugs.project', 'projects.id')
+                       // Select the uuid as the uuid
+                       .select('projects.uuid as uuid')
+                       // Where the name matches the slug passed
+                       .where({'projectslugs.name': req.params.slug});
 
-    knex('projectslugs').select('projects.id as id',
-    'projects.name as name', 'projects.uri as uri', 'projects.uuid as uuid',
-    'projects.revision as revision', 'projects.created_at as created_at',
-    'projects.updated_at as updated_at', 'projects.deleted_at as deleted_at',
-    'projectslugs.name as slug')
-    .where({'projectslugs.project': slugsSubquery, 'projects.deleted_at': null})
-    .innerJoin('projects', 'projectslugs.project', 'projects.id')
-    .then(function(results) {
-      if (results.length !== 0) {
-        /* manually create our project object from
-        the results. All results should be the same, save
-        the slug, so just create it from the first one
-        */
-        const project = {id: results[0].id, name: results[0].name,
-          uri: results[0].uri, uuid: results[0].uuid,
-          revision: results[0].revision, created_at: results[0].created_at,
-          updated_at: results[0].updated_at, deleted_at: results[0].deleted_at,
-          slugs: []};
+    // Select all projects (minus slugs) with the matching slug
+    // This is a doozy so let's break it down
+    // Select from the 'projects' table
+    const projectQ = knex('projects').select(
+      // Select the 'slugs' to be the projectslugs name
+      'projectslugs.name as slug',
+      // Explicitly select everything else from projects
+      'projects.uri as uri',
+      'projects.name as name',
+      'projects.uuid as uuid',
+      'projects.revision as revision',
+      'projects.deleted_at as deleted_at',
+      'projects.updated_at as updated_at',
+      'projects.created_at as created_at',
+      'projects.newest as newest')
+    // Order them from most recently updated to last updated
+    .orderBy('revision', 'desc')
+    // Do a left join so we keep projects without a slug field
+    // https://en.wikipedia.org/wiki/Join_(SQL)#Left_outer_join for more info.
+    .leftOuterJoin('projectslugs', 'projects.id', 'projectslugs.project')
+    // Matching on the uuid subquery (comments above)
+    .where({'uuid': uuidSubquery});
 
-        project.created_at = new Date(parseInt(project.created_at, 10))
-        .toISOString().substring(0, 10);
-        if (project.updated_at) {
-          project.updated_at = new Date(parseInt(project.updated_at, 10))
-          .toISOString().substring(0, 10);
-        } else {
-          project.updated_at = null;
-        }
-        if (project.deleted_at) {
-          project.deleted_at = new Date(parseInt(project.deleted_at, 10))
-          .toISOString().substring(0, 10);
-        } else {
-          project.deleted_at = null;
-        }
-
-        for (let i = 0, len = results.length; i < len; i++) {
-          // add slugs to project
-          project.slugs.push(results[i].slug);
-        }
-
-        res.send(project);
-      } else {
-        const err = errors.errorObjectNotFound('project');
+    // The 'include_revisions' query  parameter was included
+    if (req.query.include_revisions === 'true' ||
+        req.query.include_revisions === '') {
+      projectQ.then(function(project) {
+        // We have to fetch a list of the slugs *before* processing the project
+        const slugs = project.filter(function(proj) {
+          return proj.slug;
+        }).map(function(proj) {
+          return proj.slug;
+        });
+        return res.send(project.filter(function(proj) {
+          return proj.newest;
+        }).map(function(proj) {
+          const child = constructProject(proj, res, slugs);
+          child.parents = project.filter(function(p) {
+            // We only want to process old revisions
+            return !p.newest && p.revision !== child.revision;
+          }).map(function(p) {
+            return constructProject(p, res);
+          });
+          return child;
+        // Since map's return a list and we only want the first element...
+        }).pop());
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
-      }
-    }).catch(function(error) {
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
-    });
+      });
+
+    // The 'include_revisions' query  parameter was *not* included
+    } else {
+      projectQ.andWhere({newest: true}).then(function(project) {
+        const slugs = project.filter(function(proj) {
+          return proj.slug;
+        }).map(function(proj) {
+          return proj.slug;
+        });
+
+        // Since we have a list of slugs, but they're all mostly the same, we
+        // pass project.pop() and the slugs lis to constructProject
+        return res.send(constructProject(project.pop(), res, slugs));
+      }).catch(function(error) {
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
+      });
+    }
   });
 
   authRequest.post(app, app.get('version') + '/projects',
@@ -291,7 +337,6 @@ module.exports = function(app) {
             };
 
             trx('userroles').insert(managerRole).then(function() {
-              obj.id = project;
               obj.created_at = new Date(obj.created_at)
               .toISOString().substring(0, 10);
 
@@ -434,6 +479,7 @@ module.exports = function(app) {
           project.revision += 1;
           project.created_at = parseInt(project.created_at, 10);
           project.updated_at = Date.now();
+          project.newest = true;
 
           const oldId = project.id;
           delete project.id;
@@ -443,53 +489,62 @@ module.exports = function(app) {
           // separately, and, if something goes wrong, can be rolled
           // back without side effects.
           knex.transaction(function(trx) {
-            trx('projects').insert(project).returning('id').then(function(id) {
-              project.id = id[0];
+            trx('projects').update({newest: false}).where({id: oldId})
+            .then(function() {
+              trx('projects').insert(project).returning('id')
+              .then(function(id) {
+                project.id = id[0];
 
-              project.created_at = new Date(project.created_at)
-              .toISOString().substring(0, 10);
-              project.updated_at = new Date(project.updated_at)
-              .toISOString().substring(0, 10);
+                project.created_at = new Date(project.created_at)
+                .toISOString().substring(0, 10);
+                project.updated_at = new Date(project.updated_at)
+                .toISOString().substring(0, 10);
 
-              trx('userroles').where({project: oldId})
-              .update({project: project.id}).then(function() {
-                trx('projectslugs').where({project: oldId})
-                .then(function(existingSlugObjs) {
-                  const existingSlugs = existingSlugObjs.map(function(slug) {
-                    return slug.name;
-                  });
+                trx('userroles').where({project: oldId})
+                .update({project: project.id}).then(function() {
+                  trx('projectslugs').where({project: oldId})
+                  .then(function(existingSlugObjs) {
+                    const existingSlugs = existingSlugObjs.map(function(slug) {
+                      return slug.name;
+                    });
 
-                  if (obj.slugs) {
-                    const newSlugs = [];
+                    if (helpers.getType(obj.slugs) === 'array') {
+                      const newSlugs = [];
 
-                    newSlugs.push(trx('projectslugs').del()
-                    .where({project: oldId}));
+                      newSlugs.push(trx('projectslugs').del()
+                      .where({project: oldId}));
 
-                    /* eslint-disable */
-                    for (let slug of obj.slugs) {
-                    /* eslint-enable */
-                      newSlugs.push(trx('projectslugs')
-                      .insert({project: project.id, name: slug}));
+                      /* eslint-disable */
+                      for (let slug of obj.slugs) {
+                      /* eslint-enable */
+                        newSlugs.push(trx('projectslugs')
+                        .insert({project: project.id, name: slug}));
+                      }
+
+                      Promise.all(newSlugs).then(function() {
+                        project.slugs = obj.slugs.sort();
+                        delete project.id;
+                        delete project.newest;
+                        trx.commit();
+                        res.send(JSON.stringify(project));
+                      }).catch(function() {
+                        trx.rollback();
+                      });
+                    } else {
+                      trx('projectslugs').update({project: project.id})
+                      .where({project: oldId}).then(function() {
+                        project.slugs = existingSlugs.sort();
+                        delete project.id;
+                        delete project.newest;
+                        trx.commit();
+                        res.send(project);
+                      }).catch(function() {
+                        trx.rollback();
+                      });
                     }
-
-                    Promise.all(newSlugs).then(function() {
-                      project.slugs = obj.slugs;
-
-                      trx.commit();
-                      res.send(JSON.stringify(project));
-                    }).catch(function() {
-                      trx.rollback();
-                    });
-                  } else {
-                    trx('projectslugs').update({project: project.id})
-                    .where({project: oldId}).then(function() {
-                      project.slugs = existingSlugs;
-                      trx.commit();
-                      res.send(project);
-                    }).catch(function() {
-                      trx.rollback();
-                    });
-                  }
+                  }).catch(function() {
+                    trx.rollback();
+                  });
                 }).catch(function() {
                   trx.rollback();
                 });
