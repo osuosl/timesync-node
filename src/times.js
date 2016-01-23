@@ -19,10 +19,15 @@ module.exports = function(app) {
     fields.map(function(f) {
       if (time[f]) {
         if (typeof time[f] === 'number') {
-          time[f] = new Date(parseInt(time[f], 10)).toISOString()
+          time[f] = new Date(time[f]).toISOString()
                     .substring(0, 10);
         } else if (typeof time[f] === 'string') {
-          time[f] = time[f];
+          if (time[f][4] === '-') {
+            time[f] = time[f];
+          } else {
+            time[f] = new Date(parseInt(time[f], 10)).toISOString()
+                      .substring(0, 10);
+          }
         } else {
           time[f] = null;
         }
