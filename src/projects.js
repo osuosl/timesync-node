@@ -527,10 +527,8 @@ module.exports = function(app) {
                         delete project.newest;
                         trx.commit();
                         res.send(JSON.stringify(project));
-                      }).catch(function(error) {
+                      }).catch(function() {
                         trx.rollback();
-                        const err = errors.errorServerError(error);
-                        return res.status(err.status).send(err);
                       });
                     } else {
                       trx('projectslugs').update({project: project.id})
@@ -540,16 +538,12 @@ module.exports = function(app) {
                         delete project.newest;
                         trx.commit();
                         res.send(project);
-                      }).catch(function(error) {
+                      }).catch(function() {
                         trx.rollback();
-                        const err = errors.errorServerError(error);
-                        return res.status(err.status).send(err);
                       });
                     }
-                  }).catch(function(error) {
+                  }).catch(function() {
                     trx.rollback();
-                    const err = errors.errorServerError(error);
-                    return res.status(err.status).send(err);
                   });
                 }).catch(function() {
                   trx.rollback();
