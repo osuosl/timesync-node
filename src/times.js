@@ -436,9 +436,15 @@ module.exports = function(app) {
         // For all revisions
         for (let i = 1; i <= numRevisions; i++) {
           // Generate a list of parent times of that revision
+
+          /* jshint -W083 */
+          /* eslint-disable no-loop-func */
           const pCurr = parentTimes.filter(function(p) {
             return p.revision === i;
           });
+          /* eslint-enable no-loop-func */
+          /* jshint +W083 */
+
           // Generate the metadata for that revision
           const pCurrMeta = timesMetadata(pCurr);
           // Push the compiled parent time onto the lits of parents.
