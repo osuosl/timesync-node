@@ -241,50 +241,52 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    knex('activities').first().where({slug: req.params.slug})
-    .update({newest: false}).then(function() {
-      knex('activities').first().select(
-        'activities.name as name',
-        'activities.slug as slug',
-        'activities.uuid as uuid',
-        'activities.revision as rev',
-        'activities.created_at as created_at',
-        'activities.newest as newest')
-      .where('slug', '=', req.params.slug).then(function(obj) {
-        if (!obj) {
-          const err = errors.errorObjectNotFound('activity');
-          return res.status(err.status).send(err);
-        }
+    knex.transaction(function(trx) {
+      trx('activities').first().where({slug: req.params.slug})
+      .update({newest: false}).then(function() {
+        knex('activities').first().select(
+          'activities.name as name',
+          'activities.slug as slug',
+          'activities.uuid as uuid',
+          'activities.revision as rev',
+          'activities.created_at as created_at',
+          'activities.newest as newest')
+        .where('slug', '=', req.params.slug).then(function(obj) {
+          if (!obj) {
+            const err = errors.errorObjectNotFound('activity');
+            return res.status(err.status).send(err);
+          }
 
-        /* currObj.name = updated name
-           obj.name = name remains unchanged
+          /* currObj.name = updated name
+             obj.name = name remains unchanged
 
-           currObj.slug = updated slug
-           obj.slug = slug remains unchanged */
-        const activity = {
-          name: currObj.name || obj.name,
-          slug: currObj.slug || obj.slug,
-          uuid: obj.uuid,
-          revision: obj.rev + 1,
-          updated_at: Date.now(),
-          created_at: parseInt(obj.created_at, 10),
-        };
+             currObj.slug = updated slug
+             obj.slug = slug remains unchanged */
+          const activity = {
+            name: currObj.name || obj.name,
+            slug: currObj.slug || obj.slug,
+            uuid: obj.uuid,
+            revision: obj.rev + 1,
+            updated_at: Date.now(),
+            created_at: parseInt(obj.created_at, 10),
+          };
 
-        knex('activities').insert(activity).returning('id').then(function() {
-          activity.created_at = new Date(activity.created_at)
-          .toISOString().substring(0, 10);
+          trx('activities').insert(activity).returning('id').then(function() {
+            activity.created_at = new Date(activity.created_at)
+            .toISOString().substring(0, 10);
 
-          activity.updated_at = new Date(activity.updated_at)
-          .toISOString().substring(0, 10);
+            activity.updated_at = new Date(activity.updated_at)
+            .toISOString().substring(0, 10);
 
-          return res.send(activity);
-        }).catch(function(error) {
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
+            return res.send(activity);
+          }).catch(function() {
+            trx.rollback();
+          });
+        }).catch(function() {
+          trx.rollback();
         });
-      }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+      }).catch(function() {
+        trx.rollback();
       });
     }).catch(function(error) {
       const err = errors.errorServerError(error);
