@@ -7,41 +7,46 @@ module.exports = function(app) {
   const authRequest = require('./authenticatedRequest');
   const uuid = require('uuid');
 
-  function compileTime(time, project, activities, res) {
-    if (!time) {
+  function compileTime(inTime, project, activities, res) {
+    if (!inTime) {
       const err = errors.errorObjectNotFound('time');
       res.status(err.status);
       return err;
     }
 
+    const outTime = {
+      duration: inTime.duration,
+      user: inTime.user,
+      notes: inTime.notes,
+      issue_uri: inTime.issue_uri,
+      uuid: inTime.uuid,
+      revision: inTime.revision,
+      project: project.sort(),
+      activities: activities.sort(),
+      created_at: inTime.created_at,
+      updated_at: inTime.updated_at,
+      deleted_at: inTime.deleted_at,
+      date_worked: inTime.deleted_at,
+    };
+
     const fields = ['created_at', 'updated_at', 'deleted_at', 'date_worked'];
 
-    fields.map(function(f) {
-      if (time[f]) {
-        if (typeof time[f] === 'number') {
-          time[f] = new Date(time[f]).toISOString()
-                    .substring(0, 10);
-        } else if (typeof time[f] === 'string') {
-          if (time[f][4] === '-') {
-            time[f] = time[f];
+    fields.forEach(function(f) {
+      if (inTime[f]) {
+        if (typeof inTime[f] === 'number') {
+          outTime[f] = new Date(inTime[f]).toISOString().substring(0, 10);
+        } else if (typeof inTime[f] === 'string') {
+          if (inTime[f][4] === '-') {
+            outTime[f] = inTime[f];
           } else {
-            time[f] = new Date(parseInt(time[f], 10)).toISOString()
-                      .substring(0, 10);
+            outTime[f] = new Date(parseInt(inTime[f], 10)).toISOString()
+                         .substring(0, 10);
           }
-        } else {
-          time[f] = null;
-        }
+        } else { outTime[f] = null; }
       }
     });
 
-    time.project = project.sort();
-    time.activities = activities.sort();
-
-    delete time.activity;
-    delete time.id;
-    delete time.newest;
-
-    return time;
+    return outTime;
   }
 
   function compileTimesQueryPromise(req, res, additional) {
@@ -110,12 +115,10 @@ module.exports = function(app) {
           // Set to undefined to later be set to a sane value
           } else { range[1] = undefined; }
 
-          const currDate = new Date().getTime();
           // If the value is undefined, leave it as such
           if (range[0] === undefined) {
             // Run a regex test on the times in the query parameter
-          } else if (!/\d{4}-\d{2}-\d{2}/.test(range[0]) ||
-                    (new Date(range[0]).getTime() > currDate)) {
+          } else if (!/\d{4}-\d{2}-\d{2}/.test(range[0])) {
             const err = errors.errorBadQueryValue('start', req.query.start);
             reject(res.status(err.status).send(err));
           }
@@ -135,11 +138,16 @@ module.exports = function(app) {
             reject(res.status(err.status).send(err));
           }
 
+          if (range[0] && range[0] > Date.now()) {
+            const err = errors.errorBadQueryValue('start', req.query.start);
+            reject(res.status(err.status).send(err));
+          }
+
           // Both end and start are specified
           if (!isNaN(range[0]) && !isNaN(range[1])) {
             // Test that the times submitted were valid within the range of
             // possible dates.
-            if (!range[0] || range[0] > Date.now()) {
+            if (!range[0]) {
               const err = errors.errorBadQueryValue('start', req.query.start);
               reject(res.status(err.status).send(err));
             }
@@ -215,7 +223,7 @@ module.exports = function(app) {
           }
 
           if (projectArr) {
-            // Check that the user we just parsed is in the database
+            // Check that the project we just parsed is in the database
             knex('projectslugs').whereIn('name', projectArr).then(function(x) {
               if (x.length !== 0) {
                 const ids = x.map(function(s) {
@@ -264,7 +272,7 @@ module.exports = function(app) {
           }
 
           if (activityArr) {
-            // Check that the user we just parsed is in the database
+            // Check that the activity we just parsed is in the database
             knex('activities').whereIn('slug', activityArr).then(function(x) {
               const ids = x.map(function(y) {
                 return y.id;
@@ -793,7 +801,7 @@ module.exports = function(app) {
               trx('times').where({uuid: req.params.uuid, newest: true})
               .update({newest: false}).then(function() {
                 trx('times').insert(time).returning('id').then(function(id) {
-                  time.id = id[0];
+                  const timeID = id[0];
 
                   if (!obj.activities) {
                     knex('timesactivities').select('activity')
@@ -803,7 +811,7 @@ module.exports = function(app) {
                       for (let activity of activities) {
                         /* eslint-enable prefer-const */
                         taInsertion.push({
-                          time: time.id,
+                          time: timeID,
                           activity: activity.activity,
                         });
                       }
@@ -825,7 +833,7 @@ module.exports = function(app) {
                       for (let activity of activityIds) {
                         /* eslint-enable prefer-const */
                         taInsertion.push({
-                          time: time.id,
+                          time: timeID,
                           activity: activity,
                         });
                       }

@@ -6,31 +6,33 @@ module.exports = function(app) {
   const authRequest = require('./authenticatedRequest');
   const uuid = require('uuid');
 
-  function constructActivity(activity, res) {
-    if (!activity) {
+  function constructActivity(inActivity, res) {
+    if (!inActivity) {
       const err = errors.errorObjectNotFound('activity');
       res.status(err.status);
       return err;
     }
 
-    activity.created_at = new Date(parseInt(activity.created_at, 10))
-    .toISOString().substring(0, 10);
-    if (activity.updated_at) {
-      activity.updated_at = new Date(parseInt(activity.updated_at, 10))
-      .toISOString().substring(0, 10);
-    } else {
-      activity.updated_at = null;
-    }
-    if (activity.deleted_at) {
-      activity.deleted_at = new Date(parseInt(activity.deleted_at, 10))
-      .toISOString().substring(0, 10);
-    } else {
-      activity.deleted_at = null;
-    }
-    delete activity.id;
-    delete activity.newest;
+    const outActivity = {
+      name: inActivity.name,
+      slug: inActivity.slug,
+      uuid: inActivity.uuid,
+      revision: inActivity.revision,
+      deleted_at: inActivity.deleted_at,
+      updated_at: inActivity.updated_at,
+      created_at: inActivity.created_at,
+    };
 
-    return activity;
+    const fields = ['created_at', 'deleted_at', 'updated_at'];
+
+    fields.forEach(function(f) {
+      if (inActivity[f]) {
+        outActivity[f] = new Date(parseInt(inActivity[f], 10)).toISOString()
+                                                              .substring(0, 10);
+      } else { outActivity[f] = null; }
+    });
+
+    return outActivity;
   }
 
   authRequest.get(app, app.get('version') + '/activities',

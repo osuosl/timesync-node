@@ -1197,7 +1197,7 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'activities/?include_revisions=true&token=' +
         token,
         function(err, res, body) {
-          expect(JSON.parse(body)).to.include(withParentsData);
+          expect(JSON.parse(body)).to.deep.include(withParentsData);
           expect(JSON.parse(body)).to.not.include(noParentsData);
           done();
         });
@@ -1336,7 +1336,7 @@ module.exports = function(expect, request, baseUrl) {
       getAPIToken().then(function(token) {
         request.get(baseUrl + 'activities/' + activity +
         '?include_revisions=false&token=' + token, function(err, res, body) {
-          expect(JSON.parse(body)).to.include(noParentsData);
+          expect(JSON.parse(body)).to.deep.equal(noParentsData);
           done();
         });
       });
@@ -1348,7 +1348,7 @@ module.exports = function(expect, request, baseUrl) {
       getAPIToken().then(function(token) {
         request.get(baseUrl + 'activities/' + activity + '?token=' + token,
         function(err, res, body) {
-          expect(JSON.parse(body)).to.include(noParentsData);
+          expect(JSON.parse(body)).to.deep.include(noParentsData);
           done();
         });
       });

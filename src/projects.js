@@ -15,26 +15,25 @@ module.exports = function(app) {
     }
 
     // manually create our project object from inProject.
-    const outProject = {name: inProject.name, uri:
-    inProject.uri, uuid: inProject.uuid, revision: inProject.revision,
-    created_at: inProject.created_at, updated_at: inProject.updated_at,
-    deleted_at: inProject.deleted_at};
+    const outProject = {
+      name: inProject.name,
+      uri: inProject.uri,
+      uuid: inProject.uuid,
+      revision: inProject.revision,
+      created_at: inProject.created_at,
+      updated_at: inProject.updated_at,
+      deleted_at: inProject.deleted_at,
+    };
     if (slugs) { outProject.slugs = slugs.sort(); }
 
-    outProject.created_at = new Date(parseInt(outProject.created_at, 10))
-    .toISOString().substring(0, 10);
-    if (outProject.updated_at) {
-      outProject.updated_at = new Date(parseInt(outProject.updated_at, 10))
-      .toISOString().substring(0, 10);
-    } else {
-      outProject.updated_at = null;
-    }
-    if (outProject.deleted_at) {
-      outProject.deleted_at = new Date(parseInt(outProject.deleted_at, 10))
-      .toISOString().substring(0, 10);
-    } else {
-      outProject.deleted_at = null;
-    }
+    const fields = ['updated_at', 'deleted_at', 'created_at'];
+
+    fields.forEach(function(f) {
+      if (inProject[f]) {
+        outProject[f] = new Date(parseInt(inProject[f], 10)).toISOString()
+                                                            .substring(0, 10);
+      } else { outProject[f] = null; }
+    });
 
     return outProject;
   }
@@ -115,10 +114,17 @@ module.exports = function(app) {
             return p.slug;
           });
 
+        // This return -> filter -> map perform the following action
+        // Compiled and stringify a list of compiled times
           return JSON.stringify(constructProject(proj, res, slugs));
         }).filter(function(proj, index, self) {
+        // Check for duplicate entries created by the above map
+        // (you cannot do this comparison on objects since javascript looks at
+        // memory when doing indexOf, not string equality.
           return index === self.indexOf(proj);
         }).map(function(proj) {
+        // Convert the stringified, non-duplicated, objects back into native
+        // javascript objects.
           return JSON.parse(proj);
         }));
       }).catch(function(error) {
@@ -493,7 +499,7 @@ module.exports = function(app) {
             .then(function() {
               trx('projects').insert(project).returning('id')
               .then(function(id) {
-                project.id = id[0];
+                const projID = id[0];
 
                 project.created_at = new Date(project.created_at)
                 .toISOString().substring(0, 10);
@@ -501,7 +507,7 @@ module.exports = function(app) {
                 .toISOString().substring(0, 10);
 
                 trx('userroles').where({project: oldId})
-                .update({project: project.id}).then(function() {
+                .update({project: projID}).then(function() {
                   trx('projectslugs').where({project: oldId})
                   .then(function(existingSlugObjs) {
                     const existingSlugs = existingSlugObjs.map(function(slug) {
@@ -518,12 +524,11 @@ module.exports = function(app) {
                       for (let slug of obj.slugs) {
                       /* eslint-enable */
                         newSlugs.push(trx('projectslugs')
-                        .insert({project: project.id, name: slug}));
+                        .insert({project: projID, name: slug}));
                       }
 
                       Promise.all(newSlugs).then(function() {
                         project.slugs = obj.slugs.sort();
-                        delete project.id;
                         delete project.newest;
                         trx.commit();
                         res.send(JSON.stringify(project));
@@ -531,10 +536,9 @@ module.exports = function(app) {
                         trx.rollback();
                       });
                     } else {
-                      trx('projectslugs').update({project: project.id})
+                      trx('projectslugs').update({project: projID})
                       .where({project: oldId}).then(function() {
                         project.slugs = existingSlugs.sort();
-                        delete project.id;
                         delete project.newest;
                         trx.commit();
                         res.send(project);
