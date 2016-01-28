@@ -345,31 +345,47 @@ module.exports = function(app) {
     // Include_revisions is an included param or is explicityly set to true
     if (req.query.include_revisions === '' ||
         req.query.include_revisions === 'true') {
-      compileTimesQueryPromise(req, res).then(function(times) {
-        const timesCopy = JSON.parse(JSON.stringify(times));
-        return res.send(times.filter(function(time) {
+      // Here's what this block does in abstract terms:
+      // 1 Get a list of times with compileTimesQueryPromise
+      //   This is effectively a wrapper around a complex knex call
+      // 2 Filter out the parent times so we only act on the child times
+      // 3 Get a list of duplicate times for each child
+      // 4 Fetch the metadata for a given child time
+      // 5 compile that child time
+      // 6 compile that child time's parent times
+      //   [repeat steps 2-5 for parent times of the given child]
+      // 7 return a stringified version of the parent
+      // 8 filter out duplicate parent times for a given child
+      // 9 parse the filtered list of non-duplicate times
+      // 10 repeat steps 7-9 for each child time as well
+      compileTimesQueryPromise(req, res).then(function(allTimesArray) {
+        const allTimesCopy = JSON.parse(JSON.stringify(allTimesArray));
+        return res.send(allTimesArray.filter(function(time) {
           return time.newest;
         }).map(function(time) {
-          const childTimes = timesCopy.filter(function(t) {
-            return t.uuid === time.uuid;
+          const childTimesArray = allTimesCopy.filter(function(childTime) {
+            return childTime.uuid === time.uuid;
           });
-          const childMeta = timesMetadata(childTimes);
-          const childTime = compileTime(time, childMeta.project,
-                                        childMeta.activities, res);
+          const childTimeMetadata = timesMetadata(childTimesArray);
+          const childTime = compileTime(time, childTimeMetadata.project,
+                                        childTimeMetadata.activities, res);
 
-          childTime.parents = timesCopy.filter(function(pTime) {
-            return (pTime.uuid === childTime.uuid) && !(pTime.newest);
-          }).map(function(pTime) {
-            const pTimes = timesCopy.filter(function(pt) {
-              return pt.uuid === time.uuid;
+          childTime.parents = allTimesCopy.filter(function(parentTime) {
+            return (parentTime.uuid === childTime.uuid) && !(parentTime.newest);
+          }).map(function(parentTime) {
+            const parentTimesArray = allTimesCopy.filter(
+            function(parentTimeInner) {
+              return parentTimeInner.uuid === childTime.uuid;
             });
-            const pMeta = timesMetadata(pTimes);
-            return JSON.stringify(compileTime(pTime, pMeta.project,
-                                              pMeta.activities, res));
-          }).filter(function(pTime, index, self) {
-            return self.indexOf(pTime) === index;
-          }).map(function(pTime) {
-            return JSON.parse(pTime);
+            const parentTimeMetadata = timesMetadata(parentTimesArray);
+            return JSON.stringify(compileTime(parentTime,
+                                              parentTimeMetadata.project,
+                                              parentTimeMetadata.activities,
+                                              res));
+          }).filter(function(parentTime, index, self) {
+            return self.indexOf(parentTime) === index;
+          }).map(function(parentTime) {
+            return JSON.parse(parentTime);
           });
           return JSON.stringify(childTime);
         }).filter(function(time, index, self) {
@@ -383,21 +399,24 @@ module.exports = function(app) {
       });
     // Include_revisions is set to false or not an included param
     } else {
+      // Similar story for the above, but we don't have the inner block that
+      // deals with compiling the parent's field
       compileTimesQueryPromise(req, res, {'times.newest': true})
-      .then(function(times) {
-        const timesUUIDs = times.map(function(t) {
-          return t.uuid;
-        }).filter(function(t, i, self) {
-          return self.indexOf(t) === i;
-        });
-
-        return res.send(timesUUIDs.map(function(tUUID) {
-          const selectedTimes = times.filter(function(t) {
-            return tUUID === t.uuid;
+      .then(function(allTimesArray) {
+        const allTimesCopy = JSON.parse(JSON.stringify(allTimesArray));
+        return res.send(allTimesArray.filter(function(time) {
+          return time.newest;
+        }).map(function(time) {
+          const childTimesArray = allTimesCopy.filter(function(childTime) {
+            return childTime.uuid === time.uuid;
           });
-          const meta = timesMetadata(selectedTimes);
-          return compileTime(selectedTimes[0], meta.project, meta.activities,
-                             res);
+          const childTimeMetadata = timesMetadata(childTimesArray);
+          return JSON.stringify(compileTime(time, childTimeMetadata.project,
+                                        childTimeMetadata.activities, res));
+        }).filter(function(time, index, self) {
+          return self.indexOf(time) === index;
+        }).map(function(time) {
+          return JSON.parse(time);
         }));
       }).catch(function(error) {
         const err = errors.errorServerError(error);
@@ -746,7 +765,7 @@ module.exports = function(app) {
       'times.id as id',
       'times.uuid as uuid',
       'times.revision as revision',
-      'users.username as owner',
+      'users.username as username',
       'projectslugs.name as projectName')
     .where('times.uuid', '=', req.params.uuid)
     .innerJoin('users', 'users.id', 'times.user')
@@ -754,13 +773,13 @@ module.exports = function(app) {
                'times.project')
     .orderBy('times.revision', 'desc')
     .then(function(time) {
-      if (user.username !== time.owner) {
+      if (user.username !== time.username) {
         const err = errors.errorAuthorizationFailure(user.username,
-          'create objects for ' + time.owner);
+          'create objects for ' + time.username);
         return res.status(err.status).send(err);
       }
 
-      const username = obj.user || time.owner;
+      const username = obj.user || time.username;
       helpers.checkUser(username, username).then(function(userId) {
         if (userId !== undefined) {
           time.user = userId;
@@ -778,7 +797,7 @@ module.exports = function(app) {
           time.created_at = parseInt(time.created_at, 10);
           time.updated_at = Date.now();
           time.revision += 1;
-          delete time.owner;
+          delete time.username;
           delete time.projectName;
 
           if (obj.date_worked) {
