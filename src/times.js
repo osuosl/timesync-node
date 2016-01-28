@@ -23,10 +23,6 @@ module.exports = function(app) {
       revision: inTime.revision,
       project: project.sort(),
       activities: activities.sort(),
-      created_at: inTime.created_at,
-      updated_at: inTime.updated_at,
-      deleted_at: inTime.deleted_at,
-      date_worked: inTime.deleted_at,
     };
 
     const fields = ['created_at', 'updated_at', 'deleted_at', 'date_worked'];
@@ -42,7 +38,11 @@ module.exports = function(app) {
             outTime[f] = new Date(parseInt(inTime[f], 10)).toISOString()
                          .substring(0, 10);
           }
-        } else { outTime[f] = null; }
+        } else {
+          outTime[f] = null;
+        }
+      } else {
+        outTime[f] = null;
       }
     });
 
@@ -470,7 +470,7 @@ module.exports = function(app) {
                                           'times.uuid': req.params.uuid})
       .then(function(times) {
         const metadata = timesMetadata(times);
-        return res.send(compileTime(times.pop(), metadata.project,
+        res.send(compileTime(times.pop(), metadata.project,
                                     metadata.activities, res));
       }).catch(function(error) {
         const err = errors.errorServerError(error);

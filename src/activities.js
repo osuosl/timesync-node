@@ -18,9 +18,6 @@ module.exports = function(app) {
       slug: inActivity.slug,
       uuid: inActivity.uuid,
       revision: inActivity.revision,
-      deleted_at: inActivity.deleted_at,
-      updated_at: inActivity.updated_at,
-      created_at: inActivity.created_at,
     };
 
     const fields = ['created_at', 'deleted_at', 'updated_at'];
@@ -29,7 +26,9 @@ module.exports = function(app) {
       if (inActivity[f]) {
         outActivity[f] = new Date(parseInt(inActivity[f], 10)).toISOString()
                                                               .substring(0, 10);
-      } else { outActivity[f] = null; }
+      } else {
+        outActivity[f] = null;
+      }
     });
 
     return outActivity;

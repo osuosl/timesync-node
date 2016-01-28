@@ -20,9 +20,6 @@ module.exports = function(app) {
       uri: inProject.uri,
       uuid: inProject.uuid,
       revision: inProject.revision,
-      created_at: inProject.created_at,
-      updated_at: inProject.updated_at,
-      deleted_at: inProject.deleted_at,
     };
     if (slugs) { outProject.slugs = slugs.sort(); }
 
@@ -32,7 +29,9 @@ module.exports = function(app) {
       if (inProject[f]) {
         outProject[f] = new Date(parseInt(inProject[f], 10)).toISOString()
                                                             .substring(0, 10);
-      } else { outProject[f] = null; }
+      } else {
+        outProject[f] = null;
+      }
     });
 
     return outProject;
