@@ -245,7 +245,7 @@ module.exports = function(app) {
     knex.transaction(function(trx) {
       trx('activities').first().where({slug: req.params.slug})
       .update({newest: false}).then(function() {
-        knex('activities').first().select(
+        trx('activities').first().select(
           'activities.name as name',
           'activities.slug as slug',
           'activities.uuid as uuid',
@@ -279,6 +279,7 @@ module.exports = function(app) {
             activity.updated_at = new Date(activity.updated_at)
             .toISOString().substring(0, 10);
 
+            trx.commit();
             return res.send(activity);
           }).catch(function() {
             trx.rollback();

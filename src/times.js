@@ -823,7 +823,7 @@ module.exports = function(app) {
                   const timeID = id[0];
 
                   if (!obj.activities) {
-                    knex('timesactivities').select('activity')
+                    trx('timesactivities').select('activity')
                     .where('time', oldId).then(function(activities) {
                       const taInsertion = [];
                       /* eslint-disable prefer-const */
