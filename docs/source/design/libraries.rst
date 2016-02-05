@@ -41,27 +41,27 @@ Knex uses Bluebird promises. For information on promises in general, see the
 `MDN documentation`_ on promises. For how to use Bluebird promises specifically,
 see `Bluebird's README`_.
 
-A very important thing to note is knex's `connection pooling`_. Connections to databases
-such as PostgreSQL and MySQL default to a minimum of two pooled connections and a maximum
-of eight. This is certainly sufficient for production at this time, but it may become
-necessary in the future to increase this in order to scale the application.
+.. important::
 
-SQLite, however, is only allowed one connection when using a file, due to
-file access issues; when using an in-memory database, on the other hand, it is allowed
-near-unlimited connections. This means that when running the application locally, which is
-done in a SQLite database, using the root knex object inside of a transaction WILL result
-in deadlock and thus in the application hanging (see `this example of it failing`_;
-`this PR`_ may fix the issue when it is merged, causing overuse of connections to instead
-return an error).
+    Knex maintains `connection pools`_ to its databases; databases such as PostgreSQL and
+    MySQL default to a **minimum of two** pooled connections and a maximum of eight.
+    SQLite, however, is only allowed **one connection** when using a file, due to file
+    access issues; when using an in-memory database, on the other hand, it is allowed
+    near-unlimited connections.
 
-The fact that testing occurs on an in memory database means that this issue is subverted
-in tests. This unfortunately means that automatically testing for these conditions is not
+When running the application locally, which is done in a SQLite database, using the root
+knex object inside of a transaction WILL result in deadlock and thus in the application
+hanging (see `this example of it failing`_; `this PR`_ may fix the issue when it is
+merged, causing overuse of connections to instead return an error).
+
+Because testing occurs on an in memory database, this issue is subverted in tests.
+This unfortunately means that automatically testing for these conditions is not
 currently possible.
 
 .. _Knex documentation: http://knexjs.org/
 .. _MDN documentation: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
 .. _Bluebird's README: https://github.com/petkaantonov/bluebird#introduction
-.. _connection pooling: http://knexjs.org/#Installation-pooling
+.. _connection pools: http://knexjs.org/#Installation-pooling
 .. _this example of it failing: https://github.com/tgriesser/knex/issues/1171
 .. _this PR: https://github.com/tgriesser/knex/pull/1177
 
