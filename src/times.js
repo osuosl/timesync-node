@@ -405,10 +405,6 @@ module.exports = function(app) {
         }).map(function(time) {
           return JSON.parse(time);
         }));
-      }).catch(function(error) {
-        log.error(req, 'Error getting times with revisions: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
       });
     // Include_revisions is set to false or not an included param
     } else {
@@ -431,10 +427,6 @@ module.exports = function(app) {
         }).map(function(time) {
           return JSON.parse(time);
         }));
-      }).catch(function(error) {
-        log.error(req, 'Error getting times: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
       });
     }
   });
@@ -493,10 +485,6 @@ module.exports = function(app) {
                                  pCurrMeta.activities, res));
         }
         return res.send(childTime);
-      }).catch(function(error) {
-        log.error(req, 'Error getting time with revisions: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
       });
     } else {
       compileTimesQueryPromise(req, res, {'times.newest': true,
@@ -505,10 +493,6 @@ module.exports = function(app) {
         const metadata = timesMetadata(times);
         res.send(compileTime(times.pop(), metadata.project,
                                     metadata.activities, res));
-      }).catch(function(error) {
-        log.error(req, 'Error getting time: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
       });
     }
   });
