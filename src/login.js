@@ -138,7 +138,8 @@ module.exports = function(app) {
             resolve(payload.sub);
           });
         } else {
-          return reject({message: 'Unsupported algorithm'});
+          return reject({message: 'Unsupported token crypto-algorithm: ' +
+                                                                  header.alg});
         }
       });
     },
