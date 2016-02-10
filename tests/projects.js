@@ -697,7 +697,6 @@ module.exports = function(expect, request, baseUrl) {
           expectedResults.default_activity = patchedProject.default_activity;
           expectedResults.uuid = originalProject.uuid;
           expectedResults.revision = 2;
-          expectedResults.id = 6;
           expectedResults.updated_at = new Date().toISOString()
                                                  .substring(0, 10);
 
@@ -1042,7 +1041,6 @@ module.exports = function(expect, request, baseUrl) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.id;
         delete requestOptions.body.object.uuid;
         delete requestOptions.body.object.revision;
         delete requestOptions.body.object.deleted_at;
@@ -1069,7 +1067,6 @@ module.exports = function(expect, request, baseUrl) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.id;
         delete requestOptions.body.object.uuid;
         delete requestOptions.body.object.revision;
         delete requestOptions.body.object.deleted_at;
@@ -1366,9 +1363,8 @@ module.exports = function(expect, request, baseUrl) {
             // the projects/ endpoint should now have one more project
             const expectedGetResults = initialData.concat([
               {
-                owner: 'tschuy',
                 uri: 'https://github.com/osuosl/timesync-node',
-                slugs: ['tsn', 'timesync-node'],
+                slugs: ['timesync-node', 'tsn'],
                 name: 'TimeSync Node',
                 default_activity: null,
                 deleted_at: null,
@@ -1531,7 +1527,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedError = {
             status: 400,
             error: 'Bad object',
-            text: 'The project is missing a slug',
+            text: 'The project is missing a slugs',
           };
 
           expect(body).to.deep.equal(expectedError);
@@ -1633,7 +1629,7 @@ module.exports = function(expect, request, baseUrl) {
         request.post(requestOptions, function(err, res, body) {
           const expectedError = {
             status: 400,
-            error: 'Bad Object',
+            error: 'Bad object',
             text: 'Field default_activity of project should be string but ' +
                   'was sent as array',
           };
@@ -1737,12 +1733,9 @@ module.exports = function(expect, request, baseUrl) {
           request.get(baseUrl + 'projects?token=' + token,
           function(getErr, getRes, getBody) {
             const jsonGetBody = JSON.parse(getBody);
-            const expectedGetResult = initialData.filter(function(project) {
-              return project.deleted_at === null;
-            });
 
             expect(getRes.statusCode).to.equal(200);
-            expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
+            expect(jsonGetBody).to.deep.have.same.members(initialData);
 
             done();
           });
@@ -1818,6 +1811,7 @@ module.exports = function(expect, request, baseUrl) {
       uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
       name: 'GANETI WEB MANAGER',
       uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      default_activity: null,
       revision: 2,
       deleted_at: null,
       updated_at: currentTime,
@@ -1835,6 +1829,7 @@ module.exports = function(expect, request, baseUrl) {
       uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
       name: 'GANETI WEB MANAGER',
       uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      default_activity: null,
       revision: 2,
       deleted_at: null,
       updated_at: currentTime,
@@ -1851,6 +1846,7 @@ module.exports = function(expect, request, baseUrl) {
           uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
           name: 'Ganeti Web Manager',
           uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+          default_activity: null,
           revision: 1,
           deleted_at: null,
           updated_at: null,
