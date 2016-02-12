@@ -6,6 +6,7 @@ module.exports = function(app) {
   const validUrl = require('valid-url');
   const authRequest = require('./authenticatedRequest');
   const uuid = require('uuid');
+  const log = app.get('log');
 
   function constructProject(inProject, res, slugs) {
     if (!inProject) {
@@ -98,6 +99,10 @@ module.exports = function(app) {
         }).map(function(proj) {
           return JSON.parse(proj);
         }));
+      }).catch(function(error) {
+        log.error(req, 'Error requesting projects: ' + error);
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
       });
     } else {
       // If the 'slugs' field is null that means the object is a parent
@@ -127,6 +132,7 @@ module.exports = function(app) {
           return JSON.parse(proj);
         }));
       }).catch(function(error) {
+        log.error(req, 'Error requestingss: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
@@ -197,6 +203,7 @@ module.exports = function(app) {
         // Since map's return a list and we only want the first element...
         }).pop());
       }).catch(function(error) {
+        log.error(req, 'Error requesting project: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
@@ -214,6 +221,7 @@ module.exports = function(app) {
         // pass project.pop() and the slugs lis to constructProject
         return res.send(constructProject(project.pop(), res, slugs));
       }).catch(function(error) {
+        log.error(req, 'Error requesting project: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
@@ -347,20 +355,25 @@ module.exports = function(app) {
 
               trx.commit();
               return res.send(JSON.stringify(obj));
-            }).catch(function() {
+            }).catch(function(error) {
+              log.error(req, 'Error creating user roles for project: ' + error);
               trx.rollback();
             });
-          }).catch(function() {
+          }).catch(function(error) {
+            log.error(req, 'Error creating project slugs: ' + error);
             trx.rollback();
           });
-        }).catch(function() {
+        }).catch(function(error) {
+          log.error(req, 'Error creating updated project: ' + error);
           trx.rollback();
         });
       }).catch(function(error) {
+        log.error(req, 'Rolling back transaction.');
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
     }).catch(function(error) {
+      log.error(req, 'Error checking slugs\' existence: ' + error);
       const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });
@@ -531,7 +544,8 @@ module.exports = function(app) {
                         delete project.newest;
                         trx.commit();
                         res.send(JSON.stringify(project));
-                      }).catch(function() {
+                      }).catch(function(error) {
+                        log.error(req, 'Error inserting slugs: ' + error);
                         trx.rollback();
                       });
                     } else {
@@ -541,35 +555,44 @@ module.exports = function(app) {
                         delete project.newest;
                         trx.commit();
                         res.send(project);
-                      }).catch(function() {
+                      }).catch(function(error) {
+                        log.error(req, 'Error inserting slugs: ' + error);
                         trx.rollback();
                       });
                     }
-                  }).catch(function() {
+                  }).catch(function(error) {
+                    log.error(req, 'Error retrieving existing slugs: ' + error);
                     trx.rollback();
                   });
-                }).catch(function() {
+                }).catch(function(error) {
+                  log.error(req, 'Error updating user roles: ' + error);
                   trx.rollback();
                 });
-              }).catch(function() {
+              }).catch(function(error) {
+                log.error(req, 'Error inserting updated roles: ' + error);
                 trx.rollback();
               });
-            }).catch(function() {
+            }).catch(function(error) {
+              log.error(req, 'Error deprecating old project: ' + error);
               trx.rollback();
             });
           }).catch(function(error) {
+            log.error(req, 'Rolling back transaction.');
             const err = errors.errorServerError(error);
             return res.status(err.status).send(err);
           });
         }).catch(function(error) {
+          log.error(req, 'Error requesting project slugs for update: ' + error);
           const err = errors.errorServerError(error);
           return res.status(err.status).send(err);
         });
       }).catch(function(error) {
+        log.error(req, 'Error requesting user roles for update: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
     }).catch(function(error) {
+      log.error(req, 'Error requesting project for update: ' + error);
       const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });
@@ -634,20 +657,25 @@ module.exports = function(app) {
               .then(function() {
                 trx.commit();
                 return res.send();
-              }).catch(function() {
+              }).catch(function(error) {
+                log.error(req, 'Error deleting userroles: ' + error);
                 trx.rollback();
               });
-            }).catch(function() {
+            }).catch(function(error) {
+              log.error(req, 'Error deleting slugs: ' + error);
               trx.rollback();
             });
-          }).catch(function() {
+          }).catch(function(error) {
+            log.error(req, 'Error deleting project: ' + error);
             trx.rollback();
           });
         }).catch(function(error) {
+          log.error(req, 'Rolling back transaction.');
           const err = errors.errorServerError(error);
           return res.status(err.status).send(err);
         });
       }).catch(function(error) {
+        log.error(req, 'Error selecting project to delete: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });

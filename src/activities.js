@@ -5,6 +5,7 @@ module.exports = function(app) {
   const helpers = require('./helpers')(app);
   const authRequest = require('./authenticatedRequest');
   const uuid = require('uuid');
+  const log = app.get('log');
 
   function constructActivity(inActivity, res) {
     if (!inActivity) {
@@ -88,6 +89,7 @@ module.exports = function(app) {
           return constructActivity(activity, res);
         }));
       }).catch(function(error) {
+        log.error(req, 'Error requesting activities: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
@@ -125,6 +127,7 @@ module.exports = function(app) {
         // Return the frist element since this is a 1 element array
         }).pop());
       }).catch(function(error) {
+        log.error(req, 'Error requesting activity by slug: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
@@ -132,6 +135,7 @@ module.exports = function(app) {
       activityQ.where({newest: true}).first().then(function(activity) {
         return res.send(constructActivity(activity, res));
       }).catch(function(error) {
+        log.error(req, 'Error requesting activity by slug: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
@@ -170,18 +174,22 @@ module.exports = function(app) {
           .then(function() {
             trx.commit();
             return res.send();
-          }).catch(function() {
+          }).catch(function(error) {
+            log.error(req, 'Error deleting activity: ' + error);
             trx.rollback();
           });
         }).catch(function(error) {
+          log.error(req, 'Rolling back transaction.');
           const err = errors.errorServerError(error);
           return res.status(err.status).send(err);
         });
       }).catch(function(error) {
+        log.error(req, 'Error selecting times from activity: ' + error);
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
     }).catch(function(error) {
+      log.error(req, 'Error requesting activity to delete: ' + error);
       const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });
@@ -281,16 +289,20 @@ module.exports = function(app) {
 
             trx.commit();
             return res.send(activity);
-          }).catch(function() {
+          }).catch(function(error) {
+            log.error(req, 'Error inserting updated activity: ' + error);
             trx.rollback();
           });
-        }).catch(function() {
+        }).catch(function(error) {
+          log.error(req, 'Error selecting activity to update: ' + error);
           trx.rollback();
         });
-      }).catch(function() {
+      }).catch(function(error) {
+        log.error(req, 'Error deprecating old activity: ' + error);
         trx.rollback();
       });
     }).catch(function(error) {
+      log.error(req, 'Rolling back transaction!');
       const err = errors.errorServerError(error);
       return res.status(err.status).send(err);
     });
@@ -383,7 +395,15 @@ module.exports = function(app) {
         .toISOString().substring(0, 10);
 
         return res.send(JSON.stringify(obj));
+      }).catch(function(error) {
+        log.error(req, 'Error creating activity: ' + error);
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
       });
+    }).catch(function(error) {
+      log.error(req, 'Error checking for activity existence: ' + error);
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
     });
   });
 };

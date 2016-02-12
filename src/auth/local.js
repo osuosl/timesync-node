@@ -4,6 +4,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 
 module.exports = function(app) {
+  const log = app.get('log');
   return new LocalStrategy(
     {
       usernameField: 'auth[username]',
@@ -27,6 +28,7 @@ module.exports = function(app) {
           });
         }
       }).catch(function(err) {
+        log.error('auth/local.js', 'Error retrieving user from database.');
         done(err);
       });
     }

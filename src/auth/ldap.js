@@ -3,6 +3,7 @@
 const LdapStrategy = require('passport-ldapauth');
 
 module.exports = function(app) {
+  const log = app.get('log');
   return new LdapStrategy({
     server: {
       url: process.env.TIMESYNC_LDAP_URL,
@@ -20,6 +21,7 @@ module.exports = function(app) {
         done(null, user);
       }
     }).catch(function(err) {
+      log.error('auth/ldap.js', 'Error loading user from LDAP database.');
       done(err);
     });
   });
