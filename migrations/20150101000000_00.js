@@ -4,8 +4,17 @@ exports.up = function(knex) {
   return knex.schema.createTable('users', function(table) {
     table.increments('id').primary();
     table.string('username').unique().notNullable();
+    table.string('password').notNullable();
+    table.string('display_name');
+    table.string('email');
+    table.boolean('spectator').defaultTo(false);
+    table.boolean('manager').defaultTo(false);
+    table.boolean('admin').defaultTo(false);
     table.boolean('active').defaultTo(true);
-    table.string('password');
+    table.bigInteger('created_at').notNullable();
+    table.bigInteger('updated_at').defaultTo(null);
+    table.bigInteger('deleted_at').defaultTo(null);
+    table.text('meta');
   }).createTable('projects', function(table) {
     table.increments('id').primary();
     table.string('name').notNullable();
