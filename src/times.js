@@ -645,6 +645,7 @@ module.exports = function(app) {
               return res.status(err.status).send(err);
             });
           }).catch(function(error) {
+            log.error(req, 'Error retrieving user roles: ' + error);
             const err = errors.errorServerError(error);
             return res.status(err.status).send(err);
           });

@@ -692,6 +692,7 @@ module.exports = function(app) {
                         for (let userId of userIds) {
                           userMap[userId.username] = userId.id;
                         }
+
                         /* eslint-disable guard-for-in */
                         for (let username in obj.users) {
                         /* eslint-enable prefer-const */
