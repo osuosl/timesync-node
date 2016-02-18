@@ -909,172 +909,740 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('POST /users/:username', function() {
-    it("successfully updates a user's username, display name, password, " +
-       'email, and meta', function(done) {
-      getAPIToken().then(function(token) {
-        done(token);
-      });
-    });
+    const originalUser = {
+      username: 'timero',
+      display_name: 'Old Timer',
+      email: 'timero@example.com',
+      spectator: false,
+      manager: false,
+      admin: false,
+      active: false,
+      created_at: '2014-01-01',
+      updated_at: null,
+      deleted_at: '2016-02-17',
+      meta: 'A sample deleted user',
+    };
 
-    it("successfully updates a user's username", function(done) {
+    const updatedUser = {
+      display_name: 'Old J. Timer',
+      email: 'otimer@example.com',
+      password: 'newpass',
+      spectator: true,
+      manager: true,
+      admin: true,
+      active: true,
+      meta: 'An undeleted user',
+    };
+
+    const badUpdatedUser = { // Invalid values but correct types
+      username: 'otimer', // Username can't be changed
+      email: 'notanemail',
+      created_at: '2016-02-17',
+      updated_at: '2016-02-18',
+      deleted_at: '2016-02-19',
+    };
+
+    const invalidUpdatedUser = { // Wrong types
+      display_name: [2334],
+      password: [9876],
+      email: {223: 322},
+      spectator: 'yes',
+      manager: 'no',
+      admin: 'maybe',
+      active: 'dunno',
+      meta: [3.141592653],
+    };
+
+    const postArg = {
+      auth: {
+        type: 'token',
+      },
+    };
+
+    const requestOptions = {
+      url: baseUrl + 'users/timero',
+      json: true,
+    };
+
+    // Function used for validating that the object in the database
+    // is in the correct state (change or unchanged based on if the POST
+    // was valid)
+    const checkListEndpoint = function(done, expectedResults, token) {
+      // Make a get request
+      request.get(requestOptions.url + '?token=' + token,
+      function(err, res, body) {
+        expect(err).to.equal(null);
+
+        const jsonBody = JSON.parse(body);
+        expect(jsonBody).to.deep.equal(expectedResults);
+
+        expect(res.statusCode).to.equal(200);
+        done();
+      });
+    };
+
+    it("successfully updates a user's display name, password, email, and meta",
+    function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          display_name: updatedUser.display_name,
+          password: updatedUser.password,
+          email: updatedUser.email,
+          meta: updatedUser.meta,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = copyJsonObject(originalUser);
+          expectedResult.display_name = updatedUser.display_name;
+          expectedResult.password = updatedUser.password;
+          expectedResult.email = updatedUser.email;
+          expectedResult.meta = updatedUser.meta;
+          expectedResult.updated_at = body.updated_at;
+          expectedResult.deleted_at = null;
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(200);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("successfully updates a user's display name", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          display_name: updatedUser.display_name,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = copyJsonObject(originalUser);
+          expectedResult.display_name = updatedUser.display_name;
+          expectedResult.updated_at = body.updated_at;
+          expectedResult.deleted_at = null;
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(200);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("successfully updates a user's password", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          password: updatedUser.password,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = copyJsonObject(originalUser);
+          expectedResult.password = updatedUser.password;
+          expectedResult.updated_at = body.updated_at;
+          expectedResult.deleted_at = null;
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(200);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("successfully updates a user's email", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          email: updatedUser.email,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = copyJsonObject(originalUser);
+          expectedResult.email = updatedUser.email;
+          expectedResult.updated_at = body.updated_at;
+          expectedResult.deleted_at = null;
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(200);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("successfully updates a user's meta", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          meta: updatedUser.meta,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = copyJsonObject(originalUser);
+          expectedResult.meta = updatedUser.meta;
+          expectedResult.updated_at = body.updated_at;
+          expectedResult.deleted_at = null;
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(200);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("successfully updates a user's spectator status", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          spectator: updatedUser.spectator,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = copyJsonObject(originalUser);
+          expectedResult.spectator = updatedUser.spectator;
+          expectedResult.updated_at = body.updated_at;
+          expectedResult.deleted_at = null;
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(200);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("successfully updates a user's manager status", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          manager: updatedUser.manager,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = copyJsonObject(originalUser);
+          expectedResult.manager = updatedUser.manager;
+          expectedResult.updated_at = body.updated_at;
+          expectedResult.deleted_at = null;
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(200);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("successfully updates a user's admin status", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          admin: updatedUser.admin,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = copyJsonObject(originalUser);
+          expectedResult.admin = updatedUser.admin;
+          expectedResult.updated_at = body.updated_at;
+          expectedResult.deleted_at = null;
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(200);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("successfully updates a user's active status", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          admin: updatedUser.admin,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = copyJsonObject(originalUser);
+          expectedResult.active = updatedUser.active;
+          expectedResult.updated_at = body.updated_at;
+          expectedResult.deleted_at = null;
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(200);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with bad authentication", function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'notauser';
+      password = 'notapass';
       getAPIToken().then(function(token) {
-        done(token);
+        user = oldUser;
+        password = oldPass;
+
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(updatedUser);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 401,
+            error: 'Authentication Failure',
+            text: 'Invalid username or password',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(401);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with bad authorization", function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'mrsj';
+      password = 'word';
       getAPIToken().then(function(token) {
-        done(token);
+        user = oldUser;
+        password = oldPass;
+
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(updatedUser);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 401,
+            error: 'Authorization Failure',
+            text: 'mrsj is not authorized to modify user Old Timer',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(401);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
-    it("doesn't update a user with bad values", function(done) {
+    it("doesn't update a user's username", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
-      });
-    });
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          username: badUpdatedUser.username,
+        };
 
-    it("doesn't update a user with bad username", function(done) {
-      getAPIToken().then(function(token) {
-        done(token);
-      });
-    });
+        requestOptions.body.auth.token = token;
 
-    it("doesn't update a user with bad password", function(done) {
-      getAPIToken().then(function(token) {
-        done(token);
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'user does not have a username field',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with bad email", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
-      });
-    });
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          email: badUpdatedUser.email,
+        };
 
-    it("doesn't update a user with invalid username type", function(done) {
-      getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'Field email of user should be valid email but was sent as ' +
+              'string',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with invalid display name type", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          display_name: invalidUpdatedUser.display_name,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'Field display_name of user should be string but was sent ' +
+              'as array',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with invalid password type", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          password: invalidUpdatedUser.password,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'Field password of user should be string but was sent ' +
+              'as array',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with invalid email type", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          email: invalidUpdatedUser.email,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'Field email of user should be string but was sent as object',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with invalid spectator type", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          spectator: invalidUpdatedUser.spectator,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'Field spectator of user should be boolean but was sent ' +
+              'as string',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with invalid manager type", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          manager: invalidUpdatedUser.manager,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'Field manager of user should be boolean but was sent ' +
+              'as string',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with invalid admin type", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          admin: invalidUpdatedUser.admin,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'Field admin of user should be boolean but was sent ' +
+              'as string',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with invalid active type", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          active: invalidUpdatedUser.active,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'Field active of user should be boolean but was sent ' +
+              'as string',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with invalid meta type", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          meta: invalidUpdatedUser.meta,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'Field meta of user should be string but was sent as array',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with explicit created_at", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          created_at: badUpdatedUser.created_at,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'user does not have a created_at field',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with explicit updated_at", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          updated_at: badUpdatedUser.updated_at,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'user does not have a updated_at field',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
 
     it("doesn't update a user with explicit deleted_at", function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = {
+          deleted_at: badUpdatedUser.deleted_at,
+        };
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 400,
+            error: 'Bad object',
+            text: 'user does not have a deleted_at field',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, expectedResult, token);
+        });
       });
     });
   });
@@ -1082,19 +1650,79 @@ module.exports = function(expect, request, baseUrl) {
   describe('DELETE /users/:username', function() {
     it('successfully deletes a user', function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        request.delete(baseUrl + 'users/timero?token=' + token,
+        function(delErr, delRes, delBody) {
+          expect(delErr).to.equal(null);
+          expect(delBody).to.equal(null);
+          expect(delRes.statusCode).to.equal(200);
+
+          request.get(baseUrl + 'users/timero?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.equal(null);
+            expect(JSON.parse(getBody)).to.deep.equal({
+              status: 404,
+              error: 'Object not found',
+              text: 'Nonexistent user',
+            });
+            expect(getRes.statusCode).to.equal(404);
+
+            request.get(baseUrl + 'users?token=' + token,
+            function(getAllErr, getAllRes, getAllBody) {
+              expect(getAllErr).to.equal(null);
+              expect(JSON.parse(getAllBody).to.deep.have.same.
+                                                          members(initialData));
+              expect(getAllRes.statusCode).to.equal(200);
+              done();
+            });
+          });
+        });
       });
     });
 
     it('fails if it receives a nonexistent user', function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        request.delete(baseUrl + 'users/notauser?token=' + token,
+        function(delErr, delRes, delBody) {
+          expect(delErr).to.equal(null);
+          expect(JSON.parse(delBody)).to.deep.equal({
+            status: 404,
+            error: 'Object not found',
+            text: 'Nonexistent user',
+          });
+          expect(delRes.statusCode).to.equal(404);
+
+          request.get(baseUrl + 'users?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.equal(null);
+            expect(JSON.parse(getBody).to.deep.have.same.members(initialData));
+            expect(getRes.statusCode).to.equal(200);
+            done();
+          });
+        });
       });
     });
 
     it('fails if it receives an invalid user', function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        request.delete(baseUrl + 'users/!nv4l|d?token=' + token,
+        function(delErr, delRes, delBody) {
+          expect(delErr).to.equal(null);
+          expect(JSON.parse(delBody)).to.deep.equal({
+            status: 400,
+            error: 'The provided identifier was invalid',
+            text: 'Expected username but received !nv4l|d',
+            identifiers: ['!nv4l|d'],
+          });
+          expect(delRes.statusCode).to.equal(404);
+
+          request.get(baseUrl + 'users?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.equal(null);
+            expect(JSON.parse(getBody).to.deep.have.same.members(initialData));
+            expect(getRes.statusCode).to.equal(200);
+            done();
+          });
+        });
       });
     });
   });
