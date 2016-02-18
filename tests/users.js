@@ -32,10 +32,117 @@ module.exports = function(expect, request, baseUrl) {
     });
   }
 
+  const initialData = [
+    {
+      display_name: 'Dean Johnson',
+      username: 'deanj',
+      email: null,
+      spectator: false,
+      manager: false,
+      admin: false,
+      active: false,
+      created_at: '2014-01-01',
+      updated_at: null,
+      deleted_at: null,
+      meta: null,
+    },
+    {
+      display_name: 'Evan Tschuy',
+      username: 'tschuy',
+      email: null,
+      spectator: true,
+      manager: true,
+      admin: false,
+      active: true,
+      created_at: '2014-01-01',
+      updated_at: null,
+      deleted_at: null,
+      meta: null,
+    },
+    {
+      display_name: 'Tristan Patch',
+      username: 'patcht',
+      email: null,
+      spectator: true,
+      manager: true,
+      admin: true,
+      active: true,
+      created_at: '2014-01-01',
+      updated_at: null,
+      deleted_at: null,
+      meta: null,
+    },
+    {
+      display_name: 'Matthew Johnson',
+      username: 'mrsj',
+      email: null,
+      spectator: true,
+      manager: false,
+      admin: false,
+      active: true,
+      created_at: '2014-01-01',
+      updated_at: null,
+      deleted_at: null,
+      meta: null,
+    },
+    {
+      display_name: 'Aileen Thai',
+      username: 'thai',
+      email: null,
+      spectator: true,
+      manager: false,
+      admin: false,
+      active: true,
+      created_at: '2014-01-01',
+      updated_at: null,
+      deleted_at: null,
+      meta: null,
+    },
+    {
+      display_name: 'Megan Goossens',
+      username: 'MaraJade',
+      email: null,
+      spectator: false,
+      manager: false,
+      admin: false,
+      active: true,
+      created_at: '2014-01-01',
+      updated_at: null,
+      deleted_at: null,
+      meta: null,
+    },
+    {
+      display_name: 'Old Timer',
+      username: 'timero',
+      email: 'timero@example.com',
+      spectator: false,
+      manager: false,
+      admin: false,
+      active: false,
+      created_at: '2014-01-01',
+      updated_at: null,
+      deleted_at: '2016-02-17',
+      meta: 'A sample deleted user',
+    },
+  ];
+
   describe('GET /users', function() {
     it('returns all active users in the database', function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        request.get(baseUrl + 'users?token=' + token,
+        function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+
+          const jsonBody = JSON.parse(body);
+          const expectedResults = initialData.filter(function(data) {
+            return data.deleted_at === null;
+          });
+
+          expect(jsonBody).to.deep.equal(expectedResults);
+
+          done();
+        });
       });
     });
   });
@@ -43,13 +150,34 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /users?include_deleted=true', function() {
     it('returns all active and deleted users in the database', function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        request.get(baseUrl + 'users?include_deleted=true&token=' + token,
+        function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+
+          const jsonBody = JSON.parse(body);
+
+          expect(jsonBody).to.deep.have.same.members(initialData);
+
+          done();
+        });
       });
     });
 
     it('ignores extra params if user specifies invalid params', function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        request.get(baseUrl + 'users?include_deleted=truefoo=bar&token=' +
+        token,
+        function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+
+          const jsonBody = JSON.parse(body);
+
+          expect(jsonBody).to.deep.have.same.members(initialData);
+
+          done();
+        });
       });
     });
   });
@@ -57,25 +185,74 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /users/:usernames', function() {
     it('returns a single user by username', function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        request.get(baseUrl + 'users/' + initialData[0].username +
+        '?token=' + token,
+        function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+
+          const jsonBody = JSON.parse(body);
+
+          expect(jsonBody).to.deep.equal(initialData[0]);
+
+          done();
+        });
       });
     });
 
     it('returns an error if ?include_deleted is passed', function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        request.get(baseUrl + 'users/' + initialData[6].username +
+        'include_deleted=true&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 404,
+            error: 'Object not found',
+            text: 'Nonexistent user',
+          };
+
+          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(404);
+          done();
+        });
       });
     });
 
     it('fails with an Object Not Found error', function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        request.get(baseUrl + 'users/notauser?token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 404,
+            error: 'Object not found',
+            text: 'Nonexistent user',
+          };
+
+          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(404);
+          done();
+        });
       });
     });
 
     it('fails with an Invalid Identifier error', function(done) {
       getAPIToken().then(function(token) {
-        done(token);
+        request.get(baseUrl + 'users/!nv4l|d?token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 404,
+            error: 'The provided identifier was invalid',
+            text: 'Expected username but received !nv4l|d',
+            identifiers: ['!nv4l|d'],
+          };
+
+          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(404);
+          done();
+        });
       });
     });
   });

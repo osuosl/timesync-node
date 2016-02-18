@@ -147,6 +147,21 @@
       "updated_at": null,
       "deleted_at": null,
       "meta": null
+    },
+    {
+      "display_name": "Old Timer",
+      "username": "timero",
+      "email": "timero@example.com",
+      "spectator": false,
+      "manager": false,
+      "admin": false,
+      "id": 7,
+      "active": false,
+      "password": "$2a$04$fdkkKzJMxxIGV.VmCNV1CONgP/hpHUFuCuf15nzxc.Mg1a82wjjO",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": 1455753600000,
+      "meta": "A sample deleted user"
     }
   ],
   "projects":[
