@@ -59,40 +59,94 @@
   ],
   "users":[
     {
+      "display_name": "Dean Johnson",
       "username":"deanj",
+      "email": null,
+      "spectator": false,
+      "manager": false,
+      "admin": false,
       "id": 1,
       "active": false,
-      "password":"$2a$04$2kQbps.DOYwx1fuV68IHBuzEWJDvBrcbycI3jIQcqY8bADtUjEbv6"
+      "password":"$2a$04$2kQbps.DOYwx1fuV68IHBuzEWJDvBrcbycI3jIQcqY8bADtUjEbv6",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": null,
+      "meta": null
     },
     {
+      "display_name": "Evan Tschuy",
       "username":"tschuy",
+      "email": null,
+      "spectator": true,
+      "manager": true,
+      "admin": false,
       "id": 2,
       "active": true,
-      "password":"$2a$04$RHFIGczG2prfqYM.0O8jReJa386Gg6E/uznqSRz7Cv86C7pXsQmoa"
+      "password":"$2a$04$RHFIGczG2prfqYM.0O8jReJa386Gg6E/uznqSRz7Cv86C7pXsQmoa",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": null,
+      "meta": null
     },
     {
+      "display_name": "Tristan Patch",
       "username":"patcht",
+      "email": null,
+      "spectator": true,
+      "manager":true,
+      "admin": true,
       "id": 3,
       "active": true,
-      "password":"$2a$04$VjgpGbXzLpNkxZ0px3e8bO6HgFwNVQjTk5CBQuJgT11vd4CSfU8Ci"
+      "password":"$2a$04$VjgpGbXzLpNkxZ0px3e8bO6HgFwNVQjTk5CBQuJgT11vd4CSfU8Ci",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": null,
+      "meta": null
     },
     {
+      "display_name": "Matthew Johnson",
       "username":"mrsj",
+      "email": null,
+      "spectator": true,
+      "manager": false,
+      "admin": false,
       "id": 4,
       "active": true,
-      "password":"$2a$04$P4kOcQrJceC67bNCO6VNQutCsc1UgT80tIcdSkQbfNNMZHJ0UYUQq"
+      "password":"$2a$04$P4kOcQrJceC67bNCO6VNQutCsc1UgT80tIcdSkQbfNNMZHJ0UYUQq",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": null,
+      "meta": null
     },
     {
+      "display_name": "Aileen Thai",
       "username":"thai",
+      "email": null,
+      "spectator": true,
+      "manager": false,
+      "admin": false,
       "id": 5,
       "active": true,
-      "password":"$2a$04$TOZYq1yKt5pSZZ5X.qQnzuqprDrL2vrw3tdleh1WLpxbq3gzdOi8W"
+      "password":"$2a$04$TOZYq1yKt5pSZZ5X.qQnzuqprDrL2vrw3tdleh1WLpxbq3gzdOi8W",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": null,
+      "meta": null
     },
     {
+      "display_name": "Megan Goossens",
       "username":"MaraJade",
+      "email": null,
+      "spectator": false,
+      "manager": false,
+      "admin": false,
       "id": 6,
       "active": true,
-      "password":"$2a$04$OVJfHgDIp3j8ZFlLpWVCP.Jurd5QJIJ9NgEHfpydga6KhQ.QmeU3."
+      "password":"$2a$04$OVJfHgDIp3j8ZFlLpWVCP.Jurd5QJIJ9NgEHfpydga6KhQ.QmeU3.",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": null,
+      "meta": null
     }
   ],
   "projects":[
