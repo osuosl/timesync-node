@@ -570,9 +570,9 @@ module.exports = function(app) {
     // Finish checks for user, project, and activity
     helpers.checkUser(user.username, time.user).then(function(userId) {
       helpers.checkProject(time.project).then(function(projectId) {
-        knex('userroles').where({user: userId, project: projectId})
+        knex('userroles').first().where({user: userId, project: projectId})
         .then(function(roles) {
-          if (roles.length === 0 || roles[0].member === false) {
+          if ((!roles || roles.member === false) && !user.admin) {
             const err = errors.errorAuthorizationFailure(user.username,
               'create time entries for project ' + time.project + '.');
             return res.status(err.status).send(err);
@@ -778,7 +778,7 @@ module.exports = function(app) {
                'times.project')
     .orderBy('times.revision', 'desc')
     .then(function(time) {
-      if (user.username !== time.username) {
+      if ((user.username !== time.username) && !user.admin) {
         const err = errors.errorAuthorizationFailure(user.username,
           'create objects for ' + time.username);
         return res.status(err.status).send(err);
@@ -913,17 +913,24 @@ module.exports = function(app) {
     });
   });
 
-  app.delete(app.get('version') + '/times/:uuid', function(req, res) {
+  authRequest.delete(app.get('version') + '/times/:uuid',
+  function(req, res, user) {
     const knex = app.get('knex');
     if (!helpers.validateUUID(req.params.uuid)) {
       const err = errors.errorInvalidIdentifier('uuid', req.params.uuid);
       return res.status(err.status).send(err);
     }
 
-    knex('times').select('id').where('uuid', req.params.uuid).first()
+    knex('times').select('id', 'user').where('uuid', req.params.uuid).first()
     .then(function(time) {
       if (!time) {
         const err = errors.errorObjectNotFound('uuid', req.params.uuid);
+        return res.status(err.status).send(err);
+      }
+
+      if (time.user !== user.id && !user.manager && !user.admin) {
+        const err = errors.errorAuthorizationFailure(user.username,
+            'delete time ' + req.params.uuid);
         return res.status(err.status).send(err);
       }
 

@@ -229,9 +229,14 @@ module.exports = function(app) {
   });
 
   authRequest.post(app, app.get('version') + '/projects',
-  function(req, res, authUser) {
+  function(req, res, user) {
     const knex = app.get('knex');
     const obj = req.body.object;
+
+    if (!user.manager && !user.admin) {
+      const err = errors.authorizationFailure(user.username, 'create projects');
+      return res.status(err.status).send(err);
+    }
 
     // run various checks
     // valid keys
@@ -343,7 +348,7 @@ module.exports = function(app) {
             // The creating user must now be made project manager
             const managerRole = {
               project: project,
-              user: authUser.id,
+              user: user.id,
               manager: true,
               spectator: true,
               member: true,
@@ -380,7 +385,7 @@ module.exports = function(app) {
   });
 
   authRequest.post(app, app.get('version') + '/projects/:slug',
-  function(req, res, authUser) {
+  function(req, res, user) {
     const knex = app.get('knex');
     const obj = req.body.object;
 
@@ -456,10 +461,10 @@ module.exports = function(app) {
       // user is updating
 
       // access userroles, check if user is participating in project
-      knex('userroles').where({user: authUser.id, project: project.id})
+      knex('userroles').first().where({user: user.id, project: project.id})
       .then(function(roles) {
-        if (roles.length === 0 || roles[0].manager === false) {
-          const err = errors.errorAuthorizationFailure(authUser.username,
+        if ((!roles || !roles.manager) && !user.manager && !user.admin) {
+          const err = errors.errorAuthorizationFailure(user.username,
             'make changes to ' + project.name);
           return res.status(err.status).send(err);
         }
@@ -599,78 +604,93 @@ module.exports = function(app) {
   });
 
   authRequest.delete(app, app.get('version') + '/projects/:slug',
-  function(req, res) {
+  function(req, res, user) {
     const knex = app.get('knex');
-    if (!helpers.validateSlug(req.params.slug)) {
-      const err = errors.errorInvalidIdentifier('slug', req.params.slug);
-      return res.status(err.status).send(err);
-    }
 
-    // Get project id
-    knex('projectslugs').select('projects.id as id', 'projects.name as name')
-    .first().where('projectslugs.name', req.params.slug)
-    .innerJoin('projects', 'projectslugs.project', 'projects.id')
-    .then(function(project) {
-      if (!project) {
-        const err = errors.errorObjectNotFound('slug', req.params.slug);
+    knex('userroles').first().where('user', user.id).andWhere('project',
+      knex('projectslugs').first().select('id').where('name', req.params.slug)
+    ).then(function(roles) {
+      if ((!roles || !roles.manager) && !user.manager && !user.admin) {
+        const err = errors.errorAuthorizationFailure(user.username,
+            'delete project ' + req.params.slug);
         return res.status(err.status).send(err);
       }
 
-      // Get times associated with project
-      knex('times').where('project', '=', project.id).then(function(times) {
-        // If there are times associated, return an error
-        if (times.length > 0) {
-          res.set('Allow', 'GET, POST');
-          const err = errors.errorRequestFailure('project');
+      if (!helpers.validateSlug(req.params.slug)) {
+        const err = errors.errorInvalidIdentifier('slug', req.params.slug);
+        return res.status(err.status).send(err);
+      }
+
+      // Get project id
+      knex('projectslugs').select('projects.id as id', 'projects.name as name')
+      .first().where('projectslugs.name', req.params.slug)
+      .innerJoin('projects', 'projectslugs.project', 'projects.id')
+      .then(function(project) {
+        if (!project) {
+          const err = errors.errorObjectNotFound('slug', req.params.slug);
           return res.status(err.status).send(err);
-          // Otherwise delete project
         }
 
-        /*
-         * Once auth is provided on DELETE requests, compare user ID to ensure
-         * they have either 'project manager' rights on the project, or admin
-         * rights on the system, similar to as follows:
-         *
-         * knex('userroles').where({project: project.id, user: userId})
-         * .first().select('manager').then(function(role) {
-         *   if (!role || !role.manager) {
-         *     const err = errors.errorAuthorizationFailure(user.name,
-         *                                    'delete project ' + project.name);
-         *     return res.status(err.status).send(err);
-         *   }
-         */
+        // Get times associated with project
+        knex('times').where('project', '=', project.id).then(function(times) {
+          // If there are times associated, return an error
+          if (times.length > 0) {
+            res.set('Allow', 'GET, POST');
+            const err = errors.errorRequestFailure('project');
+            return res.status(err.status).send(err);
+            // Otherwise delete project
+          }
 
-        knex.transaction(function(trx) {
-          trx('projects').where('id', '=', project.id)
-          .update({deleted_at: Date.now()}).then(function(numObj) {
-            /* When deleting something from the table, the number of
-            objects deleted is returned. So to confirm that deletion
-            was successful, make sure that the number returned is at
-            least one. */
-            if (numObj !== 1) {
-              trx.rollback();
-            }
+          /*
+           * Once auth is provided on DELETE requests, compare user ID to ensure
+           * they have either 'project manager' rights on the project, or admin
+           * rights on the system, similar to as follows:
+           *
+           * knex('userroles').where({project: project.id, user: userId})
+           * .first().select('manager').then(function(role) {
+           *   if (!role || !role.manager) {
+           *     const err = errors.errorAuthorizationFailure(user.name,
+           *                                  'delete project ' + project.name);
+           *     return res.status(err.status).send(err);
+           *   }
+           */
 
-            trx('projectslugs').where('project', project.id).del()
-            .then(function() {
-              trx('userroles').where('project', project.id).del()
+          knex.transaction(function(trx) {
+            trx('projects').where('id', '=', project.id)
+            .update({deleted_at: Date.now()}).then(function(numObj) {
+              /* When deleting something from the table, the number of
+              objects deleted is returned. So to confirm that deletion
+              was successful, make sure that the number returned is at
+              least one. */
+              if (numObj !== 1) {
+                trx.rollback();
+              }
+
+              trx('projectslugs').where('project', project.id).del()
               .then(function() {
-                trx.commit();
-                return res.send();
+                trx('userroles').where('project', project.id).del()
+                .then(function() {
+                  trx.commit();
+                  return res.send();
+                }).catch(function(error) {
+                  log.error(req, 'Error deleting userroles: ' + error);
+                  trx.rollback();
+                });
               }).catch(function(error) {
-                log.error(req, 'Error deleting userroles: ' + error);
+                log.error(req, 'Error deleting slugs: ' + error);
                 trx.rollback();
               });
             }).catch(function(error) {
-              log.error(req, 'Error deleting slugs: ' + error);
+              log.error(req, 'Error deleting project: ' + error);
               trx.rollback();
             });
           }).catch(function(error) {
-            log.error(req, 'Error deleting project: ' + error);
-            trx.rollback();
+            log.error(req, 'Rolling back transaction.');
+            const err = errors.errorServerError(error);
+            return res.status(err.status).send(err);
           });
         }).catch(function(error) {
-          log.error(req, 'Rolling back transaction.');
+          log.error(req, 'Error checking if project has any times: ' + error);
           const err = errors.errorServerError(error);
           return res.status(err.status).send(err);
         });
@@ -679,6 +699,10 @@ module.exports = function(app) {
         const err = errors.errorServerError(error);
         return res.status(err.status).send(err);
       });
+    }).catch(function(error) {
+      log.error(req, 'Error requesting user roles.');
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
     });
   });
 };
