@@ -608,7 +608,7 @@ module.exports = function(app) {
     const knex = app.get('knex');
 
     knex('userroles').first().where('user', user.id).andWhere('project',
-      knex('projectslugs').first().select('id').where('name', req.params.slug)
+      knex('projectslugs').select('id').where('name', req.params.slug)
     ).then(function(roles) {
       if ((!roles || !roles.manager) && !user.manager && !user.admin) {
         const err = errors.errorAuthorizationFailure(user.username,

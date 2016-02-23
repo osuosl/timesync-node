@@ -536,8 +536,8 @@ module.exports = function(expect, request, baseUrl) {
       const oldUser = user;
       const oldPass = password;
 
-      user = 'patcht';
-      password = 'drowssap';
+      user = 'mrsj';
+      password = 'word';
       getAPIToken().then(function(token) {
         user = oldUser;
         password = oldPass;
@@ -551,7 +551,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(res.statusCode).to.equal(401);
 
           expect(body.error).to.equal('Authorization failure');
-          expect(body.text).to.equal('patcht is not authorized to make ' +
+          expect(body.text).to.equal('mrsj is not authorized to make ' +
           'changes to ' + originalProject.name);
 
           const expectedResults = copyJsonObject(originalProject);

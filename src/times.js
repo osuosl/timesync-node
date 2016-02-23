@@ -913,7 +913,7 @@ module.exports = function(app) {
     });
   });
 
-  authRequest.delete(app.get('version') + '/times/:uuid',
+  authRequest.delete(app, app.get('version') + '/times/:uuid',
   function(req, res, user) {
     const knex = app.get('knex');
     if (!helpers.validateUUID(req.params.uuid)) {
