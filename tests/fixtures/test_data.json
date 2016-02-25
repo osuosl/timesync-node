@@ -375,6 +375,13 @@
   ],
   "userroles":[
     {
+      "project":"projects:0",
+      "user":"users:0",
+      "manager": false,
+      "member": true,
+      "spectator": false
+    },
+    {
       "project":"projects:1",
       "user":"users:0",
       "manager": true,
@@ -432,6 +439,13 @@
     },
     {
       "project":"projects:4",
+      "user":"users:5",
+      "manager": true,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:0",
       "user":"users:5",
       "manager": true,
       "member": true,

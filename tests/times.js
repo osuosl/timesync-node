@@ -1524,36 +1524,6 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times/:uuid', function() {
-    it('returns times by uuid', function(done) {
-      getAPIToken().then(function(token) {
-        request.get(baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941' +
-        '?token=' + token, function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResult = {
-            duration: 12,
-            user: 'deanj',
-            project: ['ganeti-webmgr', 'gwm'].sort(),
-            activities: ['docs', 'dev'].sort(),
-            notes: '',
-            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-            date_worked: '2015-04-19',
-            created_at: '2015-04-19',
-            updated_at: null,
-            deleted_at: null,
-            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-            revision: 1,
-          };
-
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.eql(expectedResult);
-          done();
-        });
-      });
-    });
-  });
-
   describe('GET /times?include_deleted=true', function() {
     const softDeletedTimes = [
       {
@@ -3692,10 +3662,10 @@ module.exports = function(expect, request, baseUrl) {
     // The database's entry for `Whats Fresh`'s time entry
     const postOriginalTime = {
       duration: 12,
-      user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'].sort(),
+      user: 'deanj',
+      project: ['ganeti-webmgr', 'gwm'],
       notes: '',
-      activities: ['docs'],
+      activities: ['dev', 'docs'],
       issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
       date_worked: '2015-04-20',
       uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
@@ -3704,17 +3674,17 @@ module.exports = function(expect, request, baseUrl) {
 
     const getOriginalTime = {
       duration: 12,
-      user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'].sort(),
+      user: 'deanj',
+      project: ['ganeti-webmgr', 'gwm'],
+      activities: ['dev', 'docs'],
       notes: '',
-      activities: ['docs'],
       issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-      date_worked: '2015-04-20',
-      created_at: '2015-04-20',
+      date_worked: '2015-04-19',
+      created_at: '2015-04-19',
       updated_at: null,
-      deleted_at: null,
-      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+      uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
       revision: 1,
+      deleted_at: null,
     };
 
     // A completely patched version of the above time entry
@@ -3722,7 +3692,6 @@ module.exports = function(expect, request, baseUrl) {
     const updatedAt = new Date().toISOString().substring(0, 10);
     const postPatchedTime = {
       duration: 15,
-      user: 'deanj',
       project: 'pgd',
       activities: ['docs', 'sys'],
       notes: 'Now this is a note',
@@ -3733,16 +3702,16 @@ module.exports = function(expect, request, baseUrl) {
     const getPatchedTime = {
       duration: 15,
       user: 'deanj',
-      project: 'pgd',
+      project: ['pgd'],
       activities: ['docs', 'sys'],
       notes: 'Now this is a note',
       issue_uri: 'https://github.com/osuosl/pgd/pull/19',
       date_worked: '2015-04-28',
-      created_at: '2015-04-20',
-      updated_at: updatedAt,
-      deleted_at: null,
-      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+      created_at: '2015-04-19',
+      updated_at: null,
+      uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
       revision: 2,
+      deleted_at: null,
     };
 
     // Sends invalid data to the /times/:id endpoint
@@ -3777,7 +3746,7 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const requestOptions = {
-      url: baseUrl + 'times/e0326905-ef25-46a0-bacd-4391155aca4a',
+      url: baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941',
       json: true,
     };
 
@@ -3820,6 +3789,7 @@ module.exports = function(expect, request, baseUrl) {
             const jsonBody = JSON.parse(body0);
             expect(jsonBody.error).to.equal(undefined);
             expect(res0.statusCode).to.equal(200);
+            expectedResults.updated_at = jsonBody.updated_at;
             expect(jsonBody).to.deep.equal(expectedResults);
             done();
           });
@@ -3828,16 +3798,34 @@ module.exports = function(expect, request, baseUrl) {
     }
 
     // Tests all valid fields
-    it('succesfully patches time with valid duration, user, project,' +
-    ' activity notes, issue_uri, and date_worked', function(done) {
+    it('succesfully patches time with valid duration, project,' +
+    ' activity notes, issue_uri, and date_worked by an admin', function(done) {
+      const postObj = copyJsonObject(postPatchedTime);
+      const expectedResults = copyJsonObject(getPatchedTime);
+      let error;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, postObj, expectedResults, error,
+                 statusCode);
+    });
+
+    it('succesfully patches time with valid duration, project,' +
+    ' activity notes, issue_uri, and date_worked by the user', function(done) {
       const postObj = copyJsonObject(postPatchedTime);
       const expectedResults = copyJsonObject(getPatchedTime);
       expectedResults.project = ['pgd'];
       let error;
       const statusCode = 200;
 
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'deanj';
+      password = 'pass';
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode);
+      user = oldUser;
+      password = oldPass;
     });
 
     // Tests valid duration field
@@ -3851,21 +3839,6 @@ module.exports = function(expect, request, baseUrl) {
       const statusCode = 200;
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
-                 statusCode);
-    });
-
-    // Tests valid user field
-    // This test's functionality will be implemented at a later date
-    // (after the rest of the /time/:id functionality is implemented)
-    it('successfully patches time with valid user', function(done) {
-      const postObj = {user: postPatchedTime.user};
-      const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.updated_at = updatedAt;
-      expectedResults.user = postPatchedTime.user;
-      expectedResults.revision = 2;
-      const statusCode = 200;
-
-      checkPostToEndpoint(done, postObj, expectedResults, undefined,
                  statusCode);
     });
 
@@ -3935,7 +3908,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     // Tests all invalid fields
-    it('unsuccesfully patches time with invalid duration, user, project,' +
+    it('unsuccesfully patches time with invalid duration, project,' +
     ' activity, notes, issue_uri, and date_worked dattype', function(done) {
       const postObj = copyJsonObject(invalidTimeDataType);
       const expectedResults = copyJsonObject(getOriginalTime);
@@ -3947,12 +3920,6 @@ module.exports = function(expect, request, baseUrl) {
           error: 'Bad object',
           text: 'Field duration of time should be ' +
               'number but was sent as object',
-        },
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field user of time should be ' +
-              'string but was sent as object',
         },
         {
           status: 400,
@@ -4003,28 +3970,6 @@ module.exports = function(expect, request, baseUrl) {
           error: 'Bad object',
           text: 'Field duration of time should be ' +
               'number but was sent as object',
-        },
-      ];
-
-      checkPostToEndpoint(done, postObj, expectedResults, error,
-                 statusCode, postBody);
-    });
-
-    // Tests invalid user field
-    // This test's functionality will be implemented at a later date
-    // (after the rest of the /time/:id functionality is implemented)
-    it('unsuccessfully patches time with just invalid user datatype',
-    function(done) {
-      const postObj = {user: invalidTimeDataType.user};
-      const expectedResults = copyJsonObject(getOriginalTime);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field user of time should be ' +
-              'string but was sent as object',
         },
       ];
 
@@ -4168,33 +4113,6 @@ module.exports = function(expect, request, baseUrl) {
           error: 'Bad object',
           text: 'Field duration of time should be ' +
               'number but was sent as object',
-        },
-      ];
-
-      checkPostToEndpoint(done, postObj, expectedResults, error,
-                 statusCode, postBody);
-    });
-
-    // Tests all valid fields except invalid user
-    // This test's functionality will be implemented at a later date
-    // (after the rest of the /time/:id functionality is implemented)
-    it('unsuccessfully patches time with an invalid user datatype',
-    function(done) {
-      const postObj = copyJsonObject(postOriginalTime);
-      postObj.user = invalidTimeDataType.user;
-      postObj.project = 'gwm';
-      delete postObj.uuid;
-      delete postObj.revision;
-
-      const expectedResults = copyJsonObject(getOriginalTime);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field user of time should be ' +
-              'string but was sent as object',
         },
       ];
 
@@ -4373,43 +4291,6 @@ module.exports = function(expect, request, baseUrl) {
 
       checkPostToEndpoint(done, postObj, expectedResults, error,
                  statusCode, postBody);
-    });
-
-    // Test invalid user invalid foreign key
-    it('unsuccessfully patches time with just invalid user foreign key',
-    function(done) {
-      const postObj = {user: invalidTimeValue.user1};
-      const expectedResults = copyJsonObject(getOriginalTime);
-      const error = 'Invalid foreign key';
-      const statusCode = 409;
-      const postBody = [
-        {
-          status: 409,
-          error: 'Invalid foreign key',
-          text: 'The time does not contain a valid user reference.',
-        },
-      ];
-
-      checkPostToEndpoint(done, postObj, expectedResults, error,
-                 statusCode, postBody);
-    });
-
-    // Test invalid user (invalid formatting)
-    it('unsuccessfully patches time with just invalid user string',
-    function(done) {
-      const postObj = {user: invalidTimeValue.user2};
-      const expectedResults = copyJsonObject(getOriginalTime);
-      const error = 'Invalid foreign key';
-      const statusCode = 409;
-      const postBody = [
-        {
-          status: 409,
-          error: 'Invalid foreign key',
-          text: 'The time does not contain a valid user reference.',
-        }];
-
-      checkPostToEndpoint(done, postObj, expectedResults, error,
-                   statusCode, postBody);
     });
 
     // Test invalid project foreign key
@@ -4781,7 +4662,7 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('DELETE /times/:uuid', function() {
-    it('deletes the object with a valid uuid', function(done) {
+    it('deletes the object with a valid uuid by an admin', function(done) {
       const expectedResults = {
         status: 404,
         error: 'Object not found',
@@ -4789,6 +4670,40 @@ module.exports = function(expect, request, baseUrl) {
       };
 
       getAPIToken().then(function(token) {
+        request.del(baseUrl +
+        'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
+        function(err, res, body) {
+          expect(body.error).to.equal(undefined);
+          expect(res.statusCode).to.equal(200);
+
+          request.get(baseUrl +
+          'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
+          function(getErr, getRes, getBody) {
+            // TODO: GET should only return 200 when ?revisions=true is passed.
+            expect(getRes.statusCode).to.equal(404);
+            expect(JSON.parse(getBody)).to.deep.equal(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    it('deletes the object with a valid uuid by the user', function(done) {
+      const expectedResults = {
+        status: 404,
+        error: 'Object not found',
+        text: 'Nonexistent time',
+      };
+
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'deanj';
+      password = 'pass';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
         request.del(baseUrl +
         'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
         function(err, res, body) {
@@ -4836,6 +4751,33 @@ module.exports = function(expect, request, baseUrl) {
         function(err, res, body) {
           expect(JSON.parse(body)).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(400);
+          done();
+        });
+      });
+    });
+
+    it('fails to delete the object with invalid permissions', function(done) {
+      const expectedError = {
+        'status': 401,
+        'error': 'Authorization failure',
+        'text': 'mrsj is not authorized to delete time ' +
+          '32764929-1bea-4a17-8c8a-22d7fb144941',
+      };
+
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'mrsj';
+      password = 'word';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        request.del(baseUrl +
+          'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(401);
           done();
         });
       });

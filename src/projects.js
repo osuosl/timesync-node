@@ -234,7 +234,8 @@ module.exports = function(app) {
     const obj = req.body.object;
 
     if (!user.manager && !user.admin) {
-      const err = errors.authorizationFailure(user.username, 'create projects');
+      const err = errors.errorAuthorizationFailure(user.username,
+          'create projects');
       return res.status(err.status).send(err);
     }
 
