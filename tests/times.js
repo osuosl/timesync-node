@@ -35,7 +35,7 @@ module.exports = function(expect, request, baseUrl) {
   /* GET one of the /times endpoints and check its response against
   what should be returned */
   describe('GET /times', function() {
-    it('returns all times in the database', function(done) {
+    it('returns all times in the database to an admin', function(done) {
       getAPIToken().then(function(token) {
         request.get(baseUrl + 'times?token=' + token,
         function(getErr, getRes, getBody) {
@@ -69,6 +69,226 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               revision: 1,
               uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['pgd'],
+              activities: ['sys'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-21',
+              created_at: '2015-04-21',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
+            },
+            {
+              duration: 12,
+              user: 'patcht',
+              project: ['pgd'],
+              activities: ['dev'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-22',
+              created_at: '2015-04-22',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+            },
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
+            },
+          ];
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.have
+            .same.members(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it('returns all times in the database to a sitewide spectator',
+    function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'patcht';
+      password = 'drowssap';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        request.get(baseUrl + 'times?token=' + token,
+        function(getErr, getRes, getBody) {
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['pgd'],
+              activities: ['sys'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-21',
+              created_at: '2015-04-21',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
+            },
+            {
+              duration: 12,
+              user: 'patcht',
+              project: ['pgd'],
+              activities: ['dev'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-22',
+              created_at: '2015-04-22',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+            },
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
+            },
+          ];
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.have
+            .same.members(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it("returns only a normal user's times", function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'thai';
+      password = 'passing';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        request.get(baseUrl + 'times?token=' + token,
+        function(getErr, getRes, getBody) {
+          const expectedResults = [
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
+            },
+          ];
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.have
+            .same.members(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it("returns a project spectator's set of times", function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'deanj';
+      password = 'pass';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        request.get(baseUrl + 'times?token=' + token,
+        function(getErr, getRes, getBody) {
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
             },
             {
               duration: 12,
@@ -299,6 +519,20 @@ module.exports = function(expect, request, baseUrl) {
               revision: 1,
               uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             },
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
+            },
           ];
 
           expect(jsonBody).to.have.length(expectedResults.length);
@@ -388,6 +622,20 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               revision: 1,
               uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+            },
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
             },
           ];
 
@@ -926,6 +1174,20 @@ module.exports = function(expect, request, baseUrl) {
               revision: 1,
               uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
             },
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
+            },
           ];
 
           expect(jsonBody).to.have.length(expectedResults.length);
@@ -1190,6 +1452,20 @@ module.exports = function(expect, request, baseUrl) {
               deleted_at: null,
               revision: 1,
               uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+            },
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
             },
           ];
 
@@ -2651,30 +2927,32 @@ module.exports = function(expect, request, baseUrl) {
       {
         duration: 12,
         user: 'deanj',
-        project: ['ganeti-webmgr', 'gwm'].sort(),
+        project: ['gwm', 'ganeti-webmgr'].sort(),
         activities: ['docs', 'dev'].sort(),
         notes: '',
-        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        issue_uri:
+          'https://github.com/osu-cass/whats-fresh-api/issues/56',
         date_worked: '2015-04-19',
         created_at: '2015-04-19',
         updated_at: null,
         deleted_at: null,
-        uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
         revision: 1,
+        uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
       },
       {
         duration: 12,
         user: 'tschuy',
-        project: ['ganeti-webmgr', 'gwm'].sort(),
+        project: ['gwm', 'ganeti-webmgr'].sort(),
         activities: ['docs'],
         notes: '',
-        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        issue_uri:
+          'https://github.com/osu-cass/whats-fresh-api/issues/56',
         date_worked: '2015-04-20',
         created_at: '2015-04-20',
         updated_at: null,
         deleted_at: null,
-        uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
         revision: 1,
+        uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
       },
       {
         duration: 12,
@@ -2682,13 +2960,14 @@ module.exports = function(expect, request, baseUrl) {
         project: ['pgd'],
         activities: ['sys'],
         notes: '',
-        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        issue_uri:
+          'https://github.com/osu-cass/whats-fresh-api/issues/56',
         date_worked: '2015-04-21',
         created_at: '2015-04-21',
         updated_at: null,
         deleted_at: null,
-        uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
         revision: 1,
+        uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
       },
       {
         duration: 12,
@@ -2696,13 +2975,28 @@ module.exports = function(expect, request, baseUrl) {
         project: ['pgd'],
         activities: ['dev'],
         notes: '',
-        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        issue_uri:
+          'https://github.com/osu-cass/whats-fresh-api/issues/56',
         date_worked: '2015-04-22',
         created_at: '2015-04-22',
         updated_at: null,
         deleted_at: null,
-        uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
         revision: 1,
+        uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+      },
+      {
+        duration: 18,
+        user: 'thai',
+        project: ['wf'],
+        activities: ['docs'],
+        notes: '',
+        issue_uri: '',
+        date_worked: '2016-02-25',
+        created_at: '2016-02-25',
+        updated_at: null,
+        uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+        revision: 1,
+        deleted_at: null,
       },
     ];
 
@@ -2837,12 +3131,14 @@ module.exports = function(expect, request, baseUrl) {
           expect(res.statusCode).to.equal(401);
           expect(body).to.deep.equal(expectedResult);
 
-          request.get(baseUrl + 'times?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-            expect(JSON.parse(getBody)).to.deep.equal(initialData);
-            done();
+          getAPIToken().then(function(newToken) {
+            request.get(baseUrl + 'times?token=' + newToken,
+            function(getErr, getRes, getBody) {
+              expect(getErr).to.be.a('null');
+              expect(getRes.statusCode).to.equal(200);
+              expect(JSON.parse(getBody)).to.deep.equal(initialData);
+              done();
+            });
           });
         });
       });
