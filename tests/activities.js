@@ -6,8 +6,8 @@ function copyJsonObject(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-const user = 'patcht';
-const password = 'drowssap';
+let user = 'tschuy';
+let password = 'password';
 
 module.exports = function(expect, request, baseUrl) {
   function getAPIToken() {
@@ -380,6 +380,80 @@ module.exports = function(expect, request, baseUrl) {
         });
       });
     });
+
+    it('fails with invalid permissions', function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'mrsj';
+      password = 'word';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        request.del(baseUrl + 'activities/meeting?token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedError = {
+            status: 401,
+            error: 'Authorization failure',
+            text: 'mrsj is not authorized to delete activities',
+          };
+
+          expect(jsonBody).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(401);
+
+          request.get(baseUrl + 'activities?token=' + token,
+          function(getErr, getRes, getBody) {
+            const jsBody = JSON.parse(getBody);
+            const expectedResult = [
+              {
+                name: 'Documentation',
+                slug: 'docs',
+                deleted_at: null,
+                updated_at: null,
+                created_at: '2014-01-01',
+                uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+                revision: 1,
+              },
+              {
+                name: 'Development',
+                slug: 'dev',
+                deleted_at: null,
+                updated_at: null,
+                created_at: '2014-01-01',
+                uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
+                revision: 1,
+              },
+              {
+                name: 'Systems',
+                slug: 'sys',
+                deleted_at: null,
+                updated_at: null,
+                created_at: '2014-01-01',
+                uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
+                revision: 1,
+              },
+              {
+                name: 'Meetings',
+                slug: 'meeting',
+                deleted_at: null,
+                updated_at: null,
+                created_at: '2014-01-01',
+                uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+                revision: 1,
+              },
+            ];
+
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(jsBody).to.deep.have.same.members(expectedResult);
+
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('GET /activities?include_deleted=:bool', function() {
@@ -586,8 +660,53 @@ module.exports = function(expect, request, baseUrl) {
       });
     }
 
-    it('successfully updates the activity', function(done) {
+    it('successfully updates the activity by an admin', function(done) {
       getAPIToken().then(function(token) {
+        requestOptions.body = postArg;
+        requestOptions.body.object = patchedActivity;
+
+        requestOptions.body.auth.token = token;
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const expectedResult = copyJsonObject(originalActivity);
+          expectedResult.name = patchedActivity.name;
+          expectedResult.slug = patchedActivity.slug;
+          expectedResult.revision = 2;
+          expectedResult.updated_at = new Date().toISOString().substring(0, 10);
+
+          const expectedPost = copyJsonObject(expectedResult);
+          delete expectedPost.deleted_at;
+
+          expect(body).to.deep.equal(expectedPost);
+
+          // Checking that the activity has been properly updated
+          request.get(baseUrl + 'activities/dev-docs?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+
+            const jsonBody = JSON.parse(getBody);
+
+            expect(jsonBody).to.deep.equal(expectedResult);
+
+            done();
+          });
+        });
+      });
+    });
+
+    it('successfully updates the activity by a manager', function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'patcht';
+      password = 'drowssap';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
         requestOptions.body = postArg;
         requestOptions.body.object = patchedActivity;
 
@@ -813,6 +932,36 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it('fails to update an activity from regular user', function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'mrsj';
+      password = 'word';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedActivity);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedError = {
+            status: 401,
+            error: 'Authorization failure',
+            text: 'mrsj is not authorized to update activities',
+          };
+
+          expect(body).deep.equal(expectedError);
+          expect(res.statusCode).to.equal(401);
+
+          checkGetReq(done, token);
+        });
+      });
+    });
+
     it('fails to update when given a nonexistent slug', function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = postArg;
@@ -959,7 +1108,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     }
 
-    it('successfully creates a new activity', function(done) {
+    it('successfully creates a new activity by an admin', function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = postArg;
 
@@ -978,7 +1127,35 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('fails to create a new activity with bad auth', function(done) {
+    it('successfully creates a new activity by a manager', function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'patcht';
+      password = 'drowssap';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        requestOptions.body = postArg;
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          // Hacky workaround because UUIDs are random
+          newActivity.uuid = body.uuid;
+          expect(body).to.deep.equal(newActivity);
+
+          checkListEndpoint(done, newActivity, token);
+        });
+      });
+    });
+
+    it('fails to create a new activity with bad authentication',
+    function(done) {
       requestOptions.body = copyJsonObject(postArg);
       requestOptions.body.object = copyJsonObject(newActivity);
 
@@ -991,6 +1168,33 @@ module.exports = function(expect, request, baseUrl) {
         expect(body.text).to.equal('Bad API token');
 
         getAPIToken().then(function(token) {
+          checkListEndpoint(done, null, token);
+        });
+      });
+    });
+
+    it('fails to create a new activity by a regular user', function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'mrsj';
+      password = 'word';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(newActivity);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(res.statusCode).to.equal(401);
+
+          expect(body.error).to.equal('Authorization failure');
+          expect(body.text).to.equal('mrsj is not authorized to create ' +
+            'activities');
+
           checkListEndpoint(done, null, token);
         });
       });

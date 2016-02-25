@@ -210,7 +210,7 @@ module.exports = function(app) {
     if (!user.manager && !user.admin) {
       const err = errors.errorAuthorizationFailure(user.username,
           'update activities');
-      return err.status(res.status).send(err);
+      return res.status(err.status).send(err);
     }
 
     const validKeys = ['name', 'slug'];
@@ -329,7 +329,7 @@ module.exports = function(app) {
     if (!user.manager && !user.admin) {
       const err = errors.errorAuthorizationFailure(user.username,
           'create activities');
-      return res.send(err.status).send(err);
+      return res.status(err.status).send(err);
     }
 
     const validKeys = ['name', 'slug'];
