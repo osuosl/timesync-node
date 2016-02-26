@@ -421,38 +421,38 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    // it('fails to create a new user with bad authorization', function(done) {
-    //   const oldUser = user;
-    //   const oldPass = password;
-    //
-    //   user = 'mrsj';
-    //   password = 'word';
-    //   getAPIToken().then(function(token) {
-    //     user = oldUser;
-    //     password = oldPass;
-    //
-    //     requestOptions.body = copyJsonObject(postArg);
-    //     requestOptions.body.object = copyJsonObject(postNewUserMinimum);
-    //
-    //     requestOptions.body.auth.token = token;
-    //
-    //     request.post(requestOptions, function(err, res, body) {
-    //       expect(err).to.equal(null);
-    //
-    //       const expectedResult = {
-    //         status: 401,
-    //         error: 'Authorization Failure',
-    //         text: 'mrsj is not authorized to create users',
-    //       };
-    //
-    //       expect(body).to.deep.equal(expectedResult);
-    //
-    //       expect(res.statusCode).to.equal(401);
-    //
-    //       checkListEndpoint(done, initialData, token);
-    //     });
-    //   });
-    // });
+    it('fails to create a new user with bad authorization', function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'mrsj';
+      password = 'word';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(postNewUserMinimum);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 401,
+            error: 'Authorization Failure',
+            text: 'mrsj is not authorized to create users',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(401);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
 
     it('fails to create a new user with bad username', function(done) {
       getAPIToken().then(function(token) {
@@ -1263,7 +1263,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 401,
             error: 'Authorization Failure',
-            text: 'mrsj is not authorized to modify user Old Timer',
+            text: 'mrsj is not authorized to modify user timero',
           };
 
           expect(body).to.deep.equal(expectedResult);
