@@ -146,7 +146,7 @@ module.exports = function(app) {
   function(req, res, user) {
     const knex = app.get('knex');
 
-    if (!user.manager && !user.admin) {
+    if (!user.site_manager && !user.site_admin) {
       const err = errors.errorAuthorizationFailure(user.username,
         'delete activities');
       return res.status(err.status).send(err);
@@ -207,7 +207,7 @@ module.exports = function(app) {
     const knex = app.get('knex');
     const currObj = req.body.object;
 
-    if (!user.manager && !user.admin) {
+    if (!user.site_manager && !user.site_admin) {
       const err = errors.errorAuthorizationFailure(user.username,
           'update activities');
       return res.status(err.status).send(err);
@@ -326,7 +326,7 @@ module.exports = function(app) {
     const knex = app.get('knex');
     const obj = req.body.object;
 
-    if (!user.manager && !user.admin) {
+    if (!user.site_manager && !user.site_admin) {
       const err = errors.errorAuthorizationFailure(user.username,
           'create activities');
       return res.status(err.status).send(err);

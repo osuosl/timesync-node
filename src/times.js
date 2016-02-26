@@ -77,7 +77,7 @@ module.exports = function(app) {
 
       if (additional) { timesQ = timesQ.andWhere(additional); }
 
-      if (!user.spectator && !user.admin) {
+      if (!user.site_spectator && !user.site_admin) {
         const spectatorQ = knex('userroles').select('project')
                             .where('user', user.id).andWhere('spectator', true);
         timesQ = timesQ.where(function() {
@@ -580,7 +580,7 @@ module.exports = function(app) {
       helpers.checkProject(time.project).then(function(projectId) {
         knex('userroles').first().where({user: userId, project: projectId})
         .then(function(roles) {
-          if ((!roles || roles.member === false) && !user.admin) {
+          if ((!roles || roles.member === false) && !user.site_admin) {
             const err = errors.errorAuthorizationFailure(user.username,
               'create time entries for project ' + time.project + '.');
             return res.status(err.status).send(err);
@@ -786,7 +786,7 @@ module.exports = function(app) {
                'times.project')
     .orderBy('times.revision', 'desc')
     .then(function(time) {
-      if ((user.username !== time.username) && !user.admin) {
+      if ((user.username !== time.username) && !user.site_admin) {
         const err = errors.errorAuthorizationFailure(user.username,
           'create objects for ' + time.username);
         return res.status(err.status).send(err);
@@ -936,7 +936,7 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
       }
 
-      if (time.user !== user.id && !user.manager && !user.admin) {
+      if (time.user !== user.id && !user.site_manager && !user.site_admin) {
         const err = errors.errorAuthorizationFailure(user.username,
             'delete time ' + req.params.uuid);
         return res.status(err.status).send(err);

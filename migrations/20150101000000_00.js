@@ -7,9 +7,9 @@ exports.up = function(knex) {
     table.string('password').notNullable();
     table.string('display_name');
     table.string('email');
-    table.boolean('spectator').defaultTo(false);
-    table.boolean('manager').defaultTo(false);
-    table.boolean('admin').defaultTo(false);
+    table.boolean('site_spectator').defaultTo(false);
+    table.boolean('site_manager').defaultTo(false);
+    table.boolean('site_admin').defaultTo(false);
     table.boolean('active').defaultTo(true);
     table.bigInteger('created_at').notNullable();
     table.bigInteger('updated_at').defaultTo(null);

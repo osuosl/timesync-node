@@ -233,7 +233,7 @@ module.exports = function(app) {
     const knex = app.get('knex');
     const obj = req.body.object;
 
-    if (!user.manager && !user.admin) {
+    if (!user.site_manager && !user.site_admin) {
       const err = errors.errorAuthorizationFailure(user.username,
           'create projects');
       return res.status(err.status).send(err);
@@ -464,7 +464,8 @@ module.exports = function(app) {
       // access userroles, check if user is participating in project
       knex('userroles').first().where({user: user.id, project: project.id})
       .then(function(roles) {
-        if ((!roles || !roles.manager) && !user.manager && !user.admin) {
+        if ((!roles || !roles.manager) &&
+                                      !user.site_manager && !user.site_admin) {
           const err = errors.errorAuthorizationFailure(user.username,
             'make changes to ' + project.name);
           return res.status(err.status).send(err);
@@ -611,7 +612,8 @@ module.exports = function(app) {
     knex('userroles').first().where('user', user.id).andWhere('project',
       knex('projectslugs').select('id').where('name', req.params.slug)
     ).then(function(roles) {
-      if ((!roles || !roles.manager) && !user.manager && !user.admin) {
+      if ((!roles || !roles.manager) &&
+                                      !user.site_manager && !user.site_admin) {
         const err = errors.errorAuthorizationFailure(user.username,
             'delete project ' + req.params.slug);
         return res.status(err.status).send(err);
@@ -642,19 +644,6 @@ module.exports = function(app) {
             // Otherwise delete project
           }
 
-          /*
-           * Once auth is provided on DELETE requests, compare user ID to ensure
-           * they have either 'project manager' rights on the project, or admin
-           * rights on the system, similar to as follows:
-           *
-           * knex('userroles').where({project: project.id, user: userId})
-           * .first().select('manager').then(function(role) {
-           *   if (!role || !role.manager) {
-           *     const err = errors.errorAuthorizationFailure(user.name,
-           *                                  'delete project ' + project.name);
-           *     return res.status(err.status).send(err);
-           *   }
-           */
 
           knex.transaction(function(trx) {
             trx('projects').where('id', '=', project.id)
