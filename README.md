@@ -16,12 +16,22 @@ To start a local instance running on port 8000, just run:
 
 ```
 $ npm install
-$ TIMESYNC_AUTH_MODULES='["password"]' npm run devel
+$ SECRET_KEY=secret INSTANCE_NAME=timesync-local npm run devel
 ```
 
 ``npm run devel`` is a convenience that will automatically restart the server
 every time source files are changed. The standard ``npm start`` still works,
 and will not restart the server automatically.
+
+The ``SECRET_KEY`` and ``INSTANCE_NAME`` environment variables are used for
+the authentication service: ``INSTANCE_NAME`` is used to uniquely identify a
+running instance of timesync, to prevent cross-authentication, and
+``SECRET_KEY`` is used as a cryptographic key for the token signing function
+(see [the docs](https://github.com/osuosl/timesync) for more details).
+
+For this reason, it is important that in production, SECRET_KEY is set to a
+secure key which cannot be guessed, and INSTANCE_NAME is set to a unique name
+which can identify your instance.
 
 To run the test suite and linter run:
 
@@ -30,11 +40,20 @@ $ npm test
 $ npm run linter
 ```
 
+Alternately, run:
+
+```
+$ npm run latte
+```
+
+Which will run ``npm run linter`` followed by ``npm run coverage`` (which runs
+the tests and then prints test coverage results).
+
 To run a subset of the tests:
 
 ```
 $ npm test -- -g <substring of test description>
-$ npm test -- -g POST   # Runs all tests with POST in the `describe` string
+$ npm test -- -g POST   # Runs all tests with POST in the `describe` or `it` strings
 ```
 
 To make a quick request on the dev instance, first run the database migrations
@@ -48,15 +67,24 @@ $ npm run fixtures
 Next, run the application:
 
 ```
-$ TIMESYNC_AUTH_MODULES='["password"]' npm start
+$ SECRET_KEY=secret INSTANCE_NAME=timesync-local npm start
 ```
 
 Then, in another terminal, make a request to the application with curl.
 
+If you have a user instance already, then simply first authenticate (italics
+indicate user input):
+
+```
+$ curl -XPOST -d '{"auth":{"type":"password","_username_":"user","password":"_pass_"}}'
+```
+
+This will print out a long JWT token, which you can then place into the data on
+your curl request:
 (*Piping it to python makes the output pretty.*)
 
 ```
-$ curl -XGET -s localhost:8000/v1/times | python -m json.tool
+$ curl -XGET -s localhost:8000/v1/times?token=_token_ | python -m json.tool
 [
     {
         "activity": [
@@ -83,9 +111,9 @@ Your output should look something like the above.
 Database Backends
 -----------------
 
-TimeSync supports a development ``sqlite`` backend and a production ``postgres``
-backend. The default development and testing environment uses ``sqlite``; to use
-Postgres, see the development documentation.
+TimeSync Node supports a development ``sqlite`` backend and a production
+``postgres`` backend. The default development and testing environment uses
+``sqlite``; to use Postgres, see the development documentation.
 
 To run migrations on a particular backend, run:
 
@@ -132,13 +160,14 @@ $ cd timesync-api
 Authentication
 --------------
 
-Authentication is handled with a number of "modules", including simple password-
-based, LDAP, and possibly more in the future. To use an authentication module,
-set the environment variable ``TIMESYNC_AUTH_MODULES`` to a JSON list containing
-the plugin names you wish to enable. Note that some types of authentication may
-require additional settings (see below).
+Initial authentication is handled with a number of "modules", including simple
+password-based, LDAP, and possibly more in the future. To use an authentication
+module, set the environment variable ``TIMESYNC_AUTH_MODULES`` to a JSON list
+containing the plugin names you wish to enable. If the variable is not set,
+TimeSync will default to allowing all forms. Note that some types of
+authentication may require additional settings (see below).
 
-If the ``TIMESYNC_AUTH_MODULES`` variable is empty, password-based
+If the ``TIMESYNC_AUTH_MODULES`` variable is empty, all supported forms of
 authentication will be enabled as a default. Invalid module names are ignored.
 
 **Possible options**:
@@ -156,3 +185,26 @@ need to be set:
   ``ldaps://ldap.osuosl.org``.
 2. ``TIMESYNC_LDAP_SEARCH_BASE``: the search parameter used to find users,
   ex. ``ou=People,dc=osuosl,dc=org``
+
+Note that this is only authentication on the ``/login`` endpoint. All other
+endpoints use only token authentication. To use token authentication, first
+POST to ``/login`` using any of the above supported forms of authentication.
+This will return a JWT token which you can then use to uniquely identify
+yourself for up to 30 minutes.
+
+Use the token as a query parameter on GET requests (e.g. ``GET
+http://localhost:8000/v1/times?token=_token_``) and in the ``auth`` block on
+POST requests:
+
+```
+POST http://localhost:8000/v1/projects
+{
+  "auth": {
+    "type": "token",
+    "token": "_token_"
+  },
+  "object": {
+    ...
+  }
+}
+```
