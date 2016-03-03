@@ -334,7 +334,7 @@ module.exports = function(expect, request, baseUrl) {
     // was valid)
     const checkListEndpoint = function(done, expectedResults, token) {
       // Make a get request
-      request.get(requestOptions.url + '?token=' + token,
+      request.get(requestOptions.url + '?include_deleted=true&token=' + token,
       function(err, res, body) {
         expect(err).to.equal(null);
 
@@ -363,6 +363,10 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(200);
 
+          expectedResult.created_at = new Date(expectedResult.created_at)
+                                          .toISOString()
+                                          .substring(0, 10);
+
           checkListEndpoint(done, initialData.concat(expectedResult), token);
         });
       });
@@ -386,6 +390,10 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(200);
 
+          expectedResult.created_at = new Date(expectedResult.created_at)
+                                          .toISOString()
+                                          .substring(0, 10);
+
           checkListEndpoint(done, initialData.concat(expectedResult), token);
         });
       });
@@ -403,8 +411,8 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedResult = {
             status: 401,
-            error: 'Authentication Failure',
-            text: 'Incorrect username or password',
+            error: 'Authentication failure',
+            text: 'Bad API token',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -436,7 +444,7 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedResult = {
             status: 401,
-            error: 'Authorization Failure',
+            error: 'Authorization failure',
             text: 'mrsj is not authorized to create users',
           };
 
@@ -777,7 +785,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'user does not have a created_at field',
+            text: 'The user is missing a created_at field',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -804,7 +812,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'user does not have a updated_at field',
+            text: 'The user is missing a updated_at field',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -831,7 +839,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'user does not have a deleted_at field',
+            text: 'The user is missing a deleted_at field',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -959,7 +967,7 @@ module.exports = function(expect, request, baseUrl) {
     // was valid)
     const checkListEndpoint = function(done, expectedResults, token) {
       // Make a get request
-      request.get(requestOptions.url + '?token=' + token,
+      request.get(requestOptions.url + '?include_deleted=true&token=' + token,
       function(err, res, body) {
         expect(err).to.equal(null);
 
@@ -1224,8 +1232,8 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedResult = {
             status: 401,
-            error: 'Authentication Failure',
-            text: 'Invalid username or password',
+            error: 'Authentication failure',
+            text: 'Bad API token',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -1257,7 +1265,7 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedResult = {
             status: 401,
-            error: 'Authorization Failure',
+            error: 'Authorization failure',
             text: 'mrsj is not authorized to modify user timero',
           };
 
@@ -1285,7 +1293,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'user does not have a username field',
+            text: 'The user is missing a username field',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -1396,7 +1404,8 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'Field email of user should be string but was sent as object',
+            text: 'Field email of user should be valid email but was sent as ' +
+              'object',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -1563,7 +1572,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'user does not have a created_at field',
+            text: 'The user is missing a created_at field',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -1590,7 +1599,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'user does not have a updated_at field',
+            text: 'The user is missing a updated_at field',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -1617,7 +1626,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'user does not have a deleted_at field',
+            text: 'The user is missing a deleted_at field',
           };
 
           expect(body).to.deep.equal(expectedResult);

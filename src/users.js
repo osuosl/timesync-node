@@ -111,18 +111,196 @@ module.exports = function(app) {
   });
 
 
-  authRequest.post(app, app.get('version') + '/users', function(req, res) {
+  authRequest.post(app, app.get('version') + '/users',
+  function(req, res, authUser) {
+    const knex = app.get('knex');
+    const user = req.body.object;
 
+    // test to make sure username exists
+    if (!user.username) {
+      const err = errors.errorBadObjectMissingField('user', 'username');
+      return res.status(err.status).send(err);
+    }
+
+    // Test to make sure password exists
+    if (!user.password) {
+      const err = errors.errorBadObjectMissingField('user', 'password');
+      return res.status(err.status).send(err);
+    }
+
+    // This was a 'forEach, but race conditions === noFun
+    const noTouch = ['created_at', 'updated_at', 'deleted_at'];
+    for (var at of noTouch) {
+      if (user[at]) {
+        const err = errors.errorBadObjectMissingField('user', at + ' field');
+        return res.status(err.status).send(err);
+      }
+    }
+
+    // Test to make sure all fields are of the correct time and exist
+    const badField = helpers.validateFields(user, [
+      {name: 'username', type: 'string', required: true},
+      {name: 'display_name', type: 'string', required: false},
+      {name: 'password', type: 'string', required: true},
+      {name: 'email', type: 'string', required: false},
+      {name: 'site_spectator', type: 'boolean', required: false},
+      {name: 'site_manager', type: 'boolean', required: false},
+      {name: 'site_admin', type: 'boolean', required: false},
+      {name: 'active', type: 'boolean', required: false},
+      {name: 'meta', type: 'string', required: false},
+    ]);
+
+    // Act on any bad field found
+    if (badField) {
+      if (badField.actualType === 'undefined') {
+        const err = errors.errorBadObjectMissingField('user',
+        badField.name);
+        return res.status(err.status).send(err);
+      }
+      const err = errors.errorBadObjectInvalidField('user',
+      badField.name, badField.type, badField.actualType);
+      return res.status(err.status).send(err);
+    }
+
+    // Manually check username matches required format
+    if (!helpers.validateUsername(user.username)) {
+      const err = errors.errorBadObjectInvalidField('user', 'username',
+      'valid username', typeof(user.username));
+      return res.status(err.status).send(err);
+    }
+
+    // Manually check email matches required format
+    if (user.email && !helpers.validateEmail(user.email)) {
+      const err = errors.errorBadObjectInvalidField('user', 'email',
+      'valid email', typeof(user.email));
+      return res.status(err.status).send(err);
+    }
+
+    // Verify that user is authorized to do this operation
+    if (!authUser.site_admin || !authUser.site_manager) {
+      const err = errors.errorAuthorizationFailure(authUser.username,
+        'create users');
+      return res.status(err.status).send(err);
+    }
+
+    knex.transaction(function(trx) {
+      user.created_at = Date.now();
+      trx('users').insert(user).then(function(uid) {
+        trx.commit();
+
+        // manually set fields if they are not already set.
+        const nullFields = ['username', 'display_name', 'password', 'email',
+        'meta', 'created_at', 'updated_at', 'deleted_at'];
+        nullFields.forEach(function(f) {
+          if (!user[f]) { user[f] = null; }
+        });
+
+        // ... more of that ...
+        const boolFields = ['site_spectator', 'site_manager', 'site_admin'];
+        boolFields.forEach(function(f) {
+          if (!user[f]) { user[f] = false; }
+        });
+
+        // .. almost done...
+        if (!user.active) { user.active = true; }
+
+        // Don't send your password!
+        delete(user.password);
+
+        return res.send(JSON.stringify(user));
+      }).catch(function(error) {
+        log.error(req, 'Error inserting user entry: ' + error);
+        trx.rollback();
+      });
+    }).catch(function(error) {
+      log.error(req, 'Rolling back transaction.');
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
+    });
   });
 
 
   authRequest.post(app, app.get('version') + '/users/:username',
-  function(req, res) {
+  function(req, res, authUser) {
+    const knex = app.get('knex');
+    const modUser = req.body.object;
 
+    const noTouch = ['created_at', 'updated_at', 'deleted_at', 'username'];
+    for (var at of noTouch) {
+      if (modUser[at]) {
+        const err = errors.errorBadObjectMissingField('user', at + ' field');
+        return res.status(err.status).send(err);
+      }
+    }
+
+    // Manually check email matches required format
+    if (modUser.email && !helpers.validateEmail(modUser.email)) {
+      const err = errors.errorBadObjectInvalidField('user', 'email',
+      'valid email', typeof(modUser.email));
+      return res.status(err.status).send(err);
+    }
+
+    // Verify that user is authorized to do this operation
+    if (!(authUser.site_admin || authUser.site_manager ||
+         (authUser.username === req.params.username))) {
+      const err = errors.errorAuthorizationFailure(authUser.username,
+        'modify user ' + req.params.username);
+      return res.status(err.status).send(err);
+    }
+
+    // Test to make sure all fields are of the correct time and exist
+    const badField = helpers.validateFields(modUser, [
+      {name: 'display_name', type: 'string', required: false},
+      {name: 'password', type: 'string', required: false},
+      {name: 'site_spectator', type: 'boolean', required: false},
+      {name: 'site_manager', type: 'boolean', required: false},
+      {name: 'site_admin', type: 'boolean', required: false},
+      {name: 'active', type: 'boolean', required: false},
+      {name: 'meta', type: 'string', required: false},
+    ]);
+
+    // Act on any bad field found
+    if (badField) {
+      if (badField.actualType === 'undefined') {
+        const err = errors.errorBadObjectMissingField('user',
+        badField.name);
+        return res.status(err.status).send(err);
+      }
+      const err = errors.errorBadObjectInvalidField('user',
+      badField.name, badField.type, badField.actualType);
+      return res.status(err.status).send(err);
+    }
+
+    knex.transaction(function(trx) {
+      modUser.updated_at = Date.now();
+      trx('users').where(username, req.params.username).update(modUser)
+                  .returning(uid).then(function(uid) {
+        trx.commit();
+
+        return res.send(JSON.stringify(modUser));
+      }).catch(function(error) {
+        log.error(req, 'Error inserting user entry: ' + error);
+        trx.rollback();
+      });
+    }).catch(function(error) {
+      log.error(req, 'Rolling back transaction.');
+      const err = errors.errorServerError(error);
+      return res.status(err.status).send(err);
+    });
   });
 
 
-  app.delete(app.get('version') + '/times/:uuid', function(req, res) {
+  // NOT WORKING.
+  // I HAVE NO IDEA WHY.
+  app.delete(app.get('version') + '/users/:username',
+  function(req, res, authUser) {
+    const knex = app.get('knex');
 
+    helpers.validateUsername(req.params.username);
+
+    if (!helpers.validateUsername(req.params.username)) {
+      const err = errors.errorInvalidIdentifier('username', req.params.username);
+      return res.status(err.status).send(err);
+    }
   });
 };

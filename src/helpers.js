@@ -199,6 +199,19 @@ module.exports = function(app) {
 
       return usernameRegex.test(username.toLowerCase());
     },
+
+    validateEmail: function(email) {
+      if (typeof email !== 'string') {
+        return false;
+      }
+
+      /* eslint-disable */
+                         //  alphanumerics/./_         alphanumerics '+'     alphanumerics '@' alphanumerics  '.'      alphanumerics      .ext
+      const emailRegex = /^([A-Z|a-z|0-9](\.|_){0,1})+[A-Z|a-z|0-9]*(\+){0,1}[A-Z|a-z|0-9]+\@([A-Z|a-z|0-9])+((\.){0,1}[A-Z|a-z|0-9]){2}\.[a-z]{2,3}$/
+      /* eslint-enable */
+
+      return emailRegex.test(email);
+    },
   };
 
   return helpers;
