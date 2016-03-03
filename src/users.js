@@ -30,9 +30,7 @@ module.exports = function(app) {
 
         // The field being iterated on is a date-time
         } else if(times.indexOf(f) > -1) {
-          compiledUser[f] = new Date(rawUser[f])
-                                    .toISOString()
-                                    .substring(0, 10);
+          compiledUser[f] = new Date(rawUser[f]).toISOString().substring(0, 10);
         }
       }
     });
@@ -129,8 +127,7 @@ module.exports = function(app) {
     }
 
     // This was a 'forEach, but race conditions === noFun
-    const noTouch = ['created_at', 'updated_at', 'deleted_at'];
-    for (var at of noTouch) {
+    for (var at of ['created_at', 'updated_at', 'deleted_at']) {
       if (user[at]) {
         const err = errors.errorBadObjectMissingField('user', at + ' field');
         return res.status(err.status).send(err);
@@ -225,8 +222,7 @@ module.exports = function(app) {
     const knex = app.get('knex');
     const modUser = req.body.object;
 
-    const noTouch = ['created_at', 'updated_at', 'deleted_at', 'username'];
-    for (var at of noTouch) {
+    for (var at of ['created_at', 'updated_at', 'deleted_at', 'username']) {
       if (modUser[at]) {
         const err = errors.errorBadObjectMissingField('user', at + ' field');
         return res.status(err.status).send(err);
@@ -271,36 +267,94 @@ module.exports = function(app) {
       return res.status(err.status).send(err);
     }
 
-    knex.transaction(function(trx) {
-      modUser.updated_at = Date.now();
-      trx('users').where(username, req.params.username).update(modUser)
-                  .returning(uid).then(function(uid) {
-        trx.commit();
+    knex('users').where({username: req.params.username})
+    .then(function(user) {
+      if (!user.length) {
+        const err = errors.errorObjectNotFound('user');
+        return res.status(err.status).send(err);
+      } else {
+        knex.transaction(function(trx) {
+          user = user.pop();
 
-        return res.send(JSON.stringify(modUser));
-      }).catch(function(error) {
-        log.error(req, 'Error inserting user entry: ' + error);
-        trx.rollback();
-      });
+          for (var field in modUser) {
+            user[field] = modUser[field];
+          }
+
+          user.updated_at = Date.now();
+          user.deleted_at = null;
+          delete(user.id);
+
+          trx('users').where({username: req.params.username}).update(user)
+          .returning('uid').then(function(uid) {
+            trx.commit();
+
+            delete(user.password);
+
+            for (var b of ['site_admin', 'site_manager', 'site_spectator', 'active']) {
+              user[b] = Boolean(user[b]);
+            }
+
+            for (var t of ['updated_at', 'created_at', 'deleted_at']) {
+              if (user[t]) {
+                user[t] = new Date(user[t]).toISOString().substring(0, 10);
+              }
+            }
+
+            return res.send(JSON.stringify(user));
+          }).catch(function(error) {
+            log.error(req, 'Error inserting user entry: ' + error);
+            trx.rollback();
+          });
+        }).catch(function(error) {
+          log.error(req, 'Rolling back transaction.');
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
+        });
+      }
     }).catch(function(error) {
-      log.error(req, 'Rolling back transaction.');
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
+      log.error(req, 'Error retrieving existing slugs: ' + error);
     });
   });
 
 
-  // NOT WORKING.
-  // I HAVE NO IDEA WHY.
-  app.delete(app.get('version') + '/users/:username',
-  function(req, res, authUser) {
+  app.delete(app.get('version') + '/users/:username', function(req, res) {
     const knex = app.get('knex');
-
-    helpers.validateUsername(req.params.username);
+    console.log('in delete users endpoint');
 
     if (!helpers.validateUsername(req.params.username)) {
       const err = errors.errorInvalidIdentifier('username', req.params.username);
       return res.status(err.status).send(err);
     }
+
+    knex('users').where({username: req.params.username})
+    .then(function(user) {
+      if (user.length) {
+        const err = errors.errorObjectNotFound('user');
+        return res.status(err.status).send(err);
+      } else {
+        knex.transaction(function(trx) {
+          const deletedUser = user.pop();
+          deletedUser.updated_at = Date.now();
+          deletedUser.deleted_at = Date.now();
+          delete(deletedUser.id);
+
+          trx('users').where({username: req.params.username}).update(deletedUser)
+          .returning('uid').then(function(uid) {
+            trx.commit();
+
+            return res.send(JSON.stringify(deletedUser));
+          }).catch(function(error) {
+            log.error(req, 'Error inserting user entry: ' + error);
+            trx.rollback();
+          });
+        }).catch(function(error) {
+          log.error(req, 'Rolling back transaction.');
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
+        });
+      }
+    }).catch(function(error) {
+      log.error(req, 'Error retrieving existing slugs: ' + error);
+    });
   });
 };

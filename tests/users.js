@@ -924,7 +924,6 @@ module.exports = function(expect, request, baseUrl) {
     const updatedUser = {
       display_name: 'Old J. Timer',
       email: 'otimer@example.com',
-      password: 'newpass',
       site_spectator: true,
       site_manager: true,
       site_admin: true,
@@ -997,7 +996,6 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedResult = copyJsonObject(originalUser);
           expectedResult.display_name = updatedUser.display_name;
-          expectedResult.password = updatedUser.password;
           expectedResult.email = updatedUser.email;
           expectedResult.meta = updatedUser.meta;
           expectedResult.updated_at = body.updated_at;
@@ -1051,7 +1049,6 @@ module.exports = function(expect, request, baseUrl) {
           expect(err).to.equal(null);
 
           const expectedResult = copyJsonObject(originalUser);
-          expectedResult.password = updatedUser.password;
           expectedResult.updated_at = body.updated_at;
           expectedResult.deleted_at = null;
 
