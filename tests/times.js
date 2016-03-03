@@ -130,8 +130,8 @@ module.exports = function(expect, request, baseUrl) {
       const oldUser = user;
       const oldPass = password;
 
-      user = 'patcht';
-      password = 'drowssap';
+      user = 'mrsj';
+      password = 'word';
       getAPIToken().then(function(token) {
         user = oldUser;
         password = oldPass;
