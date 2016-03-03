@@ -160,7 +160,7 @@
       "password": "$2a$04$fdkkKzJMxxIGV.VmCNV1CONgP/hpHUFuCuf15nzxc.Mg1a82wjjO",
       "created_at": 1388534400000,
       "updated_at": null,
-      "deleted_at": 1455753600000,
+      "deleted_at": 1455667200000,
       "meta": "A sample deleted user"
     }
   ],

@@ -84,6 +84,7 @@ require('./projects')(app);
 require('./activities')(app);
 require('./times')(app);
 require('./login')(app);
+require('./users')(app);
 
 module.exports = app;
 

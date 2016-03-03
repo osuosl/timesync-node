@@ -189,6 +189,16 @@ module.exports = function(app) {
 
       return uuidRegex.test(uuid.toLowerCase());
     },
+
+    validateUsername: function(username) {
+      if (typeof username !== 'string') {
+        return false;
+      }
+
+      const usernameRegex = /^[a-z0-9\_\~\-]+$/;
+
+      return usernameRegex.test(username.toLowerCase());
+    },
   };
 
   return helpers;

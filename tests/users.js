@@ -203,12 +203,12 @@ module.exports = function(expect, request, baseUrl) {
     it('returns a deleted user if ?include_deleted is passed', function(done) {
       getAPIToken().then(function(token) {
         request.get(baseUrl + 'users/' + initialData[6].username +
-        'include_deleted=true&token=' + token,
+        '?include_deleted=true&token=' + token,
         function(err, res, body) {
           const jsonBody = JSON.parse(body);
 
           expect(jsonBody).to.deep.equal(initialData[6]);
-          expect(res.statusCode).to.equal(404);
+          expect(res.statusCode).to.equal(200);
           done();
         });
       });
@@ -238,14 +238,14 @@ module.exports = function(expect, request, baseUrl) {
         function(err, res, body) {
           const jsonBody = JSON.parse(body);
           const expectedResult = {
-            status: 404,
+            status: 400,
             error: 'The provided identifier was invalid',
             text: 'Expected username but received !nv4l|d',
-            identifiers: ['!nv4l|d'],
+            values: ['!nv4l|d'],
           };
 
           expect(jsonBody).to.deep.equal(expectedResult);
-          expect(res.statusCode).to.equal(404);
+          expect(res.statusCode).to.equal(400);
           done();
         });
       });
