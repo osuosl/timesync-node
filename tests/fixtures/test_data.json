@@ -399,7 +399,7 @@
       "user":"users:0",
       "manager": false,
       "member": true,
-      "spectator": true,
+      "spectator": true
     },
     {
       "project":"projects:1",
