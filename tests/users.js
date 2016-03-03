@@ -200,19 +200,14 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('returns an error if ?include_deleted is passed', function(done) {
+    it('returns a deleted user if ?include_deleted is passed', function(done) {
       getAPIToken().then(function(token) {
         request.get(baseUrl + 'users/' + initialData[6].username +
         'include_deleted=true&token=' + token,
         function(err, res, body) {
           const jsonBody = JSON.parse(body);
-          const expectedResult = {
-            status: 404,
-            error: 'Object not found',
-            text: 'Nonexistent user',
-          };
 
-          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(jsonBody).to.deep.equal(initialData[6]);
           expect(res.statusCode).to.equal(404);
           done();
         });
