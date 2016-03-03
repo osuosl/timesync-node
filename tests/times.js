@@ -292,6 +292,21 @@ module.exports = function(expect, request, baseUrl) {
             },
             {
               duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+            {
+              duration: 12,
               user: 'deanj',
               project: ['pgd'],
               activities: ['sys'],
