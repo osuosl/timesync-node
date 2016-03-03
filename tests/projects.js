@@ -32,6 +32,71 @@ module.exports = function(expect, request, baseUrl) {
     });
   }
 
+  const initialData = [
+    {
+      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      name: 'Ganeti Web Manager',
+      slugs: ['ganeti-webmgr', 'gwm'],
+      deleted_at: null,
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      revision: 1,
+      users: {
+        tschuy: {member: true, spectator: true, manager: true},
+        mrsj: {member: false, spectator: true, manager: false},
+      }
+    },
+    {
+      uri: 'https://code.osuosl.org/projects/pgd',
+      name: 'Protein Geometry Database',
+      slugs: ['pgd'],
+      deleted_at: null,
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
+      revision: 1,
+      users: {
+        deanj: {member: true, spectator: true, manager: true},
+        patcht: {member: true, spectator: true, manager: false},
+      }
+    },
+    {
+      uri: 'https://github.com/osu-cass/whats-fresh-api',
+      name: 'Whats Fresh',
+      slugs: ['wf'],
+      deleted_at: null,
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
+      revision: 1,
+      users: {
+        deanj: {member: true, spectator: true, manager: false},
+        thai: {member: false, spectator: true, manager: false},
+      }
+    },
+    {
+      uri: 'https://github.com/osuosl/timesync',
+      name: 'Timesync',
+      slugs: ['timesync', 'ts'],
+      deleted_at: null,
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
+      revision: 1,
+    },
+    {
+      uri: 'https://github.com/osuosl/chiliproject',
+      name: 'Chili Project',
+      slugs: [],
+      deleted_at: '2014-01-01',
+      updated_at: null,
+      created_at: '2009-07-07',
+      uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
+      revision: 1,
+    },
+  ];
+
 /* GET one of the /projects endpoints and check its response against
   what should be returned */
   describe('GET /projects', function() {
@@ -40,59 +105,19 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'projects?token=' + token,
         function(err, res, body) {
           const jsonBody = JSON.parse(body);
-          const expectedResults = [
-            {
-              uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-              name: 'Ganeti Web Manager',
-              slugs: ['ganeti-webmgr', 'gwm'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-              revision: 1,
-            },
-            {
-              uri: 'https://code.osuosl.org/projects/pgd',
-              name: 'Protein Geometry Database',
-              slugs: ['pgd'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osu-cass/whats-fresh-api',
-              name: 'Whats Fresh',
-              slugs: ['wf'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osuosl/timesync',
-              name: 'Timesync',
-              slugs: ['timesync', 'ts'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
-              revision: 1,
-            },
-          ];
 
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          [expectedResults, jsonBody].forEach(function(list) {
-            list.forEach(function(result) {
-              result.slugs.sort();
-            });
+          const expectedResults = initialData.filter(function(project) {
+            return project.deleted_at === null;
           });
 
-          expect(jsonBody).to.deep.equal(expectedResults);
+          jsonBody.forEach(function(result) {
+            result.slugs.sort();
+          });
+
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -105,63 +130,11 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'projects?include_deleted=true&token=' + token,
         function(err, res, body) {
           const jsonBody = JSON.parse(body);
-          const expectedResults = [
-            {
-              uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-              name: 'Ganeti Web Manager',
-              slugs: ['ganeti-webmgr', 'gwm'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-              revision: 1,
-            },
-            {
-              uri: 'https://code.osuosl.org/projects/pgd',
-              name: 'Protein Geometry Database',
-              slugs: ['pgd'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osu-cass/whats-fresh-api',
-              name: 'Whats Fresh',
-              slugs: ['wf'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osuosl/timesync',
-              name: 'Timesync',
-              slugs: ['timesync', 'ts'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osuosl/chiliproject',
-              name: 'Chili Project',
-              slugs: [],
-              deleted_at: '2014-01-01',
-              updated_at: null,
-              created_at: '2009-07-07',
-              uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
-              revision: 1,
-            },
-          ];
 
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expect(jsonBody).to.deep.equal(expectedResults);
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -178,63 +151,11 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'projects?project=chili&include_deleted=true&' +
         'token=' + token, function(err, res, body) {
           const jsonBody = JSON.parse(body);
-          const expectedResults = [
-            {
-              uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-              name: 'Ganeti Web Manager',
-              slugs: ['ganeti-webmgr', 'gwm'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-              revision: 1,
-            },
-            {
-              uri: 'https://code.osuosl.org/projects/pgd',
-              name: 'Protein Geometry Database',
-              slugs: ['pgd'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osu-cass/whats-fresh-api',
-              name: 'Whats Fresh',
-              slugs: ['wf'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osuosl/timesync',
-              name: 'Timesync',
-              slugs: ['timesync', 'ts'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osuosl/chiliproject',
-              name: 'Chili Project',
-              slugs: [],
-              deleted_at: '2014-01-01',
-              updated_at: null,
-              created_at: '2009-07-07',
-              uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
-              revision: 1,
-            },
-          ];
 
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expect(jsonBody).to.deep.equal(expectedResults);
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
