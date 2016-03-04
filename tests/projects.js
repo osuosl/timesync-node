@@ -98,7 +98,9 @@ module.exports = function(expect, request, baseUrl) {
       created_at: '2009-07-07',
       uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
       revision: 1,
-      users: {},
+      users: {
+        MaraJade: {member: true, spectator: true, manager: true},
+      },
     },
   ];
 
