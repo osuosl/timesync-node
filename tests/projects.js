@@ -600,7 +600,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('successfully adds demotes an existing user', function(done) {
+    it('successfully demotes an existing user', function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(patchedProjectDemotion);
@@ -632,7 +632,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('successfully adds removes the calling user', function(done) {
+    it('successfully removes the calling user', function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(patchedProjectSelfRemoval);
