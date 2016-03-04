@@ -72,6 +72,7 @@ module.exports = function(expect, request, baseUrl) {
       revision: 1,
       users: {
         deanj: {member: true, spectator: true, manager: false},
+        tschuy: {member: true, spectator: true, manager: true},
         thai: {member: false, spectator: true, manager: false},
       },
     },
@@ -84,7 +85,9 @@ module.exports = function(expect, request, baseUrl) {
       created_at: '2014-01-01',
       uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
       revision: 1,
-      users: {},
+      users: {
+        patcht: {member: true, spectator: true, manager: true},
+      },
     },
     {
       uri: 'https://github.com/osuosl/chiliproject',
