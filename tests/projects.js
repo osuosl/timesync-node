@@ -1773,8 +1773,8 @@ module.exports = function(expect, request, baseUrl) {
       created_at: '2014-01-01',
       slugs: ['ganeti-webmgr', 'gwm'],
       users: {
-        patcht: {member: true, spectator: true, manager: true},
-        thai: {member: true, spectator: true, manager: false},
+        tschuy: {member: true, spectator: true, manager: true},
+        mrsj: {member: true, spectator: true, manager: false},
       },
     };
 
@@ -1788,8 +1788,8 @@ module.exports = function(expect, request, baseUrl) {
       created_at: '2014-01-01',
       slugs: ['ganeti-webmgr', 'gwm'],
       users: {
-        patcht: {member: true, spectator: true, manager: true},
-        thai: {member: true, spectator: true, manager: false},
+        tschuy: {member: true, spectator: true, manager: true},
+        mrsj: {member: true, spectator: true, manager: false},
       },
       'parents': [
         {
@@ -1801,8 +1801,8 @@ module.exports = function(expect, request, baseUrl) {
           updated_at: null,
           created_at: '2014-01-01',
           users: {
-            patcht: {member: true, spectator: true, manager: true},
-            thai: {member: true, spectator: true, manager: false},
+            tschuy: {member: true, spectator: true, manager: true},
+            mrsj: {member: true, spectator: true, manager: false},
           },
         },
       ],
