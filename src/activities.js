@@ -143,8 +143,15 @@ module.exports = function(app) {
   });
 
   authRequest.delete(app, app.get('version') + '/activities/:slug',
-  function(req, res) {
+  function(req, res, user) {
     const knex = app.get('knex');
+
+    if (!user.site_manager && !user.site_admin) {
+      const err = errors.errorAuthorizationFailure(user.username,
+        'delete activities');
+      return res.status(err.status).send(err);
+    }
+
     if (!helpers.validateSlug(req.params.slug)) {
       const err = errors.errorInvalidIdentifier('slug', req.params.slug);
       return res.status(err.status).send(err);
@@ -196,9 +203,15 @@ module.exports = function(app) {
   });
 
   authRequest.post(app, app.get('version') + '/activities/:slug',
-  function(req, res) {
+  function(req, res, user) {
     const knex = app.get('knex');
     const currObj = req.body.object;
+
+    if (!user.site_manager && !user.site_admin) {
+      const err = errors.errorAuthorizationFailure(user.username,
+          'update activities');
+      return res.status(err.status).send(err);
+    }
 
     const validKeys = ['name', 'slug'];
 
@@ -309,9 +322,15 @@ module.exports = function(app) {
   });
 
   authRequest.post(app, app.get('version') + '/activities',
-  function(req, res) {
+  function(req, res, user) {
     const knex = app.get('knex');
     const obj = req.body.object;
+
+    if (!user.site_manager && !user.site_admin) {
+      const err = errors.errorAuthorizationFailure(user.username,
+          'create activities');
+      return res.status(err.status).send(err);
+    }
 
     const validKeys = ['name', 'slug'];
 

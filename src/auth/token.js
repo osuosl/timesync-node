@@ -24,7 +24,8 @@ module.exports = function(app) {
             done(null, user);
           }
         }).catch(function(err) {
-          log.error('auth/token.js', 'User lookup failed after token auth.');
+          log.error('auth/token.js', 'User lookup failed after token auth: ' +
+                    err);
           done(err);
         });
       }).catch(function(error) {

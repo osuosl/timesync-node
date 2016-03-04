@@ -393,9 +393,91 @@ module.exports = function(expect, request, baseUrl) {
       });
     };
 
-    it("successfully patches a project's uri, slugs, and name",
+    it("successfully patches a project's uri, slugs, and name by an admin",
     function(done) {
       getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedProject);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          // Set expected results to the new state of the project gwm
+          const expectedResults = copyJsonObject(originalProject);
+          expectedResults.name = patchedProject.name;
+          expectedResults.uri = patchedProject.uri;
+          expectedResults.slugs = patchedProject.slugs;
+          expectedResults.uuid = originalProject.uuid;
+          expectedResults.revision = 2;
+          expectedResults.updated_at = new Date().toISOString()
+                                                 .substring(0, 10);
+
+          const expectedPost = copyJsonObject(expectedResults);
+          delete expectedPost.deleted_at;
+
+          // expect body of post request to be the new state of gwm
+          expect(body).to.deep.equal(expectedPost);
+
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+    it("successfully patches a project's uri, slugs, and name by a sitewide " +
+    'manager', function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'patcht';
+      password = 'drowssap';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedProject);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          // Set expected results to the new state of the project gwm
+          const expectedResults = copyJsonObject(originalProject);
+          expectedResults.name = patchedProject.name;
+          expectedResults.uri = patchedProject.uri;
+          expectedResults.slugs = patchedProject.slugs;
+          expectedResults.uuid = originalProject.uuid;
+          expectedResults.revision = 2;
+          expectedResults.updated_at = new Date().toISOString()
+                                                 .substring(0, 10);
+
+          const expectedPost = copyJsonObject(expectedResults);
+          delete expectedPost.deleted_at;
+
+          // expect body of post request to be the new state of gwm
+          expect(body).to.deep.equal(expectedPost);
+
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+    it("successfully patches a project's uri, slugs, and name by its manager",
+    function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'MaraJade';
+      password = 'wording';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(patchedProject);
 
@@ -536,8 +618,8 @@ module.exports = function(expect, request, baseUrl) {
       const oldUser = user;
       const oldPass = password;
 
-      user = 'patcht';
-      password = 'drowssap';
+      user = 'mrsj';
+      password = 'word';
       getAPIToken().then(function(token) {
         user = oldUser;
         password = oldPass;
@@ -551,8 +633,8 @@ module.exports = function(expect, request, baseUrl) {
           expect(res.statusCode).to.equal(401);
 
           expect(body.error).to.equal('Authorization failure');
-          expect(body.text).to.equal('patcht is not authorized to make ' +
-          'changes to ' + originalProject.name);
+          expect(body.text).to.equal('mrsj is not authorized to make changes ' +
+          'to ' + originalProject.name);
 
           const expectedResults = copyJsonObject(originalProject);
           checkListEndpoint(done, expectedResults, token);
@@ -929,8 +1011,59 @@ module.exports = function(expect, request, baseUrl) {
       });
     }
 
-    it('successfully creates a new project with slugs', function(done) {
+    it('successfully creates a new project with slugs by an admin',
+    function(done) {
       getAPIToken().then(function(token) {
+        requestOptions.body = postArg;
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const addedProject = copyJsonObject(newProject);
+          addedProject.uuid = body.uuid;
+          expect(body).to.deep.equal(addedProject);
+
+          request.get(baseUrl + 'projects?token=' + token,
+          function(getErr, getRes, getBody) {
+            // the projects/ endpoint should now have one more project
+            const expectedGetResults = initialProjects.concat([
+              {
+                uri: 'https://github.com/osuosl/timesync-node',
+                slugs: ['timesync-node', 'tsn'],
+                name: 'TimeSync Node',
+                deleted_at: null,
+                updated_at: null,
+                created_at: new Date().toISOString().substring(0, 10),
+                revision: 1,
+                uuid: addedProject.uuid,
+              },
+            ]);
+
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+
+            expect(JSON.parse(getBody))
+            .to.have.same.deep.members(expectedGetResults);
+            done();
+          });
+        });
+      });
+    });
+
+    it('successfully creates a new project with slugs by a sitewide manager',
+    function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'patcht';
+      password = 'drowssap';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
         requestOptions.body = postArg;
 
         requestOptions.body.auth.token = token;
@@ -1030,6 +1163,42 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(body.error).to.equal('Authentication failure');
           expect(body.text).to.equal('Bad API token');
+
+          request.get(baseUrl + 'projects?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+
+            const jsonGetBody = JSON.parse(getBody);
+            // the projects/ list shouldn't have changed
+            expect(jsonGetBody).to.deep.have.same.members(initialProjects);
+            done();
+          });
+        });
+      });
+    });
+
+    it('fails to create a new project with bad permissions', function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'mrsj';
+      password = 'word';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(newProject);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(res.statusCode).to.equal(401);
+
+          expect(body.error).to.equal('Authorization failure');
+          expect(body.text).to.equal('mrsj is not authorized to create ' +
+              'projects');
 
           request.get(baseUrl + 'projects?token=' + token,
           function(getErr, getRes, getBody) {
@@ -1396,6 +1565,83 @@ module.exports = function(expect, request, baseUrl) {
           };
 
           expect(res.statusCode).to.equal(404);
+          expect(jsonBody).to.deep.equal(expectedResult);
+
+          request.get(baseUrl + 'projects?token=' + token,
+          function(getErr, getRes, getBody) {
+            const jsonGetBody = JSON.parse(getBody);
+            const expectedGetResult = [
+              {
+                uri: 'https://code.osuosl.org/projects/ganeti-' +
+                'webmgr',
+                name: 'Ganeti Web Manager',
+                slugs: ['ganeti-webmgr', 'gwm'],
+                deleted_at: null,
+                updated_at: null,
+                created_at: '2014-01-01',
+                uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+                revision: 1,
+              },
+              {
+                uri: 'https://code.osuosl.org/projects/pgd',
+                name: 'Protein Geometry Database',
+                slugs: ['pgd'],
+                deleted_at: null,
+                updated_at: null,
+                created_at: '2014-01-01',
+                uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
+                revision: 1,
+              },
+              {
+                uri: 'https://github.com/osu-cass/whats-fresh-api',
+                name: 'Whats Fresh',
+                slugs: ['wf'],
+                deleted_at: null,
+                updated_at: null,
+                created_at: '2014-01-01',
+                uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
+                revision: 1,
+              },
+              {
+                uri: 'https://github.com/osuosl/timesync',
+                name: 'Timesync',
+                slugs: ['timesync', 'ts'],
+                revision: 1,
+                deleted_at: null,
+                updated_at: null,
+                created_at: '2014-01-01',
+                uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
+              },
+            ];
+
+            expect(getRes.statusCode).to.equal(200);
+            expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
+            done();
+          });
+        });
+      });
+    });
+
+    it('Fails with bad permissions', function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'mrsj';
+      password = 'word';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        request.del(baseUrl + 'projects/ts?token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 401,
+            error: 'Authorization failure',
+            text: 'mrsj is not authorized to delete project ts',
+          };
+
+          expect(res.statusCode).to.equal(401);
           expect(jsonBody).to.deep.equal(expectedResult);
 
           request.get(baseUrl + 'projects?token=' + token,

@@ -50,7 +50,7 @@ module.exports = function(app) {
     return outTime;
   }
 
-  function compileTimesQueryPromise(req, res, additional) {
+  function compileTimesQueryPromise(req, res, user, additional) {
     return new Promise(function(resolve, reject) {
       const knex = app.get('knex');
       // Selects a mostly compiled list of times
@@ -70,13 +70,21 @@ module.exports = function(app) {
           'times.newest as newest',
           'activities.slug as activity')
         .join('users', 'times.user', 'users.id')
-        .join('projects', 'times.project', 'projects.id')
         .join('projectslugs', 'times.project', 'projectslugs.project')
         .join('timesactivities', 'timesactivities.time', 'times.id')
         .join('activities', 'timesactivities.activity', 'activities.id')
         .orderBy('times.revision', 'desc');
 
       if (additional) { timesQ = timesQ.andWhere(additional); }
+
+      if (!user.site_spectator && !user.site_admin) {
+        const spectatorQ = knex('userroles').select('project')
+                            .where('user', user.id).andWhere('spectator', true);
+        timesQ = timesQ.where(function() {
+          this.where('times.user', user.id)
+          .orWhere('times.project', 'in', spectatorQ);
+        });
+      }
 
       const flags = {};
       if (req.query) {
@@ -353,7 +361,7 @@ module.exports = function(app) {
   }
 
   authRequest.get(app, app.get('version') + '/times',
-  function(req, res) {
+  function(req, res, user) {
     // Include_revisions is an included param or is explicityly set to true
     if (req.query.include_revisions === '' ||
         req.query.include_revisions === 'true') {
@@ -370,7 +378,7 @@ module.exports = function(app) {
       // 8 filter out duplicate parent times for a given child
       // 9 parse the filtered list of non-duplicate times
       // 10 repeat steps 7-9 for each child time as well
-      compileTimesQueryPromise(req, res).then(function(allTimesArray) {
+      compileTimesQueryPromise(req, res, user).then(function(allTimesArray) {
         const allTimesCopy = JSON.parse(JSON.stringify(allTimesArray));
         return res.send(allTimesArray.filter(function(time) {
           return time.newest;
@@ -410,7 +418,7 @@ module.exports = function(app) {
     } else {
       // Similar story for the above, but we don't have the inner block that
       // deals with compiling the parent's field
-      compileTimesQueryPromise(req, res, {'times.newest': true})
+      compileTimesQueryPromise(req, res, user, {'times.newest': true})
       .then(function(allTimesArray) {
         const allTimesCopy = JSON.parse(JSON.stringify(allTimesArray));
         return res.send(allTimesArray.filter(function(time) {
@@ -432,7 +440,7 @@ module.exports = function(app) {
   });
 
   authRequest.get(app, app.get('version') + '/times/:uuid',
-  function(req, res) {
+  function(req, res, user) {
     if (!helpers.validateUUID(req.params.uuid)) {
       const err = errors.errorInvalidIdentifier('UUID', req.params.uuid);
       return res.status(err.status).send(err);
@@ -442,7 +450,7 @@ module.exports = function(app) {
     // - Elijah
     if (req.query.include_revisions === '' ||
         req.query.include_revisions === 'true') {
-      compileTimesQueryPromise(req, res, {'times.uuid': req.params.uuid})
+      compileTimesQueryPromise(req, res, user, {'times.uuid': req.params.uuid})
       .then(function(times) {
         // Generate a list of all children from the database
         const childTimes = times.filter(function(time) {
@@ -487,7 +495,7 @@ module.exports = function(app) {
         return res.send(childTime);
       });
     } else {
-      compileTimesQueryPromise(req, res, {'times.newest': true,
+      compileTimesQueryPromise(req, res, user, {'times.newest': true,
                                           'times.uuid': req.params.uuid})
       .then(function(times) {
         const metadata = timesMetadata(times);
@@ -570,9 +578,9 @@ module.exports = function(app) {
     // Finish checks for user, project, and activity
     helpers.checkUser(user.username, time.user).then(function(userId) {
       helpers.checkProject(time.project).then(function(projectId) {
-        knex('userroles').where({user: userId, project: projectId})
+        knex('userroles').first().where({user: userId, project: projectId})
         .then(function(roles) {
-          if (roles.length === 0 || roles[0].member === false) {
+          if ((!roles || roles.member === false) && !user.site_admin) {
             const err = errors.errorAuthorizationFailure(user.username,
               'create time entries for project ' + time.project + '.');
             return res.status(err.status).send(err);
@@ -778,7 +786,7 @@ module.exports = function(app) {
                'times.project')
     .orderBy('times.revision', 'desc')
     .then(function(time) {
-      if (user.username !== time.username) {
+      if ((user.username !== time.username) && !user.site_admin) {
         const err = errors.errorAuthorizationFailure(user.username,
           'create objects for ' + time.username);
         return res.status(err.status).send(err);
@@ -913,17 +921,24 @@ module.exports = function(app) {
     });
   });
 
-  app.delete(app.get('version') + '/times/:uuid', function(req, res) {
+  authRequest.delete(app, app.get('version') + '/times/:uuid',
+  function(req, res, user) {
     const knex = app.get('knex');
     if (!helpers.validateUUID(req.params.uuid)) {
       const err = errors.errorInvalidIdentifier('uuid', req.params.uuid);
       return res.status(err.status).send(err);
     }
 
-    knex('times').select('id').where('uuid', req.params.uuid).first()
+    knex('times').select('id', 'user').where('uuid', req.params.uuid).first()
     .then(function(time) {
       if (!time) {
         const err = errors.errorObjectNotFound('uuid', req.params.uuid);
+        return res.status(err.status).send(err);
+      }
+
+      if (time.user !== user.id && !user.site_manager && !user.site_admin) {
+        const err = errors.errorAuthorizationFailure(user.username,
+            'delete time ' + req.params.uuid);
         return res.status(err.status).send(err);
       }
 
