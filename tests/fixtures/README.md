@@ -12,19 +12,23 @@ projects.
   - Spectator of: PGD and WF
 
 2) tschuy's password is ``password``
-  - Project manager for: Ganeti Web Manager
-  - Member of: GWM
-  - Spectator of: GWM
+  - Project manager for: Ganeti Web Manager and WF
+  - Member of: GWM and WF
+  - Spectator of: GWM and WF
 
 3) patcht's password is ``drowssap``
-  - Member of: PGD
-  - Spectator of: PGD
+  - Project manager for: TimeSync
+  - Member of: PGD and TS
+  - Spectator of: PGD and TS
 
 4) mrsj's password is ``word``
+  - Member of: GWM
   - Spectator of: GWM
 
 5) thai's password is ``passing``
   - Spectator of: WF
 
 6) MaraJade's password is ``wording``
-  - Currently assigned no permissions to any projects
+- Project manager for: Chili Project (deleted)
+- Member of: Chili Project
+- Spectator of: Chili Project
