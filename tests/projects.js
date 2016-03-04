@@ -44,7 +44,7 @@ module.exports = function(expect, request, baseUrl) {
       revision: 1,
       users: {
         tschuy: {member: true, spectator: true, manager: true},
-        mrsj: {member: false, spectator: true, manager: false},
+        mrsj: {member: true, spectator: true, manager: false},
       },
     },
     {
@@ -119,7 +119,7 @@ module.exports = function(expect, request, baseUrl) {
             result.slugs.sort();
           });
 
-          expect(jsonBody).to.deep.equal(initialData);
+          expect(jsonBody).to.deep.equal(expectedResults);
           done();
         });
       });
@@ -273,13 +273,18 @@ module.exports = function(expect, request, baseUrl) {
       revision: 1,
       users: {
         tschuy: {member: true, spectator: true, manager: true},
-        mrsj: {member: false, spectator: true, manager: false},
+        mrsj: {member: true, spectator: true, manager: false},
       },
     };
 
     const patchedProjectName = {name: patchedProject.name};
     const patchedProjectUri = {uri: patchedProject.uri};
     const patchedProjectSlugs = {slugs: patchedProject.slugs};
+    const patchedProjectNewMember = {MaraJade: {member: true}};
+    const patchedProjectPromotion = {mrsj: {manager: true}};
+    const patchedProjectDemotion = {mrsj: {spectator: false}};
+    const patchedProjectSelfRemoval = {tschuy: {member: false, spectator: false,
+                                                              manager: false}};
 
     const badProject = {
       name: ['a name'],
@@ -517,6 +522,133 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedPost = copyJsonObject(expectedResults);
           delete expectedPost.deleted_at;
+
+          // expect body of post request to be the new state of gwm
+          expect(body).to.deep.equal(expectedPost);
+
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+    it('successfully adds a new member', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedProjectNewMember);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const expectedResults = copyJsonObject(originalProject);
+          expectedResults.name = patchedProject.name;
+          expectedResults.uuid = originalProject.uuid;
+          expectedResults.revision = 2;
+          expectedResults.updated_at = new Date().toISOString()
+                                                 .substring(0, 10);
+          expectedResults.users.MaraJade = {member: true, spectator: false,
+                                                                manager: false};
+
+          const expectedPost = copyJsonObject(expectedResults);
+          delete expectedPost.deleted_at;
+          delete expectedPost.users;
+
+          // expect body of post request to be the new state of gwm
+          expect(body).to.deep.equal(expectedPost);
+
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+    it('successfully promotes an existing user', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedProjectPromotion);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const expectedResults = copyJsonObject(originalProject);
+          expectedResults.name = patchedProject.name;
+          expectedResults.uuid = originalProject.uuid;
+          expectedResults.revision = 2;
+          expectedResults.updated_at = new Date().toISOString()
+                                                 .substring(0, 10);
+          expectedResults.users.mrsj = {member: true, spectator: true,
+                                                                manager: true};
+
+          const expectedPost = copyJsonObject(expectedResults);
+          delete expectedPost.deleted_at;
+          delete expectedPost.users;
+
+          // expect body of post request to be the new state of gwm
+          expect(body).to.deep.equal(expectedPost);
+
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+    it('successfully adds demotes an existing user', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedProjectDemotion);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const expectedResults = copyJsonObject(originalProject);
+          expectedResults.name = patchedProject.name;
+          expectedResults.uuid = originalProject.uuid;
+          expectedResults.revision = 2;
+          expectedResults.updated_at = new Date().toISOString()
+                                                 .substring(0, 10);
+          expectedResults.users.mrsj = {member: true, spectator: false,
+                                                                manager: false};
+
+          const expectedPost = copyJsonObject(expectedResults);
+          delete expectedPost.deleted_at;
+          delete expectedPost.users;
+
+          // expect body of post request to be the new state of gwm
+          expect(body).to.deep.equal(expectedPost);
+
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+    it('successfully adds removes the calling user', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedProjectSelfRemoval);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const expectedResults = copyJsonObject(originalProject);
+          expectedResults.name = patchedProject.name;
+          expectedResults.uuid = originalProject.uuid;
+          expectedResults.revision = 2;
+          expectedResults.updated_at = new Date().toISOString()
+                                                 .substring(0, 10);
+          expectedResults.users.tschuy = undefined;
+
+          const expectedPost = copyJsonObject(expectedResults);
+          delete expectedPost.deleted_at;
+          delete expectedPost.users;
 
           // expect body of post request to be the new state of gwm
           expect(body).to.deep.equal(expectedPost);
@@ -873,6 +1005,7 @@ module.exports = function(expect, request, baseUrl) {
       name: 'TimeSync Node',
       revision: 1,
       created_at: new Date().toISOString().substring(0, 10),
+    };
 
     // the base POST JSON
     const postArg = {
@@ -1380,7 +1513,7 @@ module.exports = function(expect, request, baseUrl) {
           function(getErr, getRes, getBody) {
             const jsonGetBody = JSON.parse(getBody);
             const expectedGetResult = initialData.filter(function(project) {
-              return project.deleted_at = null;
+              return project.deleted_at === null;
             });
 
             expect(getRes.statusCode).to.equal(200);
@@ -1411,7 +1544,7 @@ module.exports = function(expect, request, baseUrl) {
           function(getErr, getRes, getBody) {
             const jsonGetBody = JSON.parse(getBody);
             const expectedGetResult = initialData.filter(function(project) {
-              return project.deleted_at = null;
+              return project.deleted_at === null;
             });
 
             expect(getRes.statusCode).to.equal(200);

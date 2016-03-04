@@ -440,7 +440,7 @@
       "project":"projects:0",
       "user":"users:3",
       "manager": false,
-      "member": false,
+      "member": true,
       "spectator": true
     },
     {
