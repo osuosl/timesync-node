@@ -1005,6 +1005,10 @@ module.exports = function(expect, request, baseUrl) {
       name: 'TimeSync Node',
       revision: 1,
       created_at: new Date().toISOString().substring(0, 10),
+      users: {
+        patcht: {member: true, spectator: true, manager: true},
+        thai: {member: true, spectator: true, manager: false},
+      },
     };
 
     // the base POST JSON
@@ -1152,6 +1156,54 @@ module.exports = function(expect, request, baseUrl) {
           expect(res.statusCode).to.equal(200);
 
           const addedProject = copyJsonObject(newProjectNoUri);
+          addedProject.uuid = body.uuid;
+          expect(body).to.deep.equal(addedProject);
+
+          request.get(baseUrl + 'projects?token=' + token,
+          function(getErr, getRes, getBody) {
+            // the projects/ endpoint should now have one more project
+            const expectedGetResults = initialData.concat([
+              {
+                uri: null,
+                slugs: ['timesync-node', 'tsn'],
+                name: 'TimeSync Node',
+                deleted_at: null,
+                updated_at: null,
+                created_at: new Date().toISOString().substring(0, 10),
+                revision: 1,
+                uuid: addedProject.uuid,
+              },
+            ]);
+
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+
+            const jsonBody = JSON.parse(getBody);
+            expect(jsonBody).to.deep.have.same.members(expectedGetResults);
+            done();
+          });
+        });
+      });
+    });
+
+    it('successfully creates a new project with no users', function(done) {
+      getAPIToken().then(function(token) {
+        // remove uri from post data
+        const postNoUri = copyJsonObject(postArg);
+        postNoUri.object.uri = undefined;
+        requestOptions.body = postNoUri;
+
+        requestOptions.body.auth.token = token;
+
+        // remove uri from test object
+        const newProjectNoUsers = copyJsonObject(newProject);
+        delete newProjectNoUsers.users;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const addedProject = copyJsonObject(newProjectNoUsers);
           addedProject.uuid = body.uuid;
           expect(body).to.deep.equal(addedProject);
 
