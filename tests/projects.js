@@ -206,6 +206,10 @@ module.exports = function(expect, request, baseUrl) {
             created_at: '2014-01-01',
             uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
             revision: 1,
+            users: {
+              tschuy: {member: true, spectator: true, manager: true},
+              mrsj: {member: true, spectator: true, manager: false},
+            },
           };
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
@@ -1800,10 +1804,6 @@ module.exports = function(expect, request, baseUrl) {
           deleted_at: null,
           updated_at: null,
           created_at: '2014-01-01',
-          users: {
-            tschuy: {member: true, spectator: true, manager: true},
-            mrsj: {member: true, spectator: true, manager: false},
-          },
         },
       ],
     };
@@ -1927,10 +1927,6 @@ module.exports = function(expect, request, baseUrl) {
           deleted_at: null,
           updated_at: null,
           created_at: '2014-01-01',
-          users: {
-            tschuy: {member: true, spectator: true, manager: true},
-            mrsj: {member: true, spectator: true, manager: false},
-          },
         },
       ],
     };
