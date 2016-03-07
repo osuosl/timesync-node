@@ -1523,7 +1523,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('Fails if it receives an non-existent project', function(done) {
+    it('Fails if it receives a non-existent project', function(done) {
       getAPIToken().then(function(token) {
         request.del(baseUrl + 'projects/doesntexist?token=' + token,
         function(err, res, body) {
@@ -1540,52 +1540,9 @@ module.exports = function(expect, request, baseUrl) {
           request.get(baseUrl + 'projects?token=' + token,
           function(getErr, getRes, getBody) {
             const jsonGetBody = JSON.parse(getBody);
-            const expectedGetResult = [
-              {
-                uri: 'https://code.osuosl.org/projects/ganeti-' +
-                'webmgr',
-                name: 'Ganeti Web Manager',
-                slugs: ['ganeti-webmgr', 'gwm'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-                revision: 1,
-              },
-              {
-                uri: 'https://code.osuosl.org/projects/pgd',
-                name: 'Protein Geometry Database',
-                slugs: ['pgd'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
-                revision: 1,
-              },
-              {
-                uri: 'https://github.com/osu-cass/whats-fresh-api',
-                name: 'Whats Fresh',
-                slugs: ['wf'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
-                revision: 1,
-              },
-              {
-                uri: 'https://github.com/osuosl/timesync',
-                name: 'Timesync',
-                slugs: ['timesync', 'ts'],
-                revision: 1,
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
-              },
-            ];
 
             expect(getRes.statusCode).to.equal(200);
-            expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
+            expect(jsonGetBody).to.deep.have.same.members(initialData);
             done();
           });
         });
@@ -1617,52 +1574,9 @@ module.exports = function(expect, request, baseUrl) {
           request.get(baseUrl + 'projects?token=' + token,
           function(getErr, getRes, getBody) {
             const jsonGetBody = JSON.parse(getBody);
-            const expectedGetResult = [
-              {
-                uri: 'https://code.osuosl.org/projects/ganeti-' +
-                'webmgr',
-                name: 'Ganeti Web Manager',
-                slugs: ['ganeti-webmgr', 'gwm'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-                revision: 1,
-              },
-              {
-                uri: 'https://code.osuosl.org/projects/pgd',
-                name: 'Protein Geometry Database',
-                slugs: ['pgd'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
-                revision: 1,
-              },
-              {
-                uri: 'https://github.com/osu-cass/whats-fresh-api',
-                name: 'Whats Fresh',
-                slugs: ['wf'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
-                revision: 1,
-              },
-              {
-                uri: 'https://github.com/osuosl/timesync',
-                name: 'Timesync',
-                slugs: ['timesync', 'ts'],
-                revision: 1,
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
-              },
-            ];
 
             expect(getRes.statusCode).to.equal(200);
-            expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
+            expect(jsonGetBody).to.deep.have.same.members(initialData);
             done();
           });
         });
