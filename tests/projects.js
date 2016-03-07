@@ -268,17 +268,39 @@ module.exports = function(expect, request, baseUrl) {
       users: {
         tschuy: {member: true, spectator: true, manager: true},
         mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+        deanj: {member: true, spectator: true, manager: false},
       },
     };
 
     const patchedProjectName = {name: patchedProject.name};
     const patchedProjectUri = {uri: patchedProject.uri};
     const patchedProjectSlugs = {slugs: patchedProject.slugs};
-    const patchedProjectNewMember = {MaraJade: {member: true}};
-    const patchedProjectPromotion = {mrsj: {manager: true}};
-    const patchedProjectDemotion = {mrsj: {spectator: false}};
-    const patchedProjectSelfRemoval = {tschuy: {member: false, spectator: false,
-                                                              manager: false}};
+    const patchedProjectNewMember = {users: {
+      tschuy: {member: true, spectator: true, manager: true},
+      mrsj: {member: true, spectator: true, manager: false},
+      MaraJade: {member: true, spectator: true, manager: true},
+      deanj: {member: true, spectator: true, manager: false},
+      thai: {member: true, spectator: false, manager: false}, // Add thai
+    }};
+    const patchedProjectPromotion = {users: {
+      tschuy: {member: true, spectator: true, manager: true},
+      mrsj: {member: true, spectator: true, manager: true}, // mrsj now manager
+      MaraJade: {member: true, spectator: true, manager: true},
+      deanj: {member: true, spectator: true, manager: false},
+    }};
+    const patchedProjectDemotion = {users: {
+      tschuy: {member: true, spectator: true, manager: true},
+      // mrsj no longer spectator
+      mrsj: {member: true, spectator: false, manager: false},
+      MaraJade: {member: true, spectator: true, manager: true},
+      deanj: {member: true, spectator: true, manager: false},
+    }};
+    const patchedProjectSelfRemoval = {users: {
+      mrsj: {member: true, spectator: true, manager: false},
+      MaraJade: {member: true, spectator: true, manager: true},
+      deanj: {member: true, spectator: true, manager: false},
+    }};
 
     const badProject = {
       name: ['a name'],
@@ -487,6 +509,7 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedPost = copyJsonObject(expectedResults);
           delete expectedPost.deleted_at;
+          delete expectedPost.users;
 
           // expect body of post request to be the new state of gwm
           expect(body).to.deep.equal(expectedPost);
@@ -516,6 +539,7 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedPost = copyJsonObject(expectedResults);
           delete expectedPost.deleted_at;
+          delete expectedPost.users;
 
           // expect body of post request to be the new state of gwm
           expect(body).to.deep.equal(expectedPost);
@@ -537,12 +561,10 @@ module.exports = function(expect, request, baseUrl) {
           expect(res.statusCode).to.equal(200);
 
           const expectedResults = copyJsonObject(originalProject);
-          expectedResults.name = patchedProject.name;
-          expectedResults.uuid = originalProject.uuid;
           expectedResults.revision = 2;
           expectedResults.updated_at = new Date().toISOString()
                                                  .substring(0, 10);
-          expectedResults.users.MaraJade = {member: true, spectator: false,
+          expectedResults.users.thai = {member: true, spectator: false,
                                                                 manager: false};
 
           const expectedPost = copyJsonObject(expectedResults);
@@ -569,8 +591,6 @@ module.exports = function(expect, request, baseUrl) {
           expect(res.statusCode).to.equal(200);
 
           const expectedResults = copyJsonObject(originalProject);
-          expectedResults.name = patchedProject.name;
-          expectedResults.uuid = originalProject.uuid;
           expectedResults.revision = 2;
           expectedResults.updated_at = new Date().toISOString()
                                                  .substring(0, 10);
@@ -601,8 +621,6 @@ module.exports = function(expect, request, baseUrl) {
           expect(res.statusCode).to.equal(200);
 
           const expectedResults = copyJsonObject(originalProject);
-          expectedResults.name = patchedProject.name;
-          expectedResults.uuid = originalProject.uuid;
           expectedResults.revision = 2;
           expectedResults.updated_at = new Date().toISOString()
                                                  .substring(0, 10);
@@ -633,12 +651,10 @@ module.exports = function(expect, request, baseUrl) {
           expect(res.statusCode).to.equal(200);
 
           const expectedResults = copyJsonObject(originalProject);
-          expectedResults.name = patchedProject.name;
-          expectedResults.uuid = originalProject.uuid;
           expectedResults.revision = 2;
           expectedResults.updated_at = new Date().toISOString()
                                                  .substring(0, 10);
-          expectedResults.users.tschuy = undefined;
+          delete expectedResults.users.tschuy;
 
           const expectedPost = copyJsonObject(expectedResults);
           delete expectedPost.deleted_at;

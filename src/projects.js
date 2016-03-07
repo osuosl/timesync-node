@@ -508,7 +508,7 @@ module.exports = function(app) {
     const obj = req.body.object;
 
     // valid keys
-    const validKeys = ['name', 'uri', 'slugs'];
+    const validKeys = ['name', 'uri', 'slugs', 'users'];
     /* eslint-disable prefer-const */
     for (let key in obj) {
       /* eslint-enable prefer-const */
@@ -525,6 +525,7 @@ module.exports = function(app) {
       {name: 'name', type: 'string', required: false},
       {name: 'uri', type: 'string', required: false},
       {name: 'slugs', type: 'array', required: false},
+      {name: 'users', type: 'object', required: false},
     ];
 
     // validateFields takes the object to check fields on,
@@ -642,56 +643,146 @@ module.exports = function(app) {
                 project.updated_at = new Date(project.updated_at)
                 .toISOString().substring(0, 10);
 
-                trx('userroles').where({project: oldId})
-                .update({project: projID}).then(function() {
-                  trx('projectslugs').where({project: oldId})
-                  .then(function(existingSlugObjs) {
-                    const existingSlugs = existingSlugObjs.map(function(slug) {
-                      return slug.name;
-                    });
-
-                    if (helpers.getType(obj.slugs) === 'array') {
-                      const newSlugs = [];
-
-                      newSlugs.push(trx('projectslugs').del()
-                      .where({project: oldId}));
-
-                      /* eslint-disable */
-                      for (let slug of obj.slugs) {
-                      /* eslint-enable */
-                        newSlugs.push(trx('projectslugs')
-                        .insert({project: projID, name: slug}));
+                if (obj.users) {
+                  trx('userroles').where({project: oldId})
+                  .del().then(function() {
+                    const newRoles = [];
+                    trx('users').select('username', 'id')
+                    .whereIn('username', Object.keys(obj.users))
+                    .then(function(userIds) {
+                      const userMap = {};
+                      /* eslint-disable prefer-const */
+                      for (let userId of userIds) {
+                        userMap[userId.username] = userId.id;
                       }
+                      /* eslint-disable guard-for-in */
+                      for (let username in obj.users) {
+                      /* eslint-enable prefer-const */
+                        const role = obj.users[username];
+                        const newRole = {
+                          user: userMap[username],
+                          project: projID,
+                          member: role.member,
+                          spectator: role.spectator,
+                          manager: role.manager,
+                        };
+                        newRoles.push(newRole);
+                      }
+                      trx('userroles').insert(newRoles).then(function() {
+                        trx('projectslugs').where({project: oldId})
+                        .then(function(existingSlugObjs) {
+                          const existingSlugs = existingSlugObjs.map(
+                          function(slug) {
+                            return slug.name;
+                          });
 
-                      Promise.all(newSlugs).then(function() {
-                        project.slugs = obj.slugs.sort();
-                        delete project.newest;
-                        trx.commit();
-                        res.send(JSON.stringify(project));
+                          if (helpers.getType(obj.slugs) === 'array') {
+                            const newSlugs = [];
+
+                            newSlugs.push(trx('projectslugs').del()
+                            .where({project: oldId}));
+
+                            /* eslint-disable */
+                            for (let slug of obj.slugs) {
+                            /* eslint-enable */
+                              newSlugs.push(trx('projectslugs')
+                              .insert({project: projID, name: slug}));
+                            }
+
+                            Promise.all(newSlugs).then(function() {
+                              project.slugs = obj.slugs.sort();
+                              delete project.newest;
+                              trx.commit();
+                              res.send(JSON.stringify(project));
+                            }).catch(function(error) {
+                              log.error(req, 'Error inserting slugs: ' + error);
+                              trx.rollback();
+                            });
+                          } else {
+                            trx('projectslugs').update({project: projID})
+                            .where({project: oldId}).then(function() {
+                              project.slugs = existingSlugs.sort();
+                              delete project.newest;
+                              trx.commit();
+                              res.send(project);
+                            }).catch(function(error) {
+                              log.error(req, 'Error inserting slugs: ' + error);
+                              trx.rollback();
+                            });
+                          }
+                        }).catch(function(error) {
+                          log.error(req, 'Error retrieving existing slugs: ' +
+                                                                        error);
+                          trx.rollback();
+                        });
                       }).catch(function(error) {
-                        log.error(req, 'Error inserting slugs: ' + error);
+                        log.error(req, 'Error adding user roles: ' + error);
                         trx.rollback();
                       });
-                    } else {
-                      trx('projectslugs').update({project: projID})
-                      .where({project: oldId}).then(function() {
-                        project.slugs = existingSlugs.sort();
-                        delete project.newest;
-                        trx.commit();
-                        res.send(project);
-                      }).catch(function(error) {
-                        log.error(req, 'Error inserting slugs: ' + error);
-                        trx.rollback();
-                      });
-                    }
+                    }).catch(function(error) {
+                      log.error(req, 'Error retrieving users for roles: ' +
+                                                                        error);
+                      trx.rollback();
+                    });
                   }).catch(function(error) {
-                    log.error(req, 'Error retrieving existing slugs: ' + error);
+                    log.error(req, 'Error deleting old user roles: ' + error);
                     trx.rollback();
                   });
-                }).catch(function(error) {
-                  log.error(req, 'Error updating user roles: ' + error);
-                  trx.rollback();
-                });
+                } else {
+                  trx('userroles').where({project: oldId})
+                  .update({project: projID}).then(function() {
+                    trx('projectslugs').where({project: oldId})
+                    .then(function(existingSlugObjs) {
+                      const existingSlugs = existingSlugObjs.map(
+                      function(slug) {
+                        return slug.name;
+                      });
+
+                      if (helpers.getType(obj.slugs) === 'array') {
+                        const newSlugs = [];
+
+                        newSlugs.push(trx('projectslugs').del()
+                        .where({project: oldId}));
+
+                        /* eslint-disable */
+                        for (let slug of obj.slugs) {
+                        /* eslint-enable */
+                          newSlugs.push(trx('projectslugs')
+                          .insert({project: projID, name: slug}));
+                        }
+
+                        Promise.all(newSlugs).then(function() {
+                          project.slugs = obj.slugs.sort();
+                          delete project.newest;
+                          trx.commit();
+                          res.send(JSON.stringify(project));
+                        }).catch(function(error) {
+                          log.error(req, 'Error inserting slugs: ' + error);
+                          trx.rollback();
+                        });
+                      } else {
+                        trx('projectslugs').update({project: projID})
+                        .where({project: oldId}).then(function() {
+                          project.slugs = existingSlugs.sort();
+                          delete project.newest;
+                          trx.commit();
+                          res.send(project);
+                        }).catch(function(error) {
+                          log.error(req, 'Error inserting slugs: ' + error);
+                          trx.rollback();
+                        });
+                      }
+                    }).catch(function(error) {
+                      log.error(req, 'Error retrieving existing slugs: ' +
+                                                                      error);
+                      trx.rollback();
+                    });
+                  }).catch(function(error) {
+                    log.error(req, 'Error transferring user roles: ' +
+                                                                    error);
+                    trx.rollback();
+                  });
+                }
               }).catch(function(error) {
                 log.error(req, 'Error inserting updated roles: ' + error);
                 trx.rollback();
