@@ -8,8 +8,8 @@ projects.
 
 1) deanj's password is ``pass``
   - Project manager for: Protein Geometry Database
-  - Member of: PGD and What's Fresh
-  - Spectator of: PGD and WF
+  - Member of: PGD, What's Fresh, and GWM
+  - Spectator of: PGD and GWM
 
 2) tschuy's password is ``password``
   - Project manager for: Ganeti Web Manager and WF
@@ -26,9 +26,9 @@ projects.
   - Spectator of: GWM
 
 5) thai's password is ``passing``
-  - Spectator of: WF
+  - Member of: WF
 
 6) MaraJade's password is ``wording``
-- Project manager for: Chili Project (deleted)
-- Member of: Chili Project
-- Spectator of: Chili Project
+- Project manager for: Chili Project (deleted) and GWM
+- Member of: Chili Project and GWM
+- Spectator of: Chili Project and GWM

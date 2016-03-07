@@ -32,7 +32,7 @@ module.exports = function(expect, request, baseUrl) {
     });
   }
 
-  const initialData = [
+  const initialDataWithDeleted = [
     {
       uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
       name: 'Ganeti Web Manager',
@@ -45,6 +45,8 @@ module.exports = function(expect, request, baseUrl) {
       users: {
         tschuy: {member: true, spectator: true, manager: true},
         mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+        deanj: {member: true, spectator: true, manager: false},
       },
     },
     {
@@ -71,9 +73,9 @@ module.exports = function(expect, request, baseUrl) {
       uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
       revision: 1,
       users: {
-        deanj: {member: true, spectator: true, manager: false},
+        deanj: {member: true, spectator: false, manager: false},
         tschuy: {member: true, spectator: true, manager: true},
-        thai: {member: false, spectator: true, manager: false},
+        thai: {member: true, spectator: false, manager: false},
       },
     },
     {
@@ -104,6 +106,10 @@ module.exports = function(expect, request, baseUrl) {
     },
   ];
 
+  const initialData = initialDataWithDeleted.filter(function(datum) {
+    return datum.deleted_at === null;
+  });
+
 /* GET one of the /projects endpoints and check its response against
   what should be returned */
   describe('GET /projects', function() {
@@ -116,15 +122,11 @@ module.exports = function(expect, request, baseUrl) {
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          const expectedResults = initialData.filter(function(project) {
-            return project.deleted_at === null;
-          });
-
           jsonBody.forEach(function(result) {
             result.slugs.sort();
           });
 
-          expect(jsonBody).to.deep.equal(expectedResults);
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -141,7 +143,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expect(jsonBody).to.deep.equal(initialData);
+          expect(jsonBody).to.deep.equal(initialDataWithDeleted);
           done();
         });
       });
@@ -162,7 +164,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expect(jsonBody).to.deep.equal(initialData);
+          expect(jsonBody).to.deep.equal(initialDataWithDeleted);
           done();
         });
       });
@@ -197,27 +199,10 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'projects/gwm?token=' + token,
         function(err, res, body) {
           const jsonBody = JSON.parse(body);
-          const expectedResult = {
-            uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-            name: 'Ganeti Web Manager',
-            slugs: ['ganeti-webmgr', 'gwm'],
-            deleted_at: null,
-            updated_at: null,
-            created_at: '2014-01-01',
-            uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-            revision: 1,
-            users: {
-              tschuy: {member: true, spectator: true, manager: true},
-              mrsj: {member: true, spectator: true, manager: false},
-            },
-          };
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expectedResult.slugs.sort();
-          jsonBody.slugs.sort();
-
-          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(jsonBody).to.deep.equal(initialData[0]);
           done();
         });
       });
@@ -1034,7 +1019,7 @@ module.exports = function(expect, request, baseUrl) {
       method: 'POST',
     };
 
-    function checkListEndpoint(done, token) {
+    function checkListEndpoint(done, expectedGetResults, token) {
       request.get(baseUrl + 'projects?token=' + token,
       function(getErr, getRes, getBody) {
         expect(getErr).to.be.a('null');
@@ -1042,7 +1027,7 @@ module.exports = function(expect, request, baseUrl) {
 
         const jsonGetBody = JSON.parse(getBody);
         // the projects/ list shouldn't have changed
-        expect(jsonGetBody).to.deep.have.same.members(initialData);
+        expect(jsonGetBody).to.deep.have.same.members(expectedGetResults);
         done();
       });
     }
@@ -1062,33 +1047,24 @@ module.exports = function(expect, request, baseUrl) {
           addedProject.uuid = body.uuid;
           expect(body).to.deep.equal(addedProject);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            // the projects/ endpoint should now have one more project
-            const expectedGetResults = initialData.concat([
-              {
-                uri: 'https://github.com/osuosl/timesync-node',
-                slugs: ['timesync-node', 'tsn'],
-                name: 'TimeSync Node',
-                deleted_at: null,
-                updated_at: null,
-                created_at: new Date().toISOString().substring(0, 10),
-                revision: 1,
-                uuid: addedProject.uuid,
-                users: {
-                  patcht: {member: true, spectator: true, manager: true},
-                  thai: {member: true, spectator: true, manager: false},
-                },
+          const expectedGetResults = initialData.concat([
+            {
+              uri: 'https://github.com/osuosl/timesync-node',
+              slugs: ['timesync-node', 'tsn'],
+              name: 'TimeSync Node',
+              deleted_at: null,
+              updated_at: null,
+              created_at: new Date().toISOString().substring(0, 10),
+              revision: 1,
+              uuid: addedProject.uuid,
+              users: {
+                patcht: {member: true, spectator: true, manager: true},
+                thai: {member: true, spectator: true, manager: false},
               },
-            ]);
+            },
+          ]);
 
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            expect(JSON.parse(getBody))
-            .to.have.same.deep.members(expectedGetResults);
-            done();
-          });
+          checkListEndpoint(done, expectedGetResults, token);
         });
       });
     });
@@ -1116,33 +1092,24 @@ module.exports = function(expect, request, baseUrl) {
           addedProject.uuid = body.uuid;
           expect(body).to.deep.equal(addedProject);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            // the projects/ endpoint should now have one more project
-            const expectedGetResults = initialProjects.concat([
-              {
-                uri: 'https://github.com/osuosl/timesync-node',
-                slugs: ['timesync-node', 'tsn'],
-                name: 'TimeSync Node',
-                deleted_at: null,
-                updated_at: null,
-                created_at: new Date().toISOString().substring(0, 10),
-                revision: 1,
-                uuid: addedProject.uuid,
-                users: {
-                  patcht: {member: true, spectator: true, manager: true},
-                  thai: {member: true, spectator: true, manager: false},
-                },
+          const expectedGetResults = initialData.concat([
+            {
+              uri: 'https://github.com/osuosl/timesync-node',
+              slugs: ['timesync-node', 'tsn'],
+              name: 'TimeSync Node',
+              deleted_at: null,
+              updated_at: null,
+              created_at: new Date().toISOString().substring(0, 10),
+              revision: 1,
+              uuid: addedProject.uuid,
+              users: {
+                patcht: {member: true, spectator: true, manager: true},
+                thai: {member: true, spectator: true, manager: false},
               },
-            ]);
+            },
+          ]);
 
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            expect(JSON.parse(getBody))
-            .to.have.same.deep.members(expectedGetResults);
-            done();
-          });
+          checkListEndpoint(done, expectedGetResults, token);
         });
       });
     });
@@ -1168,29 +1135,24 @@ module.exports = function(expect, request, baseUrl) {
           addedProject.uuid = body.uuid;
           expect(body).to.deep.equal(addedProject);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            // the projects/ endpoint should now have one more project
-            const expectedGetResults = initialData.concat([
-              {
-                uri: null,
-                slugs: ['timesync-node', 'tsn'],
-                name: 'TimeSync Node',
-                deleted_at: null,
-                updated_at: null,
-                created_at: new Date().toISOString().substring(0, 10),
-                revision: 1,
-                uuid: addedProject.uuid,
+          const expectedGetResults = initialData.concat([
+            {
+              uri: null,
+              slugs: ['timesync-node', 'tsn'],
+              name: 'TimeSync Node',
+              deleted_at: null,
+              updated_at: null,
+              created_at: new Date().toISOString().substring(0, 10),
+              revision: 1,
+              uuid: addedProject.uuid,
+              users: {
+                patcht: {member: true, spectator: true, manager: true},
+                thai: {member: true, spectator: true, manager: false},
               },
-            ]);
+            },
+          ]);
 
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonBody = JSON.parse(getBody);
-            expect(jsonBody).to.deep.have.same.members(expectedGetResults);
-            done();
-          });
+          checkListEndpoint(done, expectedGetResults, token);
         });
       });
     });
@@ -1198,9 +1160,9 @@ module.exports = function(expect, request, baseUrl) {
     it('successfully creates a new project with no users', function(done) {
       getAPIToken().then(function(token) {
         // remove uri from post data
-        const postNoUri = copyJsonObject(postArg);
-        postNoUri.object.uri = undefined;
-        requestOptions.body = postNoUri;
+        const postNoUsers = copyJsonObject(postArg);
+        delete postNoUsers.object.users;
+        requestOptions.body = postNoUsers;
 
         requestOptions.body.auth.token = token;
 
@@ -1216,29 +1178,20 @@ module.exports = function(expect, request, baseUrl) {
           addedProject.uuid = body.uuid;
           expect(body).to.deep.equal(addedProject);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            // the projects/ endpoint should now have one more project
-            const expectedGetResults = initialData.concat([
-              {
-                uri: null,
-                slugs: ['timesync-node', 'tsn'],
-                name: 'TimeSync Node',
-                deleted_at: null,
-                updated_at: null,
-                created_at: new Date().toISOString().substring(0, 10),
-                revision: 1,
-                uuid: addedProject.uuid,
-              },
-            ]);
+          const expectedGetResults = initialData.concat([
+            {
+              uri: 'https://github.com/osuosl/timesync-node',
+              slugs: ['timesync-node', 'tsn'],
+              name: 'TimeSync Node',
+              deleted_at: null,
+              updated_at: null,
+              created_at: new Date().toISOString().substring(0, 10),
+              revision: 1,
+              uuid: addedProject.uuid,
+            },
+          ]);
 
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonBody = JSON.parse(getBody);
-            expect(jsonBody).to.deep.have.same.members(expectedGetResults);
-            done();
-          });
+          checkListEndpoint(done, expectedGetResults, token);
         });
       });
     });
@@ -1256,16 +1209,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body.error).to.equal('Authentication failure');
           expect(body.text).to.equal('Bad API token');
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialData);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1292,16 +1236,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body.text).to.equal('mrsj is not authorized to create ' +
               'projects');
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialData);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1325,16 +1260,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(400);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialData);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1359,16 +1285,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(400);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialData);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1399,16 +1316,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(409);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialData);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1431,16 +1339,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(400);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialData);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1463,16 +1362,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(400);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialProjects);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1490,7 +1380,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body.text).to.equal('Field slugs of' +
           ' project should be array but was sent as string');
 
-          checkListEndpoint(done, token);
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1508,7 +1398,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body.text).to.equal('Field name of' +
           ' project should be string but was sent as array');
 
-          checkListEndpoint(done, token);
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1526,7 +1416,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body.text).to.equal('Field uri of' +
           ' project should be string but was sent as array');
 
-          checkListEndpoint(done, token);
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1779,6 +1669,8 @@ module.exports = function(expect, request, baseUrl) {
       users: {
         tschuy: {member: true, spectator: true, manager: true},
         mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+        deanj: {member: true, spectator: true, manager: false},
       },
     };
 
@@ -1794,6 +1686,8 @@ module.exports = function(expect, request, baseUrl) {
       users: {
         tschuy: {member: true, spectator: true, manager: true},
         mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+        deanj: {member: true, spectator: true, manager: false},
       },
       'parents': [
         {
@@ -1902,6 +1796,8 @@ module.exports = function(expect, request, baseUrl) {
       users: {
         tschuy: {member: true, spectator: true, manager: true},
         mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+        deanj: {member: true, spectator: true, manager: false},
       },
     };
 
@@ -1917,6 +1813,8 @@ module.exports = function(expect, request, baseUrl) {
       users: {
         tschuy: {member: true, spectator: true, manager: true},
         mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+        deanj: {member: true, spectator: true, manager: false},
       },
       'parents': [
         {

@@ -328,7 +328,7 @@ module.exports = function(app) {
 
     // run various checks
     // valid keys
-    const validKeys = ['name', 'uri', 'slugs'];
+    const validKeys = ['name', 'uri', 'slugs', 'users'];
     /* eslint-disable prefer-const */
     for (let key in obj) {
       /* eslint-enable prefer-const */
@@ -357,6 +357,7 @@ module.exports = function(app) {
       {name: 'name', type: 'string', required: true},
       {name: 'uri', type: 'string', required: false},
       {name: 'slugs', type: 'array', required: true},
+      {name: 'users', type: 'object', required: false},
     ];
 
     // validateFields takes the object to check fields on,
@@ -433,25 +434,54 @@ module.exports = function(app) {
           });
 
           trx('projectslugs').insert(projectSlugs).then(function() {
-            // The creating user must now be made project manager
-            const managerRole = {
-              project: project,
-              user: user.id,
-              manager: true,
-              spectator: true,
-              member: true,
-            };
+            if (obj.users) {
+              trx('users').select('username', 'id')
+              .whereIn('username', Object.keys(obj.users))
+              .then(function(userIds) {
+                const roles = [];
+                const userMap = {};
+                /* eslint-disable prefer-const */
+                for (let userId of userIds) {
+                  userMap[userId.username] = userId.id;
+                }
+                /* eslint-disable guard-for-in */
+                for (let username in obj.users) {
+                /* eslint-enable prefer-const */
+                  const role = obj.users[username];
+                  const newRole = {
+                    user: userMap[username],
+                    project: project,
+                    member: role.member,
+                    spectator: role.spectator,
+                    manager: role.manager,
+                  };
+                  roles.push(newRole);
+                }
+                /* eslint-enable guard-for-in */
 
-            trx('userroles').insert(managerRole).then(function() {
+                trx('userroles').insert(roles).then(function() {
+                  obj.created_at = new Date(obj.created_at)
+                  .toISOString().substring(0, 10);
+
+                  trx.commit();
+                  return res.send(JSON.stringify(obj));
+                }).catch(function(error) {
+                  log.error(req, 'Error creating user roles for project: ' +
+                                                                        error);
+                  trx.rollback();
+                });
+              }).catch(function(error) {
+                log.error(req, 'Error requesting users for project roles: ' +
+                                                                        error);
+                trx.rollback();
+              });
+            } else {
               obj.created_at = new Date(obj.created_at)
               .toISOString().substring(0, 10);
 
               trx.commit();
               return res.send(JSON.stringify(obj));
-            }).catch(function(error) {
-              log.error(req, 'Error creating user roles for project: ' + error);
-              trx.rollback();
-            });
+            }
           }).catch(function(error) {
             log.error(req, 'Error creating project slugs: ' + error);
             trx.rollback();
