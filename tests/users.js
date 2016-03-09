@@ -1232,7 +1232,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(401);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1265,7 +1265,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(401);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1292,7 +1292,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1320,7 +1320,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1348,7 +1348,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1376,7 +1376,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1403,7 +1403,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1432,7 +1432,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1460,7 +1460,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1488,7 +1488,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1516,7 +1516,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1543,7 +1543,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1570,7 +1570,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1597,7 +1597,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
@@ -1624,7 +1624,7 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, expectedResult, token);
+          checkListEndpoint(done, originalUser, token);
         });
       });
     });
