@@ -72,11 +72,11 @@ $ SECRET_KEY=secret INSTANCE_NAME=timesync-local npm start
 
 Then, in another terminal, make a request to the application with curl.
 
-If you have a user instance already, then simply first authenticate (italics
-indicate user input):
+If you have a user instance already, then simply first authenticate (angle
+brackets indicate user input):
 
 ```
-$ curl -XPOST -d '{"auth":{"type":"password","_username_":"user","password":"_pass_"}}'
+$ curl -XPOST -d '{"auth":{"type":"password","<username>":"user","password":"<pass>"}}' -H "Content-Type: application/json" http://localhost:8000/v1/login
 ```
 
 This will print out a long JWT token, which you can then place into the data on
@@ -84,7 +84,7 @@ your curl request:
 (*Piping it to python makes the output pretty.*)
 
 ```
-$ curl -XGET -s localhost:8000/v1/times?token=_token_ | python -m json.tool
+$ curl -XGET -s localhost:8000/v1/times?token=<token> | python -m json.tool
 [
     {
         "activity": [
