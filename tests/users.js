@@ -1195,7 +1195,7 @@ module.exports = function(expect, request, baseUrl) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = {
-          site_admin: updatedUser.site_admin,
+          active: updatedUser.active,
         };
 
         requestOptions.body.auth.token = token;
