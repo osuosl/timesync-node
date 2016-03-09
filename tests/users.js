@@ -89,7 +89,7 @@ module.exports = function(expect, request, baseUrl) {
       display_name: 'Aileen Thai',
       username: 'thai',
       email: null,
-      site_spectator: true,
+      site_spectator: false,
       site_manager: false,
       site_admin: false,
       active: true,
@@ -1639,10 +1639,9 @@ module.exports = function(expect, request, baseUrl) {
   describe('DELETE /users/:username', function() {
     it('successfully deletes a user', function(done) {
       getAPIToken().then(function(token) {
-        request.delete(baseUrl + 'users/MaraJade?token=' + token,
-        function(delErr, delRes, delBody) {
+        request.del(baseUrl + 'users/MaraJade?token=' + token,
+        function(delErr, delRes) {
           expect(delErr).to.equal(null);
-          expect(delBody).to.equal(null);
           expect(delRes.statusCode).to.equal(200);
 
           request.get(baseUrl + 'users/MaraJade?token=' + token,
@@ -1658,8 +1657,8 @@ module.exports = function(expect, request, baseUrl) {
             request.get(baseUrl + 'users?token=' + token,
             function(getAllErr, getAllRes, getAllBody) {
               expect(getAllErr).to.equal(null);
-              expect(JSON.parse(getAllBody).to.deep.have.same.
-                                            members(initialData.slice(0, -2)));
+              expect(JSON.parse(getAllBody)).to.deep.have.same.
+                                            members(initialData.slice(0, -2));
               expect(getAllRes.statusCode).to.equal(200);
               done();
             });
@@ -1670,7 +1669,7 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails if it receives a nonexistent user', function(done) {
       getAPIToken().then(function(token) {
-        request.delete(baseUrl + 'users/notauser?token=' + token,
+        request.del(baseUrl + 'users/notauser?token=' + token,
         function(delErr, delRes, delBody) {
           expect(delErr).to.equal(null);
           expect(JSON.parse(delBody)).to.deep.equal({
@@ -1683,7 +1682,10 @@ module.exports = function(expect, request, baseUrl) {
           request.get(baseUrl + 'users?token=' + token,
           function(getErr, getRes, getBody) {
             expect(getErr).to.equal(null);
-            expect(JSON.parse(getBody).to.deep.have.same.members(initialData));
+            expect(JSON.parse(getBody)).to.deep.have.same
+            .members(initialData.filter(function(u) {
+              return u.deleted_at === null;
+            }));
             expect(getRes.statusCode).to.equal(200);
             done();
           });
@@ -1693,21 +1695,24 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails if it receives an invalid user', function(done) {
       getAPIToken().then(function(token) {
-        request.delete(baseUrl + 'users/!nv4l|d?token=' + token,
+        request.del(baseUrl + 'users/!nv4l|d?token=' + token,
         function(delErr, delRes, delBody) {
           expect(delErr).to.equal(null);
           expect(JSON.parse(delBody)).to.deep.equal({
             status: 400,
             error: 'The provided identifier was invalid',
             text: 'Expected username but received !nv4l|d',
-            identifiers: ['!nv4l|d'],
+            values: ['!nv4l|d'],
           });
-          expect(delRes.statusCode).to.equal(404);
+          expect(delRes.statusCode).to.equal(400);
 
           request.get(baseUrl + 'users?token=' + token,
           function(getErr, getRes, getBody) {
             expect(getErr).to.equal(null);
-            expect(JSON.parse(getBody).to.deep.have.same.members(initialData));
+            expect(JSON.parse(getBody)).to.deep.have.same
+            .members(initialData.filter(function(u) {
+              return u.deleted_at === null;
+            }));
             expect(getRes.statusCode).to.equal(200);
             done();
           });

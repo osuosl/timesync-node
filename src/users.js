@@ -316,8 +316,8 @@ module.exports = function(app) {
     });
   });
 
-
-  app.delete(app.get('version') + '/users/:username', function(req, res) {
+  authRequest.delete(app, app.get('version') + '/users/:username',
+  function(req, res, authUser) {
     const knex = app.get('knex');
     console.log('in delete users endpoint');
 
@@ -328,7 +328,7 @@ module.exports = function(app) {
 
     knex('users').where({username: req.params.username})
     .then(function(user) {
-      if (user.length) {
+      if (!user.length) {
         const err = errors.errorObjectNotFound('user');
         return res.status(err.status).send(err);
       } else {
@@ -342,7 +342,7 @@ module.exports = function(app) {
           .returning('uid').then(function(uid) {
             trx.commit();
 
-            return res.send(JSON.stringify(deletedUser));
+            return res.send();
           }).catch(function(error) {
             log.error(req, 'Error inserting user entry: ' + error);
             trx.rollback();

@@ -122,7 +122,7 @@
       "display_name": "Aileen Thai",
       "username":"thai",
       "email": null,
-      "site_spectator": true,
+      "site_spectator": false,
       "site_manager": false,
       "site_admin": false,
       "id": 5,
