@@ -16,20 +16,19 @@ module.exports = function(app) {
     const compiledUser = {};
 
     fields.forEach(function(f) {
-      if(typeof(rawUser[f]) === 'undefined' || rawUser[f] === null) {
+      if (typeof(rawUser[f]) === 'undefined' || rawUser[f] === null) {
         compiledUser[f] = null;
       } else {
-
         // The field being iterated on is a string type
-        if(strings.indexOf(f) > -1) {
+        if (strings.indexOf(f) > -1) {
           compiledUser[f] = rawUser[f];
 
         // The field being iterated on is true/false
-        } else if(bools.indexOf(f) > -1) {
+        } else if (bools.indexOf(f) > -1) {
           compiledUser[f] = Boolean(rawUser[f]);
 
         // The field being iterated on is a date-time
-        } else if(times.indexOf(f) > -1) {
+        } else if (times.indexOf(f) > -1) {
           compiledUser[f] = new Date(rawUser[f]).toISOString().substring(0, 10);
         }
       }
@@ -40,20 +39,15 @@ module.exports = function(app) {
 
 
   function compileUsersQueryPromise(req, res, additional) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
       const knex = app.get('knex');
 
       let usersQ = knex('users');
       if (typeof(additional) === 'object') {
         usersQ = usersQ.where(additional);
-        return resolve(usersQ);
-      } else {
-        return resolve(usersQ);
       }
 
-      // I know for a fact that this should have an associated 'reject'
-      // condition...
-      // I also have no idea what that condition should be.
+      return resolve(usersQ);
     });
   }
 
@@ -91,9 +85,11 @@ module.exports = function(app) {
         if (users.length === 0) {
           const err = errors.errorObjectNotFound('user');
           return res.status(err.status).send(err);
-        } else {
-          return res.send(users.map(function(u) { return compileUser(u); }).pop());
         }
+
+        return res.send(users.map(function(u) {
+          return compileUser(u);
+        }).pop());
       });
     } else {
       compileUsersQueryPromise(req, res, {'username': req.params.username})
@@ -101,9 +97,11 @@ module.exports = function(app) {
         if (users.length === 0) {
           const err = errors.errorObjectNotFound('user');
           return res.status(err.status).send(err);
-        } else {
-          return res.send(users.map(function(u) { return compileUser(u); }).pop());
         }
+
+        return res.send(users.map(function(u) {
+          return compileUser(u);
+        }).pop());
       });
     }
   });
@@ -127,7 +125,9 @@ module.exports = function(app) {
     }
 
     // This was a 'forEach, but race conditions === noFun
-    for (var at of ['created_at', 'updated_at', 'deleted_at']) {
+    /* eslint-disable prefer-const */
+    for (let at of ['created_at', 'updated_at', 'deleted_at']) {
+    /* eslint-enable prefer-const */
       if (user[at]) {
         const err = errors.errorBadObjectMissingField('user', at + ' field');
         return res.status(err.status).send(err);
@@ -182,7 +182,7 @@ module.exports = function(app) {
 
     knex.transaction(function(trx) {
       user.created_at = Date.now();
-      trx('users').insert(user).then(function(uid) {
+      trx('users').insert(user).then(function() {
         trx.commit();
 
         // manually set fields if they are not already set.
@@ -222,7 +222,9 @@ module.exports = function(app) {
     const knex = app.get('knex');
     const modUser = req.body.object;
 
-    for (var at of ['created_at', 'updated_at', 'deleted_at', 'username']) {
+    /* eslint-disable prefer-const */
+    for (let at of ['created_at', 'updated_at', 'deleted_at', 'username']) {
+    /* eslint-enable prefer-const */
       if (modUser[at]) {
         const err = errors.errorBadObjectMissingField('user', at + ' field');
         return res.status(err.status).send(err);
@@ -268,49 +270,58 @@ module.exports = function(app) {
     }
 
     knex('users').where({username: req.params.username})
-    .then(function(user) {
-      if (!user.length) {
+    .then(function(userArr) {
+      if (!userArr.length) {
         const err = errors.errorObjectNotFound('user');
         return res.status(err.status).send(err);
-      } else {
-        knex.transaction(function(trx) {
-          user = user.pop();
+      }
 
-          for (var field in modUser) {
-            user[field] = modUser[field];
+      knex.transaction(function(trx) {
+        const user = userArr.pop();
+
+        /* eslint-disable guard-for-in */
+        /* eslint-disable prefer-const */
+        for (let field in modUser) {
+        /* eslint-enable prefer-const */
+          user[field] = modUser[field];
+        }
+        /* eslint-enable guard-for-in */
+
+        user.updated_at = Date.now();
+        user.deleted_at = null;
+        delete(user.id);
+
+        trx('users').where({username: req.params.username}).update(user)
+        .returning('id').then(function() {
+          trx.commit();
+
+          delete(user.password);
+
+          /* eslint-disable prefer-const */
+          for (let b of ['site_admin', 'site_manager', 'site_spectator',
+                                                                  'active']) {
+          /* eslint-enable prefer-const */
+            user[b] = Boolean(user[b]);
           }
 
-          user.updated_at = Date.now();
-          user.deleted_at = null;
-          delete(user.id);
-
-          trx('users').where({username: req.params.username}).update(user)
-          .returning('uid').then(function(uid) {
-            trx.commit();
-
-            delete(user.password);
-
-            for (var b of ['site_admin', 'site_manager', 'site_spectator', 'active']) {
-              user[b] = Boolean(user[b]);
+          /* eslint-disable prefer-const */
+          for (let t of ['updated_at', 'created_at', 'deleted_at']) {
+          /* eslint-enable prefer-const */
+            if (user[t]) {
+              user[t] = new Date(user[t]).toISOString().substring(0, 10);
             }
+          }
 
-            for (var t of ['updated_at', 'created_at', 'deleted_at']) {
-              if (user[t]) {
-                user[t] = new Date(user[t]).toISOString().substring(0, 10);
-              }
-            }
-
-            return res.send(JSON.stringify(user));
-          }).catch(function(error) {
-            log.error(req, 'Error inserting user entry: ' + error);
-            trx.rollback();
-          });
+          return res.send(JSON.stringify(user));
         }).catch(function(error) {
-          log.error(req, 'Rolling back transaction.');
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
+          log.error(req, 'Error inserting user entry: ' + error);
+          trx.rollback();
         });
-      }
+      }).catch(function(error) {
+        log.error(req, 'Rolling back transaction.');
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
+      });
     }).catch(function(error) {
       log.error(req, 'Error retrieving existing slugs: ' + error);
     });
@@ -319,10 +330,16 @@ module.exports = function(app) {
   authRequest.delete(app, app.get('version') + '/users/:username',
   function(req, res, authUser) {
     const knex = app.get('knex');
-    console.log('in delete users endpoint');
 
     if (!helpers.validateUsername(req.params.username)) {
-      const err = errors.errorInvalidIdentifier('username', req.params.username);
+      const err = errors.errorInvalidIdentifier('username',
+                                                          req.params.username);
+      return res.status(err.status).send(err);
+    }
+
+    if (!authUser.site_manager && !authUser.site_admin) {
+      const err = errors.errorAuthorizationFailure(authUser.username,
+                                                                'delete users');
       return res.status(err.status).send(err);
     }
 
@@ -331,28 +348,28 @@ module.exports = function(app) {
       if (!user.length) {
         const err = errors.errorObjectNotFound('user');
         return res.status(err.status).send(err);
-      } else {
-        knex.transaction(function(trx) {
-          const deletedUser = user.pop();
-          deletedUser.updated_at = Date.now();
-          deletedUser.deleted_at = Date.now();
-          delete(deletedUser.id);
-
-          trx('users').where({username: req.params.username}).update(deletedUser)
-          .returning('uid').then(function(uid) {
-            trx.commit();
-
-            return res.send();
-          }).catch(function(error) {
-            log.error(req, 'Error inserting user entry: ' + error);
-            trx.rollback();
-          });
-        }).catch(function(error) {
-          log.error(req, 'Rolling back transaction.');
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
-        });
       }
+
+      knex.transaction(function(trx) {
+        const deletedUser = user.pop();
+        deletedUser.updated_at = Date.now();
+        deletedUser.deleted_at = Date.now();
+        delete(deletedUser.id);
+
+        trx('users').where({username: req.params.username})
+        .update(deletedUser).returning('id').then(function() {
+          trx.commit();
+
+          return res.send();
+        }).catch(function(error) {
+          log.error(req, 'Error inserting user entry: ' + error);
+          trx.rollback();
+        });
+      }).catch(function(error) {
+        log.error(req, 'Rolling back transaction.');
+        const err = errors.errorServerError(error);
+        return res.status(err.status).send(err);
+      });
     }).catch(function(error) {
       log.error(req, 'Error retrieving existing slugs: ' + error);
     });
