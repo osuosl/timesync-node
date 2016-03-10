@@ -212,6 +212,16 @@ module.exports = function(app) {
 
       return emailRegex.test(email);
     },
+
+    validateDate: function(date) {
+      if (typeof date !== 'string') {
+        return false;
+      }
+
+      const dateRegex = /^\d{4}\-\d{2}\-\d{2}$/;
+
+      return dateRegex.test(date);
+    },
   };
 
   return helpers;

@@ -29,7 +29,14 @@ module.exports = function(app) {
 
         // The field being iterated on is a date-time
         } else if (times.indexOf(f) > -1) {
-          compiledUser[f] = new Date(rawUser[f]).toISOString().substring(0, 10);
+          if (helpers.validateDate(rawUser[f])) {
+            compiledUser[f] = new Date(rawUser[f]).toISOString()
+                                                              .substring(0, 10);
+          } else {
+            const date = new Date();
+            date.setTime(+rawUser[f]);
+            compiledUser[f] = date.toISOString().substring(0, 10);
+          }
         }
       }
     });
@@ -57,7 +64,8 @@ module.exports = function(app) {
         req.query.include_deleted === undefined) {
       compileUsersQueryPromise(req, res, {'deleted_at': null})
       .then(function(users) {
-        res.send(users.map(function(u) { return compileUser(u); }));
+        const result = users.map(function(u) { return compileUser(u); });
+        res.send(result);
       });
     } else {
       compileUsersQueryPromise(req, res, undefined).then(function(users) {
@@ -287,6 +295,7 @@ module.exports = function(app) {
         }
         /* eslint-enable guard-for-in */
 
+        user.created_at = +user.created_at;
         user.updated_at = Date.now();
         user.deleted_at = null;
         delete(user.id);

@@ -302,4 +302,30 @@ module.exports = function(expect, app) {
       done();
     });
   });
+
+  describe('validateDate', function() {
+    it('returns true for a valid date', function(done) {
+      const val = helpers.validateDate('2016-02-10');
+      expect(val).to.equal(true);
+      done();
+    });
+
+    it('returns false for an invalid date', function(done) {
+      const val = helpers.validateDate('2016/03/18');
+      expect(val).to.equal(false);
+      done();
+    });
+
+    it('returns false for a non-string date', function(done) {
+      const val = helpers.validateDate(1388534400000);
+      expect(val).to.equal(false);
+      done();
+    });
+
+    it('returns false for null', function(done) {
+      const val = helpers.validateDate(null);
+      expect(val).to.equal(false);
+      done();
+    });
+  });
 };

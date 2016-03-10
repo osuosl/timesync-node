@@ -140,7 +140,6 @@ module.exports = function(expect, request, baseUrl) {
           });
 
           expect(jsonBody).to.deep.have.same.members(expectedResults);
-
           done();
         });
       });

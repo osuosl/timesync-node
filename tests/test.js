@@ -37,7 +37,10 @@ const transact = function(done) {
               '(SELECT MAX(id) FROM timesactivities));').then(function() {
                 newTrx.raw("SELECT setval('projectslugs_id_seq', " +
                 '(SELECT MAX(id) FROM projectslugs));').then(function() {
-                  done();
+                  newTrx.raw("SELECT setval('users_id_seq', " +
+                  '(SELECT MAX(id) FROM users));').then(function() {
+                    done();
+                  });
                 });
               });
             });
