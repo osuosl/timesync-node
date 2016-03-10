@@ -76,7 +76,7 @@ If you have a user instance already, then simply first authenticate (angle
 brackets indicate user input):
 
 ```
-$ curl -XPOST -d '{"auth":{"type":"password","<username>":"user","password":"<pass>"}}' -H "Content-Type: application/json" http://localhost:8000/v1/login
+$ curl -XPOST -d '{"auth":{"type":"password","username":"<user>","password":"<pass>"}}' -H "Content-Type: application/json" http://localhost:8000/v1/login
 ```
 
 This will print out a long JWT token, which you can then place into the data on
