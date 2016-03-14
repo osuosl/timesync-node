@@ -108,6 +108,18 @@ $ curl -XGET -s localhost:8000/v1/times?token=<token> | python -m json.tool
 
 Your output should look something like the above.
 
+If you would like to test the Postgres database, but don't want to setup a
+whole Postgres database, the command ``npm run test_pg_docker`` will spin up a
+docker container and run the tests.
+
+The postgres container will continue to run until you manually kill it
+(``docker rm -f postgres_pg``) or when you run the tests again.
+
+If you want to run the ``test_pg_docker`` command make sure of the following:
+
+* You have docker installed and the daemon is running.
+* You are in the docker group or are able to run docker as a non super-user.
+
 Database Backends
 -----------------
 
