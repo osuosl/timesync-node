@@ -389,8 +389,8 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it("successfully patches a project's uri, slugs, and name by a sitewide " +
-    'manager', function(done) {
+    it("successfully patches a project's uri, slugs, name, and " +
+    'default_activity by a sitewide manager', function(done) {
       const oldUser = user;
       const oldPass = password;
 
@@ -414,6 +414,7 @@ module.exports = function(expect, request, baseUrl) {
           expectedResults.name = patchedProject.name;
           expectedResults.uri = patchedProject.uri;
           expectedResults.slugs = patchedProject.slugs;
+          expectedResults.default_activity = patchedProject.default_activity;
           expectedResults.uuid = originalProject.uuid;
           expectedResults.revision = 2;
           expectedResults.updated_at = new Date().toISOString()
@@ -431,7 +432,8 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it("successfully patches a project's uri, slugs, and name by its manager",
+    it("successfully patches a project's uri, slugs, name, and " +
+    'default_activity by its manager',
     function(done) {
       const oldUser = user;
       const oldPass = password;
@@ -456,6 +458,7 @@ module.exports = function(expect, request, baseUrl) {
           expectedResults.name = patchedProject.name;
           expectedResults.uri = patchedProject.uri;
           expectedResults.slugs = patchedProject.slugs;
+          expectedResults.default_activity = patchedProject.default_activity;
           expectedResults.uuid = originalProject.uuid;
           expectedResults.revision = 2;
           expectedResults.updated_at = new Date().toISOString()
