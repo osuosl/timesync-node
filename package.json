@@ -15,7 +15,8 @@
     "linter": "jshint ./src ./tests ./scripts && eslint ./src ./tests ./scripts",
     "fixtures": "node --harmony ./scripts/load_fixtures.js",
     "test": "TEST=true CONSOLE=true INSTANCE_NAME=timesync SECRET_KEY=secret NODE_ENV=mocha_sqlite TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
-    "test_pg": "TEST=true CONSOLE=true INSTANCE_NAME=timesync SECRET_KEY=secret NODE_ENV=mocha knex migrate:latest && NODE_ENV=mocha TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
+    "test_pg": "NODE_ENV=mocha knex migrate:latest && TEST=true CONSOLE=true NODE_ENV=mocha INSTANCE_NAME=timesync SECRET_KEY=secret TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
+    "test_pg_docker": "export TEST_PG_CONNECTION_STRING=\"postgres://timesync:timesync@localhost:5432/timesync\" && sh ./scripts/pg_docker.sh && NODE_ENV=mocha knex migrate:latest && TEST=true CONSOLE=true NODE_ENV=mocha INSTANCE_NAME=timesync SECRET_KEY=secret TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
     "latte": "sh ./scripts/latte.sh",
     "coverage": "TEST=true CONSOLE=true INSTANCE_NAME=timesync SECRET_KEY=secret NODE_ENV=mocha_sqlite TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
     "create-account": "node --harmony ./scripts/create-account.js"
