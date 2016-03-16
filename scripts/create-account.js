@@ -14,13 +14,13 @@ const knex = require('knex')(knexfile[db]);
 // Prompt user for their information
 const info = {
   properties: {
-    name: {
+    'TimeSync root user': {
       // Note: '\w' matches all alphanumeric char and '_'
       validator: /^[\w\-\+\@\+\.]{1,30}$/,
       warning: 'Use up to 30 alphanumeric, _, @, +, . and - \n',
       required: true,
     },
-    password: {
+    'TimeSync root password': {
       hidden: true,
       required: true,
     },
@@ -28,7 +28,7 @@ const info = {
 };
 
 function onErr(err) {
-  console.log(err);
+  console.error(err);
   return 1;
 }
 
@@ -41,10 +41,21 @@ prompt.get(info, function handleInput(promptErr, result) {
 
   // Password encryption
   bcrypt.genSalt(10, function hashPassword(genSaltErr, salt) {
-    bcrypt.hash(result.password, salt, function createUser(hashErr, hash) {
+    bcrypt.hash(result['TimeSync root password'], salt,
+    function createUser(hashErr, hash) {
       knex('users').insert({
-        username: result.name,
+        username: result['TimeSync root user'],
         password: hash,
+        display_name: 'root',
+        email: null,
+        site_spectator: true,
+        site_manager: true,
+        site_admin: true,
+        active: true,
+        created_at: Date.now(),
+        updated_at: null,
+        deleted_at: null,
+        meta: 'Root user. Created by setup script. Use to create other users.',
       })
       .then(
         function userCreated() {
