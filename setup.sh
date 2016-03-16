@@ -63,6 +63,8 @@ if ! npm run create-account; then
 fi
 
 echo "Your database has been set up, and you have a root user."
+echo "TimeSync-Node does not at this time support storing your configuration."
+echo "Therefore, you must provide these credentials in the run command."
 echo "To run timesync, please run:"
 echo
 echo -n "'NODE_ENV=${NODE_ENV} "
