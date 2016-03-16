@@ -3,14 +3,19 @@ node_js:
     - "4.2"
 addons:
   postgresql: "9.1"
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
 script:
   - npm test
   - npm run test_pg
   - npm run linter
 before_script:
   - psql -c 'create database timesync;' -U postgres
-  # - npm run migrations
 git:
     submodules: false
 env:
-- TEST_PG_CONNECTION_STRING=postgres://postgres@localhost:5432/timesync SECRET_KEY=secret INSTANCE_NAME=timesync-test
+  - TEST_PG_CONNECTION_STRING=postgres://postgres@localhost:5432/timesync SECRET_KEY=secret INSTANCE_NAME=timesync-test
+  - CXX=g++-4.8
