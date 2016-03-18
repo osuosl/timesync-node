@@ -39,17 +39,17 @@ if [ -z "$PG_CONNECTION_STRING" -a -z "$MYSQL_CONNECTION_STRING" -a -z "$SQLITE_
       exit 1
     else
       export SQLITE_CONNECTION_FILE="$SQLITE_FILE"
-      export NODE_ENV=production_sqlite
+      export NODE_ENV="production_sqlite"
     fi
   else
     err_echo "Database unsupported."
   fi
 elif [ -n "$PG_CONNECTION_STRING" ]; then
-  export NODE_ENV=production_pg
+  export NODE_ENV="production_pg"
 elif [ -n "$MYSQL_CONNECTION_STRING" ]; then
-  export NODE_ENV=production_mysql
+  export NODE_ENV="production_mysql"
 elif [ -n "$SQLITE_CONNECTION_FILE" ]; then
-  export NODE_ENV=production_sqlite
+  export NODE_ENV="production_sqlite"
 fi
 
 if ! npm run migrations; then
