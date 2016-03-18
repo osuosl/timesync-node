@@ -189,6 +189,39 @@ module.exports = function(app) {
 
       return uuidRegex.test(uuid.toLowerCase());
     },
+
+    validateUsername: function(username) {
+      if (typeof username !== 'string') {
+        return false;
+      }
+
+      const usernameRegex = /^[a-z0-9\_\~\-]+$/;
+
+      return usernameRegex.test(username.toLowerCase());
+    },
+
+    validateEmail: function(email) {
+      if (typeof email !== 'string') {
+        return false;
+      }
+
+      /* eslint-disable */
+                         //  alphanumerics/./_         alphanumerics '+'     alphanumerics '@' alphanumerics  '.'      alphanumerics      .ext
+      const emailRegex = /^([A-Z|a-z|0-9](\.|_){0,1})+[A-Z|a-z|0-9]*(\+){0,1}[A-Z|a-z|0-9]+\@([A-Z|a-z|0-9])+((\.){0,1}[A-Z|a-z|0-9]){2}\.[a-z]{2,3}$/;
+      /* eslint-enable */
+
+      return emailRegex.test(email);
+    },
+
+    validateDate: function(date) {
+      if (typeof date !== 'string') {
+        return false;
+      }
+
+      const dateRegex = /^\d{4}\-\d{2}\-\d{2}$/;
+
+      return dateRegex.test(date);
+    },
   };
 
   return helpers;

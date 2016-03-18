@@ -32,3 +32,6 @@ projects.
   - Project manager for: Chili Project (deleted) and GWM
   - Member of: Chili Project and GWM
   - Spectator of: Chili Project and GWM
+
+7) timero's password = ``test``
+  - Deleted and inactive; used for tests
