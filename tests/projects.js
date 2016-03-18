@@ -32,6 +32,84 @@ module.exports = function(expect, request, baseUrl) {
     });
   }
 
+  const initialDataWithDeleted = [
+    {
+      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      name: 'Ganeti Web Manager',
+      slugs: ['ganeti-webmgr', 'gwm'],
+      deleted_at: null,
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      revision: 1,
+      users: {
+        tschuy: {member: true, spectator: true, manager: true},
+        mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+        deanj: {member: true, spectator: true, manager: false},
+      },
+    },
+    {
+      uri: 'https://code.osuosl.org/projects/pgd',
+      name: 'Protein Geometry Database',
+      slugs: ['pgd'],
+      deleted_at: null,
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
+      revision: 1,
+      users: {
+        deanj: {member: true, spectator: true, manager: true},
+        patcht: {member: true, spectator: true, manager: false},
+      },
+    },
+    {
+      uri: 'https://github.com/osu-cass/whats-fresh-api',
+      name: 'Whats Fresh',
+      slugs: ['wf'],
+      deleted_at: null,
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
+      revision: 1,
+      users: {
+        deanj: {member: true, spectator: false, manager: false},
+        tschuy: {member: true, spectator: true, manager: true},
+        thai: {member: true, spectator: false, manager: false},
+      },
+    },
+    {
+      uri: 'https://github.com/osuosl/timesync',
+      name: 'Timesync',
+      slugs: ['timesync', 'ts'],
+      deleted_at: null,
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
+      revision: 1,
+      users: {
+        patcht: {member: true, spectator: true, manager: true},
+      },
+    },
+    {
+      uri: 'https://github.com/osuosl/chiliproject',
+      name: 'Chili Project',
+      slugs: [],
+      deleted_at: '2014-01-01',
+      updated_at: null,
+      created_at: '2009-07-07',
+      uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
+      revision: 1,
+      users: {
+        MaraJade: {member: true, spectator: true, manager: true},
+      },
+    },
+  ];
+
+  const initialData = initialDataWithDeleted.filter(function(datum) {
+    return datum.deleted_at === null;
+  });
+
 /* GET one of the /projects endpoints and check its response against
   what should be returned */
   describe('GET /projects', function() {
@@ -40,59 +118,15 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'projects?token=' + token,
         function(err, res, body) {
           const jsonBody = JSON.parse(body);
-          const expectedResults = [
-            {
-              uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-              name: 'Ganeti Web Manager',
-              slugs: ['ganeti-webmgr', 'gwm'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-              revision: 1,
-            },
-            {
-              uri: 'https://code.osuosl.org/projects/pgd',
-              name: 'Protein Geometry Database',
-              slugs: ['pgd'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osu-cass/whats-fresh-api',
-              name: 'Whats Fresh',
-              slugs: ['wf'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osuosl/timesync',
-              name: 'Timesync',
-              slugs: ['timesync', 'ts'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
-              revision: 1,
-            },
-          ];
 
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          [expectedResults, jsonBody].forEach(function(list) {
-            list.forEach(function(result) {
-              result.slugs.sort();
-            });
+          jsonBody.forEach(function(result) {
+            result.slugs.sort();
           });
 
-          expect(jsonBody).to.deep.equal(expectedResults);
+          expect(jsonBody).to.deep.equal(initialData);
           done();
         });
       });
@@ -105,63 +139,11 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'projects?include_deleted=true&token=' + token,
         function(err, res, body) {
           const jsonBody = JSON.parse(body);
-          const expectedResults = [
-            {
-              uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-              name: 'Ganeti Web Manager',
-              slugs: ['ganeti-webmgr', 'gwm'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-              revision: 1,
-            },
-            {
-              uri: 'https://code.osuosl.org/projects/pgd',
-              name: 'Protein Geometry Database',
-              slugs: ['pgd'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osu-cass/whats-fresh-api',
-              name: 'Whats Fresh',
-              slugs: ['wf'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osuosl/timesync',
-              name: 'Timesync',
-              slugs: ['timesync', 'ts'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osuosl/chiliproject',
-              name: 'Chili Project',
-              slugs: [],
-              deleted_at: '2014-01-01',
-              updated_at: null,
-              created_at: '2009-07-07',
-              uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
-              revision: 1,
-            },
-          ];
 
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expect(jsonBody).to.deep.equal(expectedResults);
+          expect(jsonBody).to.deep.equal(initialDataWithDeleted);
           done();
         });
       });
@@ -178,63 +160,11 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'projects?project=chili&include_deleted=true&' +
         'token=' + token, function(err, res, body) {
           const jsonBody = JSON.parse(body);
-          const expectedResults = [
-            {
-              uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-              name: 'Ganeti Web Manager',
-              slugs: ['ganeti-webmgr', 'gwm'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-              revision: 1,
-            },
-            {
-              uri: 'https://code.osuosl.org/projects/pgd',
-              name: 'Protein Geometry Database',
-              slugs: ['pgd'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osu-cass/whats-fresh-api',
-              name: 'Whats Fresh',
-              slugs: ['wf'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osuosl/timesync',
-              name: 'Timesync',
-              slugs: ['timesync', 'ts'],
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
-              revision: 1,
-            },
-            {
-              uri: 'https://github.com/osuosl/chiliproject',
-              name: 'Chili Project',
-              slugs: [],
-              deleted_at: '2014-01-01',
-              updated_at: null,
-              created_at: '2009-07-07',
-              uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
-              revision: 1,
-            },
-          ];
 
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expect(jsonBody).to.deep.equal(expectedResults);
+          expect(jsonBody).to.deep.equal(initialDataWithDeleted);
           done();
         });
       });
@@ -269,23 +199,10 @@ module.exports = function(expect, request, baseUrl) {
         request.get(baseUrl + 'projects/gwm?token=' + token,
         function(err, res, body) {
           const jsonBody = JSON.parse(body);
-          const expectedResult = {
-            uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-            name: 'Ganeti Web Manager',
-            slugs: ['ganeti-webmgr', 'gwm'],
-            deleted_at: null,
-            updated_at: null,
-            created_at: '2014-01-01',
-            uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-            revision: 1,
-          };
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expectedResult.slugs.sort();
-          jsonBody.slugs.sort();
-
-          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(jsonBody).to.deep.equal(initialData[0]);
           done();
         });
       });
@@ -348,11 +265,42 @@ module.exports = function(expect, request, baseUrl) {
       uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
       uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
       revision: 1,
+      users: {
+        tschuy: {member: true, spectator: true, manager: true},
+        mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+        deanj: {member: true, spectator: true, manager: false},
+      },
     };
 
     const patchedProjectName = {name: patchedProject.name};
     const patchedProjectUri = {uri: patchedProject.uri};
     const patchedProjectSlugs = {slugs: patchedProject.slugs};
+    const patchedProjectNewMember = {users: {
+      tschuy: {member: true, spectator: true, manager: true},
+      mrsj: {member: true, spectator: true, manager: false},
+      MaraJade: {member: true, spectator: true, manager: true},
+      deanj: {member: true, spectator: true, manager: false},
+      thai: {member: true, spectator: false, manager: false}, // Add thai
+    }};
+    const patchedProjectPromotion = {users: {
+      tschuy: {member: true, spectator: true, manager: true},
+      mrsj: {member: true, spectator: true, manager: true}, // mrsj now manager
+      MaraJade: {member: true, spectator: true, manager: true},
+      deanj: {member: true, spectator: true, manager: false},
+    }};
+    const patchedProjectDemotion = {users: {
+      tschuy: {member: true, spectator: true, manager: true},
+      // mrsj no longer spectator
+      mrsj: {member: true, spectator: false, manager: false},
+      MaraJade: {member: true, spectator: true, manager: true},
+      deanj: {member: true, spectator: true, manager: false},
+    }};
+    const patchedProjectSelfRemoval = {users: {
+      mrsj: {member: true, spectator: true, manager: false},
+      MaraJade: {member: true, spectator: true, manager: true},
+      deanj: {member: true, spectator: true, manager: false},
+    }};
 
     const badProject = {
       name: ['a name'],
@@ -417,6 +365,7 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedPost = copyJsonObject(expectedResults);
           delete expectedPost.deleted_at;
+          delete expectedPost.users;
 
           // expect body of post request to be the new state of gwm
           expect(body).to.deep.equal(expectedPost);
@@ -458,6 +407,7 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedPost = copyJsonObject(expectedResults);
           delete expectedPost.deleted_at;
+          delete expectedPost.users;
 
           // expect body of post request to be the new state of gwm
           expect(body).to.deep.equal(expectedPost);
@@ -499,6 +449,7 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedPost = copyJsonObject(expectedResults);
           delete expectedPost.deleted_at;
+          delete expectedPost.users;
 
           // expect body of post request to be the new state of gwm
           expect(body).to.deep.equal(expectedPost);
@@ -528,6 +479,7 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedPost = copyJsonObject(expectedResults);
           delete expectedPost.deleted_at;
+          delete expectedPost.users;
 
           // expect body of post request to be the new state of gwm
           expect(body).to.deep.equal(expectedPost);
@@ -557,6 +509,7 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedPost = copyJsonObject(expectedResults);
           delete expectedPost.deleted_at;
+          delete expectedPost.users;
 
           // expect body of post request to be the new state of gwm
           expect(body).to.deep.equal(expectedPost);
@@ -586,6 +539,126 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedPost = copyJsonObject(expectedResults);
           delete expectedPost.deleted_at;
+          delete expectedPost.users;
+
+          // expect body of post request to be the new state of gwm
+          expect(body).to.deep.equal(expectedPost);
+
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+    it('successfully adds a new member', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedProjectNewMember);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const expectedResults = copyJsonObject(originalProject);
+          expectedResults.revision = 2;
+          expectedResults.updated_at = new Date().toISOString()
+                                                 .substring(0, 10);
+          expectedResults.users.thai = {member: true, spectator: false,
+                                                                manager: false};
+
+          const expectedPost = copyJsonObject(expectedResults);
+          delete expectedPost.deleted_at;
+          delete expectedPost.users;
+
+          // expect body of post request to be the new state of gwm
+          expect(body).to.deep.equal(expectedPost);
+
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+    it('successfully promotes an existing user', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedProjectPromotion);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const expectedResults = copyJsonObject(originalProject);
+          expectedResults.revision = 2;
+          expectedResults.updated_at = new Date().toISOString()
+                                                 .substring(0, 10);
+          expectedResults.users.mrsj = {member: true, spectator: true,
+                                                                manager: true};
+
+          const expectedPost = copyJsonObject(expectedResults);
+          delete expectedPost.deleted_at;
+          delete expectedPost.users;
+
+          // expect body of post request to be the new state of gwm
+          expect(body).to.deep.equal(expectedPost);
+
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+    it('successfully demotes an existing user', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedProjectDemotion);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const expectedResults = copyJsonObject(originalProject);
+          expectedResults.revision = 2;
+          expectedResults.updated_at = new Date().toISOString()
+                                                 .substring(0, 10);
+          expectedResults.users.mrsj = {member: true, spectator: false,
+                                                                manager: false};
+
+          const expectedPost = copyJsonObject(expectedResults);
+          delete expectedPost.deleted_at;
+          delete expectedPost.users;
+
+          // expect body of post request to be the new state of gwm
+          expect(body).to.deep.equal(expectedPost);
+
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+    it('successfully removes the calling user', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedProjectSelfRemoval);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const expectedResults = copyJsonObject(originalProject);
+          expectedResults.revision = 2;
+          expectedResults.updated_at = new Date().toISOString()
+                                                 .substring(0, 10);
+          delete expectedResults.users.tschuy;
+
+          const expectedPost = copyJsonObject(expectedResults);
+          delete expectedPost.deleted_at;
+          delete expectedPost.users;
 
           // expect body of post request to be the new state of gwm
           expect(body).to.deep.equal(expectedPost);
@@ -929,6 +1002,10 @@ module.exports = function(expect, request, baseUrl) {
       uri: 'https://github.com/osuosl/timesync-node',
       slugs: ['timesync-node', 'tsn'],
       name: 'TimeSync Node',
+      users: {
+        patcht: {member: true, spectator: true, manager: true},
+        thai: {member: true, spectator: true, manager: false},
+      },
     };
 
     // the project as added to the database
@@ -938,6 +1015,10 @@ module.exports = function(expect, request, baseUrl) {
       name: 'TimeSync Node',
       revision: 1,
       created_at: new Date().toISOString().substring(0, 10),
+      users: {
+        patcht: {member: true, spectator: true, manager: true},
+        thai: {member: true, spectator: true, manager: false},
+      },
     };
 
     // the base POST JSON
@@ -948,57 +1029,13 @@ module.exports = function(expect, request, baseUrl) {
       object: project,
     };
 
-    const initialProjects = [
-      {
-        uri: 'https://code.osuosl.org/projects/' +
-        'ganeti-webmgr',
-        name: 'Ganeti Web Manager',
-        slugs: ['ganeti-webmgr', 'gwm'],
-        deleted_at: null,
-        updated_at: null,
-        created_at: '2014-01-01',
-        uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-        revision: 1,
-      },
-      {
-        uri: 'https://code.osuosl.org/projects/pgd',
-        name: 'Protein Geometry Database',
-        slugs: ['pgd'],
-        deleted_at: null,
-        updated_at: null,
-        created_at: '2014-01-01',
-        uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
-        revision: 1,
-      },
-      {
-        uri: 'https://github.com/osu-cass/whats-fresh-api',
-        name: 'Whats Fresh',
-        slugs: ['wf'],
-        deleted_at: null,
-        updated_at: null,
-        created_at: '2014-01-01',
-        uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
-        revision: 1,
-      },
-      {
-        uri: 'https://github.com/osuosl/timesync',
-        name: 'Timesync',
-        slugs: ['timesync', 'ts'],
-        deleted_at: null,
-        updated_at: null,
-        created_at: '2014-01-01',
-        uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
-        revision: 1,
-      },
-    ];
-
     const requestOptions = {
       url: baseUrl + 'projects/',
       json: true,
       method: 'POST',
     };
 
-    function checkListEndpoint(done, token) {
+    function checkListEndpoint(done, expectedGetResults, token) {
       request.get(baseUrl + 'projects?token=' + token,
       function(getErr, getRes, getBody) {
         expect(getErr).to.be.a('null');
@@ -1006,7 +1043,7 @@ module.exports = function(expect, request, baseUrl) {
 
         const jsonGetBody = JSON.parse(getBody);
         // the projects/ list shouldn't have changed
-        expect(jsonGetBody).to.deep.have.same.members(initialProjects);
+        expect(jsonGetBody).to.deep.have.same.members(expectedGetResults);
         done();
       });
     }
@@ -1026,29 +1063,24 @@ module.exports = function(expect, request, baseUrl) {
           addedProject.uuid = body.uuid;
           expect(body).to.deep.equal(addedProject);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            // the projects/ endpoint should now have one more project
-            const expectedGetResults = initialProjects.concat([
-              {
-                uri: 'https://github.com/osuosl/timesync-node',
-                slugs: ['timesync-node', 'tsn'],
-                name: 'TimeSync Node',
-                deleted_at: null,
-                updated_at: null,
-                created_at: new Date().toISOString().substring(0, 10),
-                revision: 1,
-                uuid: addedProject.uuid,
+          const expectedGetResults = initialData.concat([
+            {
+              uri: 'https://github.com/osuosl/timesync-node',
+              slugs: ['timesync-node', 'tsn'],
+              name: 'TimeSync Node',
+              deleted_at: null,
+              updated_at: null,
+              created_at: new Date().toISOString().substring(0, 10),
+              revision: 1,
+              uuid: addedProject.uuid,
+              users: {
+                patcht: {member: true, spectator: true, manager: true},
+                thai: {member: true, spectator: true, manager: false},
               },
-            ]);
+            },
+          ]);
 
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            expect(JSON.parse(getBody))
-            .to.have.same.deep.members(expectedGetResults);
-            done();
-          });
+          checkListEndpoint(done, expectedGetResults, token);
         });
       });
     });
@@ -1076,29 +1108,24 @@ module.exports = function(expect, request, baseUrl) {
           addedProject.uuid = body.uuid;
           expect(body).to.deep.equal(addedProject);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            // the projects/ endpoint should now have one more project
-            const expectedGetResults = initialProjects.concat([
-              {
-                uri: 'https://github.com/osuosl/timesync-node',
-                slugs: ['timesync-node', 'tsn'],
-                name: 'TimeSync Node',
-                deleted_at: null,
-                updated_at: null,
-                created_at: new Date().toISOString().substring(0, 10),
-                revision: 1,
-                uuid: addedProject.uuid,
+          const expectedGetResults = initialData.concat([
+            {
+              uri: 'https://github.com/osuosl/timesync-node',
+              slugs: ['timesync-node', 'tsn'],
+              name: 'TimeSync Node',
+              deleted_at: null,
+              updated_at: null,
+              created_at: new Date().toISOString().substring(0, 10),
+              revision: 1,
+              uuid: addedProject.uuid,
+              users: {
+                patcht: {member: true, spectator: true, manager: true},
+                thai: {member: true, spectator: true, manager: false},
               },
-            ]);
+            },
+          ]);
 
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            expect(JSON.parse(getBody))
-            .to.have.same.deep.members(expectedGetResults);
-            done();
-          });
+          checkListEndpoint(done, expectedGetResults, token);
         });
       });
     });
@@ -1124,29 +1151,63 @@ module.exports = function(expect, request, baseUrl) {
           addedProject.uuid = body.uuid;
           expect(body).to.deep.equal(addedProject);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            // the projects/ endpoint should now have one more project
-            const expectedGetResults = initialProjects.concat([
-              {
-                uri: null,
-                slugs: ['timesync-node', 'tsn'],
-                name: 'TimeSync Node',
-                deleted_at: null,
-                updated_at: null,
-                created_at: new Date().toISOString().substring(0, 10),
-                revision: 1,
-                uuid: addedProject.uuid,
+          const expectedGetResults = initialData.concat([
+            {
+              uri: null,
+              slugs: ['timesync-node', 'tsn'],
+              name: 'TimeSync Node',
+              deleted_at: null,
+              updated_at: null,
+              created_at: new Date().toISOString().substring(0, 10),
+              revision: 1,
+              uuid: addedProject.uuid,
+              users: {
+                patcht: {member: true, spectator: true, manager: true},
+                thai: {member: true, spectator: true, manager: false},
               },
-            ]);
+            },
+          ]);
 
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
+          checkListEndpoint(done, expectedGetResults, token);
+        });
+      });
+    });
 
-            const jsonBody = JSON.parse(getBody);
-            expect(jsonBody).to.deep.have.same.members(expectedGetResults);
-            done();
-          });
+    it('successfully creates a new project with no users', function(done) {
+      getAPIToken().then(function(token) {
+        // remove uri from post data
+        const postNoUsers = copyJsonObject(postArg);
+        delete postNoUsers.object.users;
+        requestOptions.body = postNoUsers;
+
+        requestOptions.body.auth.token = token;
+
+        // remove uri from test object
+        const newProjectNoUsers = copyJsonObject(newProject);
+        delete newProjectNoUsers.users;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const addedProject = copyJsonObject(newProjectNoUsers);
+          addedProject.uuid = body.uuid;
+          expect(body).to.deep.equal(addedProject);
+
+          const expectedGetResults = initialData.concat([
+            {
+              uri: 'https://github.com/osuosl/timesync-node',
+              slugs: ['timesync-node', 'tsn'],
+              name: 'TimeSync Node',
+              deleted_at: null,
+              updated_at: null,
+              created_at: new Date().toISOString().substring(0, 10),
+              revision: 1,
+              uuid: addedProject.uuid,
+            },
+          ]);
+
+          checkListEndpoint(done, expectedGetResults, token);
         });
       });
     });
@@ -1164,16 +1225,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body.error).to.equal('Authentication failure');
           expect(body.text).to.equal('Bad API token');
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialProjects);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1200,16 +1252,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body.text).to.equal('mrsj is not authorized to create ' +
               'projects');
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialProjects);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1233,16 +1276,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(400);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialProjects);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1267,16 +1301,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(400);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialProjects);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1307,16 +1332,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(409);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialProjects);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1339,16 +1355,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(400);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialProjects);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1371,16 +1378,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(400);
 
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonGetBody = JSON.parse(getBody);
-            // the projects/ list shouldn't have changed
-            expect(jsonGetBody).to.deep.have.same.members(initialProjects);
-            done();
-          });
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1398,7 +1396,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body.text).to.equal('Field slugs of' +
           ' project should be array but was sent as string');
 
-          checkListEndpoint(done, token);
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1416,7 +1414,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body.text).to.equal('Field name of' +
           ' project should be string but was sent as array');
 
-          checkListEndpoint(done, token);
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1434,7 +1432,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body.text).to.equal('Field uri of' +
           ' project should be string but was sent as array');
 
-          checkListEndpoint(done, token);
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1477,7 +1475,19 @@ module.exports = function(expect, request, baseUrl) {
 
           expect(res.statusCode).to.equal(405);
           expect(jsonBody).to.deep.equal(expectedResult);
-          done();
+
+          request.get(baseUrl + 'projects?token=' + token,
+          function(getErr, getRes, getBody) {
+            const jsonGetBody = JSON.parse(getBody);
+            const expectedGetResult = initialData.filter(function(project) {
+              return project.deleted_at === null;
+            });
+
+            expect(getRes.statusCode).to.equal(200);
+            expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
+
+            done();
+          });
         });
       });
     });
@@ -1500,49 +1510,9 @@ module.exports = function(expect, request, baseUrl) {
           request.get(baseUrl + 'projects?token=' + token,
           function(getErr, getRes, getBody) {
             const jsonGetBody = JSON.parse(getBody);
-            const expectedGetResult = [
-              {
-                uri: 'https://code.osuosl.org/projects/ganeti-' +
-                'webmgr',
-                name: 'Ganeti Web Manager',
-                slugs: ['ganeti-webmgr', 'gwm'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-                revision: 1,
-              },
-              {
-                uri: 'https://code.osuosl.org/projects/pgd',
-                name: 'Protein Geometry Database',
-                slugs: ['pgd'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
-                revision: 1,
-              },
-              {
-                uri: 'https://github.com/osu-cass/whats-fresh-api',
-                name: 'Whats Fresh',
-                slugs: ['wf'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
-                revision: 1,
-              },
-              {
-                uri: 'https://github.com/osuosl/timesync',
-                name: 'Timesync',
-                slugs: ['timesync', 'ts'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
-                revision: 1,
-              },
-            ];
+            const expectedGetResult = initialData.filter(function(project) {
+              return project.deleted_at === null;
+            });
 
             expect(getRes.statusCode).to.equal(200);
             expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
@@ -1553,7 +1523,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('Fails if it receives an non-existent project', function(done) {
+    it('Fails if it receives a non-existent project', function(done) {
       getAPIToken().then(function(token) {
         request.del(baseUrl + 'projects/doesntexist?token=' + token,
         function(err, res, body) {
@@ -1570,52 +1540,9 @@ module.exports = function(expect, request, baseUrl) {
           request.get(baseUrl + 'projects?token=' + token,
           function(getErr, getRes, getBody) {
             const jsonGetBody = JSON.parse(getBody);
-            const expectedGetResult = [
-              {
-                uri: 'https://code.osuosl.org/projects/ganeti-' +
-                'webmgr',
-                name: 'Ganeti Web Manager',
-                slugs: ['ganeti-webmgr', 'gwm'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-                revision: 1,
-              },
-              {
-                uri: 'https://code.osuosl.org/projects/pgd',
-                name: 'Protein Geometry Database',
-                slugs: ['pgd'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
-                revision: 1,
-              },
-              {
-                uri: 'https://github.com/osu-cass/whats-fresh-api',
-                name: 'Whats Fresh',
-                slugs: ['wf'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
-                revision: 1,
-              },
-              {
-                uri: 'https://github.com/osuosl/timesync',
-                name: 'Timesync',
-                slugs: ['timesync', 'ts'],
-                revision: 1,
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
-              },
-            ];
 
             expect(getRes.statusCode).to.equal(200);
-            expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
+            expect(jsonGetBody).to.deep.have.same.members(initialData);
             done();
           });
         });
@@ -1647,52 +1574,9 @@ module.exports = function(expect, request, baseUrl) {
           request.get(baseUrl + 'projects?token=' + token,
           function(getErr, getRes, getBody) {
             const jsonGetBody = JSON.parse(getBody);
-            const expectedGetResult = [
-              {
-                uri: 'https://code.osuosl.org/projects/ganeti-' +
-                'webmgr',
-                name: 'Ganeti Web Manager',
-                slugs: ['ganeti-webmgr', 'gwm'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-                revision: 1,
-              },
-              {
-                uri: 'https://code.osuosl.org/projects/pgd',
-                name: 'Protein Geometry Database',
-                slugs: ['pgd'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
-                revision: 1,
-              },
-              {
-                uri: 'https://github.com/osu-cass/whats-fresh-api',
-                name: 'Whats Fresh',
-                slugs: ['wf'],
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
-                revision: 1,
-              },
-              {
-                uri: 'https://github.com/osuosl/timesync',
-                name: 'Timesync',
-                slugs: ['timesync', 'ts'],
-                revision: 1,
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
-              },
-            ];
 
             expect(getRes.statusCode).to.equal(200);
-            expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
+            expect(jsonGetBody).to.deep.have.same.members(initialData);
             done();
           });
         });
@@ -1704,34 +1588,46 @@ module.exports = function(expect, request, baseUrl) {
     const currentTime = new Date().toISOString().substring(0, 10);
 
     const noParentsData = {
-      'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
-      'name': 'GANETI WEB MANAGER',
-      'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
-      'revision': 2,
-      'deleted_at': null,
-      'updated_at': currentTime,
-      'created_at': '2014-01-01',
-      'slugs': ['ganeti-webmgr', 'gwm'],
+      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      name: 'GANETI WEB MANAGER',
+      uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      revision: 2,
+      deleted_at: null,
+      updated_at: currentTime,
+      created_at: '2014-01-01',
+      slugs: ['ganeti-webmgr', 'gwm'],
+      users: {
+        tschuy: {member: true, spectator: true, manager: true},
+        mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+        deanj: {member: true, spectator: true, manager: false},
+      },
     };
 
     const withParentsData = {
-      'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
-      'name': 'GANETI WEB MANAGER',
-      'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
-      'revision': 2,
-      'deleted_at': null,
-      'updated_at': currentTime,
-      'created_at': '2014-01-01',
-      'slugs': ['ganeti-webmgr', 'gwm'],
+      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      name: 'GANETI WEB MANAGER',
+      uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      revision: 2,
+      deleted_at: null,
+      updated_at: currentTime,
+      created_at: '2014-01-01',
+      slugs: ['ganeti-webmgr', 'gwm'],
+      users: {
+        tschuy: {member: true, spectator: true, manager: true},
+        mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+        deanj: {member: true, spectator: true, manager: false},
+      },
       'parents': [
         {
-          'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
-          'name': 'Ganeti Web Manager',
-          'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
-          'revision': 1,
-          'deleted_at': null,
-          'updated_at': null,
-          'created_at': '2014-01-01',
+          uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+          name: 'Ganeti Web Manager',
+          uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+          revision: 1,
+          deleted_at: null,
+          updated_at: null,
+          created_at: '2014-01-01',
         },
       ],
     };
@@ -1819,34 +1715,46 @@ module.exports = function(expect, request, baseUrl) {
     const project = 'gwm';
 
     const noParentsData = {
-      'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
-      'name': 'GANETI WEB MANAGER',
-      'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
-      'revision': 2,
-      'deleted_at': null,
-      'updated_at': currentTime,
-      'created_at': '2014-01-01',
-      'slugs': ['ganeti-webmgr', 'gwm'],
+      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      name: 'GANETI WEB MANAGER',
+      uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      revision: 2,
+      deleted_at: null,
+      updated_at: currentTime,
+      created_at: '2014-01-01',
+      slugs: ['ganeti-webmgr', 'gwm'],
+      users: {
+        tschuy: {member: true, spectator: true, manager: true},
+        mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+        deanj: {member: true, spectator: true, manager: false},
+      },
     };
 
     const withParentsData = {
-      'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
-      'name': 'GANETI WEB MANAGER',
-      'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
-      'revision': 2,
-      'deleted_at': null,
-      'updated_at': currentTime,
-      'created_at': '2014-01-01',
-      'slugs': ['ganeti-webmgr', 'gwm'],
+      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      name: 'GANETI WEB MANAGER',
+      uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      revision: 2,
+      deleted_at: null,
+      updated_at: currentTime,
+      created_at: '2014-01-01',
+      slugs: ['ganeti-webmgr', 'gwm'],
+      users: {
+        tschuy: {member: true, spectator: true, manager: true},
+        mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+        deanj: {member: true, spectator: true, manager: false},
+      },
       'parents': [
         {
-          'uri': 'https://code.osuosl.org/projects/ganeti-webmgr',
-          'name': 'Ganeti Web Manager',
-          'uuid': 'c285963e-192b-4e99-9d92-a940519f1fbd',
-          'revision': 1,
-          'deleted_at': null,
-          'updated_at': null,
-          'created_at': '2014-01-01',
+          uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+          name: 'Ganeti Web Manager',
+          uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+          revision: 1,
+          deleted_at: null,
+          updated_at: null,
+          created_at: '2014-01-01',
         },
       ],
     };
