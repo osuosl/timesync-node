@@ -457,13 +457,6 @@
     },
     {
       "project":"projects:3",
-      "user":"users:1",
-      "manager": false,
-      "member": true,
-      "spectator": false
-    },
-    {
-      "project":"projects:4",
       "user":"users:2",
       "manager": true,
       "member": true,
@@ -471,8 +464,8 @@
     },
     {
       "project":"projects:4",
-      "user":"users:1",
-      "manager": false,
+      "user":"users:5",
+      "manager": true,
       "member": true,
       "spectator": true
     },

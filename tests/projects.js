@@ -705,6 +705,7 @@ module.exports = function(expect, request, baseUrl) {
 
           const expectedPost = copyJsonObject(expectedResults);
           delete expectedPost.deleted_at;
+          delete expectedPost.users;
 
           // expect body of post request to be the new state of gwm
           expect(body).to.deep.equal(expectedPost);
@@ -1326,6 +1327,7 @@ module.exports = function(expect, request, baseUrl) {
               uri: 'https://github.com/osuosl/timesync-node',
               slugs: ['timesync-node', 'tsn'],
               name: 'TimeSync Node',
+              default_activity: 'meeting',
               deleted_at: null,
               updated_at: null,
               created_at: new Date().toISOString().substring(0, 10),
@@ -1617,7 +1619,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(409);
 
-          checkListEndpoint(done, token);
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
@@ -1640,7 +1642,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(body).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(400);
 
-          checkListEndpoint(done, token);
+          checkListEndpoint(done, initialData, token);
         });
       });
     });
