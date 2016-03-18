@@ -29,6 +29,6 @@ projects.
   - Member of: WF
 
 6) MaraJade's password is ``wording``
-- Project manager for: Chili Project (deleted) and GWM
-- Member of: Chili Project and GWM
-- Spectator of: Chili Project and GWM
+  - Project manager for: Chili Project (deleted) and GWM
+  - Member of: Chili Project and GWM
+  - Spectator of: Chili Project and GWM

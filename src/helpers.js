@@ -79,12 +79,18 @@ module.exports = function(app) {
         /* eslint-enable prefer-const */
         const fieldValue = helpers.getType(object[field.name]);
         if (fieldValue !== field.type) {
-          if (object[field.name] === undefined && !field.required) {
-            // if the field isn't required, and it's undefined,
-            // skip it
-            continue;
+          if (object[field.name] === undefined) {
+            if (!field.required) {
+              // if the field isn't required, and it's undefined,
+              // skip it
+              continue;
+            } else {
+              field.missing = true;
+              return field;
+            }
           }
 
+          field.missing = false;
           field.actualType = fieldValue;
           return field;
         }

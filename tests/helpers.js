@@ -34,7 +34,7 @@ module.exports = function(expect, app) {
         name: 'integer',
         type: 'number',
         required: true,
-        actualType: 'undefined',
+        missing: true,
       };
 
       expect(validation).to.deep.equal(expectedReturn);
@@ -46,7 +46,7 @@ module.exports = function(expect, app) {
       const fields = [
         {name: 'string', type: 'string', required: true},
         {name: 'array', type: 'array', required: true},
-        {name: 'integer', type: 'number', required: true},
+        {name: 'integer', type: 'number', required: false},
       ];
 
       const validation = helpers.validateFields(obj, fields);
@@ -54,8 +54,9 @@ module.exports = function(expect, app) {
       const expectedReturn = {
         name: 'integer',
         type: 'number',
-        required: true,
+        required: false,
         actualType: 'string',
+        missing: false,
       };
 
       expect(validation).to.deep.equal(expectedReturn);

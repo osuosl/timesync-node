@@ -20,6 +20,7 @@ module.exports = function(app) {
       name: inProject.name,
       uri: inProject.uri,
       uuid: inProject.uuid,
+      default_activity: inProject.default_activity,
       revision: inProject.revision,
     };
     if (slugs) { outProject.slugs = slugs.sort(); }
@@ -60,7 +61,7 @@ module.exports = function(app) {
         req.query.include_deleted === '') {
       projectsQ = knex('projects');
     } else {
-      projectsQ = knex('projects').where({deleted_at: null});
+      projectsQ = knex('projects').where({'projects.deleted_at': null});
     }
 
     projectsQ = projectsQ.select(
@@ -70,6 +71,7 @@ module.exports = function(app) {
       'projects.uri as uri',
       'projects.name as name',
       'projects.uuid as uuid',
+      'activities.slug as default_activity',
       'projects.revision as revision',
       'projects.deleted_at as deleted_at',
       'projects.updated_at as updated_at',
@@ -77,10 +79,11 @@ module.exports = function(app) {
       'projects.newest as newest',
       'projects.id as id') // id will be stripped in constructProject() anyway
     // Order them from most recently updated to last updated
-    .orderBy('revision')
+    .orderBy('projects.revision')
     // Do a left join so we keep projects without a slug field
     // https://en.wikipedia.org/wiki/Join_(SQL)#Left_outer_join for more info.
-    .leftOuterJoin('projectslugs', 'projects.id', 'projectslugs.project');
+    .leftOuterJoin('projectslugs', 'projects.id', 'projectslugs.project')
+    .leftOuterJoin('activities', 'projects.default_activity', 'activities.id');
     // Yes this code is duplicated in both GET endpoints. If you have strong
     // feelings about this, change it. kthnkxby
 
@@ -139,7 +142,7 @@ module.exports = function(app) {
     } else {
       // If the 'slugs' field is null that means the object is a parent
       // Children may have empty slug fields `[]` but not null.
-      projectsQ.where({newest: true}).then(function(projects) {
+      projectsQ.where({'projects.newest': true}).then(function(projects) {
         if (projects.length === 0) {
           return res.send([]);
         }
@@ -215,6 +218,7 @@ module.exports = function(app) {
       'projects.uri as uri',
       'projects.name as name',
       'projects.uuid as uuid',
+      'activities.slug as default_activity',
       'projects.revision as revision',
       'projects.deleted_at as deleted_at',
       'projects.updated_at as updated_at',
@@ -226,8 +230,9 @@ module.exports = function(app) {
     // Do a left join so we keep projects without a slug field
     // https://en.wikipedia.org/wiki/Join_(SQL)#Left_outer_join for more info.
     .leftOuterJoin('projectslugs', 'projects.id', 'projectslugs.project')
+    .leftOuterJoin('activities', 'projects.default_activity', 'activities.id')
     // Matching on the uuid subquery (comments above)
-    .where({'uuid': uuidSubquery});
+    .where({'projects.uuid': uuidSubquery});
 
     // The 'include_revisions' query  parameter was included
     if (req.query.include_revisions === 'true' ||
@@ -278,7 +283,7 @@ module.exports = function(app) {
 
     // The 'include_revisions' query  parameter was *not* included
     } else {
-      projectQ.andWhere({newest: true}).then(function(project) {
+      projectQ.andWhere({'projects.newest': true}).then(function(project) {
         if (!project || project.length === 0) {
           const err = errors.errorObjectNotFound('project');
           return res.status(err.status).send(err);
@@ -328,7 +333,7 @@ module.exports = function(app) {
 
     // run various checks
     // valid keys
-    const validKeys = ['name', 'uri', 'slugs', 'users'];
+    const validKeys = ['name', 'uri', 'slugs', 'users', 'default_activity'];
     /* eslint-disable prefer-const */
     for (let key in obj) {
       /* eslint-enable prefer-const */
@@ -340,34 +345,34 @@ module.exports = function(app) {
       }
     }
 
-    // check existence of slugs
-    if (!obj.slugs) {
-      const err = errors.errorBadObjectMissingField('project', 'slug');
-      return res.status(err.status).send(err);
-    }
-
-    // check existence of name
-    if (!obj.name) {
-      const err = errors.errorBadObjectMissingField('project', 'name');
-      return res.status(err.status).send(err);
-    }
-
     // check field types
     const fields = [
       {name: 'name', type: 'string', required: true},
       {name: 'uri', type: 'string', required: false},
       {name: 'slugs', type: 'array', required: true},
       {name: 'users', type: 'object', required: false},
+      {name: 'default_activity', type: 'string', required: false},
     ];
 
     // validateFields takes the object to check fields on,
     // and an array of field names and types
     const validationFailure = helpers.validateFields(obj, fields);
     if (validationFailure) {
-      const err = errors.errorBadObjectInvalidField('project',
-        validationFailure.name, validationFailure.type,
-        validationFailure.actualType);
-      return res.status(err.status).send(err);
+      let err;
+      if (validationFailure.missing) {
+        err = errors.errorBadObjectMissingField('project',
+          validationFailure.name);
+      } else {
+        if (validationFailure.name !== 'default_activity' ||
+            validationFailure.actualType !== 'null') {
+          err = errors.errorBadObjectInvalidField('project',
+            validationFailure.name, validationFailure.type,
+            validationFailure.actualType);
+        }
+      }
+      if (err) {
+        return res.status(err.status).send(err);
+      }
     }
 
     // check validity of uri syntax
@@ -393,106 +398,113 @@ module.exports = function(app) {
     // currently in use.
     knex('projectslugs').where('name', 'in', obj.slugs)
     .then(function(slugs) {
-      // if any slugs match the slugs passed to us, error out
-      if (slugs.length) {
-        const err = errors.errorSlugsAlreadyExist(slugs.map(function(slug) {
-          return slug.name;
-        }));
+      const activity = obj.default_activity ? [obj.default_activity] : [];
 
-        return res.status(err.status).send(err);
-      }
+      helpers.checkActivities(activity).then(function(activityId) {
+        // if any slugs match the slugs passed to us, error out
+        if (slugs.length) {
+          const err = errors.errorSlugsAlreadyExist(slugs.map(function(slug) {
+            return slug.name;
+          }));
 
-      obj.uuid = uuid.v4();
-      obj.created_at = Date.now();
-      obj.revision = 1;
+          return res.status(err.status).send(err);
+        }
 
-      // create object to insert into database
-      const insertion = {
-        uri: obj.uri,
-        name: obj.name,
-        uuid: obj.uuid,
-        created_at: obj.created_at,
-        revision: 1,
-      };
+        obj.uuid = uuid.v4();
+        obj.created_at = Date.now();
+        obj.revision = 1;
 
-      knex.transaction(function(trx) {
-        /* 'You take the trx.rollback(), the story ends. You wake up in your
-            bed and none of the database calls ever happened. You take the
-            trx.commit(), you stay in wonderland, and everything is saved to
-            the database.' */
+        // create object to insert into database
+        const insertion = {
+          uri: obj.uri,
+          name: obj.name,
+          uuid: obj.uuid,
+          default_activity: activityId[0] || null,
+          created_at: obj.created_at,
+          revision: 1,
+        };
 
-        // trx can be used just like knex, but every call is temporary until
-        // trx.commit() is called. Until then, they're stored separately, and,
-        // if something goes wrong, can be rolled back without side effects.
-        trx('projects').insert(insertion).returning('id')
-        .then(function(projects) {
-          // project is a list containing the ID of the
-          // newly created project
-          const project = projects[0];
-          const projectSlugs = obj.slugs.map(function(slug) {
-            return {name: slug, project: project};
-          });
+        knex.transaction(function(trx) {
+          /* 'You take the trx.rollback(), the story ends. You wake up in your
+              bed and none of the database calls ever happened. You take the
+              trx.commit(), you stay in wonderland, and everything is saved to
+              the database.' */
 
-          trx('projectslugs').insert(projectSlugs).then(function() {
-            if (obj.users) {
-              trx('users').select('username', 'id')
-              .whereIn('username', Object.keys(obj.users))
-              .then(function(userIds) {
-                const roles = [];
-                const userMap = {};
-                /* eslint-disable prefer-const */
-                for (let userId of userIds) {
-                  userMap[userId.username] = userId.id;
-                }
-                /* eslint-disable guard-for-in */
-                for (let username in obj.users) {
-                /* eslint-enable prefer-const */
-                  const role = obj.users[username];
-                  const newRole = {
-                    user: userMap[username],
-                    project: project,
-                    member: role.member,
-                    spectator: role.spectator,
-                    manager: role.manager,
-                  };
-                  roles.push(newRole);
-                }
-                /* eslint-enable guard-for-in */
+          // trx can be used just like knex, but every call is temporary until
+          // trx.commit() is called. Until then, they're stored separately, and,
+          // if something goes wrong, can be rolled back without side effects.
+          trx('projects').insert(insertion).returning('id')
+          .then(function(projects) {
+            // project is a list containing the ID of the
+            // newly created project
+            const project = projects[0];
+            const projectSlugs = obj.slugs.map(function(slug) {
+              return {name: slug, project: project};
+            });
+            trx('projectslugs').insert(projectSlugs).then(function() {
+              if (obj.users) {
+                trx('users').select('username', 'id')
+                .whereIn('username', Object.keys(obj.users))
+                .then(function(userIds) {
+                  const roles = [];
+                  const userMap = {};
+                  /* eslint-disable prefer-const */
+                  for (let userId of userIds) {
+                    userMap[userId.username] = userId.id;
+                  }
+                  /* eslint-disable guard-for-in */
+                  for (let username in obj.users) {
+                  /* eslint-enable prefer-const */
+                    const role = obj.users[username];
+                    const newRole = {
+                      user: userMap[username],
+                      project: project,
+                      member: role.member,
+                      spectator: role.spectator,
+                      manager: role.manager,
+                    };
+                    roles.push(newRole);
+                  }
+                  /* eslint-enable guard-for-in */
 
-                trx('userroles').insert(roles).then(function() {
-                  obj.created_at = new Date(obj.created_at)
-                  .toISOString().substring(0, 10);
+                  trx('userroles').insert(roles).then(function() {
+                    obj.created_at = new Date(obj.created_at)
+                    .toISOString().substring(0, 10);
 
-                  trx.commit();
-                  return res.send(JSON.stringify(obj));
+                    trx.commit();
+                    return res.send(JSON.stringify(obj));
+                  }).catch(function(error) {
+                    log.error(req, 'Error creating user roles for project: ' +
+                                                                        error);
+                    trx.rollback();
+                  });
                 }).catch(function(error) {
-                  log.error(req, 'Error creating user roles for project: ' +
+                  log.error(req, 'Error requesting users for project roles: ' +
                                                                         error);
                   trx.rollback();
                 });
-              }).catch(function(error) {
-                log.error(req, 'Error requesting users for project roles: ' +
-                                                                        error);
-                trx.rollback();
-              });
-            } else {
-              obj.created_at = new Date(obj.created_at)
-              .toISOString().substring(0, 10);
+              } else {
+                obj.created_at = new Date(obj.created_at)
+                .toISOString().substring(0, 10);
 
-              trx.commit();
-              return res.send(JSON.stringify(obj));
-            }
+                trx.commit();
+                return res.send(JSON.stringify(obj));
+              }
+            }).catch(function(error) {
+              log.error(req, 'Error inserting new project slugs: ' + error);
+              trx.rollback();
+            });
           }).catch(function(error) {
-            log.error(req, 'Error creating project slugs: ' + error);
+            log.error(req, 'Error creating updated project: ' + error);
             trx.rollback();
           });
         }).catch(function(error) {
-          log.error(req, 'Error creating updated project: ' + error);
-          trx.rollback();
+          log.error(req, 'Rolling back transaction.');
+          const err = errors.errorServerError(error);
+          return res.status(err.status).send(err);
         });
-      }).catch(function(error) {
-        log.error(req, 'Rolling back transaction.');
-        const err = errors.errorServerError(error);
+      }).catch(function() {
+        const err = errors.errorInvalidForeignKey('project', 'activity');
         return res.status(err.status).send(err);
       });
     }).catch(function(error) {
@@ -508,7 +520,7 @@ module.exports = function(app) {
     const obj = req.body.object;
 
     // valid keys
-    const validKeys = ['name', 'uri', 'slugs', 'users'];
+    const validKeys = ['name', 'uri', 'slugs', 'users', 'default_activity'];
     /* eslint-disable prefer-const */
     for (let key in obj) {
       /* eslint-enable prefer-const */
@@ -526,16 +538,28 @@ module.exports = function(app) {
       {name: 'uri', type: 'string', required: false},
       {name: 'slugs', type: 'array', required: false},
       {name: 'users', type: 'object', required: false},
+      {name: 'default_activity', type: 'string', required: false},
     ];
 
     // validateFields takes the object to check fields on,
     // and an array of field names and types
     const validationFailure = helpers.validateFields(obj, fields);
     if (validationFailure) {
-      const err = errors.errorBadObjectInvalidField('project',
-        validationFailure.name, validationFailure.type,
-        validationFailure.actualType);
-      return res.status(err.status).send(err);
+      let err;
+      if (validationFailure.missing) {
+        err = errors.errorBadObjectMissingField('project',
+          validationFailure.name);
+      } else {
+        if (validationFailure.name !== 'default_activity' ||
+            validationFailure.actualType !== 'null') {
+          err = errors.errorBadObjectInvalidField('project',
+            validationFailure.name, validationFailure.type,
+            validationFailure.actualType);
+        }
+      }
+      if (err) {
+        return res.status(err.status).send(err);
+      }
     }
 
     // check validity of uri syntax
@@ -573,11 +597,16 @@ module.exports = function(app) {
     knex('projects').first().select('projects.id as id',
     'projects.name as name', 'projects.uri as uri',
     'projects.uuid as uuid', 'projects.revision as revision',
+    'activities.slug as default_activity_name',
     'projects.created_at as created_at')
     .where('projects.id', '=', projectIdQuery)
+    .leftJoin('activities', 'activities.id', 'projects.default_activity')
     .then(function(project) {
       // project contains all of the information about the project the
       // user is updating
+
+      const defaultActivityName = project.default_activity_name;
+      delete project.default_activity_name;
 
       // access userroles, check if user is participating in project
       knex('userroles').first().where({user: user.id, project: project.id})
@@ -589,218 +618,242 @@ module.exports = function(app) {
           return res.status(err.status).send(err);
         }
 
-        knex('projectslugs').where('name', 'in', obj.slugs)
-        .then(function(slugs) {
-          // slugs contains all of the slugs named by the user that
-          // currently exist in the database. This list is used to
-          // check that they're not overlapping with existing slugs.
+        const update = function(activityId) {
+          knex('projectslugs').where('name', 'in', obj.slugs)
+          .then(function(slugs) {
+            // slugs contains all of the slugs named by the user that
+            // currently exist in the database. This list is used to
+            // check that they're not overlapping with existing slugs.
 
-          // final check: do any of the slugs POSTed to this
-          // endpoint already belong to some other project?
+            // final check: do any of the slugs POSTed to this
+            // endpoint already belong to some other project?
 
-          let overlappingSlugs = slugs.filter(function(slug) {
-            return slug.project !== project.id;
-          });
-
-          if (overlappingSlugs.length) {
-            overlappingSlugs = overlappingSlugs.map(function(slug) {
-              return slug.name;
+            let overlappingSlugs = slugs.filter(function(slug) {
+              return slug.project !== project.id;
             });
 
-            const err = errors.errorSlugsAlreadyExist(overlappingSlugs);
-            return res.status(err.status).send(err);
-          }
-          // all checks have passed
+            if (overlappingSlugs.length) {
+              overlappingSlugs = overlappingSlugs.map(function(slug) {
+                return slug.name;
+              });
 
-          // modify the project object gotten from the database
-          // and then reinsert it into the database
+              const err = errors.errorSlugsAlreadyExist(overlappingSlugs);
+              return res.status(err.status).send(err);
+            }
 
-          // when using knex.update() I have better luck updating
-          // the entire object, even fields that aren't changed
-          project.uri = obj.uri || project.uri;
-          project.name = obj.name || project.name;
-          project.revision += 1;
-          project.created_at = parseInt(project.created_at, 10);
-          project.updated_at = Date.now();
-          project.newest = true;
+            // all checks have passed
 
-          const oldId = project.id;
-          delete project.id;
+            // modify the project object gotten from the database
+            // and then reinsert it into the database
 
-          // trx can be used just like knex, but every call is temporary
-          // until trx.commit() is called. Until then, they're stored
-          // separately, and, if something goes wrong, can be rolled
-          // back without side effects.
-          knex.transaction(function(trx) {
-            trx('projects').update({newest: false}).where({id: oldId})
-            .then(function() {
-              trx('projects').insert(project).returning('id')
-              .then(function(id) {
-                const projID = id[0];
+            // when using knex.update() I have better luck updating
+            // the entire object, even fields that aren't changed
+            project.uri = obj.uri || project.uri;
+            project.name = obj.name || project.name;
+            project.default_activity =
+              helpers.getType(activityId) === 'array' ?
+              activityId[0] :
+              activityId;
+            project.revision += 1;
+            project.created_at = parseInt(project.created_at, 10);
+            project.updated_at = Date.now();
+            project.newest = true;
 
-                project.created_at = new Date(project.created_at)
-                .toISOString().substring(0, 10);
-                project.updated_at = new Date(project.updated_at)
-                .toISOString().substring(0, 10);
+            const oldId = project.id;
+            delete project.id;
 
-                if (obj.users) {
-                  trx('userroles').where({project: oldId})
-                  .del().then(function() {
-                    const newRoles = [];
-                    trx('users').select('username', 'id')
-                    .whereIn('username', Object.keys(obj.users))
-                    .then(function(userIds) {
-                      const userMap = {};
-                      /* eslint-disable prefer-const */
-                      for (let userId of userIds) {
-                        userMap[userId.username] = userId.id;
-                      }
-                      /* eslint-disable guard-for-in */
-                      for (let username in obj.users) {
-                      /* eslint-enable prefer-const */
-                        const role = obj.users[username];
-                        const newRole = {
-                          user: userMap[username],
-                          project: projID,
-                          member: role.member,
-                          spectator: role.spectator,
-                          manager: role.manager,
-                        };
-                        newRoles.push(newRole);
-                      }
-                      trx('userroles').insert(newRoles).then(function() {
-                        trx('projectslugs').where({project: oldId})
-                        .then(function(existingSlugObjs) {
-                          const existingSlugs = existingSlugObjs.map(
-                          function(slug) {
-                            return slug.name;
-                          });
+            // trx can be used just like knex, but every call is temporary
+            // until trx.commit() is called. Until then, they're stored
+            // separately, and, if something goes wrong, can be rolled
+            // back without side effects.
+            knex.transaction(function(trx) {
+              trx('projects').update({newest: false}).where({id: oldId})
+              .then(function() {
+                trx('projects').insert(project).returning('id')
+                .then(function(id) {
+                  const projID = id[0];
 
-                          if (helpers.getType(obj.slugs) === 'array') {
-                            const newSlugs = [];
+                  project.created_at = new Date(project.created_at)
+                  .toISOString().substring(0, 10);
+                  project.updated_at = new Date(project.updated_at)
+                  .toISOString().substring(0, 10);
+                  project.default_activity = obj.default_activity ||
+                                                    defaultActivityName;
 
-                            newSlugs.push(trx('projectslugs').del()
-                            .where({project: oldId}));
+                  if (obj.users) {
+                    trx('userroles').where({project: oldId})
+                    .del().then(function() {
+                      const newRoles = [];
+                      trx('users').select('username', 'id')
+                      .whereIn('username', Object.keys(obj.users))
+                      .then(function(userIds) {
+                        const userMap = {};
+                        /* eslint-disable prefer-const */
+                        for (let userId of userIds) {
+                          userMap[userId.username] = userId.id;
+                        }
 
-                            /* eslint-disable */
-                            for (let slug of obj.slugs) {
-                            /* eslint-enable */
-                              newSlugs.push(trx('projectslugs')
-                              .insert({project: projID, name: slug}));
-                            }
-
-                            Promise.all(newSlugs).then(function() {
-                              project.slugs = obj.slugs.sort();
-                              delete project.newest;
-                              trx.commit();
-                              res.send(JSON.stringify(project));
-                            }).catch(function(error) {
-                              log.error(req, 'Error inserting slugs: ' + error);
-                              trx.rollback();
+                        /* eslint-disable guard-for-in */
+                        for (let username in obj.users) {
+                        /* eslint-enable prefer-const */
+                          const role = obj.users[username];
+                          const newRole = {
+                            user: userMap[username],
+                            project: projID,
+                            member: role.member,
+                            spectator: role.spectator,
+                            manager: role.manager,
+                          };
+                          newRoles.push(newRole);
+                        }
+                        trx('userroles').insert(newRoles).then(function() {
+                          trx('projectslugs').where({project: oldId})
+                          .then(function(existingSlugObjs) {
+                            const existingSlugs = existingSlugObjs.map(
+                            function(slug) {
+                              return slug.name;
                             });
-                          } else {
-                            trx('projectslugs').update({project: projID})
-                            .where({project: oldId}).then(function() {
-                              project.slugs = existingSlugs.sort();
-                              delete project.newest;
-                              trx.commit();
-                              res.send(project);
-                            }).catch(function(error) {
-                              log.error(req, 'Error inserting slugs: ' + error);
-                              trx.rollback();
-                            });
-                          }
-                        }).catch(function(error) {
-                          log.error(req, 'Error retrieving existing slugs: ' +
+
+                            if (helpers.getType(obj.slugs) === 'array') {
+                              const newSlugs = [];
+
+                              newSlugs.push(trx('projectslugs').del()
+                              .where({project: oldId}));
+
+                              /* eslint-disable */
+                              for (let slug of obj.slugs) {
+                              /* eslint-enable */
+                                newSlugs.push(trx('projectslugs')
+                                .insert({project: projID, name: slug}));
+                              }
+
+                              Promise.all(newSlugs).then(function() {
+                                project.slugs = obj.slugs.sort();
+                                delete project.newest;
+                                trx.commit();
+                                res.send(JSON.stringify(project));
+                              }).catch(function(error) {
+                                log.error(req, 'Error inserting slugs: ' +
                                                                         error);
+                                trx.rollback();
+                              });
+                            } else {
+                              trx('projectslugs').update({project: projID})
+                              .where({project: oldId}).then(function() {
+                                project.slugs = existingSlugs.sort();
+                                delete project.newest;
+                                trx.commit();
+                                res.send(project);
+                              }).catch(function(error) {
+                                log.error(req, 'Error updating slugs: ' +
+                                                                        error);
+                                trx.rollback();
+                              });
+                            }
+                          }).catch(function(error) {
+                            log.error(req, 'Error retrieving existing slugs: ' +
+                                                                        error);
+                            trx.rollback();
+                          });
+                        }).catch(function(error) {
+                          log.error(req, 'Error adding user roles: ' + error);
                           trx.rollback();
                         });
                       }).catch(function(error) {
-                        log.error(req, 'Error adding user roles: ' + error);
+                        log.error(req, 'Error retrieving users for roles: ' +
+                                                                        error);
                         trx.rollback();
                       });
                     }).catch(function(error) {
-                      log.error(req, 'Error retrieving users for roles: ' +
-                                                                        error);
+                      log.error(req, 'Error deleting old user roles: ' + error);
                       trx.rollback();
                     });
-                  }).catch(function(error) {
-                    log.error(req, 'Error deleting old user roles: ' + error);
-                    trx.rollback();
-                  });
-                } else {
-                  trx('userroles').where({project: oldId})
-                  .update({project: projID}).then(function() {
-                    trx('projectslugs').where({project: oldId})
-                    .then(function(existingSlugObjs) {
-                      const existingSlugs = existingSlugObjs.map(
-                      function(slug) {
-                        return slug.name;
-                      });
+                  } else {
+                    trx('userroles').where({project: oldId})
+                    .update({project: projID}).then(function() {
+                      trx('projectslugs').where({project: oldId})
+                      .then(function(existingSlugObjs) {
+                        const existingSlugs = existingSlugObjs.map(
+                        function(slug) {
+                          return slug.name;
+                        });
 
-                      if (helpers.getType(obj.slugs) === 'array') {
-                        const newSlugs = [];
+                        if (helpers.getType(obj.slugs) === 'array') {
+                          const newSlugs = [];
 
-                        newSlugs.push(trx('projectslugs').del()
-                        .where({project: oldId}));
+                          newSlugs.push(trx('projectslugs').del()
+                          .where({project: oldId}));
 
-                        /* eslint-disable */
-                        for (let slug of obj.slugs) {
-                        /* eslint-enable */
-                          newSlugs.push(trx('projectslugs')
-                          .insert({project: projID, name: slug}));
+                          /* eslint-disable */
+                          for (let slug of obj.slugs) {
+                          /* eslint-enable */
+                            newSlugs.push(trx('projectslugs')
+                            .insert({project: projID, name: slug}));
+                          }
+
+                          Promise.all(newSlugs).then(function() {
+                            project.slugs = obj.slugs.sort();
+                            delete project.newest;
+                            trx.commit();
+                            res.send(JSON.stringify(project));
+                          }).catch(function(error) {
+                            log.error(req, 'Error inserting slugs: ' + error);
+                            trx.rollback();
+                          });
+                        } else {
+                          trx('projectslugs').update({project: projID})
+                          .where({project: oldId}).then(function() {
+                            project.slugs = existingSlugs.sort();
+                            delete project.newest;
+                            trx.commit();
+                            res.send(project);
+                          }).catch(function(error) {
+                            log.error(req, 'Error updating slugs: ' + error);
+                            trx.rollback();
+                          });
                         }
-
-                        Promise.all(newSlugs).then(function() {
-                          project.slugs = obj.slugs.sort();
-                          delete project.newest;
-                          trx.commit();
-                          res.send(JSON.stringify(project));
-                        }).catch(function(error) {
-                          log.error(req, 'Error inserting slugs: ' + error);
-                          trx.rollback();
-                        });
-                      } else {
-                        trx('projectslugs').update({project: projID})
-                        .where({project: oldId}).then(function() {
-                          project.slugs = existingSlugs.sort();
-                          delete project.newest;
-                          trx.commit();
-                          res.send(project);
-                        }).catch(function(error) {
-                          log.error(req, 'Error inserting slugs: ' + error);
-                          trx.rollback();
-                        });
-                      }
+                      }).catch(function(error) {
+                        log.error(req, 'Error retrieving existing slugs: ' +
+                                                                        error);
+                        trx.rollback();
+                      });
                     }).catch(function(error) {
-                      log.error(req, 'Error retrieving existing slugs: ' +
+                      log.error(req, 'Error transferring user roles: ' +
                                                                       error);
                       trx.rollback();
                     });
-                  }).catch(function(error) {
-                    log.error(req, 'Error transferring user roles: ' +
-                                                                    error);
-                    trx.rollback();
-                  });
-                }
+                  }
+                }).catch(function(error) {
+                  log.error(req, 'Error inserting new project: ' + error);
+                  trx.rollback();
+                });
               }).catch(function(error) {
-                log.error(req, 'Error inserting updated roles: ' + error);
+                log.error(req, 'Error updating old project: ' + error);
                 trx.rollback();
               });
             }).catch(function(error) {
-              log.error(req, 'Error deprecating old project: ' + error);
-              trx.rollback();
+              log.error(req, 'Rolling back transaction.');
+              const err = errors.errorServerError(error);
+              return res.status(err.status).send(err);
             });
           }).catch(function(error) {
-            log.error(req, 'Rolling back transaction.');
+            log.error(req, 'Error checking slugs: ' + error);
             const err = errors.errorServerError(error);
             return res.status(err.status).send(err);
           });
-        }).catch(function(error) {
-          log.error(req, 'Error requesting project slugs for update: ' + error);
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
-        });
+        };
+
+        if (obj.default_activity) {
+          helpers.checkActivities([obj.default_activity]).then(update)
+          .catch(function() {
+            const err = errors.errorInvalidForeignKey('project', 'activity');
+            return res.status(err.status).send(err);
+          });
+        } else if (obj.default_activity === null) {
+          update(null);
+        } else {
+          update(project.default_activity);
+        }
       }).catch(function(error) {
         log.error(req, 'Error requesting user roles for update: ' + error);
         const err = errors.errorServerError(error);

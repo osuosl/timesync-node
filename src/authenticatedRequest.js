@@ -38,7 +38,8 @@ module.exports = {
       const caller = function(autherr, user, info) {
         if (!user) {
           const err = errors.errorAuthenticationFailure(autherr ||
-                                                                  info.message);
+                                                        info.message ||
+                                                        'Unknown error');
           return res.status(err.status).send(err);
         }
         callback(req, res, user);
@@ -58,7 +59,8 @@ module.exports = {
       const caller = function(autherr, user, info) {
         if (!user) {
           const err = errors.errorAuthenticationFailure(autherr ||
-                                                                  info.message);
+                                                        info.message ||
+                                                        'Unknown error');
           return res.status(err.status).send(err);
         }
         callback(req, res, user);
@@ -78,7 +80,8 @@ module.exports = {
       const caller = function(autherr, user, info) {
         if (!user) {
           const err = errors.errorAuthenticationFailure(autherr ||
-                                                                  info.message);
+                                                        info.message ||
+                                                        'Unknown error');
           return res.status(err.status).send(err);
         }
         callback(req, res, user);

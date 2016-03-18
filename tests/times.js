@@ -3073,6 +3073,63 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it('creates a new time with default activity', function(done) {
+      getAPIToken().then(function(token) {
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'ts',
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
+
+        const postArg = getPostObject(baseUrl + 'times/', time);
+
+        postArg.body.auth.token = token;
+
+        request.post(postArg, function(postErr, postRes, postBody) {
+          expect(postErr).to.equal(null);
+          expect(postRes.statusCode).to.equal(200);
+
+          time.uuid = postBody.uuid;
+          time.revision = 1;
+
+          expect(postBody).to.deep.equal(time);
+
+          const createdAt = new Date().toISOString().substring(0, 10);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            const expectedResults = initialData.concat([
+              {
+                duration: 20,
+                user: 'tschuy',
+                project: ['ts', 'timesync'].sort(),
+                activities: ['dev'],
+                notes: '',
+                issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+                date_worked: '2015-07-30',
+                created_at: createdAt,
+                updated_at: null,
+                deleted_at: null,
+                uuid: time.uuid,
+                revision: 1,
+              },
+            ]);
+
+            const jsonGetBody = JSON.parse(getBody);
+            expectedResults[expectedResults.length - 1].activities.sort();
+            jsonGetBody[jsonGetBody.length - 1].activities.sort();
+
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(jsonGetBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
     it('fails with a bad token', function(done) {
       const time = {
         duration: 20,
