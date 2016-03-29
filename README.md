@@ -115,10 +115,10 @@ $ curl -XGET -s localhost:8000/v1/times?token=<token> | python -m json.tool
 Your output should look something like the above.
 
 If you would like to test the PostgreSQL database, but don't want to setup a
-whole Postgres database, the command ``npm run test_pg_docker`` will spin up a
+whole PostgreSQL database, the command ``npm run test_pg_docker`` will spin up a
 docker container and run the tests.
 
-The Postgres container will continue to run until you manually kill it
+The PostgreSQL container will continue to run until you manually kill it
 (``docker rm -f postgres_pg``) or when you run the tests again.
 
 If you want to run the ``test_pg_docker`` command make sure of the following:
@@ -130,8 +130,8 @@ Database Backends
 -----------------
 
 TimeSync Node supports a development ``sqlite`` backend and production
-``postgres``, ``mysql``, and ``sqlite`` backends. The default development and
-testing environment uses ``sqlite``; to use Postgres, see the development
+``postgresql``, ``mysql``, and ``sqlite`` backends. The default development and
+testing environment uses ``sqlite``; to use PostgreSQL, see the development
 documentation.
 
 To run migrations on a particular backend, run:
@@ -140,9 +140,9 @@ To run migrations on a particular backend, run:
 $ NODE_ENV=backend npm run migrations
 ```
 
-Valid values of NODE_ENV are ``mocha`` (Postgres), ``mocha_sqlite`` (SQLite),
-``development`` (SQLite), ``development_pg`` (Postgres), ``production_pg``
-(Postgres), ``production_mysql`` (MySQL), and ``production_sqlite`` (SQLite).
+Valid values of NODE_ENV are ``mocha`` (PostgreSQL), ``mocha_sqlite`` (SQLite),
+``development`` (SQLite), ``development_pg`` (PostgreSQL), ``production_pg``
+(PostgreSQL), ``production_mysql`` (MySQL), and ``production_sqlite`` (SQLite).
 
 Documentation
 -------------
