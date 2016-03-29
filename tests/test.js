@@ -10,7 +10,7 @@ const knexfile = require('../knexfile');
 const knex = require('knex')(knexfile[process.env.NODE_ENV]);
 
 const port = process.env.PORT || 8000;
-const baseUrl = 'http://localhost:' + port + '/v1/';
+const baseUrl = 'http://localhost:' + port + '/v0/';
 
 const app = require('../src/app');
 let trx;

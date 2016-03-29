@@ -39,7 +39,7 @@ app.set('knex', knex);
 app.set('log', log);
 
 // Set API version prefix
-app.set('version', '/v1');
+app.set('version', '/v0');
 
 // Set up authentication
 const passport = require('passport');
