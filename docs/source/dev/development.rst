@@ -48,9 +48,9 @@ run the migrations::
 
 And run the server::
 
-    npm devel
+    npm run devel
 
-.. note:: ``npm devel`` uses the ``nodemon`` tool to automatically restart your
+.. note:: ``npm run devel`` uses the ``nodemon`` tool to automatically restart your
     test server when files are changed. To run TimeSync in production, use
     ``npm start``.
 
