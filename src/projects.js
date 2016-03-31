@@ -325,7 +325,7 @@ module.exports = function(app) {
             return errors.send(val, res);
           }
 
-          return val;
+          return res.send(val);
         }).catch(function(error) {
           log.error(req, 'Error requesting user roles: ' + error);
           return errors.send(errors.errorServerError(error));

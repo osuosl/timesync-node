@@ -206,7 +206,7 @@ module.exports = {
   /*
    * Helper function to ensure HTTP status is sent and prevent repeated send
    */
-  sendError: function(error, res) {
+  send: function(error, res) {
     if (!res.finished) {
       return res.status(error.status).send(error);
     }

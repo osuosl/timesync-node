@@ -150,7 +150,11 @@ module.exports = function(app) {
       });
     } else {
       activityQ.where({newest: true}).first().then(function(activity) {
-        return res.send(constructActivity(activity, res));
+        const val = constructActivity(activity, res);
+        if (val.error) {
+          return errors.send(val, res);
+        }
+        return res.send(val);
       }).catch(function(error) {
         log.error(req, 'Error requesting activity by slug: ' + error);
         return errors.send(errors.errorServerError(error));

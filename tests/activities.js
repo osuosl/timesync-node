@@ -113,7 +113,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('should fail with invalid slug error', function(done) {
+    it('should fail with Object not found error', function(done) {
       getAPIToken().then(function(token) {
         request.get(baseUrl + 'activities/404?token=' + token,
         function(err, res, body) {
