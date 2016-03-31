@@ -339,7 +339,7 @@ module.exports = function(app) {
     knex('users').where({username: req.params.username})
     .then(function(user) {
       if (!user.length) {
-        return errors.send(errors.errorObjectNotFound('user'));
+        return errors.send(errors.errorObjectNotFound('user'), res);
       }
 
       knex.transaction(function(trx) {

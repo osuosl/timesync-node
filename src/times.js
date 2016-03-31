@@ -391,7 +391,7 @@ module.exports = function(app) {
             if (parent.error) {
               return errors.send(parent, res);
             }
-            return res.send(parent);
+            return JSON.stringify(parent);
           }).filter(function(parentTime, index, self) {
             return self.indexOf(parentTime) === index;
           }).map(function(parentTime) {
@@ -403,6 +403,8 @@ module.exports = function(app) {
         }).map(function(time) {
           return JSON.parse(time);
         }));
+      }).catch(function(error) {
+        return errors.send(error, res);
       });
     // Include_revisions is set to false or not an included param
     } else {
@@ -424,12 +426,14 @@ module.exports = function(app) {
             return errors.send(child, res);
           }
 
-          return child;
+          return JSON.stringify(child);
         }).filter(function(time, index, self) {
           return self.indexOf(time) === index;
         }).map(function(time) {
           return JSON.parse(time);
         }));
+      }).catch(function(error) {
+        return errors.send(error, res);
       });
     }
   });
@@ -496,6 +500,8 @@ module.exports = function(app) {
           childTime.parents.push(parent);
         }
         return res.send(childTime);
+      }).catch(function(error) {
+        return errors.send(error, res);
       });
     } else {
       compileTimesQueryPromise(req, res, user, {'times.newest': true,
@@ -509,6 +515,8 @@ module.exports = function(app) {
         }
 
         return res.send(val);
+      }).catch(function(error) {
+        return errors.send(error, res);
       });
     }
   });
