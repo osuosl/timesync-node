@@ -7,10 +7,9 @@ module.exports = function(app) {
   const uuid = require('uuid');
   const log = app.get('log');
 
-  function constructActivity(inActivity, res) {
+  function constructActivity(inActivity) {
     if (!inActivity) {
       const err = errors.errorObjectNotFound('activity');
-      res.status(err.status);
       return err;
     }
 
@@ -63,19 +62,26 @@ module.exports = function(app) {
           return a.newest;
         // Map the 'constructActivity' function to each activity
         }).map(function(a) {
-          const child = constructActivity(a, res);
+          const child = constructActivity(a);
+          if (child.error) {
+            return errors.send(child, res);
+          }
           // Set the child's parent field to a similar map,
           // filter on them having the same uuid and different revisions
           child.parents = activities.filter(function(p) {
             return a.uuid === p.uuid && a.revision !== p.revision;
           }).map(function(p) {
-            return constructActivity(p, res);
+            const val = constructActivity(p);
+            if (val.error) {
+              return errors.send(val, res);
+            }
+
+            return val;
           });
           return child;
         }));
       }).catch(function(error) {
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     // Include revisions parameter was not included
     } else {
@@ -86,12 +92,16 @@ module.exports = function(app) {
         }
         // Send the processed objects, pretty straight forward.
         return res.send(activities.map(function(activity) {
-          return constructActivity(activity, res);
+          const val = constructActivity(activity);
+          if (val.error) {
+            return errors.send(val, res);
+          }
+
+          return val;
         }));
       }).catch(function(error) {
         log.error(req, 'Error requesting activities: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     }
   });
@@ -100,8 +110,8 @@ module.exports = function(app) {
   function(req, res) {
     const knex = app.get('knex');
     if (errors.isInvalidSlug(req.params.slug)) {
-      const err = errors.errorInvalidIdentifier('slug', req.params.slug);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorInvalidIdentifier('slug', req.params.slug),
+                                                                          res);
     }
 
     const activityQ = knex('activities').where({slug: req.params.slug})
@@ -117,27 +127,33 @@ module.exports = function(app) {
           return a.newest;
         }).map(function(a) {
           const child = constructActivity(a, res);
+          if (child.error) {
+            return errors.send(child, res);
+          }
           // With the parents field filled out (or equal to [])
           child.parents = activity.filter(function(p) {
             return p.revision !== a.revision;
           }).map(function(p) {
-            return constructActivity(p, res);
+            const val = constructActivity(p, res);
+            if (val.error) {
+              return errors.send(res, val);
+            }
+
+            return val;
           });
           return child;
         // Return the frist element since this is a 1 element array
         }).pop());
       }).catch(function(error) {
         log.error(req, 'Error requesting activity by slug: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     } else {
       activityQ.where({newest: true}).first().then(function(activity) {
         return res.send(constructActivity(activity, res));
       }).catch(function(error) {
         log.error(req, 'Error requesting activity by slug: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error));
       });
     }
   });
@@ -147,21 +163,20 @@ module.exports = function(app) {
     const knex = app.get('knex');
 
     if (!user.site_manager && !user.site_admin) {
-      const err = errors.errorAuthorizationFailure(user.username,
-        'delete activities');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorAuthorizationFailure(user.username,
+        'delete activities'), res);
     }
 
     if (!helpers.validateSlug(req.params.slug)) {
-      const err = errors.errorInvalidIdentifier('slug', req.params.slug);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorInvalidIdentifier('slug', req.params.slug),
+                                                                          res);
     }
 
     knex('activities').select('id', 'name').where('slug', req.params.slug)
     .first().then(function(activity) {
       if (!activity) {
-        const err = errors.errorObjectNotFound('slug', req.params.slug);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorObjectNotFound('slug', req.params.slug),
+                                                                          res);
       }
 
       knex('timesactivities').select('id').where('activity', activity.id)
@@ -170,8 +185,7 @@ module.exports = function(app) {
         is being referenced by timesactivities */
         if (tas.length > 0) {
           res.set('Allow', 'GET, POST');
-          const err = errors.errorRequestFailure('activity');
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorRequestFailure('activity'), res);
         }
 
         knex.transaction(function(trx) {
@@ -187,18 +201,15 @@ module.exports = function(app) {
           });
         }).catch(function(error) {
           log.error(req, 'Rolling back transaction.');
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorServerError(error), res);
         });
       }).catch(function(error) {
         log.error(req, 'Error selecting times from activity: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     }).catch(function(error) {
       log.error(req, 'Error requesting activity to delete: ' + error);
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorServerError(error), res);
     });
   });
 
@@ -208,9 +219,8 @@ module.exports = function(app) {
     const currObj = req.body.object;
 
     if (!user.site_manager && !user.site_admin) {
-      const err = errors.errorAuthorizationFailure(user.username,
-          'update activities');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorAuthorizationFailure(user.username,
+          'update activities'), res);
     }
 
     const validKeys = ['name', 'slug'];
@@ -222,8 +232,8 @@ module.exports = function(app) {
     // indexOf returns -1 if the parameter it not in the array
     // so this will return true if the slug/name DNE
       if (validKeys.indexOf(key) === -1) {
-        const err = errors.errorBadObjectUnknownField('activity', key);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorBadObjectUnknownField('activity', key),
+                                                                          res);
       }
     }
 
@@ -234,33 +244,30 @@ module.exports = function(app) {
 
     const validationFailure = helpers.validateFields(currObj, fields);
     if (validationFailure) {
-      const err = errors.errorBadObjectInvalidField(
+      return errors.send(errors.errorBadObjectInvalidField(
         'activity',
         validationFailure.name,
         validationFailure.type,         // expected type
         validationFailure.actualType    // actual type received
-      );
-      return res.status(err.status).send(err);
+      ), res);
     }
 
     // checks non-empty string was sent to update name
     if (currObj.name !== undefined && currObj.name.length === 0) {
-      const err = errors.errorBadObjectInvalidField(
-        'activity', 'name', 'string', 'empty string');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField(
+        'activity', 'name', 'string', 'empty string'), res);
     }
 
     // checks non-empty string was sent to update slug
     if (currObj.slug !== undefined && currObj.slug.length === 0) {
-      const err = errors.errorBadObjectInvalidField(
-        'activity', 'slug', 'slug', 'empty string');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField(
+        'activity', 'slug', 'slug', 'empty string'), res);
     }
 
     // checks for valid slugs
     if (!helpers.validateSlug(req.params.slug)) {
-      const err = errors.errorInvalidIdentifier('slug', req.params.slug);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorInvalidIdentifier('slug', req.params.slug),
+                                                                          res);
     }
 
     knex.transaction(function(trx) {
@@ -275,8 +282,7 @@ module.exports = function(app) {
           'activities.newest as newest')
         .where('slug', '=', req.params.slug).then(function(obj) {
           if (!obj) {
-            const err = errors.errorObjectNotFound('activity');
-            return res.status(err.status).send(err);
+            return errors.send(errors.errorObjectNotFound('activity'), res);
           }
 
           /* currObj.name = updated name
@@ -316,8 +322,7 @@ module.exports = function(app) {
       });
     }).catch(function(error) {
       log.error(req, 'Rolling back transaction!');
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorServerError(error), res);
     });
   });
 
@@ -327,9 +332,8 @@ module.exports = function(app) {
     const obj = req.body.object;
 
     if (!user.site_manager && !user.site_admin) {
-      const err = errors.errorAuthorizationFailure(user.username,
-          'create activities');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorAuthorizationFailure(user.username,
+          'create activities'), res);
     }
 
     const validKeys = ['name', 'slug'];
@@ -341,8 +345,8 @@ module.exports = function(app) {
     // indexOf returns -1 if the parameter it not in the array
     // so this will return true if the slug/name DNE
       if (validKeys.indexOf(key) === -1) {
-        const err = errors.errorBadObjectUnknownField('activity', key);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorBadObjectUnknownField('activity', key),
+                                                                          res);
       }
     }
 
@@ -355,52 +359,46 @@ module.exports = function(app) {
     for (let field of fields) {
     /* eslint-enable prefer-const */
       if (!obj[field.name]) {
-        const err = errors.errorBadObjectMissingField('activity', field.name);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorBadObjectMissingField('activity',
+            field.name), res);
       }
     }
 
     const validationFailure = helpers.validateFields(obj, fields);
     if (validationFailure) {
-      const err = errors.errorBadObjectInvalidField(
+      return errors.send(errors.errorBadObjectInvalidField(
         'activity',
         validationFailure.name,
         validationFailure.type,         // expected type
         validationFailure.actualType    // actual type received
-      );
-      return res.status(err.status).send(err);
+      ), res);
     }
 
     // checks non-empty string was sent to update name
     if (obj.name.length === 0) {
-      const err = errors.errorBadObjectInvalidField(
-        'activity', 'name', 'string', 'empty string');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField(
+        'activity', 'name', 'string', 'empty string'), res);
     }
 
     // checks non-empty string was sent to update slug
     if (obj.slug.length === 0) {
-      const err = errors.errorBadObjectInvalidField(
-        'activity', 'slug', 'slug', 'empty string');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField(
+        'activity', 'slug', 'slug', 'empty string'), res);
     }
 
     // checks for valid slugs
     if (!helpers.validateSlug(obj.slug)) {
-      const err = errors.errorBadObjectInvalidField(
-        'activity', 'slug', 'slug', 'non-slug string');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField(
+        'activity', 'slug', 'slug', 'non-slug string'), res);
     }
 
     knex('activities').where('slug', '=', obj.slug).then(function(existing) {
       if (existing.length) {
-        const err = errors.errorSlugsAlreadyExist(
+        return errors.send(errors.errorSlugsAlreadyExist(
           existing.map(function(slug) {
             return slug.slug;
           })
-        );
-
-        return res.status(err.status).send(err);
+        ), res);
       }
 
       obj.uuid = uuid.v4();
@@ -416,13 +414,11 @@ module.exports = function(app) {
         return res.send(JSON.stringify(obj));
       }).catch(function(error) {
         log.error(req, 'Error creating activity: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     }).catch(function(error) {
       log.error(req, 'Error checking for activity existence: ' + error);
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorServerError(error), res);
     });
   });
 };
