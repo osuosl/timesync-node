@@ -18,14 +18,13 @@ module.exports = function(app) {
 
   app.post(app.get('version') + '/login', function(req, res, next) {
     if (!req.body.auth) {
-      const err = errors.errorAuthenticationFailure('Missing credentials');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorAuthenticationFailure(
+        'Missing credentials'), res);
     }
 
     if (!req.body.auth.type) {
-      const err = errors.errorAuthenticationFailure(
-        'Authentication type required');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorAuthenticationFailure(
+        'Authentication type required'), res);
     }
 
     if (req.body.auth.type === 'password') {
@@ -35,14 +34,16 @@ module.exports = function(app) {
     }
 
     if (app.get('strategies').indexOf(authType) < 0) {
-      const err = errors.errorAuthenticationTypeFailure(req.body.auth.type);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorAuthenticationTypeFailure(
+        req.body.auth.type), res);
     }
 
     const caller = function(autherr, user, info) {
       if (!user) {
-        const err = errors.errorAuthenticationFailure(info.message);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorAuthenticationFailure(autherr ||
+                                                            info.message ||
+                                                            'Unknown error'),
+                                                            res);
       }
 
       /*

@@ -56,6 +56,7 @@ module.exports = function(app) {
             return reject();
           }).catch(function(error) {
             log.error('helpers.checkUser', 'Error checking user: ' + error);
+            reject({type: 'database', value: error});
           });
         } else {
           return reject();
