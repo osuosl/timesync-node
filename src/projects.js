@@ -10,8 +10,7 @@ module.exports = function(app) {
 
   function constructProject(inProject, roles, res, slugs) {
     if (!inProject) {
-      const err = errors.errorObjectNotFound('project');
-      return err;
+      return errors.errorObjectNotFound('project');
     }
 
     // manually create our project object from inProject.

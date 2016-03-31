@@ -9,8 +9,7 @@ module.exports = function(app) {
 
   function constructActivity(inActivity) {
     if (!inActivity) {
-      const err = errors.errorObjectNotFound('activity');
-      return err;
+      return errors.errorObjectNotFound('activity');
     }
 
     const outActivity = {
