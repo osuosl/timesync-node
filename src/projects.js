@@ -11,7 +11,6 @@ module.exports = function(app) {
   function constructProject(inProject, roles, res, slugs) {
     if (!inProject) {
       const err = errors.errorObjectNotFound('project');
-      res.status(err.status);
       return err;
     }
 
@@ -117,10 +116,19 @@ module.exports = function(app) {
             });
 
             const child = constructProject(proj, roles, res, slugs);
+            if (child.error) {
+              return errors.send(child, res);
+            }
+
             child.parents = projects.filter(function(p) {
               return p.uuid === proj.uuid && !p.newest;
             }).map(function(p) {
-              return constructProject(p, [], res);
+              const val = constructProject(p, [], res);
+              if (val.error) {
+                return errors.send(val, res);
+              }
+
+              return val;
             });
 
             return JSON.stringify(child);
@@ -131,13 +139,11 @@ module.exports = function(app) {
           }));
         }).catch(function(error) {
           log.error(req, 'Error requesting user roles: ' + error);
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorServerError(error), res);
         });
       }).catch(function(error) {
         log.error(req, 'Error requesting projects: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     } else {
       // If the 'slugs' field is null that means the object is a parent
@@ -176,17 +182,19 @@ module.exports = function(app) {
           }).map(function(proj) {
           // Convert the stringified, non-duplicated, objects back into native
           // javascript objects.
-            return JSON.parse(proj);
+            const obj = JSON.parse(proj);
+            if (obj.error) {
+              return errors.send(obj, res);
+            }
+            return obj;
           }));
         }).catch(function(error) {
           log.error(req, 'Error requesting user roles: ' + error);
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorServerError(error), res);
         });
       }).catch(function(error) {
         log.error(req, 'Error requestings projects: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     }
   });
@@ -195,8 +203,8 @@ module.exports = function(app) {
   function(req, res) {
     const knex = app.get('knex');
     if (errors.isInvalidSlug(req.params.slug)) {
-      const err = errors.errorInvalidIdentifier('slug', req.params.slug);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorInvalidIdentifier('slug', req.params.slug),
+        res);
     }
 
     // Finds UUID of project with the requested slug
@@ -261,32 +269,38 @@ module.exports = function(app) {
             });
 
             const child = constructProject(proj, roles, res, slugs);
+            if (child.error) {
+              return errors.send(child, res);
+            }
+
             child.parents = project.filter(function(p) {
               // We only want to process old revisions
               return !p.newest && p.revision !== child.revision;
             }).map(function(p) {
-              return constructProject(p, [], res);
+              const val = constructProject(p, [], res);
+              if (val.error) {
+                return errors.send(val, res);
+              }
+
+              return val;
             });
             return child;
           // Since map's return a list and we only want the first element...
           }).pop());
         }).catch(function(error) {
           log.error(req, 'Error requesting user roles: ' + error);
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorServerError(error), res);
         });
       }).catch(function(error) {
         log.error(req, 'Error requesting project: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
 
     // The 'include_revisions' query  parameter was *not* included
     } else {
       projectQ.andWhere({'projects.newest': true}).then(function(project) {
         if (!project || project.length === 0) {
-          const err = errors.errorObjectNotFound('project');
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorObjectNotFound('project'), res);
         }
 
         const slugs = project.filter(function(proj) {
@@ -306,16 +320,19 @@ module.exports = function(app) {
         .then(function(roles) {
           // Since we have a list of slugs, but they're all mostly the same, we
           // pass project.pop() and the slugs lis to constructProject
-          return res.send(constructProject(project.pop(), roles, res, slugs));
+          const val = constructProject(project.pop(), roles, res, slugs);
+          if (val.error) {
+            return errors.send(val, res);
+          }
+
+          return val;
         }).catch(function(error) {
           log.error(req, 'Error requesting user roles: ' + error);
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorServerError(error));
         });
       }).catch(function(error) {
         log.error(req, 'Error requesting project: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error));
       });
     }
   });
@@ -326,9 +343,8 @@ module.exports = function(app) {
     const obj = req.body.object;
 
     if (!user.site_manager && !user.site_admin) {
-      const err = errors.errorAuthorizationFailure(user.username,
-          'create projects');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorAuthorizationFailure(user.username,
+          'create projects'), res);
     }
 
     // run various checks
@@ -340,8 +356,8 @@ module.exports = function(app) {
       // indexOf returns -1 if the parameter is not in the array,
       // so this returns true if the slug is not in slugNames
       if (validKeys.indexOf(key) === -1) {
-        const err = errors.errorBadObjectUnknownField('project', key);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorBadObjectUnknownField('project', key),
+          res);
       }
     }
 
@@ -371,15 +387,14 @@ module.exports = function(app) {
         }
       }
       if (err) {
-        return res.status(err.status).send(err);
+        return errors.send(err, res);
       }
     }
 
     // check validity of uri syntax
     if (obj.uri && !validUrl.isWebUri(obj.uri)) {
-      const err = errors.errorBadObjectInvalidField('project', 'uri', 'uri',
-      'non-uri string');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('project', 'uri',
+        'uri', 'non-uri string'), res);
     }
 
     // check validity of slugs
@@ -388,9 +403,8 @@ module.exports = function(app) {
     });
 
     if (invalidSlugs.length) {
-      const err = errors.errorBadObjectInvalidField('project', 'slugs',
-      'slugs', 'non-slug strings');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('project', 'slugs',
+      'slugs', 'non-slug strings'), res);
     }
 
     // select any slugs that match the ones submitted
@@ -403,11 +417,11 @@ module.exports = function(app) {
       helpers.checkActivities(activity).then(function(activityId) {
         // if any slugs match the slugs passed to us, error out
         if (slugs.length) {
-          const err = errors.errorSlugsAlreadyExist(slugs.map(function(slug) {
-            return slug.name;
-          }));
-
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorSlugsAlreadyExist(slugs.map(
+            function(slug) {
+              return slug.name;
+            })
+          ), res);
         }
 
         obj.uuid = uuid.v4();
@@ -500,17 +514,15 @@ module.exports = function(app) {
           });
         }).catch(function(error) {
           log.error(req, 'Rolling back transaction.');
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorServerError(error), res);
         });
       }).catch(function() {
-        const err = errors.errorInvalidForeignKey('project', 'activity');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorInvalidForeignKey('project', 'activity'),
+          res);
       });
     }).catch(function(error) {
       log.error(req, 'Error checking slugs\' existence: ' + error);
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorServerError(error), res);
     });
   });
 
@@ -527,8 +539,8 @@ module.exports = function(app) {
       // indexOf returns -1 if the parameter is not in the array,
       // so this returns true if the slug is not in slugNames
       if (validKeys.indexOf(key) === -1) {
-        const err = errors.errorBadObjectUnknownField('project', key);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorBadObjectUnknownField('project', key),
+          res);
       }
     }
 
@@ -558,15 +570,14 @@ module.exports = function(app) {
         }
       }
       if (err) {
-        return res.status(err.status).send(err);
+        return errors.send(err, res);
       }
     }
 
     // check validity of uri syntax
     if (obj.uri && !validUrl.isWebUri(obj.uri)) {
-      const err = errors.errorBadObjectInvalidField('project', 'uri', 'uri',
-        'string');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('project', 'uri',
+        'uri', 'string'), res);
     }
 
     // check validity of slugs
@@ -577,14 +588,12 @@ module.exports = function(app) {
         });
 
         if (invalidSlugs.length) {
-          const err = errors.errorBadObjectInvalidField('project', 'slugs',
-            'slugs', 'non-slug strings');
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorBadObjectInvalidField('project',
+            'slugs', 'slugs', 'non-slug strings'), res);
         }
       } else { // Slugs was passed as an empty array
-        const err = errors.errorBadObjectInvalidField('project', 'slugs',
-          'array of slugs', 'empty array');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorBadObjectInvalidField('project', 'slugs',
+          'array of slugs', 'empty array'), res);
       }
     }
 
@@ -613,9 +622,8 @@ module.exports = function(app) {
       .then(function(roles) {
         if ((!roles || !roles.manager) &&
                                       !user.site_manager && !user.site_admin) {
-          const err = errors.errorAuthorizationFailure(user.username,
-            'make changes to ' + project.name);
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorAuthorizationFailure(user.username,
+            'make changes to ' + project.name), res);
         }
 
         const update = function(activityId) {
@@ -637,8 +645,8 @@ module.exports = function(app) {
                 return slug.name;
               });
 
-              const err = errors.errorSlugsAlreadyExist(overlappingSlugs);
-              return res.status(err.status).send(err);
+              return errors.send(errors.errorSlugsAlreadyExist(
+                overlappingSlugs), res);
             }
 
             // all checks have passed
@@ -678,7 +686,7 @@ module.exports = function(app) {
                   project.updated_at = new Date(project.updated_at)
                   .toISOString().substring(0, 10);
                   project.default_activity = obj.default_activity ||
-                                                    defaultActivityName;
+                                                            defaultActivityName;
 
                   if (obj.users) {
                     trx('userroles').where({project: oldId})
@@ -833,21 +841,19 @@ module.exports = function(app) {
               });
             }).catch(function(error) {
               log.error(req, 'Rolling back transaction.');
-              const err = errors.errorServerError(error);
-              return res.status(err.status).send(err);
+              return errors.send(errors.errorServerError(error), res);
             });
           }).catch(function(error) {
             log.error(req, 'Error checking slugs: ' + error);
-            const err = errors.errorServerError(error);
-            return res.status(err.status).send(err);
+            return errors.send(errors.errorServerError(error), res);
           });
         };
 
         if (obj.default_activity) {
           helpers.checkActivities([obj.default_activity]).then(update)
           .catch(function() {
-            const err = errors.errorInvalidForeignKey('project', 'activity');
-            return res.status(err.status).send(err);
+            return errors.send(errors.errorInvalidForeignKey('project',
+              'activity'), res);
           });
         } else if (obj.default_activity === null) {
           update(null);
@@ -856,13 +862,11 @@ module.exports = function(app) {
         }
       }).catch(function(error) {
         log.error(req, 'Error requesting user roles for update: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     }).catch(function(error) {
       log.error(req, 'Error requesting project for update: ' + error);
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorServerError(error), res);
     });
   });
 
@@ -875,14 +879,13 @@ module.exports = function(app) {
     ).then(function(roles) {
       if ((!roles || !roles.manager) &&
                                       !user.site_manager && !user.site_admin) {
-        const err = errors.errorAuthorizationFailure(user.username,
-            'delete project ' + req.params.slug);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorAuthorizationFailure(user.username,
+            'delete project ' + req.params.slug), res);
       }
 
       if (!helpers.validateSlug(req.params.slug)) {
-        const err = errors.errorInvalidIdentifier('slug', req.params.slug);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorInvalidIdentifier('slug',
+          req.params.slug), res);
       }
 
       // Get project id
@@ -891,8 +894,8 @@ module.exports = function(app) {
       .innerJoin('projects', 'projectslugs.project', 'projects.id')
       .then(function(project) {
         if (!project) {
-          const err = errors.errorObjectNotFound('slug', req.params.slug);
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorObjectNotFound('slug',
+            req.params.slug), res);
         }
 
         // Get times associated with project
@@ -900,8 +903,7 @@ module.exports = function(app) {
           // If there are times associated, return an error
           if (times.length > 0) {
             res.set('Allow', 'GET, POST');
-            const err = errors.errorRequestFailure('project');
-            return res.status(err.status).send(err);
+            return errors.send(errors.errorRequestFailure('project'), res);
             // Otherwise delete project
           }
 
@@ -937,23 +939,19 @@ module.exports = function(app) {
             });
           }).catch(function(error) {
             log.error(req, 'Rolling back transaction.');
-            const err = errors.errorServerError(error);
-            return res.status(err.status).send(err);
+            return errors.send(errors.errorServerError(error), res);
           });
         }).catch(function(error) {
           log.error(req, 'Error checking if project has any times: ' + error);
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorServerError(error), res);
         });
       }).catch(function(error) {
         log.error(req, 'Error selecting project to delete: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     }).catch(function(error) {
       log.error(req, 'Error requesting user roles.');
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorServerError(error), res);
     });
   });
 };
