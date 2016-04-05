@@ -218,8 +218,11 @@ module.exports = function(app) {
         log.error(req, 'Rolling back transaction.');
         return errors.send(errors.errorServerError(error), res);
       });
-    }).then(function() {
-      return errors.send(errors.errorUsernameAlreadyExists(user.username), res);
+    }).then(function(userId) {
+      if (userId) {
+        return errors.send(errors.errorUsernameAlreadyExists(user.username),
+                                                                          res);
+      }
     });
   });
 
