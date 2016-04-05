@@ -79,9 +79,8 @@ module.exports = function(app) {
   function(req, res) {
     // Check for valid :username
     if (!helpers.validateUsername(req.params.username)) {
-      const err = errors.errorInvalidIdentifier('username',
-                                                req.params.username);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorInvalidIdentifier('username',
+                                                req.params.username), res);
     }
 
     // return requested user object
@@ -91,8 +90,7 @@ module.exports = function(app) {
                                           'username': req.params.username})
       .then(function(users) {
         if (users.length === 0) {
-          const err = errors.errorObjectNotFound('user');
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorObjectNotFound('user'), res);
         }
 
         return res.send(users.map(function(u) {
@@ -103,8 +101,7 @@ module.exports = function(app) {
       compileUsersQueryPromise(req, res, {'username': req.params.username})
       .then(function(users) {
         if (users.length === 0) {
-          const err = errors.errorObjectNotFound('user');
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorObjectNotFound('user'), res);
         }
 
         return res.send(users.map(function(u) {
@@ -122,14 +119,14 @@ module.exports = function(app) {
 
     // test to make sure username exists
     if (!user.username) {
-      const err = errors.errorBadObjectMissingField('user', 'username');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectMissingField('user', 'username'),
+        res);
     }
 
     // Test to make sure password exists
     if (!user.password) {
-      const err = errors.errorBadObjectMissingField('user', 'password');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectMissingField('user', 'password'),
+        res);
     }
 
     // This was a 'forEach, but race conditions === noFun
@@ -137,8 +134,8 @@ module.exports = function(app) {
     for (let at of ['created_at', 'updated_at', 'deleted_at']) {
     /* eslint-enable prefer-const */
       if (user[at]) {
-        const err = errors.errorBadObjectMissingField('user', at + ' field');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorBadObjectMissingField('user',
+          at + ' field'), res);
       }
     }
 
@@ -158,34 +155,29 @@ module.exports = function(app) {
     // Act on any bad field found
     if (badField) {
       if (badField.actualType === 'undefined') {
-        const err = errors.errorBadObjectMissingField('user',
-        badField.name);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorBadObjectMissingField('user',
+          badField.name), res);
       }
-      const err = errors.errorBadObjectInvalidField('user',
-      badField.name, badField.type, badField.actualType);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('user',
+        badField.name, badField.type, badField.actualType), res);
     }
 
     // Manually check username matches required format
     if (!helpers.validateUsername(user.username)) {
-      const err = errors.errorBadObjectInvalidField('user', 'username',
-      'valid username', typeof(user.username));
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('user', 'username',
+        'valid username', typeof(user.username)), res);
     }
 
     // Manually check email matches required format
     if (user.email && !helpers.validateEmail(user.email)) {
-      const err = errors.errorBadObjectInvalidField('user', 'email',
-      'valid email', typeof(user.email));
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('user', 'email',
+        'valid email', typeof(user.email)), res);
     }
 
     // Verify that user is authorized to do this operation
     if (!authUser.site_admin || !authUser.site_manager) {
-      const err = errors.errorAuthorizationFailure(authUser.username,
-        'create users');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorAuthorizationFailure(authUser.username,
+        'create users'), res);
     }
 
     knex.transaction(function(trx) {
@@ -219,8 +211,7 @@ module.exports = function(app) {
       });
     }).catch(function(error) {
       log.error(req, 'Rolling back transaction.');
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorServerError(error));
     });
   });
 
@@ -234,24 +225,22 @@ module.exports = function(app) {
     for (let at of ['created_at', 'updated_at', 'deleted_at', 'username']) {
     /* eslint-enable prefer-const */
       if (modUser[at]) {
-        const err = errors.errorBadObjectMissingField('user', at + ' field');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorBadObjectMissingField('user',
+          at + ' field'), res);
       }
     }
 
     // Manually check email matches required format
     if (modUser.email && !helpers.validateEmail(modUser.email)) {
-      const err = errors.errorBadObjectInvalidField('user', 'email',
-      'valid email', typeof(modUser.email));
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('user', 'email',
+      'valid email', typeof(modUser.email)), res);
     }
 
     // Verify that user is authorized to do this operation
     if (!(authUser.site_admin || authUser.site_manager ||
          (authUser.username === req.params.username))) {
-      const err = errors.errorAuthorizationFailure(authUser.username,
-        'modify user ' + req.params.username);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorAuthorizationFailure(authUser.username,
+        'modify user ' + req.params.username), res);
     }
 
     // Test to make sure all fields are of the correct time and exist
@@ -268,20 +257,17 @@ module.exports = function(app) {
     // Act on any bad field found
     if (badField) {
       if (badField.actualType === 'undefined') {
-        const err = errors.errorBadObjectMissingField('user',
-        badField.name);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorBadObjectMissingField('user',
+          badField.name), res);
       }
-      const err = errors.errorBadObjectInvalidField('user',
-      badField.name, badField.type, badField.actualType);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('user',
+        badField.name, badField.type, badField.actualType), res);
     }
 
     knex('users').where({username: req.params.username})
     .then(function(userArr) {
       if (!userArr.length) {
-        const err = errors.errorObjectNotFound('user');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorObjectNotFound('user'), res);
       }
 
       knex.transaction(function(trx) {
@@ -328,11 +314,11 @@ module.exports = function(app) {
         });
       }).catch(function(error) {
         log.error(req, 'Rolling back transaction.');
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     }).catch(function(error) {
       log.error(req, 'Error retrieving existing slugs: ' + error);
+      return errors.send(errors.errorServerError(error), res);
     });
   });
 
@@ -341,22 +327,19 @@ module.exports = function(app) {
     const knex = app.get('knex');
 
     if (!helpers.validateUsername(req.params.username)) {
-      const err = errors.errorInvalidIdentifier('username',
-                                                          req.params.username);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorInvalidIdentifier('username',
+                                                    req.params.username), res);
     }
 
     if (!authUser.site_manager && !authUser.site_admin) {
-      const err = errors.errorAuthorizationFailure(authUser.username,
-                                                                'delete users');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorAuthorizationFailure(authUser.username,
+                                                          'delete users'), res);
     }
 
     knex('users').where({username: req.params.username})
     .then(function(user) {
       if (!user.length) {
-        const err = errors.errorObjectNotFound('user');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorObjectNotFound('user'), res);
       }
 
       knex.transaction(function(trx) {
@@ -376,11 +359,11 @@ module.exports = function(app) {
         });
       }).catch(function(error) {
         log.error(req, 'Rolling back transaction.');
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     }).catch(function(error) {
-      log.error(req, 'Error retrieving existing slugs: ' + error);
+      log.error(req, 'Error retrieving existing user: ' + error);
+      return errors.send(errors.errorServerError(error), res);
     });
   });
 };

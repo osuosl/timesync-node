@@ -8,11 +8,9 @@ module.exports = function(app) {
   const uuid = require('uuid');
   const log = app.get('log');
 
-  function compileTime(inTime, project, activities, res) {
+  function compileTime(inTime, project, activities) {
     if (!inTime) {
-      const err = errors.errorObjectNotFound('time');
-      res.status(err.status);
-      return err;
+      return errors.errorObjectNotFound('time');
     }
 
     const outTime = {
@@ -128,28 +126,24 @@ module.exports = function(app) {
           if (range[0] === undefined) {
             // Run a regex test on the times in the query parameter
           } else if (!/\d{4}-\d{2}-\d{2}/.test(range[0])) {
-            const err = errors.errorBadQueryValue('start', req.query.start);
-            reject(res.status(err.status).send(err));
+            reject(errors.errorBadQueryValue('start', req.query.start));
           }
           // If the value is undefined, leave it as such
           if (range[1] === undefined) {
             // Run a regex test on the times in the query parameter
           } else if (!(/\d{4}-\d{2}-\d{2}/.test(range[1]))) {
-            const err = errors.errorBadQueryValue('end', req.query.end);
-            reject(res.status(err.status).send(err));
+            reject(errors.errorBadQueryValue('end', req.query.end));
           }
 
           // The dates must be good, so map an actual date type to them
           range = range.map(function(d) { return new Date(d).getTime(); });
 
           if (range[0] > range[1]) {
-            const err = errors.errorBadQueryValue('start', req.query.start);
-            reject(res.status(err.status).send(err));
+            reject(errors.errorBadQueryValue('start', req.query.start));
           }
 
           if (range[0] && range[0] > Date.now()) {
-            const err = errors.errorBadQueryValue('start', req.query.start);
-            reject(res.status(err.status).send(err));
+            reject(errors.errorBadQueryValue('start', req.query.start));
           }
 
           // Both end and start are specified
@@ -157,12 +151,10 @@ module.exports = function(app) {
             // Test that the times submitted were valid within the range of
             // possible dates.
             if (!range[0]) {
-              const err = errors.errorBadQueryValue('start', req.query.start);
-              reject(res.status(err.status).send(err));
+              reject(errors.errorBadQueryValue('start', req.query.start));
             }
             if (!range[1]) {
-              const err = errors.errorBadQueryValue('end', req.query.end);
-              reject(res.status(err.status).send(err));
+              reject(errors.errorBadQueryValue('end', req.query.end));
             }
 
             // Set the date worked to be within the range
@@ -205,13 +197,11 @@ module.exports = function(app) {
                 }
               } else {
                 // Send an error if the user is not found in the database
-                const err = errors.errorBadQueryValue('user', req.query.user);
-                reject(res.status(err.status).send(err));
+                reject(errors.errorBadQueryValue('user', req.query.user));
               }
             }).catch(function(error) {
               log.error(req, 'Error selecting users for filter: ' + error);
-              const err = errors.errorServerError(error);
-              reject(res.status(err.status).send(err));
+              reject(errors.errorServerError(error));
             });
           }
         } else {
@@ -252,19 +242,16 @@ module.exports = function(app) {
                   }
                 }).catch(function(error) {
                   log.error(req, 'Error getting projects for filter: ' + error);
-                  const err = errors.errorServerError(error);
-                  reject(res.status(err.status).send(err));
+                  reject(errors.errorServerError(error));
                 });
               } else {
                 // Send an error if the user is not found in the database
-                const err = errors.errorBadQueryValue('project',
-                                                      req.query.project);
-                reject(res.status(err.status).send(err));
+                reject(errors.errorBadQueryValue('project',
+                                                      req.query.project));
               }
             }).catch(function(error) {
               log.error(req, 'Error getting project slugs to filter: ' + error);
-              const err = errors.errorServerError(error);
-              reject(res.status(err.status).send(err));
+              reject(errors.errorServerError(error));
             });
           }
         } else {
@@ -307,19 +294,16 @@ module.exports = function(app) {
                   }
                 }).catch(function(error) {
                   log.error(req, 'Error getting filter activities: ' + error);
-                  const err = errors.errorServerError(error);
-                  reject(res.status(err.status).send(err));
+                  reject(errors.errorServerError(error));
                 });
               } else {
                 // Send an error if the user is not found in the database
-                const err = errors.errorBadQueryValue('activity',
-                                                      req.query.activity);
-                reject(res.status(err.status).send(err));
+                reject(errors.errorBadQueryValue('activity',
+                                                      req.query.activity));
               }
             }).catch(function(error) {
               log.error(req, 'Error retrieving activities: ' + error);
-              const err = errors.errorServerError(error);
-              reject(res.status(err.status).send(err));
+              reject(errors.errorServerError(error));
             });
           }
         } else {
@@ -388,7 +372,10 @@ module.exports = function(app) {
           });
           const childTimeMetadata = timesMetadata(childTimesArray);
           const childTime = compileTime(time, childTimeMetadata.project,
-                                        childTimeMetadata.activities, res);
+                                        childTimeMetadata.activities);
+          if (childTime.error) {
+            return errors.send(childTime, res);
+          }
 
           childTime.parents = allTimesCopy.filter(function(parentTime) {
             return (parentTime.uuid === childTime.uuid) && !(parentTime.newest);
@@ -398,10 +385,13 @@ module.exports = function(app) {
               return parentTimeInner.uuid === childTime.uuid;
             });
             const parentTimeMetadata = timesMetadata(parentTimesArray);
-            return JSON.stringify(compileTime(parentTime,
-                                              parentTimeMetadata.project,
-                                              parentTimeMetadata.activities,
-                                              res));
+            const parent = compileTime(parentTime,
+                                      parentTimeMetadata.project,
+                                      parentTimeMetadata.activities);
+            if (parent.error) {
+              return errors.send(parent, res);
+            }
+            return JSON.stringify(parent);
           }).filter(function(parentTime, index, self) {
             return self.indexOf(parentTime) === index;
           }).map(function(parentTime) {
@@ -413,6 +403,8 @@ module.exports = function(app) {
         }).map(function(time) {
           return JSON.parse(time);
         }));
+      }).catch(function(error) {
+        return errors.send(error, res);
       });
     // Include_revisions is set to false or not an included param
     } else {
@@ -428,13 +420,20 @@ module.exports = function(app) {
             return childTime.uuid === time.uuid;
           });
           const childTimeMetadata = timesMetadata(childTimesArray);
-          return JSON.stringify(compileTime(time, childTimeMetadata.project,
-                                        childTimeMetadata.activities, res));
+          const child = compileTime(time, childTimeMetadata.project,
+                                        childTimeMetadata.activities);
+          if (child.error) {
+            return errors.send(child, res);
+          }
+
+          return JSON.stringify(child);
         }).filter(function(time, index, self) {
           return self.indexOf(time) === index;
         }).map(function(time) {
           return JSON.parse(time);
         }));
+      }).catch(function(error) {
+        return errors.send(error, res);
       });
     }
   });
@@ -442,8 +441,8 @@ module.exports = function(app) {
   authRequest.get(app, app.get('version') + '/times/:uuid',
   function(req, res, user) {
     if (!helpers.validateUUID(req.params.uuid)) {
-      const err = errors.errorInvalidIdentifier('UUID', req.params.uuid);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorInvalidIdentifier('UUID', req.params.uuid),
+        res);
     }
 
     // I appologize for the following if-block and all of it's tom-foolery.
@@ -460,7 +459,10 @@ module.exports = function(app) {
         const childMetadata = timesMetadata(childTimes);
         // Map the processed child info to the DB object
         const childTime = compileTime(childTimes[0], childMetadata.project,
-                                      childMetadata.activities, res);
+                                      childMetadata.activities);
+        if (childTime.error) {
+          return errors.send(childTime, res);
+        }
 
         // Generate a list of parent times
         const parentTimes = times.filter(function(p) {
@@ -489,18 +491,32 @@ module.exports = function(app) {
           // Generate the metadata for that revision
           const pCurrMeta = timesMetadata(pCurr);
           // Push the compiled parent time onto the lits of parents.
-          childTime.parents.push(compileTime(pCurr[0], pCurrMeta.project,
-                                 pCurrMeta.activities, res));
+          const parent = compileTime(pCurr[0], pCurrMeta.project,
+                                 pCurrMeta.activities);
+          if (parent.error) {
+            return errors.send(parent, res);
+          }
+
+          childTime.parents.push(parent);
         }
         return res.send(childTime);
+      }).catch(function(error) {
+        return errors.send(error, res);
       });
     } else {
       compileTimesQueryPromise(req, res, user, {'times.newest': true,
                                           'times.uuid': req.params.uuid})
       .then(function(times) {
         const metadata = timesMetadata(times);
-        res.send(compileTime(times.pop(), metadata.project,
-                                    metadata.activities, res));
+        const val = compileTime(times.pop(), metadata.project,
+                                    metadata.activities);
+        if (val.error) {
+          return errors.send(val, res);
+        }
+
+        return res.send(val);
+      }).catch(function(error) {
+        return errors.send(error, res);
       });
     }
   });
@@ -522,27 +538,23 @@ module.exports = function(app) {
 
     if (badField) {
       if (badField.missing) {
-        const err = errors.errorBadObjectMissingField('time',
-        badField.name);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorBadObjectMissingField('time',
+        badField.name), res);
       }
-      const err = errors.errorBadObjectInvalidField('time',
-      badField.name, badField.type, badField.actualType);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('time',
+        badField.name, badField.type, badField.actualType), res);
     }
 
     // Test duration value
     if (time.duration < 0) {
-      const err = errors.errorBadObjectInvalidField('time', 'duration',
-      'positive number', 'negative number');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('time', 'duration',
+        'positive number', 'negative number'), res);
     }
 
     // Test validity of project slug
     if (!helpers.validateSlug(time.project)) {
-      const err = errors.errorBadObjectInvalidField('time', 'project', 'slug',
-      'invalid slug ' + time.project);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('time', 'project',
+        'slug', 'invalid slug ' + time.project), res);
     }
 
     if (time.activities) {
@@ -551,30 +563,28 @@ module.exports = function(app) {
       for (let activity of time.activities) {
         /* eslint-enable prefer-const */
         if (helpers.getType(activity) !== 'string') {
-          const err = errors.errorBadObjectInvalidField('time', 'activities',
-          'slugs', 'array containing at least 1 ' + helpers.getType(activity));
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorBadObjectInvalidField('time',
+            'activities', 'slugs', 'array containing at least 1 ' +
+            helpers.getType(activity)), res);
         } else if (!helpers.validateSlug(activity)) {
-          const err = errors.errorBadObjectInvalidField('time', 'activities',
-          'slugs', 'array containing at least 1 invalid slug');
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorBadObjectInvalidField('time',
+            'activities', 'slugs', 'array containing at least 1 invalid slug'),
+            res);
         }
       }
     }
 
     // Test issue URI value
     if (time.issue_uri && !validUrl.isWebUri(time.issue_uri)) {
-      const err = errors.errorBadObjectInvalidField('time', 'issue_uri',
-              'URI', 'invalid URI ' + time.issue_uri);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('time', 'issue_uri',
+              'URI', 'invalid URI ' + time.issue_uri), res);
     }
 
     // Test date worked value
     if (!/\d{4}-\d{2}-\d{2}/.test(time.date_worked) ||
-    !Date.parse(time.date_worked)) {
-      const err = errors.errorBadObjectInvalidField('time', 'date_worked',
-      'ISO-8601 date', time.date_worked);
-      return res.status(err.status).send(err);
+      !Date.parse(time.date_worked)) {
+      return errors.send(errors.errorBadObjectInvalidField('time',
+        'date_worked', 'ISO-8601 date', time.date_worked), res);
     }
     // Finish checks for user, project, and activity
     helpers.checkUser(user.username, time.user).then(function(userId) {
@@ -583,9 +593,8 @@ module.exports = function(app) {
           knex('userroles').first().where({user: userId, project: projectId})
           .then(function(roles) {
             if ((!roles || roles.member === false) && !user.site_admin) {
-              const err = errors.errorAuthorizationFailure(user.username,
-                'create time entries for project ' + time.project + '.');
-              return res.status(err.status).send(err);
+              return errors.send(errors.errorAuthorizationFailure(user.username,
+                'create time entries for project ' + time.project + '.'), res);
             }
 
             time.uuid = uuid.v4();
@@ -641,21 +650,19 @@ module.exports = function(app) {
               });
             }).catch(function(error) {
               log.error(req, 'Rolling back transaction.');
-              const err = errors.errorServerError(error);
-              return res.status(err.status).send(err);
+              return errors.send(errors.errorServerError(error), res);
             });
           }).catch(function(error) {
             log.error(req, 'Error retrieving user roles: ' + error);
-            const err = errors.errorServerError(error);
-            return res.status(err.status).send(err);
+            return errors.send(errors.errorServerError(error), res);
           });
         };
 
         if (time.activities) {
           helpers.checkActivities(time.activities).then(insert)
           .catch(function() {
-            const err = errors.errorInvalidForeignKey('time', 'activities');
-            return res.status(err.status).send(err);
+            return errors.send(errors.errorInvalidForeignKey('time',
+              'activities'), res);
           });
         } else {
           knex('projects').select('default_activity').first()
@@ -663,24 +670,21 @@ module.exports = function(app) {
             if (activityId.default_activity) {
               insert([activityId.default_activity]);
             } else {
-              const err = errors.errorBadObjectMissingField('time',
-                                                            'activities');
-              return res.status(err.status).send(err);
+              return errors.send(errors.errorBadObjectMissingField('time',
+                                                            'activities'), res);
             }
           }).catch(function(error) {
             log.error(req, 'Error selecting default activity.');
-            const err = errors.errorServerError(error);
-            return res.status(err.status).send(err);
+            return errors.send(errors.errorServerError(error), res);
           });
         }
       }).catch(function() {
-        const err = errors.errorInvalidForeignKey('time', 'project');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorInvalidForeignKey('time', 'project'),
+          res);
       });
     }).catch(function() {
-      const err = errors.errorAuthorizationFailure(user.username,
-        'create time entries for ' + time.user);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorAuthorizationFailure(user.username,
+        'create time entries for ' + time.user), res);
     });
   });
 
@@ -689,8 +693,8 @@ module.exports = function(app) {
   function(req, res, user) {
     const knex = app.get('knex');
     if (!helpers.validateUUID(req.params.uuid)) {
-      const err = errors.errorInvalidIdentifier('UUID', req.params.uuid);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorInvalidIdentifier('UUID', req.params.uuid),
+        res);
     }
 
     const obj = req.body.object;
@@ -698,9 +702,8 @@ module.exports = function(app) {
     // Test duration value
     if (obj.duration !== undefined &&
             helpers.getType(obj.duration) === 'object') {
-      const err = errors.errorBadObjectInvalidField('time', 'duration',
-      'number', 'object');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('time', 'duration',
+        'number', 'object'), res);
     }
 
     // Duration always ends up a string for some reason
@@ -727,25 +730,23 @@ module.exports = function(app) {
     for (let field in obj) {
     /* eslint-enable prefer-const */
       if (fieldNames.indexOf(field) < 0) {
-        const err = errors.errorBadObjectUnknownField('time', field);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorBadObjectUnknownField('time', field),
+          res);
       }
     }
 
     // Test fields
     const validationFailure = helpers.validateFields(obj, fields);
     if (validationFailure) {
-      const err = errors.errorBadObjectInvalidField('time',
+      return errors.send(errors.errorBadObjectInvalidField('time',
         validationFailure.name, validationFailure.type,
-        validationFailure.actualType);
-      return res.status(err.status).send(err);
+        validationFailure.actualType), res);
     }
 
     // Test duration value again
     if (obj.duration !== undefined && obj.duration < 0) {
-      const err = errors.errorBadObjectInvalidField('time', 'duration',
-      'positive integer', 'negative integer');
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('time', 'duration',
+        'positive integer', 'negative integer'), res);
     }
 
     // Test each activity
@@ -754,14 +755,13 @@ module.exports = function(app) {
       for (let activity of obj.activities) {
         /* eslint-enable prefer-const */
         if (helpers.getType(activity) !== 'string') {
-          const err = errors.errorBadObjectInvalidField('time', 'activities',
-          'slugs', 'array containing at least 1 ' +
-          helpers.getType(activity));
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorBadObjectInvalidField('time',
+            'activities', 'slugs', 'array containing at least 1 ' +
+            helpers.getType(activity)), res);
         } else if (!helpers.validateSlug(activity)) {
-          const err = errors.errorBadObjectInvalidField('time', 'activities',
-          'slugs', 'array containing at least 1 invalid slug');
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorBadObjectInvalidField('time',
+            'activities', 'slugs', 'array containing at least 1 invalid slug'),
+            res);
         }
       }
     }
@@ -769,25 +769,22 @@ module.exports = function(app) {
     // Test issue URI value
     if (obj.issue_uri !== undefined &&
             !validUrl.isWebUri(obj.issue_uri)) {
-      const err = errors.errorBadObjectInvalidField('time', 'issue_uri',
-              'URI', 'invalid URI ' + obj.issue_uri);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('time', 'issue_uri',
+              'URI', 'invalid URI ' + obj.issue_uri), res);
     }
 
     // Test date worked value
     if (obj.date_worked !== undefined &&
         (!/\d{4}-\d{2}-\d{2}/.test(obj.date_worked) ||
         !Date.parse(obj.date_worked))) {
-      const err = errors.errorBadObjectInvalidField('time', 'date_worked',
-      'ISO-8601 date', obj.date_worked);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('time',
+        'date_worked', 'ISO-8601 date', obj.date_worked), res);
     }
 
     // Test notes value
     if (obj.notes !== undefined && helpers.getType(obj.notes) !== 'string') {
-      const err = errors.errorBadObjectInvalidField('time', 'notes',
-      'string', helpers.getType(obj.notes));
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorBadObjectInvalidField('time', 'notes',
+        'string', helpers.getType(obj.notes)), res);
     }
 
     // retrieves the time from the database
@@ -812,9 +809,8 @@ module.exports = function(app) {
     .orderBy('times.revision', 'desc')
     .then(function(time) {
       if ((user.username !== time.username) && !user.site_admin) {
-        const err = errors.errorAuthorizationFailure(user.username,
-          'create objects for ' + time.username);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorAuthorizationFailure(user.username,
+          'create objects for ' + time.username), res);
       }
 
       const username = obj.user || time.username;
@@ -923,26 +919,22 @@ module.exports = function(app) {
               });
             }).catch(function(error) {
               log.error(req, 'Rolling back transaction.');
-              const err = errors.errorServerError(error);
-              return res.status(err.status).send(err);
+              return errors.send(errors.errorServerError(error), res);
             });
           }).catch(function() {
-            const err = errors.errorInvalidForeignKey('time',
-                    'activities');
-            return res.status(err.status).send(err);
+            return errors.send(errors.errorInvalidForeignKey('time',
+                    'activities'), res);
           });
         }).catch(function() {
-          const err = errors.errorInvalidForeignKey('time', 'project');
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorInvalidForeignKey('time', 'project'),
+            res);
         });
       }).catch(function() {
-        const err = errors.errorInvalidForeignKey('time', 'user');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorInvalidForeignKey('time', 'user'), res);
       });
     }).catch(function(error) {
       log.error(req, 'Error retrieving time to update: ' + error);
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorServerError(error), res);
     });
   });
 
@@ -950,21 +942,20 @@ module.exports = function(app) {
   function(req, res, user) {
     const knex = app.get('knex');
     if (!helpers.validateUUID(req.params.uuid)) {
-      const err = errors.errorInvalidIdentifier('uuid', req.params.uuid);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorInvalidIdentifier('uuid', req.params.uuid),
+        res);
     }
 
     knex('times').select('id', 'user').where('uuid', req.params.uuid).first()
     .then(function(time) {
       if (!time) {
-        const err = errors.errorObjectNotFound('uuid', req.params.uuid);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorObjectNotFound('uuid', req.params.uuid),
+          res);
       }
 
       if (time.user !== user.id && !user.site_manager && !user.site_admin) {
-        const err = errors.errorAuthorizationFailure(user.username,
-            'delete time ' + req.params.uuid);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorAuthorizationFailure(user.username,
+            'delete time ' + req.params.uuid), res);
       }
 
       knex.transaction(function(trx) {
@@ -980,13 +971,11 @@ module.exports = function(app) {
         });
       }).catch(function(error) {
         log.error(req, 'Rolling back transaction.');
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     }).catch(function(error) {
       log.error(req, 'Error retrieving time to delete: ' + error);
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
+      return errors.send(errors.errorServerError(error), res);
     });
   });
 };

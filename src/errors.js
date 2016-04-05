@@ -202,4 +202,15 @@ module.exports = {
     return createError(400, 'Bad Query Value', 'Parameter ' + key +
     ' contained invalid value ' + value);
   },
+
+  /*
+   * Helper function to ensure HTTP status is sent and prevent repeated send
+   */
+  send: function(error, res) {
+    if (!res.finished) {
+      return res.status(error.status).send(error);
+    }
+
+    return null;
+  },
 };

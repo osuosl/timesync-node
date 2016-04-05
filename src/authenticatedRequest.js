@@ -6,24 +6,23 @@ module.exports = {
   post: function(app, path, callback) {
     app.post(path, function(req, res, next) {
       if (!req.body.auth) {
-        const err = errors.errorAuthenticationFailure('Missing credentials');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorAuthenticationFailure(
+          'Missing credentials'), res);
       }
 
       if (!req.body.auth.type) {
-        const err = errors.errorAuthenticationFailure(
-          'Authentication type required');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorAuthenticationFailure(
+          'Authentication type required'), res);
       }
 
       if (req.body.auth.type !== 'token') {
-        const err = errors.errorAuthenticationTypeFailure(req.body.auth.type);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorAuthenticationTypeFailure(
+          req.body.auth.type), res);
       }
 
       if (!req.body.auth.token) {
-        const err = errors.errorAuthenticationFailure('Missing credentials');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorAuthenticationFailure(
+          'Missing credentials'), res);
       }
 
       /*
@@ -37,10 +36,10 @@ module.exports = {
 
       const caller = function(autherr, user, info) {
         if (!user) {
-          const err = errors.errorAuthenticationFailure(autherr ||
-                                                        info.message ||
-                                                        'Unknown error');
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorAuthenticationFailure(autherr ||
+                                                              info.message ||
+                                                              'Unknown error'),
+                                                              res);
         }
         callback(req, res, user);
       };
@@ -52,16 +51,16 @@ module.exports = {
   get: function(app, path, callback) {
     app.get(path, function(req, res, next) {
       if (!req.query.token) {
-        const err = errors.errorAuthenticationFailure('Missing credentials');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorAuthenticationFailure(
+          'Missing credentials'), res);
       }
 
       const caller = function(autherr, user, info) {
         if (!user) {
-          const err = errors.errorAuthenticationFailure(autherr ||
-                                                        info.message ||
-                                                        'Unknown error');
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorAuthenticationFailure(autherr ||
+                                                              info.message ||
+                                                              'Unknown error'),
+                                                              res);
         }
         callback(req, res, user);
       };
@@ -73,16 +72,16 @@ module.exports = {
   delete: function(app, path, callback) {
     app.delete(path, function(req, res, next) {
       if (!req.query.token) {
-        const err = errors.errorAuthenticationFailure('Missing credentials');
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorAuthenticationFailure(
+          'Missing credentials'), res);
       }
 
       const caller = function(autherr, user, info) {
         if (!user) {
-          const err = errors.errorAuthenticationFailure(autherr ||
-                                                        info.message ||
-                                                        'Unknown error');
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorAuthenticationFailure(autherr ||
+                                                              info.message ||
+                                                              'Unknown error'),
+                                                              res);
         }
         callback(req, res, user);
       };
