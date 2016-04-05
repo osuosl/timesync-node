@@ -53,13 +53,13 @@ module.exports = function(app) {
             if (user !== undefined) {
               return resolve(user.id);
             }
-            return reject();
+            return reject({type: 'nonexistent', value: username});
           }).catch(function(error) {
             log.error('helpers.checkUser', 'Error checking user: ' + error);
             reject({type: 'database', value: error});
           });
         } else {
-          return reject();
+          return reject({type: 'invalid', value: username});
         }
       });
     },

@@ -13,7 +13,7 @@ module.exports = function(expect, app) {
     // Later: Include a test that checks if username is admin
     it('Returns false if username !== user', function(done) {
       helpers.checkUser('notauser', 'tschuy').then().catch(function(err) {
-        expect(err).to.be.an('undefined');
+        expect(err).to.deep.equal({type: 'invalid', value: 'notauser'});
         done();
       });
     });

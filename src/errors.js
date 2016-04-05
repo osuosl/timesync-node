@@ -204,6 +204,15 @@ module.exports = {
   },
 
   /*
+  * Error 12: Usernames already exist. Used when a new user is being created,
+  but the username already belongs to a user.
+  */
+  errorUsernameAlreadyExists: function(name) {
+    return createError(409, 'Username already exists', 'username ' + name +
+    ' already exists', [name]);
+  },
+
+  /*
    * Helper function to ensure HTTP status is sent and prevent repeated send
    */
   send: function(error, res) {

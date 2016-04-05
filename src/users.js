@@ -180,38 +180,49 @@ module.exports = function(app) {
         'create users'), res);
     }
 
-    knex.transaction(function(trx) {
-      user.created_at = Date.now();
-      trx('users').insert(user).then(function() {
-        trx.commit();
+    helpers.checkUser(user.username, user.username).catch(function(result) {
+      if (result.type !== 'nonexistent') {
+        return errors.send(errors.errorServerError(result.value), res);
+      }
 
-        // manually set fields if they are not already set.
-        const nullFields = ['username', 'display_name', 'password', 'email',
-        'meta', 'created_at', 'updated_at', 'deleted_at'];
-        nullFields.forEach(function(f) {
-          if (!user[f]) { user[f] = null; }
+      knex.transaction(function(trx) {
+        user.created_at = Date.now();
+        trx('users').insert(user).then(function() {
+          trx.commit();
+
+          // manually set fields if they are not already set.
+          const nullFields = ['username', 'display_name', 'password', 'email',
+          'meta', 'created_at', 'updated_at', 'deleted_at'];
+          nullFields.forEach(function(f) {
+            if (!user[f]) { user[f] = null; }
+          });
+
+          // ... more of that ...
+          const boolFields = ['site_spectator', 'site_manager', 'site_admin'];
+          boolFields.forEach(function(f) {
+            if (!user[f]) { user[f] = false; }
+          });
+
+          // .. almost done...
+          if (!user.active) { user.active = true; }
+
+          // Don't send your password!
+          delete(user.password);
+
+          return res.send(JSON.stringify(user));
+        }).catch(function(error) {
+          log.error(req, 'Error inserting user entry: ' + error);
+          trx.rollback();
         });
-
-        // ... more of that ...
-        const boolFields = ['site_spectator', 'site_manager', 'site_admin'];
-        boolFields.forEach(function(f) {
-          if (!user[f]) { user[f] = false; }
-        });
-
-        // .. almost done...
-        if (!user.active) { user.active = true; }
-
-        // Don't send your password!
-        delete(user.password);
-
-        return res.send(JSON.stringify(user));
       }).catch(function(error) {
-        log.error(req, 'Error inserting user entry: ' + error);
-        trx.rollback();
+        log.error(req, 'Rolling back transaction.');
+        return errors.send(errors.errorServerError(error), res);
       });
-    }).catch(function(error) {
-      log.error(req, 'Rolling back transaction.');
-      return errors.send(errors.errorServerError(error));
+    }).then(function(userId) {
+      if (userId) {
+        return errors.send(errors.errorUsernameAlreadyExists(user.username),
+                                                                          res);
+      }
     });
   });
 
