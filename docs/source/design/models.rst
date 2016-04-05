@@ -66,7 +66,6 @@ activity    foreign key to Activity id
 notes       nullable string
 issue_uri   nullable string
 date_worked integer representing millisecond epoch time
-newest      bool
 uuid        UUID string unique to revision set
 revision    integer
 newest      bool
