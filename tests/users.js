@@ -484,6 +484,34 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it('fails to create a new user with duplicate username', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(postNewUserMinimum);
+
+        requestOptions.body.auth.token = token;
+
+        requestOptions.body.object.username = 'patcht';
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 409,
+            error: 'Username already exists',
+            text: 'username patcht already exists',
+            values: ['patcht'],
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(409);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
     it('fails to create a new user with bad email', function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);

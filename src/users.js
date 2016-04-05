@@ -220,7 +220,7 @@ module.exports = function(app) {
         return res.status(err.status).send(err);
       });
     }).then(function() {
-      return errors.send(errors.errorUsernamesAlreadyExist(user.username), res);
+      return errors.send(errors.errorUsernameAlreadyExists(user.username), res);
     });
   });
 
