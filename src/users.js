@@ -216,8 +216,7 @@ module.exports = function(app) {
         });
       }).catch(function(error) {
         log.error(req, 'Rolling back transaction.');
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     }).then(function() {
       return errors.send(errors.errorUsernameAlreadyExists(user.username), res);
