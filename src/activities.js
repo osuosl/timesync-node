@@ -273,57 +273,17 @@ module.exports = function(app) {
                                                                           res);
     }
 
-<<<<<<< HEAD
-    knex.transaction(function(trx) {
-      trx('activities').first().where({slug: req.params.slug})
-      .update({newest: false}).then(function() {
-        trx('activities').first().select(
-          'activities.name as name',
-          'activities.slug as slug',
-          'activities.uuid as uuid',
-          'activities.revision as rev',
-          'activities.created_at as created_at',
-          'activities.newest as newest')
-        .where('slug', '=', req.params.slug).then(function(obj) {
-          if (!obj) {
-            return errors.send(errors.errorObjectNotFound('activity'), res);
-          }
-
-          /* currObj.name = updated name
-             obj.name = name remains unchanged
-
-             currObj.slug = updated slug
-             obj.slug = slug remains unchanged */
-          const activity = {
-            name: currObj.name || obj.name,
-            slug: currObj.slug || obj.slug,
-            uuid: obj.uuid,
-            revision: obj.rev + 1,
-            updated_at: Date.now(),
-            created_at: parseInt(obj.created_at, 10),
-          };
-
-          trx('activities').insert(activity).returning('id').then(function() {
-            activity.created_at = new Date(activity.created_at)
-            .toISOString().substring(0, 10);
-
-            activity.updated_at = new Date(activity.updated_at)
-            .toISOString().substring(0, 10);
-=======
     knex('activities').where('slug', currObj.slug)
     .then(function(existingSlugs) {
       if (existingSlugs.length !== 0) {
-        const err = errors.errorSlugsAlreadyExist([currObj.slug]);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorSlugsAlreadyExist([currObj.slug]), res);
       }
->>>>>>> Prevented duplication of names and slugs in activities and projects.
 
       knex('activities').where('name', currObj.name)
       .then(function(existingNames) {
         if (existingNames.length !== 0) {
-          const err = errors.errorBadObjectInvalidField('activity', 'name',
-            'unique name', 'name which already exists');
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorBadObjectInvalidField('activity',
+            'name', 'unique name', 'name which already exists'), res);
         }
 
         knex.transaction(function(trx) {
@@ -338,8 +298,7 @@ module.exports = function(app) {
               'activities.newest as newest')
             .where('slug', '=', req.params.slug).then(function(obj) {
               if (!obj) {
-                const err = errors.errorObjectNotFound('activity');
-                return res.status(err.status).send(err);
+                return errors.send(errors.errorObjectNotFound('activity'), res);
               }
 
               /* currObj.name = updated name
@@ -380,23 +339,15 @@ module.exports = function(app) {
           });
         }).catch(function(error) {
           log.error(req, 'Rolling back transaction!');
-          const err = errors.errorServerError(error);
-          return res.status(err.status).send(err);
+          return errors.send(errors.errorServerError(error), res);
         });
       }).catch(function(error) {
         log.error(req, 'Error retrieving existing activity names: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
+        return errors.send(errors.errorServerError(error), res);
       });
     }).catch(function(error) {
-<<<<<<< HEAD
-      log.error(req, 'Rolling back transaction!');
-      return errors.send(errors.errorServerError(error), res);
-=======
       log.error(req, 'Error retrieving existing activity slugs: ' + error);
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
->>>>>>> Prevented duplication of names and slugs in activities and projects.
+      return errors.send(errors.errorServerError(error), res);
     });
   });
 
@@ -468,16 +419,7 @@ module.exports = function(app) {
 
     knex('activities').where('slug', '=', obj.slug).then(function(existing) {
       if (existing.length) {
-<<<<<<< HEAD
-        return errors.send(errors.errorSlugsAlreadyExist(
-          existing.map(function(slug) {
-            return slug.slug;
-          })
-        ), res);
-=======
-        const err = errors.errorSlugsAlreadyExist([obj.slug]);
-        return res.status(err.status).send(err);
->>>>>>> Prevented duplication of names and slugs in activities and projects.
+        return errors.send(errors.errorSlugsAlreadyExist([obj.slug]), res);
       }
 
       knex('activities').where('name', obj.name).then(function(existingNames) {
@@ -504,23 +446,12 @@ module.exports = function(app) {
           return res.status(err.status).send(err);
         });
       }).catch(function(error) {
-<<<<<<< HEAD
-        log.error(req, 'Error creating activity: ' + error);
+        log.error(req, 'Error checking for activity name existence: ' + error);
         return errors.send(errors.errorServerError(error), res);
       });
     }).catch(function(error) {
-      log.error(req, 'Error checking for activity existence: ' + error);
-      return errors.send(errors.errorServerError(error), res);
-=======
-        log.error(req, 'Error checking for activity name existence: ' + error);
-        const err = errors.errorServerError(error);
-        return res.status(err.status).send(err);
-      });
-    }).catch(function(error) {
       log.error(req, 'Error checking for activity slug existence: ' + error);
-      const err = errors.errorServerError(error);
-      return res.status(err.status).send(err);
->>>>>>> Prevented duplication of names and slugs in activities and projects.
+      return errors.send(errors.errorServerError(error), res);
     });
   });
 };
