@@ -1014,6 +1014,30 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it("doesn't patch a project with existent slugs", function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedProject);
+        delete requestOptions.body.object.uuid;
+        delete requestOptions.body.object.revision;
+        delete requestOptions.body.object.deleted_at;
+        delete requestOptions.body.object.updated_at;
+        delete requestOptions.body.object.created_at;
+        requestOptions.body.object.slugs = ['gwm', 'pgd'];
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(body.error).to.equal('The slug provided already exists');
+          expect(res.statusCode).to.equal(409);
+          expect(body.text).to.equal('slug pgd already exists');
+          expect(body.values).to.deep.equal(['pgd']);
+
+          const expectedResults = copyJsonObject(originalProject);
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
 
     it("doesn't patch a project with wrong-type name", function(done) {
       getAPIToken().then(function(token) {
@@ -1033,6 +1057,31 @@ module.exports = function(expect, request, baseUrl) {
           expect(res.statusCode).to.equal(400);
           expect(body.text).to.equal('Field name of' +
           ' project should be string but was sent as array');
+
+          const expectedResults = copyJsonObject(originalProject);
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+    it("doesn't patch a project with existing name", function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(originalProject);
+        delete requestOptions.body.object.uuid;
+        delete requestOptions.body.object.revision;
+        delete requestOptions.body.object.deleted_at;
+        delete requestOptions.body.object.updated_at;
+        delete requestOptions.body.object.created_at;
+        requestOptions.body.object.name = 'Protein Geometry Database';
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(body.error).to.equal('Bad object');
+          expect(res.statusCode).to.equal(400);
+          expect(body.text).to.equal('Field name of project should be unique ' +
+          'name but was sent as name which already exists');
 
           const expectedResults = copyJsonObject(originalProject);
           checkListEndpoint(done, expectedResults, token);
@@ -1556,6 +1605,30 @@ module.exports = function(expect, request, baseUrl) {
             status: 400,
             error: 'Bad object',
             text: 'The project is missing a name',
+          };
+
+          expect(body).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new project with an existing name', function(done) {
+      getAPIToken().then(function(token) {
+        const postExistingName = copyJsonObject(postArg);
+        postExistingName.object.name = 'Protein Geometry Database';
+        requestOptions.body = postExistingName;
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedError = {
+            status: 400,
+            error: 'Bad object',
+            text: 'Field name of project should be unique name but was sent ' +
+            'as name which already exists',
           };
 
           expect(body).to.deep.equal(expectedError);
