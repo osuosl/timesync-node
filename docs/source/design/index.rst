@@ -10,5 +10,5 @@ include design choices made by the TimeSync API).
 .. toctree::
     :maxdepth: 1
 
-    Draft Models <draft_models>
+    Database Models <models>
     Libraries <libraries>

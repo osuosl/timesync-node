@@ -1,4 +1,4 @@
-.. libraries:
+.. _libraries:
 
 =========
 Libraries
@@ -73,7 +73,7 @@ which one throws exceptions, which allows it to run with any number of testing
 libraries. TimeSync uses the Chai assertion library, which allows us to use
 plugins like ``chai-passport-strategy`` to make our tests simpler.
 
-TimeSync uses mostly Chai's ``expect`` paradigm when running tests. This allows
+TimeSync uses Chai's ``expect`` paradigm when running tests. This allows
 tests to be read almost like English:
 
 .. code-block:: javascript
@@ -171,9 +171,9 @@ To use a strategy, it can be loaded with ``passport.use``:
 Passport Local
 --------------
 
-Currently, TimeSync is set up to use ``passport-local`` to do username/password
-authentication. To use ``passport-local``, create a new LocalStrategy with a
-function taking the username, password, and ``done`` callback. Your job is then
+Currently, ``passport-local`` is used to do username/password authentication, one form of
+login authentication available. To use ``passport-local``, create a new LocalStrategy with
+a function taking the username, password, and ``done`` callback. Your job is then
 to check if the username and password match what's in the database. When you've
 finished checking, the ``done`` callback can be called.
 
@@ -212,11 +212,11 @@ of three calls:
 
 .. code-block:: javascript
 
-    request.get(url, function(error, response, body) {});
+    request.get(uri, function(error, response, body) {});
     request.post(postData, function(error, response, body) {});
-    request.del(url, function(error, response, body) {});
+    request.del(uri, function(error, response, body) {});
 
-The url argument to ``get`` and ``del`` is a string. ``postData`` is an object with the
+The uri argument to ``get`` and ``del`` is a string. ``postData`` is an object with the
 following fields:
 
 * ``uri``: a string to the uri of the resource
