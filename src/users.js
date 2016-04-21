@@ -253,6 +253,21 @@ module.exports = function(app) {
         'modify user ' + req.params.username), res);
     }
 
+    if (!authUser.site_admin && authUser.site_manager &&
+        (modUser.display_name || modUser.password || modUser.site_manager ||
+        modUser.site_admin || modUser.active || modUser.meta)) {
+      const err = errors.errorAuthorizationFailure(authUser.username,
+        'modify fields of user ' + req.params.username + ' other than ' +
+        'site_spectator');
+      return res.status(err.status).send(err);
+    }
+
+    if (!authUser.site_admin && (modUser.site_manager || modUser.site_admin)) {
+      const err = errors.errorAuthorizationFailure(authUser.username,
+        'set permissions of user ' + req.params.username);
+      return res.status(err.status).send(err);
+    }
+
     // Test to make sure all fields are of the correct time and exist
     const badField = helpers.validateFields(modUser, [
       {name: 'display_name', type: 'string', required: false},
