@@ -208,7 +208,6 @@ module.exports = function(app) {
 
           // Don't send your password!
           delete(user.password);
-
           return res.send(JSON.stringify(user));
         }).catch(function(error) {
           log.error(req, 'Error inserting user entry: ' + error);

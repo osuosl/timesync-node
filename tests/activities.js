@@ -860,6 +860,52 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it('fails to update an activity to have an existent name', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = postArg;
+        requestOptions.body.object = {name: 'Development'};
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedError = {
+            status: 400,
+            error: 'Bad object',
+            text: 'Field name of activity should be unique name but was sent ' +
+                  'as name which already exists',
+          };
+
+          expect(body).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(400);
+
+          checkGetReq(done, token);
+        });
+      });
+    });
+
+    it('fails to update an activity to have an existent slug', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = postArg;
+        requestOptions.body.object = {slug: 'dev'};
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedError = {
+            status: 409,
+            error: 'The slug provided already exists',
+            text: 'slug dev already exists',
+            values: ['dev'],
+          };
+
+          expect(body).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(409);
+
+          checkGetReq(done, token);
+        });
+      });
+    });
+
     it('fails to update activity if name is invalid type', function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = postArg;
@@ -1284,6 +1330,30 @@ module.exports = function(expect, request, baseUrl) {
             status: 400,
             error: 'Bad object',
             text: 'The activity is missing a name',
+          };
+
+          expect(body).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(400);
+
+          checkListEndpoint(done, null, token);
+        });
+      });
+    });
+
+    it('fails to create a new activity with an existing name', function(done) {
+      getAPIToken().then(function(token) {
+        const postExistingName = copyJsonObject(postArg);
+        postExistingName.object.name = 'Documentation';
+        requestOptions.body = postExistingName;
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedError = {
+            status: 400,
+            error: 'Bad object',
+            text: 'Field name of activity should be unique name but was sent ' +
+            'as name which already exists',
           };
 
           expect(body).to.deep.equal(expectedError);
