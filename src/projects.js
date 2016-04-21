@@ -466,17 +466,13 @@ module.exports = function(app) {
                   .whereIn('username', Object.keys(obj.users))
                   .then(function(userIds) {
                     const roles = [];
-                    const userMap = {};
                     /* eslint-disable prefer-const */
-                    for (let userId of userIds) {
-                      userMap[userId.username] = userId.id;
-                    }
                     /* eslint-disable guard-for-in */
-                    for (let username in obj.users) {
+                    for (let userObj of userIds) {
                     /* eslint-enable prefer-const */
-                      const role = obj.users[username];
+                      const role = obj.users[userObj.username];
                       const newRole = {
-                        user: userMap[username],
+                        user: userObj.id,
                         project: project,
                         member: role.member,
                         spectator: role.spectator,
