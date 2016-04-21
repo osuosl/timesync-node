@@ -486,6 +486,24 @@ module.exports = function(app) {
                       obj.created_at = new Date(obj.created_at)
                       .toISOString().substring(0, 10);
 
+                      /* eslint-disable prefer-const */
+                      /* eslint-disable guard-for-in */
+                      for (let username in obj.users) {
+                        let flag = false;
+                        for (let userId of userIds) {
+                        /* eslint-enable prefer-const */
+                          if (userId.username === username) {
+                            flag = true;
+                            break;
+                          }
+                        }
+
+                        if (!flag) {
+                          delete obj.users[username];
+                        }
+                      }
+                      /* eslint-enable guard-for-in */
+
                       trx.commit();
                       return res.send(JSON.stringify(obj));
                     }).catch(function(error) {
@@ -705,18 +723,13 @@ module.exports = function(app) {
                         trx('users').select('username', 'id')
                         .whereIn('username', Object.keys(obj.users))
                         .then(function(userIds) {
-                          const userMap = {};
                           /* eslint-disable prefer-const */
-                          for (let userId of userIds) {
-                            userMap[userId.username] = userId.id;
-                          }
-
                           /* eslint-disable guard-for-in */
-                          for (let username in obj.users) {
+                          for (let userObj of userIds) {
                           /* eslint-enable prefer-const */
-                            const role = obj.users[username];
+                            const role = obj.users[userObj.username];
                             const newRole = {
-                              user: userMap[username],
+                              user: userObj.id,
                               project: projID,
                               member: role.member,
                               spectator: role.spectator,
@@ -724,6 +737,8 @@ module.exports = function(app) {
                             };
                             newRoles.push(newRole);
                           }
+
+                          /* eslint-enable guard-for-in */
                           trx('userroles').insert(newRoles).then(function() {
                             trx('projectslugs').where({project: oldId})
                             .then(function(existingSlugObjs) {
