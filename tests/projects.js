@@ -293,6 +293,13 @@ module.exports = function(expect, request, baseUrl) {
       deanj: {member: true, spectator: true, manager: false},
       thai: {member: true, spectator: false, manager: false}, // Add thai
     }};
+    const patchedProjectBadMember = {users: {
+      tschuy: {member: true, spectator: true, manager: true},
+      mrsj: {member: true, spectator: true, manager: false},
+      MaraJade: {member: true, spectator: true, manager: true},
+      deanj: {member: true, spectator: true, manager: false},
+      wasd: {member: true, spectator: false, manager: false}, // no wasd
+    }};
     const patchedProjectPromotion = {users: {
       tschuy: {member: true, spectator: true, manager: true},
       mrsj: {member: true, spectator: true, manager: true}, // mrsj now manager
@@ -583,6 +590,34 @@ module.exports = function(expect, request, baseUrl) {
                                                  .substring(0, 10);
           expectedResults.users.thai = {member: true, spectator: false,
                                                                 manager: false};
+
+          const expectedPost = copyJsonObject(expectedResults);
+          delete expectedPost.deleted_at;
+          delete expectedPost.users;
+
+          // expect body of post request to be the new state of gwm
+          expect(body).to.deep.equal(expectedPost);
+
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
+    it('successfully ignores nonexistent members', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+        requestOptions.body.object = copyJsonObject(patchedProjectBadMember);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const expectedResults = copyJsonObject(originalProject);
+          expectedResults.revision = 2;
+          expectedResults.updated_at = new Date().toISOString()
+                                                 .substring(0, 10);
 
           const expectedPost = copyJsonObject(expectedResults);
           delete expectedPost.deleted_at;
@@ -1382,6 +1417,49 @@ module.exports = function(expect, request, baseUrl) {
               created_at: new Date().toISOString().substring(0, 10),
               revision: 1,
               uuid: addedProject.uuid,
+            },
+          ]);
+
+          checkListEndpoint(done, expectedGetResults, token);
+        });
+      });
+    });
+
+    it('successfully creates a new project with a bad user', function(done) {
+      getAPIToken().then(function(token) {
+        // remove uri from post data
+        const postBadUser = copyJsonObject(postArg);
+        postBadUser.object.users.wasd =
+                              {member: true, spectator: false, manager: false};
+        requestOptions.body = postBadUser;
+
+        requestOptions.body.auth.token = token;
+
+        const newProjectBadUser = copyJsonObject(newProject);
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          const addedProject = copyJsonObject(newProjectBadUser);
+          addedProject.uuid = body.uuid;
+          expect(body).to.deep.equal(addedProject);
+
+          const expectedGetResults = initialData.concat([
+            {
+              uri: 'https://github.com/osuosl/timesync-node',
+              slugs: ['timesync-node', 'tsn'],
+              name: 'TimeSync Node',
+              default_activity: 'meeting',
+              deleted_at: null,
+              updated_at: null,
+              created_at: new Date().toISOString().substring(0, 10),
+              revision: 1,
+              uuid: addedProject.uuid,
+              users: {
+                patcht: {member: true, spectator: true, manager: true},
+                thai: {member: true, spectator: true, manager: false},
+              },
             },
           ]);
 
