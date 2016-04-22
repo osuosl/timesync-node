@@ -16,8 +16,8 @@ const info = {
   properties: {
     'TimeSync root user': {
       // Note: '\w' matches all alphanumeric char and '_'
-      validator: /^[\w\-\+\@\+\.]{1,30}$/,
-      warning: 'Use up to 30 alphanumeric, _, @, +, . and - \n',
+      validator: /^[\w\-\~\.\_]{1,30}$/,
+      warning: 'Use up to 30 alphanumeric, _, ~, . and - \n',
       required: true,
     },
     'TimeSync root password': {

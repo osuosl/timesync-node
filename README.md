@@ -9,6 +9,9 @@ TimeSync is the OSU Open Source Lab's time tracking system. It's designed to be
 simple, have a sane API, and make sense while allowing users to track their
 time spent on various projects and activities.
 
+This is the reference implementation of the TimeSync API, written for Node.js.
+The API documentation can be found [here](https://github.com/osuosl/timesync).
+
 Usage
 -----
 
@@ -16,7 +19,7 @@ To start a local instance running on port 8000, just run:
 
 ```
 $ npm install
-$ SECRET_KEY=secret INSTANCE_NAME=timesync-local npm run devel
+$ npm run devel
 ```
 
 ``npm run devel`` is a convenience that will automatically restart the server
@@ -29,7 +32,11 @@ running instance of timesync, to prevent cross-authentication, and
 ``SECRET_KEY`` is used as a cryptographic key for the token signing function
 (see [the docs](https://github.com/osuosl/timesync) for more details).
 
-For this reason, it is important that in production, SECRET_KEY is set to a
+These environment variables are set to default, but insecure, values when
+running ``npm run devel`` for convenience; these values should *not* be used
+in any production environment.
+
+It is important that in production, SECRET_KEY is set to a
 secure key which cannot be guessed, and INSTANCE_NAME is set to a unique name
 which can identify your instance.
 
@@ -67,7 +74,7 @@ $ npm run fixtures
 Next, run the application:
 
 ```
-$ SECRET_KEY=secret INSTANCE_NAME=timesync-local npm start
+$ npm run devel
 ```
 
 Then, in another terminal, make a request to the application with curl.
@@ -86,33 +93,32 @@ your curl request:
 ```
 $ curl -XGET -s localhost:8000/v1/times?token=<token> | python -m json.tool
 [
-    {
-        "activity": [
-            "dev"
-        ],
-        "created_at": null,
-        "date_worked": null,
-        "duration": 12,
-        "id": 1,
-        "issue_uri": "https://github.com/osu-cass/whats-fresh-api/issues/56",
-        "notes": "",
-        "project": [
-            "wf"
-        ],
-        "updated_at": null,
-        "user": "tschuy"
-    }
+  {
+    "activities": [
+      "dev"
+    ],
+    "created_at": "2016-02-19",
+    "date_worked": "2016-02-19",
+    "duration": 12000,
+    "issue_uri": "https://github.com/osu-cass/whats-fresh-api/issues/56",
+    "notes": "",
+    "project": [
+      "wf"
+    ],
+    "updated_at": null,
+    "user": "tschuy"
+  }
 ]
 
 ```
 
 Your output should look something like the above.
 
-If you would like to test the Postgres database, but don't want to setup a
-whole Postgres database, the command ``npm run test_pg_docker`` will spin up a
+If you would like to test the PostgreSQL database, but don't want to setup a
+whole PostgreSQL database, the command ``npm run test_pg_docker`` will spin up a
 docker container and run the tests.
 
-The postgres container will continue to run until you manually kill it
+The PostgreSQL container will continue to run until you manually kill it
 (``docker rm -f postgres_pg``) or when you run the tests again.
 
 If you want to run the ``test_pg_docker`` command make sure of the following:
@@ -123,15 +129,20 @@ If you want to run the ``test_pg_docker`` command make sure of the following:
 Database Backends
 -----------------
 
-TimeSync Node supports a development ``sqlite`` backend and a production
-``postgres`` backend. The default development and testing environment uses
-``sqlite``; to use Postgres, see the development documentation.
+TimeSync Node supports a development ``sqlite`` backend and production
+``postgresql``, ``mysql``, and ``sqlite`` backends. The default development and
+testing environment uses ``sqlite``; to use PostgreSQL, see the development
+documentation.
 
 To run migrations on a particular backend, run:
 
 ```
 $ NODE_ENV=backend npm run migrations
 ```
+
+Valid values of NODE_ENV are ``mocha`` (PostgreSQL), ``mocha_sqlite`` (SQLite),
+``development`` (SQLite), ``development_pg`` (PostgreSQL), ``production_pg``
+(PostgreSQL), ``production_mysql`` (MySQL), and ``production_sqlite`` (SQLite).
 
 Documentation
 -------------
@@ -205,7 +216,7 @@ This will return a JWT token which you can then use to uniquely identify
 yourself for up to 30 minutes.
 
 Use the token as a query parameter on GET requests (e.g. ``GET
-http://localhost:8000/v1/times?token=_token_``) and in the ``auth`` block on
+http://localhost:8000/v1/times?token=<token>``) and in the ``auth`` block on
 POST requests:
 
 ```
@@ -213,7 +224,7 @@ POST http://localhost:8000/v1/projects
 {
   "auth": {
     "type": "token",
-    "token": "_token_"
+    "token": "<token>"
   },
   "object": {
     ...

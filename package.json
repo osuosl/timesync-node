@@ -1,14 +1,15 @@
 {
   "name": "timesync",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "TimeSync time tracker implemented in js",
   "main": "app.js",
   "directories": {
-    "doc": "docs"
+    "doc": "docs",
+    "lib": "src"
   },
   "scripts": {
     "start": "node --harmony ./src/app.js",
-    "devel": "nodemon --harmony ./src/app.js",
+    "devel": "INSTANCE_NAME=timesync-development SECRET_KEY=secret nodemon --harmony ./src/app.js",
     "migrations": "knex migrate:latest",
     "clear-database": "node --harmony ./scripts/clear-database.js",
     "recreate": "rm dev.sqlite3 && knex migrate:latest",
@@ -29,11 +30,10 @@
     "time",
     "tracker"
   ],
+  "homepage": "https://github.com/osuosl/timesync-node",
   "author": "OSU Open Source Lab <support@osuosl.org>",
   "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/osuosl/timesync-node/issues"
-  },
+  "bugs": "https://github.com/osuosl/timesync-node/issues",
   "dependencies": {
     "ain2": "^1.5.3",
     "babel-eslint": "^4.1.5",

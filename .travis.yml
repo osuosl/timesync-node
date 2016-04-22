@@ -1,8 +1,8 @@
 language: node_js
 node_js:
-    - "4.2"
+    - "4.4"
 addons:
-  postgresql: "9.1"
+  postgresql: "9.3"
   apt:
     sources:
       - ubuntu-toolchain-r-test

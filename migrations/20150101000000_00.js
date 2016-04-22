@@ -22,47 +22,54 @@ exports.up = function(knex) {
     table.bigInteger('created_at').notNullable();
     table.bigInteger('updated_at').defaultTo(null);
     table.bigInteger('deleted_at').defaultTo(null);
-    table.uuid('uuid');
+    table.uuid('uuid').notNullable();
     table.integer('revision').defaultTo(1);
     table.boolean('newest').defaultTo(true);
   }).createTable('projects', function(table) {
     table.increments('id').primary();
     table.string('name').notNullable();
     table.string('uri');
-    table.integer('default_activity').references('id').inTable('activities');
+    table.integer('default_activity').references('id').inTable('activities')
+      .onDelete('set null');
     table.bigInteger('created_at').notNullable();
     table.bigInteger('updated_at').defaultTo(null);
     table.bigInteger('deleted_at').defaultTo(null);
-    table.uuid('uuid');
+    table.uuid('uuid').notNullable();
     table.integer('revision').defaultTo(1);
     table.boolean('newest').defaultTo(true);
   }).createTable('times', function(table) {
     table.increments('id').primary();
     table.integer('duration').notNullable();
-    table.integer('user').references('id').inTable('users').notNullable();
-    table.integer('project').references('id').inTable('projects').notNullable();
+    table.integer('user').references('id').inTable('users').notNullable()
+      .onDelete('restrict');
+    table.integer('project').references('id').inTable('projects').notNullable()
+      .onDelete('restrict');
     table.string('notes');
     table.string('issue_uri');
-    table.bigInteger('date_worked');
+    table.bigInteger('date_worked').notNullable();
     table.bigInteger('created_at').notNullable();
     table.bigInteger('updated_at').defaultTo(null);
     table.bigInteger('deleted_at').defaultTo(null);
-    table.uuid('uuid');
+    table.uuid('uuid').notNullable();
     table.integer('revision').defaultTo(1);
     table.boolean('newest').defaultTo(true);
   }).createTable('projectslugs', function(table) {
     table.increments('id').primary();
     table.string('name').unique().notNullable();
-    table.integer('project').references('id').inTable('projects').notNullable().onDelete('cascade');
+    table.integer('project').references('id').inTable('projects').notNullable()
+      .onDelete('cascade');
   }).createTable('timesactivities', function(table) {
     table.increments('id').primary();
-    table.integer('time').references('id').inTable('times').notNullable();
-    table.integer('activity').references('id')
-      .inTable('activities').notNullable();
+    table.integer('time').references('id').inTable('times').notNullable()
+      .onDelete('cascade');
+    table.integer('activity').references('id').inTable('activities')
+      .notNullable().onDelete('cascade');
   }).createTable('userroles', function(table) {
     table.increments('id').primary();
-    table.integer('project').references('id').inTable('projects').notNullable();
-    table.integer('user').references('id').inTable('users').notNullable();
+    table.integer('project').references('id').inTable('projects').notNullable()
+      .onDelete('cascade');
+    table.integer('user').references('id').inTable('users').notNullable()
+      .onDelete('cascade');
     table.boolean('manager').defaultTo(false);
     table.boolean('member').defaultTo(false);
     table.boolean('spectator').defaultTo(false);
