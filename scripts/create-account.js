@@ -15,13 +15,15 @@ const knex = require('knex')(knexfile[db]);
 // Prompt user for their information
 const info = {
   properties: {
-    'TimeSync root user': {
+    'user': {
+      description: 'TimeSync root username',
       // Note: '\w' matches all alphanumeric char and '_'
-      validator: /^[\w\-\~\.\_]{1,30}$/,
-      warning: 'Use up to 30 alphanumeric, _, ~, . and - \n',
+      pattern: /^[\w\-\~\.\_]{1,30}$/,
+      message: 'Use up to 30 alphanumeric, _, ~, . and - \n',
       required: true,
     },
-    'TimeSync root password': {
+    'password': {
+      description: 'TimeSync root password',
       hidden: true,
       required: true,
     },
@@ -31,6 +33,22 @@ const info = {
 function onErr(err) {
   console.error(err);
   return 1;
+}
+
+if (yargs.argv['-h'] || yargs.argv['--help']) {
+  console.log('Run without arguments for interactive mode, or use the flags');
+  console.log('the following syntax to supply arguments:');
+  console.log('  npm run create-account -u USER -p PASSWORD   OR');
+  console.log('  npm run create-account --user=USER --password=PASSWORD');
+  process.exit(0);
+}
+
+if (yargs.argv.u) {
+  yargs.argv.user = yargs.argv.u;
+}
+
+if (yargs.argv.p) {
+  yargs.argv.password = yargs.argv.p;
 }
 
 prompt.override = yargs.argv;
