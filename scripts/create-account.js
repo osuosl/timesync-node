@@ -4,6 +4,7 @@
 
 // Library requirements
 const prompt = require('prompt');
+const yargs = require('yargs');
 const bcrypt = require('bcrypt');
 const knexfile = require('../knexfile');
 const db = process.env.NODE_ENV || 'development';
@@ -31,6 +32,8 @@ function onErr(err) {
   console.error(err);
   return 1;
 }
+
+prompt.override = yargs.argv;
 
 prompt.start();
 
