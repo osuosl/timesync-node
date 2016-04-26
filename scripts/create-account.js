@@ -62,10 +62,12 @@ prompt.get(info, function handleInput(promptErr, result) {
 
   // Password encryption
   bcrypt.genSalt(10, function hashPassword(genSaltErr, salt) {
-    bcrypt.hash(result['TimeSync root password'], salt,
+    bcrypt.hash(result.password, salt,
     function createUser(hashErr, hash) {
+      console.log('Username: ' + result.user, 'hash: ' + hash);
+      process.exit(0);
       knex('users').insert({
-        username: result['TimeSync root user'],
+        username: result.user,
         password: hash,
         display_name: 'root',
         email: null,
