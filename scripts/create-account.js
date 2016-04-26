@@ -35,23 +35,33 @@ function onErr(err) {
   return 1;
 }
 
-if (yargs.argv['-h'] || yargs.argv['--help']) {
+if (yargs.argv.h || yargs.argv.help) {
   console.log('Run without arguments for interactive mode, or use the flags');
   console.log('the following syntax to supply arguments:');
-  console.log('  npm run create-account -u USER -p PASSWORD   OR');
-  console.log('  npm run create-account --user=USER --password=PASSWORD');
+  console.log('  npm run create-account -- -u USER -p PASSWORD   OR');
+  console.log('  npm run create-account -- --user USER --password PASSWORD');
   process.exit(0);
 }
 
+const argv = {};
+
 if (yargs.argv.u) {
-  yargs.argv.user = yargs.argv.u;
+  argv.user = yargs.argv.u;
+}
+
+if (yargs.argv.user) {
+  argv.user = yargs.argv.user;
 }
 
 if (yargs.argv.p) {
-  yargs.argv.password = yargs.argv.p;
+  argv.password = yargs.argv.p;
 }
 
-prompt.override = yargs.argv;
+if (yargs.argv.password) {
+  argv.password = yargs.argv.password;
+}
+
+prompt.override = argv;
 
 prompt.start();
 
@@ -64,8 +74,6 @@ prompt.get(info, function handleInput(promptErr, result) {
   bcrypt.genSalt(10, function hashPassword(genSaltErr, salt) {
     bcrypt.hash(result.password, salt,
     function createUser(hashErr, hash) {
-      console.log('Username: ' + result.user, 'hash: ' + hash);
-      process.exit(0);
       knex('users').insert({
         username: result.user,
         password: hash,
