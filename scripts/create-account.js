@@ -65,69 +65,75 @@ prompt.override = argv;
 
 prompt.start();
 
-prompt.get(info, function handleInput(promptErr, result) {
-  if (promptErr) {
-    return onErr(promptErr);
+knex('users').select('id').then(function(userIds) {
+  if (userIds.length > 0) {
+    process.exit(0);
   }
 
-  // Password encryption
-  bcrypt.genSalt(10, function hashPassword(genSaltErr, salt) {
-    bcrypt.hash(result.password, salt,
-    function createUser(hashErr, hash) {
-      knex('users').insert({
-        username: result.user,
-        password: hash,
-        display_name: 'root',
-        email: null,
-        site_spectator: true,
-        site_manager: true,
-        site_admin: true,
-        active: true,
-        created_at: Date.now(),
-        updated_at: null,
-        deleted_at: null,
-        meta: 'Root user. Created by setup script. Use to create other users.',
-      })
-      .then(
-        function userCreated() {
-          console.log('\nUser successfully created\n');
-        }
-      )
-      /* If the user enters a duplicate name, information will not be
-         added to the database. An error message will print to the screen
-         and the process will exit. */
-      .catch(
-        function handleKnexError(err) {
-          if (err.errno === 19) {
-            console.log('\nINVALID ENTRY: That username is ' +
-              'already in use, please choose a ' +
-              'different handle\n');
-            process.exit(0);
-          } else if (err.errno === 1) {
-            console.log('\nDoes your database exist?\n');
-            process.exit(0);
-          } else {
-            // NOTE: DON'T IGNORE - This will need to be fixed
-            // later to work on databases other than sqlite
-              /* If the error that occurs is not a constraint
-               violation, an error message will print to the screen
-               with a link to a list of result codes. The errno is
-               also printed to the screen. */
+  prompt.get(info, function handleInput(promptErr, result) {
+    if (promptErr) {
+      return onErr(promptErr);
+    }
 
-            console.log('\nSomething went wrong! Check out ' +
-              'https://www.sqlite.org/c3ref/' +
-              'c_abort.html to figure out what ' +
-              'happened.\n');
-            console.log('  Your error number is: ' + err.errno +
-              '\n');
-          }
+    // Password encryption
+    bcrypt.genSalt(10, function hashPassword(genSaltErr, salt) {
+      bcrypt.hash(result.password, salt,
+      function createUser(hashErr, hash) {
+        knex('users').insert({
+          username: result.user,
+          password: hash,
+          display_name: 'root',
+          email: null,
+          site_spectator: true,
+          site_manager: true,
+          site_admin: true,
+          active: true,
+          created_at: Date.now(),
+          updated_at: null,
+          deleted_at: null,
+          meta: 'Root user. Created automatically. Use to create other users.',
         })
-      // Exits the process after storing user info in the db.
-      .then(
-        function quit() {
-          process.exit(0);
-        }
-      );
+        .then(
+          function userCreated() {
+            console.log('\nUser successfully created\n');
+          }
+        )
+        /* If the user enters a duplicate name, information will not be
+           added to the database. An error message will print to the screen
+           and the process will exit. */
+        .catch(
+          function handleKnexError(err) {
+            if (err.errno === 19) {
+              console.log('\nINVALID ENTRY: That username is ' +
+                'already in use, please choose a ' +
+                'different handle\n');
+              process.exit(0);
+            } else if (err.errno === 1) {
+              console.log('\nDoes your database exist?\n');
+              process.exit(0);
+            } else {
+              // NOTE: DON'T IGNORE - This will need to be fixed
+              // later to work on databases other than sqlite
+                /* If the error that occurs is not a constraint
+                 violation, an error message will print to the screen
+                 with a link to a list of result codes. The errno is
+                 also printed to the screen. */
+
+              console.log('\nSomething went wrong! Check out ' +
+                'https://www.sqlite.org/c3ref/' +
+                'c_abort.html to figure out what ' +
+                'happened.\n');
+              console.log('  Your error number is: ' + err.errno +
+                '\n');
+            }
+          })
+        // Exits the process after storing user info in the db.
+        .then(
+          function quit() {
+            process.exit(0);
+          }
+        );
+      });
     });
   });
 });
