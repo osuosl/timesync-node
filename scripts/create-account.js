@@ -35,31 +35,18 @@ function onErr(err) {
   return 1;
 }
 
-if (yargs.argv.h || yargs.argv.help) {
-  console.log('Run without arguments for interactive mode, or use the flags');
-  console.log('the following syntax to supply arguments:');
-  console.log('  npm run create-account -- -u USER -p PASSWORD   OR');
-  console.log('  npm run create-account -- --user USER --password PASSWORD');
-  process.exit(0);
-}
-
-const argv = {};
-
-if (yargs.argv.u) {
-  argv.user = yargs.argv.u;
-}
-
-if (yargs.argv.user) {
-  argv.user = yargs.argv.user;
-}
-
-if (yargs.argv.p) {
-  argv.password = yargs.argv.p;
-}
-
-if (yargs.argv.password) {
-  argv.password = yargs.argv.password;
-}
+const argv = yargs
+            .usage('Usage: $0 [options]')
+            .example('$0 -u root -p root_pass')
+            .alias('u', 'user')
+            .nargs('u', 1)
+            .describe('u', 'Root account username')
+            .alias('p', 'password')
+            .nargs('p', 1)
+            .describe('p', 'Root account password')
+            .help('h')
+            .alias('h', 'help')
+            .argv;
 
 prompt.override = argv;
 

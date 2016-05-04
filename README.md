@@ -140,7 +140,7 @@ create other accounts for your users.
 If you want to use the script in an automated workflow, such as a Chef cookbook,
 the script accepts the flags `--user/--password` or `-u/-p`, as in:
 
-    npm run create-account -u root -p root_pass
+    npm run create-account -- -u root -p root_pass
 
 The create-account script is run by the setup.sh script, as well.
 
