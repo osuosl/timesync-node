@@ -19,6 +19,7 @@ To start a local instance running on port 8000, just run:
 
 ```
 $ npm install
+$ npm run create-account
 $ npm run devel
 ```
 
@@ -125,6 +126,23 @@ If you want to run the ``test_pg_docker`` command make sure of the following:
 
 * You have docker installed and the daemon is running.
 * You are in the docker group or are able to run docker as a non super-user.
+
+Creating users
+--------------
+
+If you just installed TimeSync-Node, there will be no users available to you.
+Run `npm run create-account` to generate a root user; it will prompt you for a
+username and password.
+
+The root account shouldn't be used for general use, but it is available to
+create other accounts for your users.
+
+If you want to use the script in an automated workflow, such as a Chef cookbook,
+the script accepts the flags `--user/--password` or `-u/-p`, as in:
+
+    npm run create-account -u root -p root_pass
+
+The create-account script is run by the setup.sh script, as well.
 
 Database Backends
 -----------------
