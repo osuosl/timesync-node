@@ -36,8 +36,8 @@ function onErr(err) {
 }
 
 const argv = yargs
-            .usage('Usage: $0 [options]')
-            .example('$0 -u root -p root_pass')
+            .usage('Usage: npm run create-account -- [options]')
+            .example('npm run create-account -- -u root -p root_pass')
             .alias('u', 'user')
             .nargs('u', 1)
             .describe('u', 'Root account username')
