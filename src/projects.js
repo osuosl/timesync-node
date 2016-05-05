@@ -750,23 +750,27 @@ module.exports = function(app) {
                               if (helpers.getType(obj.slugs) === 'array') {
                                 const newSlugs = [];
 
-                                newSlugs.push(trx('projectslugs').del()
-                                .where({project: oldId}));
+                                trx('projectslugs').del()
+                                .where({project: oldId}).then(function() {
+                                  /* eslint-disable */
+                                  for (let slug of obj.slugs) {
+                                  /* eslint-enable */
+                                    newSlugs.push(trx('projectslugs')
+                                    .insert({project: projID, name: slug}));
+                                  }
 
-                                /* eslint-disable */
-                                for (let slug of obj.slugs) {
-                                /* eslint-enable */
-                                  newSlugs.push(trx('projectslugs')
-                                  .insert({project: projID, name: slug}));
-                                }
-
-                                Promise.all(newSlugs).then(function() {
-                                  project.slugs = obj.slugs.sort();
-                                  delete project.newest;
-                                  trx.commit();
-                                  res.send(JSON.stringify(project));
+                                  Promise.all(newSlugs).then(function() {
+                                    project.slugs = obj.slugs.sort();
+                                    delete project.newest;
+                                    trx.commit();
+                                    res.send(JSON.stringify(project));
+                                  }).catch(function(error) {
+                                    log.error(req, 'Error inserting slugs: ' +
+                                                                        error);
+                                    trx.rollback();
+                                  });
                                 }).catch(function(error) {
-                                  log.error(req, 'Error inserting slugs: ' +
+                                  log.error(req, 'Error deleting old slugs: ' +
                                                                         error);
                                   trx.rollback();
                                 });
@@ -815,23 +819,28 @@ module.exports = function(app) {
                           if (helpers.getType(obj.slugs) === 'array') {
                             const newSlugs = [];
 
-                            newSlugs.push(trx('projectslugs').del()
-                            .where({project: oldId}));
+                            trx('projectslugs').del().where({project: oldId})
+                            .then(function() {
+                              /* eslint-disable */
+                              for (let slug of obj.slugs) {
+                              /* eslint-enable */
+                                newSlugs.push(trx('projectslugs')
+                                .insert({project: projID, name: slug}));
+                              }
 
-                            /* eslint-disable */
-                            for (let slug of obj.slugs) {
-                            /* eslint-enable */
-                              newSlugs.push(trx('projectslugs')
-                              .insert({project: projID, name: slug}));
-                            }
-
-                            Promise.all(newSlugs).then(function() {
-                              project.slugs = obj.slugs.sort();
-                              delete project.newest;
-                              trx.commit();
-                              res.send(JSON.stringify(project));
+                              Promise.all(newSlugs).then(function() {
+                                project.slugs = obj.slugs.sort();
+                                delete project.newest;
+                                trx.commit();
+                                res.send(JSON.stringify(project));
+                              }).catch(function(error) {
+                                log.error(req, 'Error inserting slugs: ' +
+                                          error);
+                                trx.rollback();
+                              });
                             }).catch(function(error) {
-                              log.error(req, 'Error inserting slugs: ' + error);
+                              log.error(req, 'Error deleting old slugs: ' +
+                                        error);
                               trx.rollback();
                             });
                           } else {
