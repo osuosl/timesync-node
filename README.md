@@ -19,6 +19,7 @@ To start a local instance running on port 8000, just run:
 
 ```
 $ npm install
+$ npm run migrations
 $ npm run create-account
 $ npm run devel
 ```
@@ -69,7 +70,7 @@ and load the fixtures:
 
 ```
 $ npm run migrations
-$ npm run fixtures
+$ npm run fixtures   # For loading the test data
 ```
 
 Next, run the application:
