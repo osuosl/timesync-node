@@ -38,6 +38,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('knex', knex);
 app.set('log', log);
 
+app.use(function(err, req, res, next) {
+  if (err instanceof SyntaxError && err.status === 400) {
+    return res.status(400).send();
+  }
+  next();
+});
+
 // Set API version prefix
 app.set('version', '/v0');
 
