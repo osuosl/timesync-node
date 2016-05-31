@@ -808,6 +808,10 @@ module.exports = function(app) {
                'times.project')
     .orderBy('times.revision', 'desc')
     .then(function(time) {
+      if (!time) {
+        return errors.send(errors.errorObjectNotFound('time'));
+      }
+
       if ((user.username !== time.username) && !user.site_admin) {
         return errors.send(errors.errorAuthorizationFailure(user.username,
           'create objects for ' + time.username), res);

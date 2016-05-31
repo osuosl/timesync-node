@@ -637,6 +637,10 @@ module.exports = function(app) {
       // project contains all of the information about the project the
       // user is updating
 
+      if (!project) {
+        return errors.send(errors.objectNotFound('project'));
+      }
+
       const defaultActivityName = project.default_activity_name;
       delete project.default_activity_name;
 
