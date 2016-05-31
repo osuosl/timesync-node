@@ -38,9 +38,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('knex', knex);
 app.set('log', log);
 
+const errors = require('./errors');
+
+/*
+ * Catch errors due to malformed or invalid JSON in request bodies and
+ * return a 400 error
+ */
 app.use(function(err, req, res, next) {
   if (err instanceof SyntaxError && err.status === 400) {
-    return res.status(400).send();
+    return errors.send(errors.errorBadObjectInvalidObject(), res);
   }
   next();
 });
