@@ -62,6 +62,46 @@ const endTransact = function(done) {
   });
 };
 
+describe('Basic', function() {
+  this.timeout(1000);
+  beforeEach(transact);
+  afterEach(endTransact);
+
+  before(function(done) {
+    knex.migrate.latest().then(function() {
+      done();
+    });
+  });
+
+  it('should have a response at base URL', function(done) {
+    request.get(baseUrl, function(err, res, body) {
+      expect(body.toString()).to.equal('Cannot GET /v0/\n');
+      done();
+    });
+  });
+
+  it('should return an error on invalid JSON', function(done) {
+    const requestOptions = {
+      url: baseUrl + 'login',
+      body: '{"auth": {"type": "password", username: "patcht". password: ' +
+      'drowssap}',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    };
+    request.post(requestOptions, function(err, res, body) {
+      expect(JSON.parse(body)).to.deep.equal({
+        status: 400,
+        error: 'Bad object',
+        text: 'The request body could not be parsed as valid JSON',
+      });
+
+      done();
+    });
+  });
+});
+
 describe('Endpoints', function() {
   this.timeout(1000);
   beforeEach(transact);

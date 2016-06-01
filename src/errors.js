@@ -104,6 +104,16 @@ module.exports = {
   },
 
   /*
+  * Error 4: Bad object. Variant 4: invalid object. Client POSTed an object
+  * which could not be parsed as valid JSON, and the server is unable to
+  * interpret the object at all.
+  */
+  errorBadObjectInvalidObject: function() {
+    return createError(400, 'Bad object', 'The request body could not be ' +
+    'parsed as valid JSON');
+  },
+
+  /*
   * Error 5: Invalid identifier. The given slug or ID is not of the correct
   * format to be valid, and therefore could never point to a valid object.
   *
