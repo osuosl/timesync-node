@@ -809,7 +809,7 @@ module.exports = function(app) {
     .orderBy('times.revision', 'desc')
     .then(function(time) {
       if (!time) {
-        return errors.send(errors.errorObjectNotFound('time'));
+        return errors.send(errors.errorObjectNotFound('time'), res);
       }
 
       if ((user.username !== time.username) && !user.site_admin) {

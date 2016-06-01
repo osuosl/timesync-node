@@ -750,6 +750,30 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it("doesn't patch a non-existent project", function(done) {
+      getAPIToken().then(function(token) {
+        const options = copyJsonObject(requestOptions);
+        options.body = copyJsonObject(postArg);
+        options.body.object = copyJsonObject(patchedProject);
+        options.uri = baseUrl + 'projects/not-a-project';
+
+        options.body.auth.token = token;
+
+        request.post(options, function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(body).to.deep.equal({
+            status: 404,
+            error: 'Object not found',
+            text: 'Nonexistent project',
+          });
+          expect(res.statusCode).to.equal(404);
+
+          const expectedResults = copyJsonObject(originalProject);
+          checkListEndpoint(done, expectedResults, token);
+        });
+      });
+    });
+
     it("doesn't patch a project with bad authentication", function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);

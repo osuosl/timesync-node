@@ -1244,6 +1244,33 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it("doesn't update a non-existent user", function(done) {
+      getAPIToken().then(function(token) {
+        const options = copyJsonObject(requestOptions);
+        options.body = copyJsonObject(postArg);
+        options.body.object = copyJsonObject(updatedUser);
+
+        options.body.auth.token = token;
+        options.uri = baseUrl + 'users/nonexistent';
+
+        request.post(options, function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const expectedResult = {
+            status: 404,
+            error: 'Object not found',
+            text: 'Nonexistent user',
+          };
+
+          expect(body).to.deep.equal(expectedResult);
+
+          expect(res.statusCode).to.equal(404);
+
+          checkListEndpoint(done, originalUser, token);
+        });
+      });
+    });
+
     it("doesn't update a user with bad authentication", function(done) {
       getAPIToken().then(function(token) {
         requestOptions.body = copyJsonObject(postArg);

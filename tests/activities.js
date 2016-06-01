@@ -813,6 +813,30 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it('fails to update a non-existent activity', function(done) {
+      getAPIToken().then(function(token) {
+        const options = copyJsonObject(requestOptions);
+        options.body = postArg;
+        options.body.object = patchedSlug;
+
+        options.body.auth.token = token;
+        options.uri = baseUrl + 'activities/not-an-activity';
+
+        request.post(options, function(err, res, body) {
+          const expectedError = {
+            status: 404,
+            error: 'Object not found',
+            text: 'Nonexistent activity',
+          };
+
+          expect(body).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(404);
+
+          checkGetReq(done, token);
+        });
+      });
+    });
+
     // Returns an error 400 - errorBadObjectInvalidRield
     it('fails to update an activity to have no name', function(done) {
       getAPIToken().then(function(token) {

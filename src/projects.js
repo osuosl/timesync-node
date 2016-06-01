@@ -638,7 +638,7 @@ module.exports = function(app) {
       // user is updating
 
       if (!project) {
-        return errors.send(errors.objectNotFound('project'));
+        return errors.send(errors.errorObjectNotFound('project'), res);
       }
 
       const defaultActivityName = project.default_activity_name;
