@@ -4127,19 +4127,23 @@ module.exports = function(expect, request, baseUrl) {
      * Without this function you would see this exact code pretty 26
      * times over.
      */
-    function checkPostToEndpoint(done, postObj, expectedResults, error,
+    function checkPostToEndpoint(done, uri, postObj, expectedResults, error,
     statusCode, postBodies) {
       getAPIToken().then(function(token) {
+        const options = copyJsonObject(requestOptions);
         postArg.object = postObj;
-        requestOptions.body = postArg;
+        options.body = postArg;
 
-        requestOptions.body.auth.token = token;
+        options.body.auth.token = token;
+        if (uri) {
+          options.uri = uri;
+        }
 
         // make a given post request
         // check the error
         // check the statusCode
         // Also check the body of the request
-        request.post(requestOptions, function(err, res, body) {
+        request.post(options, function(err, res, body) {
           expect(body.error).to.equal(error);
           expect(res.statusCode).to.equal(statusCode);
 
@@ -4173,7 +4177,7 @@ module.exports = function(expect, request, baseUrl) {
       let error;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode);
     });
 
@@ -4190,7 +4194,7 @@ module.exports = function(expect, request, baseUrl) {
 
       user = 'deanj';
       password = 'pass';
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode);
       user = oldUser;
       password = oldPass;
@@ -4206,7 +4210,7 @@ module.exports = function(expect, request, baseUrl) {
       let error;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode);
     });
 
@@ -4219,7 +4223,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.revision = 2;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, undefined,
+      checkPostToEndpoint(done, null, postObj, expectedResults, undefined,
                  statusCode);
     });
 
@@ -4232,7 +4236,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.revision = 2;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, undefined,
+      checkPostToEndpoint(done, null, postObj, expectedResults, undefined,
                  statusCode);
     });
 
@@ -4245,7 +4249,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.revision = 2;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, undefined,
+      checkPostToEndpoint(done, null, postObj, expectedResults, undefined,
                  statusCode);
     });
 
@@ -4258,7 +4262,7 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.revision = 2;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, undefined,
+      checkPostToEndpoint(done, null, postObj, expectedResults, undefined,
                  statusCode);
     });
 
@@ -4271,8 +4275,26 @@ module.exports = function(expect, request, baseUrl) {
       expectedResults.revision = 2;
       const statusCode = 200;
 
-      checkPostToEndpoint(done, postObj, expectedResults, undefined,
+      checkPostToEndpoint(done, null, postObj, expectedResults, undefined,
                  statusCode);
+    });
+
+    it('unsuccessfully patches a non-existent time', function(done) {
+      const uri = baseUrl + 'times/00000000-0000-0000-0000-000000000000';
+      const postObj = {duration: postPatchedTime.duration};
+      const expectedResults = copyJsonObject(getOriginalTime);
+      const error = 'Object not found';
+      const statusCode = 404;
+      const postBody = [
+        {
+          status: 404,
+          error: 'Object not found',
+          text: 'Nonexistent time',
+        },
+      ];
+
+      checkPostToEndpoint(done, uri, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests all invalid fields
@@ -4321,7 +4343,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4341,7 +4363,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4361,7 +4383,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4381,7 +4403,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4401,7 +4423,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4421,7 +4443,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4441,7 +4463,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4460,7 +4482,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4484,7 +4506,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4508,7 +4530,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4533,7 +4555,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4558,7 +4580,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4583,7 +4605,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4608,7 +4630,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4631,7 +4653,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4657,7 +4679,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4676,7 +4698,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4695,7 +4717,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4714,7 +4736,7 @@ module.exports = function(expect, request, baseUrl) {
           text: 'The time does not contain a valid activities reference.',
         }];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4732,7 +4754,7 @@ module.exports = function(expect, request, baseUrl) {
           text: 'Field user of time should be string but was sent as array',
         }];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
 
@@ -4752,7 +4774,7 @@ module.exports = function(expect, request, baseUrl) {
         },
       ];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
               statusCode, postBody);
     });
 
@@ -4771,7 +4793,7 @@ module.exports = function(expect, request, baseUrl) {
                   'sent as April 29, 1995',
         }];
 
-      checkPostToEndpoint(done, postObj, expectedResults, error,
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
                  statusCode, postBody);
     });
   });
