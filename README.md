@@ -85,7 +85,7 @@ If you have a user instance already, then simply first authenticate (angle
 brackets indicate user input):
 
 ```
-$ curl -XPOST -d '{"auth":{"type":"password","username":"<user>","password":"<pass>"}}' -H "Content-Type: application/json" http://localhost:8000/v1/login
+$ curl -XPOST -d '{"auth":{"type":"password","username":"<user>","password":"<pass>"}}' -H "Content-Type: application/json" http://localhost:8000/v0/login
 ```
 
 This will print out a long JWT token, which you can then place into the data on
@@ -93,7 +93,7 @@ your curl request:
 (*Piping it to python makes the output pretty.*)
 
 ```
-$ curl -XGET -s localhost:8000/v1/times?token=<token> | python -m json.tool
+$ curl -XGET -s localhost:8000/v0/times?token=<token> | python -m json.tool
 [
   {
     "activities": [
@@ -235,11 +235,11 @@ This will return a JWT token which you can then use to uniquely identify
 yourself for up to 30 minutes.
 
 Use the token as a query parameter on GET requests (e.g. ``GET
-http://localhost:8000/v1/times?token=<token>``) and in the ``auth`` block on
+http://localhost:8000/v0/times?token=<token>``) and in the ``auth`` block on
 POST requests:
 
 ```
-POST http://localhost:8000/v1/projects
+POST http://localhost:8000/v0/projects
 {
   "auth": {
     "type": "token",
