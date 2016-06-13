@@ -201,13 +201,14 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /projects?user=:username', function() {
     it('returns all times for a user', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'projects?user=tschuy&token=' + token,
+        const username = 'tschuy';
+        request.get(baseUrl + 'projects?user=' + username + '&token=' + token,
         function(err, res, body) {
           expect(err).to.equal(null);
 
           const jsonBody = JSON.parse(body);
           const expectedResult = initialData.filter(function(project) {
-            return project.users.tschuy;
+            return project.users[username];
           });
 
           expect(jsonBody).to.deep.equal(expectedResult);
