@@ -942,7 +942,8 @@ module.exports = function(app) {
         }
 
         // Get times associated with project
-        knex('times').where('project', '=', project.id).then(function(times) {
+        knex('times').where('project', '=', project.id)
+        .whereNull('deleted_at').where('newest', true).then(function(times) {
           // If there are times associated, return an error
           if (times.length > 0) {
             res.set('Allow', 'GET, POST');
