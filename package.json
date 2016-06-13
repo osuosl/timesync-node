@@ -39,6 +39,7 @@
     "babel-eslint": "^4.1.5",
     "bcrypt": "^0.8.5",
     "body-parser": "^1.15.0",
+    "cors": "^2.7.1",
     "eslint": "^1.9.0",
     "eslint-config-airbnb": "^1.0.0",
     "eslint-plugin-react": "^3.8.0",

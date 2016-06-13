@@ -50,6 +50,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('knex', knex);
 app.set('log', log);
 
+app.use(require('cors')());
+
 const errors = require('./errors');
 
 /*
