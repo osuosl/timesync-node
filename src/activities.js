@@ -182,7 +182,9 @@ module.exports = function(app) {
                                                                           res);
       }
 
-      knex('timesactivities').select('id').where('activity', activity.id)
+      knex('times').select('times.id').whereNull('times.deleted_at')
+      .where('times.newest', true)
+      .join('timesactivities', 'timesactivities.activity', activity.id)
       .then(function(tas) {
         /* If the length of the array is greater than 0, then the activity id
         is being referenced by timesactivities */
