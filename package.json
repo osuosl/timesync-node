@@ -43,6 +43,7 @@
     "eslint-config-airbnb": "^1.0.0",
     "eslint-plugin-react": "^3.8.0",
     "express": "^4.13.4",
+    "helmet": "^2.1.0",
     "knex": "^0.10.0",
     "ldapjs": "^1.0.0",
     "log": "^1.4.0",

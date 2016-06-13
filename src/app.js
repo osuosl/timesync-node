@@ -30,9 +30,21 @@ const Log = require('log');
 const Ain = require('ain2');
 const fs = require('fs');
 
+const helmet = require('helmet');
+
 const log = require('./log')(Log, Ain, fs);
 
 const app = express();
+app.use(helmet()); // Set a variety of HTTP headers to improve security
+app.use(helmet.noCache()); // Disallow all caching; not set by default
+app.use(helmet.contentSecurityPolicy({ // Set a CSP; not set by default
+  directives: {
+    defaultSrc: ['none'], // Disallow any data to come from the TS server
+    scriptSrc: ['self'], // Except scripts and AJAX requests
+    connectSrc: ['self'], // To prevent MITM and XSS attacks
+    // reportUri: '/', // Consider adding in the future
+  },
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('knex', knex);
