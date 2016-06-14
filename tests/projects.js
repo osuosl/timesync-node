@@ -199,7 +199,7 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('GET /projects?user=:username', function() {
-    it('returns all times for a user', function(done) {
+    it('returns all projects for a user', function(done) {
       getAPIToken().then(function(token) {
         const username = 'tschuy';
         request.get(baseUrl + 'projects?user=' + username + '&token=' + token,
