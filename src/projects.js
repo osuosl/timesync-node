@@ -105,14 +105,18 @@ module.exports = function(app) {
 
           if (userArr) {
             // Check that the user we just parsed is in the database
-            knex('users').whereIn('username', userArr).then(function(x) {
+            knex('users').whereIn('username', userArr).map(function(y) {
+              return y.id;
+            }).then(function(x) {
               if (x.length !== 0) {
                 // append it to the timesQ query
-                projectsQ = projectsQ.join('userroles', 'userroles.user', 'in',
-                                                                      userArr);
+                knex('userroles').whereIn('user', x).map(function(y) {
+                  return y.project;
+                }).then(function(y) {
+                  projectsQ = projectsQ.whereIn('projects.id', y);
 
-                console.log('here');
-                resolve(projectsQ);
+                  resolve(projectsQ);
+                });
               } else {
                 // Send an error if the user is not found in the database
                 reject(errors.errorBadQueryValue('user', req.query.user));
@@ -195,11 +199,8 @@ module.exports = function(app) {
         return errors.send(error, res);
       });
     } else {
-      // If the 'slugs' field is null that means the object is a parent
-      // Children may have empty slug fields `[]` but not null.
       compileProjectsQueryPromise(req, res, {'projects.newest': true})
       .then(function(projects) {
-        console.log('there');
         if (projects.length === 0) {
           return res.send([]);
         }
