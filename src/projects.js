@@ -50,45 +50,100 @@ module.exports = function(app) {
     return outProject;
   }
 
+  function compileProjectsQueryPromise(req, res, additional) {
+    return new Promise(function(resolve, reject) {
+      const knex = app.get('knex');
+      let projectsQ = knex('projects');
+
+      projectsQ = projectsQ.select(
+        // Select the 'slugs' to be the projectslugs name
+        'projectslugs.name as slug',
+        // Explicitly select everything else from projects
+        'projects.uri as uri',
+        'projects.name as name',
+        'projects.uuid as uuid',
+        'activities.slug as default_activity',
+        'projects.revision as revision',
+        'projects.deleted_at as deleted_at',
+        'projects.updated_at as updated_at',
+        'projects.created_at as created_at',
+        'projects.newest as newest',
+        'projects.id as id') // id will be stripped in constructProject() anyway
+      // Order them from most recently updated to last updated
+      .orderBy('projects.revision')
+      // Do a left join so we keep projects without a slug field
+      // https://en.wikipedia.org/wiki/Join_(SQL)#Left_outer_join for more info.
+      .leftOuterJoin('projectslugs', 'projects.id', 'projectslugs.project')
+      .leftOuterJoin('activities', 'projects.default_activity', 'activities.id')
+      ;
+      // Yes this code is duplicated in both GET endpoints. If you have strong
+      // feelings about this, change it. kthnkxby
+
+      if (additional) { projectsQ = projectsQ.andWhere(additional); }
+
+      if (req.query) {
+        // Query for soft-deleted projects when include_deleted=true or if the
+        // param is passed (and not set to anything)
+        if (req.query.include_deleted === 'false' ||
+            req.query.include_deleted === undefined) {
+          projectsQ = projectsQ.where({'projects.deleted_at': null});
+        }
+
+        if (req.query.user && req.query.user.length) {
+          let userArr = null;
+           // It is a string,
+          if (typeof req.query.user === 'string') {
+            // append it to the projectsQ query
+            userArr = [req.query.user];
+          // It is an array
+          } else if (helpers.getType(req.query.user) === 'array' &&
+                      // with string elements
+                      helpers.getType(req.query.user[0]) === 'string') {
+            // Append the array to the projectsQ query
+            userArr = req.query.user;
+          }
+
+          if (userArr) {
+            // Check that the user we just parsed is in the database
+            knex('users').whereIn('username', userArr).map(function(y) {
+              return y.id;
+            }).then(function(x) {
+              if (x.length !== 0) {
+                // append it to the timesQ query
+                knex('userroles').whereIn('user', x).map(function(y) {
+                  return y.project;
+                }).then(function(y) {
+                  projectsQ = projectsQ.whereIn('projects.id', y);
+
+                  resolve(projectsQ);
+                });
+              } else {
+                // Send an error if the user is not found in the database
+                reject(errors.errorBadQueryValue('user', req.query.user));
+              }
+            }).catch(function(error) {
+              log.error(req, 'Error selecting users for filter: ' + error);
+              reject(errors.errorServerError(error));
+            });
+          } else {
+            reject(errors.errorBadQueryValue('user', req.query.user));
+          }
+        } else {
+          resolve(projectsQ);
+        }
+      } else {
+        resolve(projectsQ);
+      }
+    });
+  }
+
   authRequest.get(app, app.get('version') + '/projects',
   function(req, res) {
     const knex = app.get('knex');
-    let projectsQ;
-
-    if (req.query.include_deleted === 'true' ||
-        req.query.include_deleted === '') {
-      projectsQ = knex('projects');
-    } else {
-      projectsQ = knex('projects').where({'projects.deleted_at': null});
-    }
-
-    projectsQ = projectsQ.select(
-      // Select the 'slugs' to be the projectslugs name
-      'projectslugs.name as slug',
-      // Explicitly select everything else from projects
-      'projects.uri as uri',
-      'projects.name as name',
-      'projects.uuid as uuid',
-      'activities.slug as default_activity',
-      'projects.revision as revision',
-      'projects.deleted_at as deleted_at',
-      'projects.updated_at as updated_at',
-      'projects.created_at as created_at',
-      'projects.newest as newest',
-      'projects.id as id') // id will be stripped in constructProject() anyway
-    // Order them from most recently updated to last updated
-    .orderBy('projects.revision')
-    // Do a left join so we keep projects without a slug field
-    // https://en.wikipedia.org/wiki/Join_(SQL)#Left_outer_join for more info.
-    .leftOuterJoin('projectslugs', 'projects.id', 'projectslugs.project')
-    .leftOuterJoin('activities', 'projects.default_activity', 'activities.id');
-    // Yes this code is duplicated in both GET endpoints. If you have strong
-    // feelings about this, change it. kthnkxby
-
     // The 'include_revisions' query  parameter was included
     if (req.query.include_revisions === 'true' ||
         req.query.include_revisions === '') {
-      projectsQ.then(function(projects) {
+      compileProjectsQueryPromise(req, res).then(function(projects) {
         if (projects.length === 0) {
           return res.send([]);
         }
@@ -141,13 +196,11 @@ module.exports = function(app) {
           return errors.send(errors.errorServerError(error), res);
         });
       }).catch(function(error) {
-        log.error(req, 'Error requesting projects: ' + error);
-        return errors.send(errors.errorServerError(error), res);
+        return errors.send(error, res);
       });
     } else {
-      // If the 'slugs' field is null that means the object is a parent
-      // Children may have empty slug fields `[]` but not null.
-      projectsQ.where({'projects.newest': true}).then(function(projects) {
+      compileProjectsQueryPromise(req, res, {'projects.newest': true})
+      .then(function(projects) {
         if (projects.length === 0) {
           return res.send([]);
         }
@@ -192,8 +245,7 @@ module.exports = function(app) {
           return errors.send(errors.errorServerError(error), res);
         });
       }).catch(function(error) {
-        log.error(req, 'Error requestings projects: ' + error);
-        return errors.send(errors.errorServerError(error), res);
+        return errors.send(error, res);
       });
     }
   });

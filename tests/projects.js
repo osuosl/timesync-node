@@ -198,6 +198,47 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
+  describe('GET /projects?user=:username', function() {
+    it('returns all projects for a user', function(done) {
+      getAPIToken().then(function(token) {
+        const username = 'tschuy';
+        request.get(baseUrl + 'projects?user=' + username + '&token=' + token,
+        function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const jsonBody = JSON.parse(body);
+          const expectedResult = initialData.filter(function(project) {
+            return project.users[username];
+          });
+
+          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(200);
+          done();
+        });
+      });
+    });
+
+    it('returns an error for a nonexistent user', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'projects?user=notauser&token=' + token,
+        function(err, res, body) {
+          expect(err).to.equal(null);
+
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            error: 'Bad Query Value',
+            text: 'Parameter user contained invalid value notauser',
+            status: 400,
+          };
+
+          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          done();
+        });
+      });
+    });
+  });
+
   describe('GET /projects/:slug', function() {
     it('should return projects by slug', function(done) {
       getAPIToken().then(function(token) {
