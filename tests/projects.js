@@ -226,7 +226,7 @@ module.exports = function(expect, request, baseUrl) {
 
           const jsonBody = JSON.parse(body);
           const expectedResult = {
-            error: 'Bad query value',
+            error: 'Bad Query Value',
             text: 'Parameter user contained invalid value notauser',
             status: 400,
           };
