@@ -1,0 +1,4 @@
+[submodule "timesync-api"]
+    path = timesync-api
+    url = https://github.com/osuosl/timesync.git
+    branch = develop

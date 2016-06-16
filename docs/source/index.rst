@@ -1,27 +1,34 @@
-.. TimeSync documentation master file, created by
-   sphinx-quickstart on Thu Apr  9 11:25:53 2015.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. _timesync-node-docs:
 
-Welcome to TimeSync's documentation!
-====================================
+Welcome to TimeSync-Node's documentation!
+=========================================
 TimeSync is an OSU Open Source Lab developed Time Tracking system.
 
-Design Docs
------------
-* :ref:`draft-api`
-* :ref:`draft-models`
+Development Docs
+----------------
+.. toctree::
+  :maxdepth: 2
+
+  Developer Guide <dev/development>
+  Usage Guide <dev/usage>
+
+Design
+------
+.. toctree::
+  :maxdepth: 2
+
+  Design <design/index>
 
 
 Meeting Notes
 -------------
-* :ref:`dev-meeting-2015-04-09`
+.. toctree::
+  :maxdepth: 2
 
+  Meetings <meetings/index>
 
 Indices and tables
-==================
-
+------------------
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

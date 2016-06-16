@@ -1,0 +1,495 @@
+
+{
+  "activities":[
+    {
+      "name":"Documentation",
+      "slug":"docs",
+      "id": 1,
+      "uuid": "986fe650-4bef-4e36-a99d-ad880b7f6cad",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null,
+      "created_at": 1388534400000,
+      "newest": true
+    },
+    {
+      "name":"Development",
+      "slug":"dev",
+      "id": 2,
+      "uuid": "b0b8c83b-f529-4130-93ef-e4e94e5bc57e",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null,
+      "created_at": 1388534400000,
+      "newest": true
+    },
+    {
+      "name":"Systems",
+      "slug":"sys",
+      "id": 3,
+      "uuid": "504796fd-859d-4edd-b2b8-b4109bb1fdf2",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null,
+      "created_at": 1388534400000,
+      "newest": true
+    },
+    {
+      "name":"Meetings",
+      "slug":"meeting",
+      "id":4,
+      "uuid": "6552d14e-12eb-4f1f-83d5-147f8452614c",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null,
+      "created_at": 1388534400000,
+      "newest": true
+    },
+    {
+      "name":"Code Review",
+      "slug": null,
+      "id": 5,
+      "uuid": "384e8177-2123-4578-8201-031199a3a58f",
+      "revision": 1,
+      "deleted_at": 1393632000000,
+      "updated_at": null,
+      "created_at": 1388534400000,
+      "newest": true
+    }
+  ],
+  "users":[
+    {
+      "display_name": "Dean Johnson",
+      "username":"deanj",
+      "email": null,
+      "site_spectator": false,
+      "site_manager": false,
+      "site_admin": false,
+      "id": 1,
+      "active": false,
+      "password":"$2a$04$2kQbps.DOYwx1fuV68IHBuzEWJDvBrcbycI3jIQcqY8bADtUjEbv6",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": null,
+      "meta": null
+    },
+    {
+      "display_name": "Evan Tschuy",
+      "username":"tschuy",
+      "email": null,
+      "site_spectator": true,
+      "site_manager": true,
+      "site_admin": true,
+      "id": 2,
+      "active": true,
+      "password":"$2a$04$RHFIGczG2prfqYM.0O8jReJa386Gg6E/uznqSRz7Cv86C7pXsQmoa",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": null,
+      "meta": null
+    },
+    {
+      "display_name": "Tristan Patch",
+      "username":"patcht",
+      "email": null,
+      "site_spectator": true,
+      "site_manager":true,
+      "site_admin": false,
+      "id": 3,
+      "active": true,
+      "password":"$2a$04$VjgpGbXzLpNkxZ0px3e8bO6HgFwNVQjTk5CBQuJgT11vd4CSfU8Ci",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": null,
+      "meta": null
+    },
+    {
+      "display_name": "Matthew Johnson",
+      "username":"mrsj",
+      "email": null,
+      "site_spectator": true,
+      "site_manager": false,
+      "site_admin": false,
+      "id": 4,
+      "active": true,
+      "password":"$2a$04$P4kOcQrJceC67bNCO6VNQutCsc1UgT80tIcdSkQbfNNMZHJ0UYUQq",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": null,
+      "meta": null
+    },
+    {
+      "display_name": "Aileen Thai",
+      "username":"thai",
+      "email": null,
+      "site_spectator": false,
+      "site_manager": false,
+      "site_admin": false,
+      "id": 5,
+      "active": true,
+      "password":"$2a$04$TOZYq1yKt5pSZZ5X.qQnzuqprDrL2vrw3tdleh1WLpxbq3gzdOi8W",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": null,
+      "meta": null
+    },
+    {
+      "display_name": "Megan Goossens",
+      "username":"MaraJade",
+      "email": null,
+      "site_spectator": false,
+      "site_manager": false,
+      "site_admin": false,
+      "id": 6,
+      "active": true,
+      "password":"$2a$04$OVJfHgDIp3j8ZFlLpWVCP.Jurd5QJIJ9NgEHfpydga6KhQ.QmeU3.",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": null,
+      "meta": null
+    },
+    {
+      "display_name": "Old Timer",
+      "username": "timero",
+      "email": "timero@example.com",
+      "site_spectator": false,
+      "site_manager": false,
+      "site_admin": false,
+      "id": 7,
+      "active": false,
+      "password": "$2a$04$fdkkKzJMxxIGV.VmCNV1CONgP/hpHUFuCuf15nzxc.Mg1a82wjjO",
+      "created_at": 1388534400000,
+      "updated_at": null,
+      "deleted_at": 1455667200000,
+      "meta": "A sample deleted user"
+    }
+  ],
+  "projects":[
+    {
+      "uri":"https:://code.osuosl.org/projects/ganeti-webmgr",
+      "name":"Ganeti Web Manager",
+      "default_activity": null,
+      "id": 1,
+      "uuid": "c285963e-192b-4e99-9d92-a940519f1fbd",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null,
+      "created_at": 1388534400000,
+      "newest": true
+    },
+    {
+      "uri":"https:://code.osuosl.org/projects/pgd",
+      "name":"Protein Geometry Database",
+      "default_activity": null,
+      "id": 2,
+      "uuid": "e3e25e6a-5e45-4df2-8561-796b07e8f974",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null,
+      "created_at": 1388534400000,
+      "newest": true
+    },
+    {
+      "uri":"https:://github.com/osu-cass/whats-fresh-api",
+      "name":"Whats Fresh",
+      "default_activity": null,
+      "id": 3,
+      "uuid": "9369f959-26f2-490d-8721-2948c49c3c09",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null,
+      "created_at": 1388534400000,
+      "newest": true
+    },
+    {
+      "uri":"https:://github.com/osuosl/timesync",
+      "name":"Timesync",
+      "default_activity": "activities:1",
+      "id": 4,
+      "uuid": "1f8788bd-0909-4397-be2c-79047f90c575",
+      "revision": 1,
+      "deleted_at": null,
+      "updated_at": null,
+      "created_at": 1388534400000,
+      "newest": true
+    },
+    {
+      "uri":"https:://github.com/osuosl/chiliproject",
+      "name":"Chili Project",
+      "default_activity": null,
+      "id": 5,
+      "uuid": "6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29",
+      "revision": 1,
+      "deleted_at": 1388534400000,
+      "updated_at": null,
+      "created_at": 1246924800000,
+      "newest": true
+    }
+  ],
+  "times":[
+    {
+      "duration":12,
+      "user":"users:0",
+      "project":"projects:0",
+      "notes":"",
+      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "date_worked":1429401600000,
+      "created_at":1429401600000,
+      "updated_at": null,
+      "id": 1,
+      "uuid": "32764929-1bea-4a17-8c8a-22d7fb144941",
+      "revision": 1,
+      "deleted_at": null,
+      "newest": true
+    },
+    {
+      "duration":12,
+      "user":"users:1",
+      "project":"projects:0",
+      "notes":"",
+      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "date_worked":1429488000000,
+      "created_at":1429488000000,
+      "updated_at": null,
+      "id": 2,
+      "uuid": "e0326905-ef25-46a0-bacd-4391155aca4a",
+      "revision": 1,
+      "deleted_at": null,
+      "newest": true
+    },
+    {
+      "duration":12,
+      "user":"users:0",
+      "project":"projects:1",
+      "notes":"",
+      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "date_worked":1429574400000,
+      "created_at":1429574400000,
+      "updated_at": null,
+      "id": 3,
+      "uuid": "4bfd7dcf-3fda-4488-a530-60b65d9e77a9",
+      "revision": 1,
+      "deleted_at": null,
+      "newest": true
+    },
+    {
+      "duration":12,
+      "user":"users:2",
+      "project":"projects:1",
+      "notes":"",
+      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "date_worked":1429660800000,
+      "created_at":1429660800000,
+      "updated_at": null,
+      "id": 4,
+      "uuid": "d24c191f-305c-4646-824d-433bbd86fcec",
+      "revision": 1,
+      "deleted_at": null,
+      "newest": true
+    },
+    {
+      "duration":12,
+      "user":"users:1",
+      "project":"projects:0",
+      "notes":"",
+      "issue_uri":"https:://github.com/osuosl/ganeti_webmgr/issues/48",
+      "date_worked":1429488000000,
+      "created_at":1429488000000,
+      "updated_at": null,
+      "id": 5,
+      "uuid": "b6ac75fb-7872-403f-ab71-e5542fae4212",
+      "revision": 1,
+      "deleted_at": 1435968000000,
+      "newest": true
+    },
+    {
+      "duration":12,
+      "user":"users:2",
+      "project":"projects:1",
+      "notes":"",
+      "issue_uri":"",
+      "date_worked":1429660800000,
+      "created_at":1429660800000,
+      "updated_at": null,
+      "id": 6,
+      "uuid": "58e07b73-596d-472b-adcc-ea68599657f7",
+      "revision": 1,
+      "deleted_at":1439337600000,
+      "newest": true
+    },
+    {
+      "duration":18,
+      "user":"users:4",
+      "project":"projects:2",
+      "notes":"",
+      "issue_uri":"",
+      "date_worked":1456358400000,
+      "created_at":1456358400000,
+      "updated_at": null,
+      "id": 7,
+      "uuid": "339f0d41-dd83-434f-81ca-9666a1c96f99",
+      "revision": 1,
+      "deleted_at":null,
+      "newest": true
+    }
+  ],
+  "projectslugs":[
+    {
+      "name":"gwm",
+      "id": 1,
+      "project": "projects:0",
+      "activity": null
+    },
+    {
+      "name":"pgd",
+      "id": 2,
+      "project": "projects:1",
+      "activity": null
+    },
+    {
+      "name":"wf",
+      "id": 3,
+      "project": "projects:2",
+      "activity": null
+    },
+    {
+      "name": "ganeti-webmgr",
+      "project": "projects:0",
+      "id": 4,
+      "activity": null
+    },
+    {
+      "name": "timesync",
+      "id": 5,
+      "project": "projects:3",
+      "activity": null
+    },
+    {
+      "name": "ts",
+      "id": 6,
+      "project": "projects:3",
+      "activity": null
+    }
+  ],
+  "timesactivities":[
+    {
+      "id": 1,
+      "time": "times:0",
+      "activity": "activities:0"
+    },
+    {
+      "id": 2,
+      "time": "times:0",
+      "activity": "activities:1"
+    },
+    {
+      "id": 3,
+      "time": "times:1",
+      "activity": "activities:0"
+    },
+    {
+      "id": 4,
+      "time": "times:2",
+      "activity": "activities:2"
+    },
+    {
+      "id": 5,
+      "time": "times:3",
+      "activity": "activities:1"
+    },
+    {
+      "id": 6,
+      "time": "times:4",
+      "activity": "activities:0"
+    },
+    {
+      "id": 7,
+      "time": "times:5",
+      "activity": "activities:1"
+    },
+    {
+      "id": 8,
+      "time": "times:6",
+      "activity": "activities:0"
+    }
+  ],
+  "userroles":[
+    {
+      "project":"projects:0",
+      "user":"users:0",
+      "manager": false,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:1",
+      "user":"users:0",
+      "manager": true,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:0",
+      "user":"users:1",
+      "manager": true,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:2",
+      "user":"users:0",
+      "manager": false,
+      "member": true,
+      "spectator": false
+    },
+    {
+      "project":"projects:2",
+      "user":"users:1",
+      "manager": true,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:1",
+      "user":"users:2",
+      "manager": false,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:0",
+      "user":"users:3",
+      "manager": false,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:2",
+      "user":"users:4",
+      "manager": false,
+      "member": true,
+      "spectator": false
+    },
+    {
+      "project":"projects:3",
+      "user":"users:2",
+      "manager": true,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:4",
+      "user":"users:5",
+      "manager": true,
+      "member": true,
+      "spectator": true
+    },
+    {
+      "project":"projects:0",
+      "user":"users:5",
+      "manager": true,
+      "member": true,
+      "spectator": true
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    // rules here take precedence over airbnb's
+    "func-names": 0,
+    "strict": [2, "global"],
+    "max-len": [2, 80, 4]
+  },
+  "ecmaFeatures": {
+    "modules": false
+  },
+  "env": {
+    "node": true
+  },
+  "root": true,
+}

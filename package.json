@@ -1,0 +1,72 @@
+{
+  "name": "timesync",
+  "version": "0.1.0",
+  "description": "TimeSync time tracker implemented in js",
+  "main": "app.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "src"
+  },
+  "scripts": {
+    "start": "node --harmony ./src/app.js",
+    "devel": "INSTANCE_NAME=timesync-development SECRET_KEY=secret nodemon --harmony ./src/app.js",
+    "migrations": "knex migrate:latest",
+    "clear-database": "node --harmony ./scripts/clear-database.js",
+    "recreate": "rm dev.sqlite3 && knex migrate:latest",
+    "linter": "jshint ./src ./tests ./scripts && eslint ./src ./tests ./scripts",
+    "fixtures": "node --harmony ./scripts/load_fixtures.js",
+    "test": "TEST=true CONSOLE=true INSTANCE_NAME=timesync SECRET_KEY=secret NODE_ENV=mocha_sqlite TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
+    "test_pg": "NODE_ENV=mocha knex migrate:latest && TEST=true CONSOLE=true NODE_ENV=mocha INSTANCE_NAME=timesync SECRET_KEY=secret TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
+    "test_pg_docker": "export TEST_PG_CONNECTION_STRING=\"postgres://timesync:timesync@localhost:5432/timesync\" && sh ./scripts/pg_docker.sh && NODE_ENV=mocha knex migrate:latest && TEST=true CONSOLE=true NODE_ENV=mocha INSTANCE_NAME=timesync SECRET_KEY=secret TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true mocha --harmony tests",
+    "latte": "sh ./scripts/latte.sh",
+    "coverage": "TEST=true CONSOLE=true INSTANCE_NAME=timesync SECRET_KEY=secret NODE_ENV=mocha_sqlite TIMESYNC_AUTH_MODULES='[\"ldap\",\"password\"]' TIMESYNC_LDAP_URL=ldap://localhost:1389 TIMESYNC_LDAP_SEARCH_BASE=ou=passport-ldapauth PORT=8851 DEBUG=true node --harmony ./node_modules/istanbul/lib/cli.js cover _mocha -- tests",
+    "create-account": "node --harmony ./scripts/create-account.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osuosl/timesync-node.git"
+  },
+  "keywords": [
+    "time",
+    "tracker"
+  ],
+  "homepage": "https://github.com/osuosl/timesync-node",
+  "author": "OSU Open Source Lab <support@osuosl.org>",
+  "license": "Apache-2.0",
+  "bugs": "https://github.com/osuosl/timesync-node/issues",
+  "dependencies": {
+    "ain2": "^1.5.3",
+    "babel-eslint": "^4.1.5",
+    "bcrypt": "^0.8.5",
+    "body-parser": "^1.15.0",
+    "cors": "^2.7.1",
+    "eslint": "^1.9.0",
+    "eslint-config-airbnb": "^1.0.0",
+    "eslint-plugin-react": "^3.8.0",
+    "express": "^4.13.4",
+    "helmet": "^2.1.0",
+    "knex": "^0.10.0",
+    "ldapjs": "^1.0.0",
+    "log": "^1.4.0",
+    "passport": "^0.3.2",
+    "passport-ldapauth": "^0.5.0",
+    "passport-local": "^1.0.0",
+    "passport-localapikey": "^0.0.3",
+    "pg": "^4.5.1",
+    "prompt": "^1.0.0",
+    "sqlite3": "^3.1.1",
+    "uuid": "^2.0.1",
+    "valid-url": "^1.0.9"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-passport-strategy": "^1.0.0",
+    "istanbul": "^0.4.2",
+    "jshint": "^2.9.1",
+    "mocha": "^2.4.5",
+    "nodemon": "^1.9.1",
+    "request": "^2.69.0",
+    "sql-fixtures": "^1.0.0",
+    "yargs": "^4.6.0"
+  }
+}

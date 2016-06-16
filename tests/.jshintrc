@@ -1,0 +1,34 @@
+{
+  /* many of these options taken from the Airbnb Javascript
+     style guide: https://github.com/airbnb/javascript */
+
+  // Allow ES6.
+  "esnext": true,
+
+  // Define globals exposed by Node.js.
+  "node": true,
+
+  // Prohibit use of == and != in favor of === and !==.
+  "eqeqeq": true,
+
+  // Prohibit use of a variable before it is defined.
+  "latedef": true,
+
+  // Warn when variables are defined but never used.
+  "unused": true,
+
+  // Prohibit use of explicitly undeclared variables.
+  "undef": true,
+
+  // require curly braces for one-line statements
+  "curly": true,
+
+  "predef": [
+    "describe",
+    "it",
+    "beforeEach",
+    "afterEach",
+    "before",
+    "after"
+  ]
+}
