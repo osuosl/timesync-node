@@ -6,11 +6,11 @@ function copyJsonObject(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-let user = 'tschuy';
-let password = 'password';
+const defaultUsername = 'tschuy';
+const defaultPassword = 'password';
 
 module.exports = function(expect, request, baseUrl) {
-  function getAPIToken() {
+  function getAPIToken(username, password) {
     const requestOptions = {
       url: baseUrl + 'login',
       json: true,
@@ -18,13 +18,13 @@ module.exports = function(expect, request, baseUrl) {
     requestOptions.body = {
       auth: {
         type: 'password',
-        username: user,
-        password: password,
+        username: username || defaultUsername,
+        password: password || defaultPassword,
       },
     };
     return new Promise(function(resolve) {
       request.post(requestOptions, function(err, res, body) {
-        expect(err).to.be.a('null');
+        expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
 
         resolve(body.token);
@@ -32,56 +32,68 @@ module.exports = function(expect, request, baseUrl) {
     });
   }
 
+  const initialDataWithDeleted = [
+    {
+      name: 'Documentation',
+      slug: 'docs',
+      deleted_at: null,
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+      revision: 1,
+    },
+    {
+      name: 'Development',
+      slug: 'dev',
+      deleted_at: null,
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
+      revision: 1,
+    },
+    {
+      name: 'Systems',
+      slug: 'sys',
+      deleted_at: null,
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
+      revision: 1,
+    },
+    {
+      name: 'Meetings',
+      slug: 'meeting',
+      deleted_at: null,
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
+      revision: 1,
+    },
+    {
+      name: 'Code Review',
+      slug: null,
+      deleted_at: '2014-03-01',
+      updated_at: null,
+      created_at: '2014-01-01',
+      uuid: '384e8177-2123-4578-8201-031199a3a58f',
+      revision: 1,
+    },
+  ];
+
+  const initialData = initialDataWithDeleted.filter(a => {
+    return a.deleted_at === null;
+  });
+
   /* GET one of the /activities endpoints and check its response against
   what should be returned */
   describe('GET /activities', function() {
     it('should return all activities in the database', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'activities?token=' + token,
+        request.get(`${baseUrl}activities?token=${token}`,
         function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = [
-            {
-              name: 'Documentation',
-              slug: 'docs',
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
-              revision: 1,
-            },
-            {
-              name: 'Development',
-              slug: 'dev',
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
-              revision: 1,
-            },
-            {
-              name: 'Systems',
-              slug: 'sys',
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
-              revision: 1,
-            },
-            {
-              name: 'Meetings',
-              slug: 'meeting',
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
-              revision: 1,
-            },
-          ];
-
           expect(err).to.equal(null);
+          expect(JSON.parse(body)).to.deep.have.same.members(initialData);
           expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.equal(expectedResults);
           done();
         });
       });
@@ -91,23 +103,16 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /activities/:slug', function() {
     it('should return activities by slug', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'activities/sys?token=' + token,
+        const slug = 'sys';
+        request.get(`${baseUrl}activities/${slug}?token=${token}`,
         function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResult = {
-            name: 'Systems',
-            slug: 'sys',
-            deleted_at: null,
-            updated_at: null,
-            created_at: '2014-01-01',
-            uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
-            revision: 1,
-          };
+          const expectedResult = initialData.filter(a => {
+            return a.slug === slug;
+          })[0];
 
           expect(err).to.equal(null);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
           expect(res.statusCode).to.equal(200);
-
-          expect(jsonBody).to.deep.equal(expectedResult);
           done();
         });
       });
@@ -115,17 +120,17 @@ module.exports = function(expect, request, baseUrl) {
 
     it('should fail with Object not found error', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'activities/404?token=' + token,
+        const slug = '404';
+        request.get(`${baseUrl}activities/${slug}?token=${token}`,
         function(err, res, body) {
-          const jsonBody = JSON.parse(body);
           const expectedResult = {
             status: 404,
             error: 'Object not found',
             text: 'Nonexistent activity',
           };
 
-          expect(jsonBody).to.deep.equal(expectedResult);
-          expect(res.statusCode).to.equal(404);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
 
           done();
         });
@@ -134,323 +139,19 @@ module.exports = function(expect, request, baseUrl) {
 
     it('should fail with Invalid Slug error', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'activities/test-!*@?token=' + token,
+        const slug = 'test-!*@';
+        request.get(`${baseUrl}activities/${slug}?token=${token}`,
         function(err, res, body) {
-          const jsonBody = JSON.parse(body);
           const expectedResult = {
             status: 400,
             error: 'The provided identifier was invalid',
-            text: 'Expected slug but received test-!*@',
-            values: ['test-!*@'],
+            text: `Expected slug but received ${slug}`,
+            values: [slug],
           };
 
-          expect(jsonBody).to.eql(expectedResult);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
           expect(res.statusCode).to.equal(400);
-
           done();
-        });
-      });
-    });
-  });
-
-  describe('DELETE /activities/:slug', function() {
-    it('deletes the activity with the given slug', function(done) {
-      getAPIToken().then(function(token) {
-        request.del(baseUrl + 'activities/meeting?token=' + token,
-        function(delErr, delRes) {
-          expect(delErr).to.be.a('null');
-          expect(delRes.statusCode).to.equal(200);
-
-          // Checks to see that the activity has been deleted from the db
-          request.get(baseUrl + 'activities/meeting?token=' + token,
-          function(getErr, getRes, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedError = {
-              status: 404,
-              error: 'Object not found',
-              text: 'Nonexistent activity',
-            };
-
-            expect(jsonBody).to.deep.equal(expectedError);
-            expect(getRes.statusCode).to.equal(404);
-
-            done();
-          });
-        });
-      });
-    });
-
-    it('fails if it receives a nonexistent slug', function(done) {
-      getAPIToken().then(function(token) {
-        request.del(baseUrl + 'activities/naps?token=' + token,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedError = {
-            status: 404,
-            error: 'Object not found',
-            text: 'Nonexistent slug',
-          };
-
-          expect(jsonBody).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(404);
-
-          request.get(baseUrl + 'activities?token=' + token,
-          function(getErr, getRes, getBody) {
-            const jsBody = JSON.parse(getBody);
-            const expectedResult = [
-              {
-                name: 'Documentation',
-                slug: 'docs',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
-                revision: 1,
-              },
-              {
-                name: 'Development',
-                slug: 'dev',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
-                revision: 1,
-              },
-              {
-                name: 'Systems',
-                slug: 'sys',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
-                revision: 1,
-              },
-              {
-                name: 'Meetings',
-                slug: 'meeting',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
-                revision: 1,
-              },
-            ];
-
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-            expect(jsBody).to.deep.have.same.members(expectedResult);
-
-            done();
-          });
-        });
-      });
-    });
-
-    it('fails if it receives an invalid slug', function(done) {
-      getAPIToken().then(function(token) {
-        request.del(baseUrl + 'activities/!what?token=' + token,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedError = {
-            status: 400,
-            error: 'The provided identifier was invalid',
-            text: 'Expected slug but received !what',
-            values: ['!what'],
-          };
-
-          expect(jsonBody).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          request.get(baseUrl + 'activities?token=' + token,
-          function(getErr, getRes, getBody) {
-            const jsBody = JSON.parse(getBody);
-            const expectedResult = [
-              {
-                name: 'Documentation',
-                slug: 'docs',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
-                revision: 1,
-              },
-              {
-                name: 'Development',
-                slug: 'dev',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
-                revision: 1,
-              },
-              {
-                name: 'Systems',
-                slug: 'sys',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
-                revision: 1,
-              },
-              {
-                name: 'Meetings',
-                slug: 'meeting',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
-                revision: 1,
-              },
-            ];
-
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-            expect(jsBody).to.deep.have.same.members(expectedResult);
-
-            done();
-          });
-        });
-      });
-    });
-
-    it('fails if the activity is referenced by a time', function(done) {
-      getAPIToken().then(function(token) {
-        request.del(baseUrl + 'activities/docs?token=' + token,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedError = {
-            status: 405,
-            error: 'Method not allowed',
-            text: 'The method specified is not allowed for the ' +
-            'activity identified',
-          };
-
-          expect(res.headers.allow).to.equal('GET, POST');
-          expect(jsonBody).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(405);
-
-          request.get(baseUrl + 'activities?token=' + token,
-          function(getErr, getRes, getBody) {
-            const jsBody = JSON.parse(getBody);
-            const expectedResult = [
-              {
-                name: 'Documentation',
-                slug: 'docs',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
-                revision: 1,
-              },
-              {
-                name: 'Development',
-                slug: 'dev',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
-                revision: 1,
-              },
-              {
-                name: 'Systems',
-                slug: 'sys',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
-                revision: 1,
-              },
-              {
-                name: 'Meetings',
-                slug: 'meeting',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
-                revision: 1,
-              },
-            ];
-
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-            expect(jsBody).to.deep.have.same.members(expectedResult);
-
-            done();
-          });
-        });
-      });
-    });
-
-    it('fails with invalid permissions', function(done) {
-      const oldUser = user;
-      const oldPass = password;
-
-      user = 'mrsj';
-      password = 'word';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
-        request.del(baseUrl + 'activities/meeting?token=' + token,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedError = {
-            status: 401,
-            error: 'Authorization failure',
-            text: 'mrsj is not authorized to delete activities',
-          };
-
-          expect(jsonBody).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(401);
-
-          request.get(baseUrl + 'activities?token=' + token,
-          function(getErr, getRes, getBody) {
-            const jsBody = JSON.parse(getBody);
-            const expectedResult = [
-              {
-                name: 'Documentation',
-                slug: 'docs',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
-                revision: 1,
-              },
-              {
-                name: 'Development',
-                slug: 'dev',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
-                revision: 1,
-              },
-              {
-                name: 'Systems',
-                slug: 'sys',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
-                revision: 1,
-              },
-              {
-                name: 'Meetings',
-                slug: 'meeting',
-                deleted_at: null,
-                updated_at: null,
-                created_at: '2014-01-01',
-                uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
-                revision: 1,
-              },
-            ];
-
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-            expect(jsBody).to.deep.have.same.members(expectedResult);
-
-            done();
-          });
         });
       });
     });
@@ -459,60 +160,12 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /activities?include_deleted=:bool', function() {
     it('returns a list of all active and deleted activities', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'activities?include_deleted=true&token=' + token,
-        function(getErr, getRes, getBody) {
-          const jsonBody = JSON.parse(getBody);
-          const expectedResults = [
-            {
-              name: 'Documentation',
-              slug: 'docs',
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
-              revision: 1,
-            },
-            {
-              name: 'Development',
-              slug: 'dev',
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
-              revision: 1,
-            },
-            {
-              name: 'Systems',
-              slug: 'sys',
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
-              revision: 1,
-            },
-            {
-              name: 'Meetings',
-              slug: 'meeting',
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
-              revision: 1,
-            },
-            {
-              name: 'Code Review',
-              slug: null,
-              deleted_at: '2014-03-01',
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '384e8177-2123-4578-8201-031199a3a58f',
-              revision: 1,
-            },
-          ];
-
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.equal(expectedResults);
+        request.get(`${baseUrl}activities?include_deleted=true&token=${token}`,
+        function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(JSON.parse(body)).to.deep.have.same
+                                              .members(initialDataWithDeleted);
+          expect(res.statusCode).to.equal(200);
           done();
         });
       });
@@ -523,61 +176,12 @@ module.exports = function(expect, request, baseUrl) {
     it('ignores extra param if user specifies query with an activityslug',
     function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl +
-        'activities?activity=review&include_deleted=true&token=' + token,
-        function(getErr, getRes, getBody) {
-          const jsonBody = JSON.parse(getBody);
-          const expectedResults = [
-            {
-              name: 'Documentation',
-              slug: 'docs',
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
-              revision: 1,
-            },
-            {
-              name: 'Development',
-              slug: 'dev',
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
-              revision: 1,
-            },
-            {
-              name: 'Systems',
-              slug: 'sys',
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
-              revision: 1,
-            },
-            {
-              name: 'Meetings',
-              slug: 'meeting',
-              deleted_at: null,
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
-              revision: 1,
-            },
-            {
-              name: 'Code Review',
-              slug: null,
-              deleted_at: '2014-03-01',
-              updated_at: null,
-              created_at: '2014-01-01',
-              uuid: '384e8177-2123-4578-8201-031199a3a58f',
-              revision: 1,
-            },
-          ];
-
-          expect(getErr).to.equal(null);
-          expect(getRes.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.equal(expectedResults);
+        request.get(`${baseUrl}activities?activity=review&` +
+        `include_deleted=true&token=${token}`, function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(JSON.parse(body)).to.deep.have.same
+                                              .members(initialDataWithDeleted);
+          expect(res.statusCode).to.equal(200);
           done();
         });
       });
@@ -586,840 +190,17 @@ module.exports = function(expect, request, baseUrl) {
     it('returns an error if user specifies with /activities/:slug endpoint',
     function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl +
-        'activities/review?include_deleted=true&token=' + token,
-        function(getErr, getRes, getBody) {
-          const jsonBody = JSON.parse(getBody);
+        request.get(`${baseUrl}activities/review?include_deleted=true&` +
+        `token=${token}`, function(err, res, body) {
           const expectedResult = {
             status: 404,
             error: 'Object not found',
             text: 'Nonexistent activity',
           };
 
-          expect(jsonBody).to.deep.equal(expectedResult);
-          expect(getRes.statusCode).to.equal(404);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
           done();
-        });
-      });
-    });
-  });
-
-  describe('POST /activities/:slug', function() {
-    const patchedActivity = {
-      name: 'TimeSync Documentation',
-      slug: 'dev-docs',
-    };
-
-    const originalActivity = {
-      name: 'Documentation',
-      slug: 'docs',
-      deleted_at: null,
-      updated_at: null,
-      created_at: '2014-01-01',
-      uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
-      revision: 1,
-    };
-
-    const patchedName = { name: patchedActivity.name };
-
-    const patchedSlug = { slug: patchedActivity.slug };
-
-    const badActivity = {
-      name: '',
-      slug: '',
-    };
-
-    const badPatchedName = { name: badActivity.name };
-
-    const badPatchedSlug = { slug: badActivity.slug };
-
-    // Base POST JSON
-    const postArg = {
-      auth: {
-        type: 'token',
-      },
-    };
-
-    const requestOptions = {
-      url: baseUrl + 'activities/docs',
-      json: true,
-    };
-
-    // Performs get request to check whether the db's been changed
-    function checkGetReq(done, token) {
-      request.get(baseUrl + 'activities/docs?token=' + token,
-      function(getErr, getRes, getBody) {
-        expect(getErr).to.be.a('null');
-        expect(getRes.statusCode).to.equal(200);
-
-        const jsonBody = JSON.parse(getBody);
-
-        expect(jsonBody).to.deep.equal(originalActivity);
-
-        done();
-      });
-    }
-
-    it('successfully updates the activity by an admin', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-        requestOptions.body.object = patchedActivity;
-
-        requestOptions.body.auth.token = token;
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResult = copyJsonObject(originalActivity);
-          expectedResult.name = patchedActivity.name;
-          expectedResult.slug = patchedActivity.slug;
-          expectedResult.revision = 2;
-          expectedResult.updated_at = new Date().toISOString().substring(0, 10);
-
-          const expectedPost = copyJsonObject(expectedResult);
-          delete expectedPost.deleted_at;
-
-          expect(body).to.deep.equal(expectedPost);
-
-          // Checking that the activity has been properly updated
-          request.get(baseUrl + 'activities/dev-docs?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonBody = JSON.parse(getBody);
-
-            expect(jsonBody).to.deep.equal(expectedResult);
-
-            done();
-          });
-        });
-      });
-    });
-
-    it('successfully updates the activity by a manager', function(done) {
-      const oldUser = user;
-      const oldPass = password;
-
-      user = 'patcht';
-      password = 'drowssap';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
-        requestOptions.body = postArg;
-        requestOptions.body.object = patchedActivity;
-
-        requestOptions.body.auth.token = token;
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResult = copyJsonObject(originalActivity);
-          expectedResult.name = patchedActivity.name;
-          expectedResult.slug = patchedActivity.slug;
-          expectedResult.revision = 2;
-          expectedResult.updated_at = new Date().toISOString().substring(0, 10);
-
-          const expectedPost = copyJsonObject(expectedResult);
-          delete expectedPost.deleted_at;
-
-          expect(body).to.deep.equal(expectedPost);
-
-          // Checking that the activity has been properly updated
-          request.get(baseUrl + 'activities/dev-docs?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonBody = JSON.parse(getBody);
-
-            expect(jsonBody).to.deep.equal(expectedResult);
-
-            done();
-          });
-        });
-      });
-    });
-
-    it('successfully updates the activity name', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-        requestOptions.body.object = patchedName;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResult = copyJsonObject(originalActivity);
-          expectedResult.name = patchedName.name;
-          expectedResult.revision = 2;
-          expectedResult.updated_at = new Date().toISOString().substring(0, 10);
-
-          const expectedPost = copyJsonObject(expectedResult);
-          delete expectedPost.deleted_at;
-
-          expect(body).to.deep.equal(expectedPost);
-
-          request.get(baseUrl + 'activities/docs?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonBody = JSON.parse(getBody);
-
-            expect(jsonBody).to.deep.equal(expectedResult);
-
-            done();
-          });
-        });
-      });
-    });
-
-    it('successfully updates the activity slug', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-        requestOptions.body.object = patchedSlug;
-
-        requestOptions.body.auth.token = token;
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResult = copyJsonObject(originalActivity);
-          expectedResult.slug = patchedSlug.slug;
-          expectedResult.revision = 2;
-          expectedResult.updated_at = new Date().toISOString().substring(0, 10);
-
-          const expectedPost = copyJsonObject(expectedResult);
-          delete expectedPost.deleted_at;
-
-          expect(body).to.deep.equal(expectedPost);
-
-          request.get(baseUrl + 'activities/dev-docs?token=' + token,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonBody = JSON.parse(getBody);
-
-            expect(jsonBody).to.deep.equal(expectedResult);
-
-            done();
-          });
-        });
-      });
-    });
-
-    it('fails to update a non-existent activity', function(done) {
-      getAPIToken().then(function(token) {
-        const options = copyJsonObject(requestOptions);
-        options.body = postArg;
-        options.body.object = patchedSlug;
-
-        options.body.auth.token = token;
-        options.uri = baseUrl + 'activities/not-an-activity';
-
-        request.post(options, function(err, res, body) {
-          const expectedError = {
-            status: 404,
-            error: 'Object not found',
-            text: 'Nonexistent activity',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(404);
-
-          checkGetReq(done, token);
-        });
-      });
-    });
-
-    // Returns an error 400 - errorBadObjectInvalidRield
-    it('fails to update an activity to have no name', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-        requestOptions.body.object = badPatchedName;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field name of activity should be string but was sent as ' +
-                  'empty string',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkGetReq(done, token);
-        });
-      });
-    });
-
-    it('fails to update an activity to have no slug', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-        requestOptions.body.object = badPatchedSlug;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field slug of activity should be slug but was sent as ' +
-                  'empty string',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkGetReq(done, token);
-        });
-      });
-    });
-
-    it('fails to update an activity to have an existent name', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-        requestOptions.body.object = {name: 'Development'};
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field name of activity should be unique name but was sent ' +
-                  'as name which already exists',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkGetReq(done, token);
-        });
-      });
-    });
-
-    it('fails to update an activity to have an existent slug', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-        requestOptions.body.object = {slug: 'dev'};
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 409,
-            error: 'The slug provided already exists',
-            text: 'slug dev already exists',
-            values: ['dev'],
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(409);
-
-          checkGetReq(done, token);
-        });
-      });
-    });
-
-    it('fails to update activity if name is invalid type', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-        requestOptions.body.object = copyJsonObject(patchedActivity);
-        delete requestOptions.body.object.id;
-        requestOptions.body.object.name = ['timesync', 'documentation'];
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field name of activity should be string but was sent as ' +
-                  'array',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkGetReq(done, token);
-        });
-      });
-    });
-
-    it('fails to update activity if slug is invalid type', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-        requestOptions.body.object = copyJsonObject(patchedActivity);
-        delete requestOptions.body.object.id;
-        requestOptions.body.object.slug = ['docs', 'api'];
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field slug of activity should be string but was sent as ' +
-                  'array',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkGetReq(done, token);
-        });
-      });
-    });
-
-    it('fails to update an activity with bad authentication', function(done) {
-      requestOptions.body = copyJsonObject(postArg);
-      requestOptions.body.object = copyJsonObject(patchedActivity);
-
-      requestOptions.body.auth.token = 'not_a_token';
-
-      request.post(requestOptions, function(err, res, body) {
-        const expectedError = {
-          status: 401,
-          error: 'Authentication failure',
-          text: 'Bad API token',
-        };
-
-        expect(body).deep.equal(expectedError);
-        expect(res.statusCode).to.equal(401);
-
-        getAPIToken().then(function(token) {
-          checkGetReq(done, token);
-        });
-      });
-    });
-
-    it('fails to update an activity from regular user', function(done) {
-      const oldUser = user;
-      const oldPass = password;
-
-      user = 'mrsj';
-      password = 'word';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedActivity);
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 401,
-            error: 'Authorization failure',
-            text: 'mrsj is not authorized to update activities',
-          };
-
-          expect(body).deep.equal(expectedError);
-          expect(res.statusCode).to.equal(401);
-
-          checkGetReq(done, token);
-        });
-      });
-    });
-
-    it('fails to update when given a nonexistent slug', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-        requestOptions.body.object = copyJsonObject(patchedActivity);
-        requestOptions.url = baseUrl + 'activities/doge';
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 404,
-            error: 'Object not found',
-            text: 'Nonexistent activity',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(404);
-
-          checkGetReq(done, token);
-        });
-      });
-    });
-
-    it('fails to update when given an invalid slug', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-        requestOptions.body.object = copyJsonObject(patchedActivity);
-        requestOptions.url = baseUrl + 'activities/!._cucco';
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'The provided identifier was invalid',
-            text: 'Expected slug but received !._cucco',
-            values: ['!._cucco'],
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkGetReq(done, token);
-        });
-      });
-    });
-  });
-
-  describe('POST /activities', function() {
-    // the activity object to attempt to add
-    const activity = {
-      slug: 'chef',
-      name: 'Chef',
-    };
-
-    // the project as added to the database
-    const newActivity = {
-      slug: 'chef',
-      name: 'Chef',
-      created_at: new Date().toISOString().substring(0, 10),
-      revision: 1,
-    };
-
-    // the base POST JSON
-    const postArg = {
-      auth: {
-        type: 'token',
-      },
-      object: activity,
-    };
-
-    const initialActivities = [
-      {
-        name: 'Documentation',
-        slug: 'docs',
-        deleted_at: null,
-        updated_at: null,
-        created_at: '2014-01-01',
-        uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
-        revision: 1,
-      },
-      {
-        name: 'Development',
-        slug: 'dev',
-        deleted_at: null,
-        updated_at: null,
-        created_at: '2014-01-01',
-        uuid: 'b0b8c83b-f529-4130-93ef-e4e94e5bc57e',
-        revision: 1,
-      },
-      {
-        name: 'Systems',
-        slug: 'sys',
-        deleted_at: null,
-        updated_at: null,
-        created_at: '2014-01-01',
-        uuid: '504796fd-859d-4edd-b2b8-b4109bb1fdf2',
-        revision: 1,
-      },
-      {
-        name: 'Meetings',
-        slug: 'meeting',
-        deleted_at: null,
-        updated_at: null,
-        created_at: '2014-01-01',
-        uuid: '6552d14e-12eb-4f1f-83d5-147f8452614c',
-        revision: 1,
-      },
-    ];
-
-    const requestOptions = {
-      url: baseUrl + 'activities/',
-      json: true,
-      method: 'POST',
-    };
-
-    function checkListEndpoint(done, newActivityItem, token) {
-      request.get(baseUrl + 'activities?token=' + token,
-      function(getErr, getRes, getBody) {
-        // the projects/ endpoint should now have one more project
-        let expectedGetResults;
-        if (newActivityItem) {
-          expectedGetResults = initialActivities.concat([
-            {
-              slug: 'chef',
-              name: 'Chef',
-              deleted_at: null,
-              updated_at: null,
-              created_at: new Date().toISOString().substring(0, 10),
-              uuid: newActivityItem.uuid,
-              revision: 1,
-            },
-          ]);
-        } else {
-          expectedGetResults = initialActivities;
-        }
-
-        expect(getErr).to.be.a('null');
-        expect(getRes.statusCode).to.equal(200);
-
-        expect(JSON.parse(getBody))
-        .to.have.same.deep.members(expectedGetResults);
-        done();
-      });
-    }
-
-    it('successfully creates a new activity by an admin', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          // Hacky workaround because UUIDs are random
-          newActivity.uuid = body.uuid;
-          expect(body).to.deep.equal(newActivity);
-
-          checkListEndpoint(done, newActivity, token);
-        });
-      });
-    });
-
-    it('successfully creates a new activity by a manager', function(done) {
-      const oldUser = user;
-      const oldPass = password;
-
-      user = 'patcht';
-      password = 'drowssap';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
-        requestOptions.body = postArg;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          // Hacky workaround because UUIDs are random
-          newActivity.uuid = body.uuid;
-          expect(body).to.deep.equal(newActivity);
-
-          checkListEndpoint(done, newActivity, token);
-        });
-      });
-    });
-
-    it('fails to create a new activity with bad authentication',
-    function(done) {
-      requestOptions.body = copyJsonObject(postArg);
-      requestOptions.body.object = copyJsonObject(newActivity);
-
-      requestOptions.body.auth.token = 'not_a_token';
-
-      request.post(requestOptions, function(err, res, body) {
-        expect(res.statusCode).to.equal(401);
-
-        expect(body.error).to.equal('Authentication failure');
-        expect(body.text).to.equal('Bad API token');
-
-        getAPIToken().then(function(token) {
-          checkListEndpoint(done, null, token);
-        });
-      });
-    });
-
-    it('fails to create a new activity by a regular user', function(done) {
-      const oldUser = user;
-      const oldPass = password;
-
-      user = 'mrsj';
-      password = 'word';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(newActivity);
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(res.statusCode).to.equal(401);
-
-          expect(body.error).to.equal('Authorization failure');
-          expect(body.text).to.equal('mrsj is not authorized to create ' +
-            'activities');
-
-          checkListEndpoint(done, null, token);
-        });
-      });
-    });
-
-    it('fails to create a new activity with an invalid slug', function(done) {
-      getAPIToken().then(function(token) {
-        const postInvalidSlug = copyJsonObject(postArg);
-        postInvalidSlug.object.slug = '$*#*cat';
-        requestOptions.body = postInvalidSlug;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field slug of activity should be slug but was sent as ' +
-            'non-slug string',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, null, token);
-        });
-      });
-    });
-
-    it('fails to create a new activity with an existing slug', function(done) {
-      getAPIToken().then(function(token) {
-        const postExistingSlug = copyJsonObject(postArg);
-        postExistingSlug.object.slug = 'dev';
-        requestOptions.body = postExistingSlug;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 409,
-            error: 'The slug provided already exists',
-            text: 'slug dev already exists',
-            values: ['dev'],
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(409);
-
-          checkListEndpoint(done, null, token);
-        });
-      });
-    });
-
-    it('fails to create a new activity with no slug', function(done) {
-      getAPIToken().then(function(token) {
-        const postNoSlug = copyJsonObject(postArg);
-        delete postNoSlug.object.slug;
-        requestOptions.body = postNoSlug;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'The activity is missing a slug',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, null, token);
-        });
-      });
-    });
-
-    it('fails to create a new activity with no name', function(done) {
-      getAPIToken().then(function(token) {
-        const postNoName = copyJsonObject(postArg);
-        delete postNoName.object.name;
-        requestOptions.body = postNoName;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'The activity is missing a name',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, null, token);
-        });
-      });
-    });
-
-    it('fails to create a new activity with an existing name', function(done) {
-      getAPIToken().then(function(token) {
-        const postExistingName = copyJsonObject(postArg);
-        postExistingName.object.name = 'Documentation';
-        requestOptions.body = postExistingName;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field name of activity should be unique name but was sent ' +
-            'as name which already exists',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, null, token);
-        });
-      });
-    });
-
-    it('fails to create an activity with bad name datatype', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object.name = ['test'];
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field name of' +
-          ' activity should be string but was sent as array');
-
-          checkListEndpoint(done, null, token);
-        });
-      });
-    });
-
-    it('fails to create an activity with bad slug datatype', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object.slug = ['test'];
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field slug of' +
-          ' activity should be string but was sent as array');
-
-          checkListEndpoint(done, null, token);
         });
       });
     });
@@ -1477,12 +258,16 @@ module.exports = function(expect, request, baseUrl) {
       const postActivity = {
         'name': 'Documentationification',
       };
-      const postArg = getPostObject(baseUrl + 'activities/' + activity,
+      const postArg = getPostObject(`${baseUrl}activities/${activity}`,
                       postActivity);
 
       getAPIToken().then(function(token) {
         postArg.body.auth.token = token;
-        request.post(postArg, function() {
+        request.post(postArg, function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(body.error).to.equal(undefined);
+          expect(res.statusCode).to.equal(200);
+          expect(body.name).to.equal(postActivity.name);
           done();
         });
       });
@@ -1492,9 +277,8 @@ module.exports = function(expect, request, baseUrl) {
     it('gets activities + revisions when include_revisions=true is passed',
     function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'activities/?include_revisions=true&token=' +
-        token,
-        function(err, res, body) {
+        request.get(`${baseUrl}activities/?include_revisions=true&token=` +
+        token, function(err, res, body) {
           expect(JSON.parse(body)).to.deep.include(withParentsData);
           expect(JSON.parse(body)).to.not.include(noParentsData);
           done();
@@ -1506,7 +290,7 @@ module.exports = function(expect, request, baseUrl) {
     it('gets activities + revisions when include_revisions is passed',
     function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'activities/?include_revisions&token=' + token,
+        request.get(`${baseUrl}activities/?include_revisions&token=${token}`,
         function(err, res, body) {
           expect(JSON.parse(body)).to.include(withParentsData);
           expect(JSON.parse(body)).to.not.include(noParentsData);
@@ -1518,10 +302,9 @@ module.exports = function(expect, request, baseUrl) {
     // Tests that include_revisions isn't always set to true
     it('gets just activities when include_revisions=false', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'activities/?include_revisions=false&token=' +
-        token,
-        function(err, res, body) {
-          expect(JSON.parse(body)).to.include(noParentsData);
+        request.get(`${baseUrl}activities/?include_revisions=false&token=` +
+        token, function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.include(noParentsData);
           done();
         });
       });
@@ -1531,7 +314,7 @@ module.exports = function(expect, request, baseUrl) {
     it('gets just activities when include_revisions is not set',
     function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'activities/?token=' + token,
+        request.get(`${baseUrl}activities/?token=${token}`,
         function(err, res, body) {
           expect(JSON.parse(body)).to.include(noParentsData);
           done();
@@ -1648,6 +431,772 @@ module.exports = function(expect, request, baseUrl) {
         function(err, res, body) {
           expect(JSON.parse(body)).to.deep.include(noParentsData);
           done();
+        });
+      });
+    });
+  });
+
+  describe('POST /activities', function() {
+    // the activity object to attempt to add
+    const activity = {
+      slug: 'chef',
+      name: 'Chef',
+    };
+
+    // the project as added to the database
+    const newActivity = {
+      slug: 'chef',
+      name: 'Chef',
+      created_at: new Date().toISOString().substring(0, 10),
+      revision: 1,
+    };
+
+    const getActivity = {
+      slug: 'chef',
+      name: 'Chef',
+      created_at: new Date().toISOString().substring(0, 10),
+      updated_at: null,
+      deleted_at: null,
+      revision: 1,
+    };
+
+    // the base POST JSON
+    const postArg = {
+      auth: {
+        type: 'token',
+      },
+      object: activity,
+    };
+
+    const requestOptions = {
+      url: baseUrl + 'activities/',
+      json: true,
+      method: 'POST',
+    };
+
+    function checkListEndpoint(done, expectedResults, token) {
+      request.get(`${baseUrl}activities?token=${token}`,
+      function(err, res, body) {
+        expect(err).to.equal(null);
+        expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+        expect(res.statusCode).to.equal(200);
+        done();
+      });
+    }
+
+    it('successfully creates a new activity by an admin', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+
+          const addedActivity = copyJsonObject(newActivity);
+          addedActivity.uuid = body.uuid;
+          expect(body).to.deep.equal(addedActivity);
+
+          const expectedResult = copyJsonObject(getActivity);
+          expectedResult.uuid = body.uuid;
+          checkListEndpoint(done, initialData.concat(expectedResult), token);
+        });
+      });
+    });
+
+    it('successfully creates a new activity by a manager', function(done) {
+      getAPIToken('patcht', 'drowssap').then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+
+          const addedActivity = copyJsonObject(newActivity);
+          addedActivity.uuid = body.uuid;
+          expect(body).to.deep.equal(addedActivity);
+
+          const expectedResult = copyJsonObject(getActivity);
+          expectedResult.uuid = body.uuid;
+          checkListEndpoint(done, initialData.concat(expectedResult), token);
+        });
+      });
+    });
+
+    it('fails to create a new activity with bad authentication',
+    function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = 'not_a_token';
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          const expectedResult = {
+            error: 'Authentication failure',
+            status: 401,
+            text: 'Bad API token',
+          };
+          expect(body).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new activity by a regular user', function(done) {
+      getAPIToken('mrsj', 'word').then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          const expectedResult = {
+            error: 'Authorization failure',
+            status: 401,
+            text: 'mrsj is not authorized to create activities',
+          };
+          expect(body).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new activity with an invalid slug', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        const slug = '*&$&^*@';
+        requestOptions.body.object.slug = slug;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'Field slug of activity should be slug but was sent as ' +
+                  'non-slug string',
+          };
+          expect(body).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new activity with an existing slug', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        const slug = 'dev';
+        requestOptions.body.object.slug = slug;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          const expectedResult = {
+            error: 'The slug provided already exists',
+            status: 409,
+            text: `slug ${slug} already exists`,
+            values: [slug],
+          };
+          expect(body).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new activity with no slug', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        requestOptions.body.object.slug = '';
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'The activity is missing a slug',
+          };
+          expect(body).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new activity with no name', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        requestOptions.body.object.name = '';
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'The activity is missing a name',
+          };
+          expect(body).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new activity with an existing name', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        requestOptions.body.object.name = 'Development';
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'Field name of activity should be unique name but was sent ' +
+                  'as name which already exists',
+          };
+          expect(body).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create an activity with bad name datatype', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        requestOptions.body.object.name = ['test'];
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'Field name of activity should be string but was sent as ' +
+                  'array',
+          };
+          expect(body).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create an activity with bad slug datatype', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        requestOptions.body.object.slug = ['test'];
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'Field slug of activity should be string but was sent as ' +
+                  'array',
+          };
+          expect(body).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+  });
+
+  describe('POST /activities/:slug', function() {
+    const getOriginalActivity = {
+      name: 'Documentation',
+      slug: 'docs',
+      uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+      revision: 1,
+      created_at: '2014-01-01',
+      updated_at: null,
+      deleted_at: null,
+    };
+
+    // A completely patched version of the above activity
+    // Only contains valid patch elements
+    const updatedAt = new Date().toISOString().substring(0, 10);
+    const postPatchedActivity = {
+      name: 'TimeSync Documentation',
+      slug: 'dev-docs',
+    };
+
+    const getPatchedActivity = {
+      name: 'TimeSync Documentation',
+      slug: 'dev-docs',
+      uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
+      revision: 2,
+      created_at: '2014-01-01',
+      updated_at: updatedAt,
+      deleted_at: null,
+    };
+
+    const invalidActivityDataType = {
+      name: {thisIs: 'the wrong data type'},
+      slug: {thisIs: 'the wrong data type'},
+    };
+
+    const invalidActivityValue = {
+      slug: 'activity--!@#$',
+    };
+
+    // Base POST JSON
+    const postArg = {
+      auth: {
+        type: 'token',
+      },
+    };
+
+    const requestOptions = {
+      url: `${baseUrl}activities/docs`,
+      json: true,
+    };
+
+    function checkPostToEndpoint(done, uri, postObj, expectedResults, error,
+    statusCode, postBodies, username, password) {
+      getAPIToken(username, password).then(function(token) {
+        const options = copyJsonObject(requestOptions);
+        postArg.object = postObj;
+        options.body = postArg;
+
+        options.body.auth.token = token;
+        if (uri) {
+          options.uri = uri;
+        }
+
+        // make a given post request
+        // check the error
+        // check the statusCode
+        // Also check the body of the request
+        request.post(options, function(err, res, body) {
+          expect(body.error).to.equal(error);
+          expect(res.statusCode).to.equal(statusCode);
+
+          if (postBodies !== undefined) {
+            // Is the recieved body within the array of expected bodies
+            expect(body).to.deep.equal(postBodies[0]);
+          }
+
+          // Always checks for valid get request
+          // err is always 'null'
+          // res.statusCode is always 200
+          // body always equals expectedresults
+          let slug = 'docs';
+          if (postObj.slug && !error) {
+            slug = postObj.slug;
+          }
+          request.get(`${baseUrl}activities/${slug}?token=${token}`,
+          function(err0, res0, body0) {
+            const jsonBody = JSON.parse(body0);
+            expect(jsonBody.error).to.equal(undefined);
+            expect(res0.statusCode).to.equal(200);
+            expectedResults.updated_at = jsonBody.updated_at;
+            expect(jsonBody).to.deep.equal(expectedResults);
+            done();
+          });
+        });
+      });
+    }
+
+    it('successfully updates the activity by an admin', function(done) {
+      const postObj = copyJsonObject(postPatchedActivity);
+      const expectedResults = copyJsonObject(getPatchedActivity);
+      let error;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
+    });
+
+    it('successfully updates the activity by a manager', function(done) {
+      const postObj = copyJsonObject(postPatchedActivity);
+      const expectedResults = copyJsonObject(getPatchedActivity);
+      let error;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, undefined, 'patcht', 'drowssap');
+    });
+
+    it('successfully updates the activity name', function(done) {
+      const postObj = {name: postPatchedActivity.name};
+      const expectedResults = copyJsonObject(getOriginalActivity);
+      expectedResults.name = postPatchedActivity.name;
+      expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
+      let error;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
+    });
+
+    it('successfully updates the activity slug', function(done) {
+      const postObj = {slug: postPatchedActivity.slug};
+      const expectedResults = copyJsonObject(getOriginalActivity);
+      expectedResults.slug = postPatchedActivity.slug;
+      expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
+      let error;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
+    });
+
+    it('fails to update a non-existent activity', function(done) {
+      const uri = baseUrl + 'activities/not-an-activity';
+      const postObj = {name: postPatchedActivity.name};
+      const expectedResults = copyJsonObject(getOriginalActivity);
+      const error = 'Object not found';
+      const statusCode = 404;
+      const postBody = [
+        {
+          status: 404,
+          error: 'Object not found',
+          text: 'Nonexistent activity',
+        },
+      ];
+
+      checkPostToEndpoint(done, uri, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    // Returns an error 400 - errorBadObjectInvalidField
+    it('fails to update an activity to have no name', function(done) {
+      const postObj = {name: ''};
+      const expectedResults = copyJsonObject(getOriginalActivity);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field name of activity should be string but was sent as ' +
+                'empty string',
+        },
+      ];
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    it('fails to update an activity to have no slug', function(done) {
+      const postObj = {slug: ''};
+      const expectedResults = copyJsonObject(getOriginalActivity);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field slug of activity should be slug but was sent as ' +
+                'empty string',
+        },
+      ];
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    it('fails to update an activity to have an existent name', function(done) {
+      const postObj = {name: 'Development'};
+      const expectedResults = copyJsonObject(getOriginalActivity);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field name of activity should be unique name but was sent ' +
+                'as name which already exists',
+        },
+      ];
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    it('fails to update an activity to have an existent slug', function(done) {
+      const postObj = {slug: 'dev'};
+      const expectedResults = copyJsonObject(getOriginalActivity);
+      const error = 'The slug provided already exists';
+      const statusCode = 409;
+      const postBody = [
+        {
+          status: 409,
+          error: 'The slug provided already exists',
+          text: 'slug dev already exists',
+          values: ['dev'],
+        },
+      ];
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    it('fails to update activity if name is invalid type', function(done) {
+      const postObj = {name: invalidActivityDataType.name};
+      const expectedResults = copyJsonObject(getOriginalActivity);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field name of activity should be string but was sent as ' +
+                'object',
+        },
+      ];
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    it('fails to update activity if slug is invalid type', function(done) {
+      const postObj = {slug: invalidActivityDataType.slug};
+      const expectedResults = copyJsonObject(getOriginalActivity);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field slug of activity should be string but was sent as ' +
+                'object',
+        },
+      ];
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+
+    it('fails to update an activity from regular user', function(done) {
+      const postObj = {name: 'Development'};
+      const expectedResults = copyJsonObject(getOriginalActivity);
+      const error = 'Authorization failure';
+      const statusCode = 401;
+      const postBody = [
+        {
+          status: 401,
+          error: 'Authorization failure',
+          text: 'mrsj is not authorized to update activities',
+        },
+      ];
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody, 'mrsj', 'word');
+    });
+
+    it('fails to update when given an invalid slug', function(done) {
+      const slug = invalidActivityValue.slug;
+      const postObj = {slug: slug};
+      const expectedResults = copyJsonObject(getOriginalActivity);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field slug of activity should be valid slug but was sent ' +
+                `as invalid slug ${slug}`,
+        },
+      ];
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+  });
+
+  describe('DELETE /activities/:slug', function() {
+    it('deletes the activity with the given slug', function(done) {
+      getAPIToken().then(function(token) {
+        const slug = 'meeting';
+        request.del(`${baseUrl}activities/${slug}?token=${token}`,
+        function(delErr, delRes) {
+          expect(delErr).to.equal(null);
+          expect(delRes.statusCode).to.equal(200);
+
+          // Checks to see that the activity has been deleted from the db
+          request.get(`${baseUrl}activities/${slug}?token=${token}`,
+          function(getErr, getRes, body) {
+            const expectedError = {
+              status: 404,
+              error: 'Object not found',
+              text: 'Nonexistent activity',
+            };
+
+            expect(JSON.parse(body)).to.deep.equal(expectedError);
+            expect(getRes.statusCode).to.equal(expectedError.status);
+
+            done();
+          });
+        });
+      });
+    });
+
+    it('fails if it receives a nonexistent slug', function(done) {
+      getAPIToken().then(function(token) {
+        const slug = 'naps';
+        request.del(`${baseUrl}activities/${slug}?token=${token}`,
+        function(err, res, body) {
+          const expectedError = {
+            status: 404,
+            error: 'Object not found',
+            text: 'Nonexistent slug',
+          };
+
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(expectedError.status);
+
+          request.get(`${baseUrl}activities?token=${token}`,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.equal(null);
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+
+            done();
+          });
+        });
+      });
+    });
+
+    it('fails if it receives an invalid slug', function(done) {
+      getAPIToken().then(function(token) {
+        const slug = '!what';
+        request.del(`${baseUrl}activities/${slug}?token=${token}`,
+        function(err, res, body) {
+          const expectedError = {
+            status: 400,
+            error: 'The provided identifier was invalid',
+            text: `Expected slug but received ${slug}`,
+            values: [slug],
+          };
+
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(expectedError.status);
+
+          request.get(`${baseUrl}activities?token=${token}`,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.equal(null);
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+
+            done();
+          });
+        });
+      });
+    });
+
+    it('fails if the activity is referenced by a time', function(done) {
+      getAPIToken().then(function(token) {
+        const slug = 'docs';
+        request.del(`${baseUrl}activities/${slug}?token=${token}`,
+        function(err, res, body) {
+          const expectedError = {
+            status: 405,
+            error: 'Method not allowed',
+            text: 'The method specified is not allowed for the activity ' +
+                  'identified',
+          };
+
+          expect(res.headers.allow).to.equal('GET, POST');
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(expectedError.status);
+
+          request.get(`${baseUrl}activities/${slug}?token=${token}`,
+          function(getErr, getRes, getBody) {
+            const expectedResult = initialData.filter(a => {
+              return a.slug === slug;
+            })[0];
+
+            expect(getErr).to.equal(null);
+            expect(JSON.parse(getBody)).to.deep.equal(expectedResult);
+            expect(getRes.statusCode).to.equal(200);
+
+            request.get(`${baseUrl}activities?token=${token}`,
+            function(getErr0, getRes0, getBody0) {
+              expect(getErr0).to.equal(null);
+              expect(getRes0.statusCode).to.equal(200);
+              expect(JSON.parse(getBody0)).to.deep.have.same
+                                                          .members(initialData);
+              done();
+            });
+          });
+        });
+      });
+    });
+
+    it('fails with invalid permissions', function(done) {
+      getAPIToken('mrsj', 'word').then(function(token) {
+        const slug = 'meeting';
+        request.del(`${baseUrl}activities/${slug}?token=${token}`,
+        function(err, res, body) {
+          const expectedError = {
+            status: 401,
+            error: 'Authorization failure',
+            text: 'mrsj is not authorized to delete activities',
+          };
+
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(expectedError.status);
+
+          request.get(`${baseUrl}activities/${slug}?token=${token}`,
+          function(getErr, getRes, getBody) {
+            const expectedResult = initialData.filter(a => {
+              return a.slug === slug;
+            })[0];
+
+            expect(getErr).to.equal(null);
+            expect(JSON.parse(getBody)).to.deep.equal(expectedResult);
+            expect(getRes.statusCode).to.equal(200);
+
+            request.get(`${baseUrl}activities?token=${token}`,
+            function(getErr0, getRes0, getBody0) {
+              expect(getErr0).to.equal(null);
+              expect(JSON.parse(getBody0)).to.deep.have.same
+                                                      .members(initialData);
+              expect(getRes0.statusCode).to.equal(200);
+
+              done();
+            });
+          });
         });
       });
     });
