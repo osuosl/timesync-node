@@ -143,1774 +143,2037 @@ module.exports = function(expect, request, baseUrl) {
 
   /* GET one of the /times endpoints and check its response against
   what should be returned */
-  describe('GET /times', function() {
-    it('returns all times in the database to an admin', function(done) {
-      getAPIToken().then(function(token) {
-        request.get(`${baseUrl}times?token=${token}`, function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(initialData);
-          done();
-        });
-      });
-    });
-
-    it('returns all times in the database to a sitewide spectator',
-    function(done) {
-      getAPIToken('mrsj', 'word').then(function(token) {
-        request.get(`${baseUrl}times?token=${token}`, function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(initialData);
-          done();
-        });
-      });
-    });
-
-    it("returns only a normal user's times", function(done) {
-      const user = 'thai';
-      getAPIToken(user, 'passing').then(function(token) {
-        request.get(`${baseUrl}times?token=${token}`, function(err, res, body) {
-          const expectedResults = initialData.filter(t => {
-            return t.user === user;
+  describe('GET', function() {
+    describe('/times', function() {
+      it('returns all times in the database to an admin', function(done) {
+        getAPIToken().then(function(token) {
+          request.get(`${baseUrl}times?token=${token}`,
+          function(err, res, body) {
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(initialData);
+            done();
           });
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
         });
       });
-    });
 
-    it("returns a project spectator's set of times", function(done) {
-      getAPIToken('deanj', 'pass').then(function(token) {
-        request.get(`${baseUrl}times?token=${token}`, function(err, res, body) {
-          const expectedResults = initialData.filter(t => {
-            // deanj is spectator on pgd and gwm
-            return t.project.indexOf('pgd') >= 0 ||
-                   t.project.indexOf('gwm') >= 0;
+      it('returns all times in the database to a sitewide spectator',
+      function(done) {
+        getAPIToken('mrsj', 'word').then(function(token) {
+          request.get(`${baseUrl}times?token=${token}`,
+          function(err, res, body) {
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(initialData);
+            done();
           });
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
         });
       });
-    });
-  });
 
-  describe('GET /times?user=:user', function() {
-    it('returns all times for a user', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'deanj';
-        request.get(`${baseUrl}times?user=${u}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.user === u;
+      it("returns only a normal user's times", function(done) {
+        const user = 'thai';
+        getAPIToken(user, 'passing').then(function(token) {
+          request.get(`${baseUrl}times?token=${token}`,
+          function(err, res, body) {
+            const expectedResults = initialData.filter(t => {
+              return t.user === user;
+            });
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
           });
+        });
+      });
 
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
+      it("returns a project spectator's set of times", function(done) {
+        getAPIToken('deanj', 'pass').then(function(token) {
+          request.get(`${baseUrl}times?token=${token}`,
+          function(err, res, body) {
+            const expectedResults = initialData.filter(t => {
+              // deanj is spectator on pgd and gwm
+              return t.project.indexOf('pgd') >= 0 ||
+                     t.project.indexOf('gwm') >= 0;
+            });
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
         });
       });
     });
 
-    it('returns an error for a non-existent user', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'fakeuser';
-        request.get(`${baseUrl}times?user=${u}&token=${token}`,
-        function(err, res, body) {
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter user contained invalid value ${u}`,
+    describe('/times?user=:user', function() {
+      it('returns all times for a user', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'deanj';
+          request.get(`${baseUrl}times?user=${u}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.user === u;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+
+      it('returns an error for a non-existent user', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'fakeuser';
+          request.get(`${baseUrl}times?user=${u}&token=${token}`,
+          function(err, res, body) {
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter user contained invalid value ${u}`,
+            };
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?project=:project', function() {
+      it('returns all times for a project', function(done) {
+        getAPIToken().then(function(token) {
+          const p = 'gwm';
+          request.get(`${baseUrl}times?project=${p}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.project.indexOf(p) >= 0;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+
+      it('returns an error for a non-existent project', function(done) {
+        getAPIToken().then(function(token) {
+          const p = 'notreal';
+          request.get(`${baseUrl}times?project=${p}&token=${token}`,
+          function(err, res, body) {
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter project contained invalid value ${p}`,
+            };
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activity=:activity', function() {
+      it('returns all times for an activity', function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'docs';
+          request.get(`${baseUrl}times?activity=${a}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.activities.indexOf(a) >= 0;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+
+      it('returns an error for a non-existent activity', function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'falsch';
+          request.get(`${baseUrl}times?activity=${a}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter activity contained invalid value ${a}`,
+            };
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(jsonBody).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?start=:start', function() {
+      it('returns all times after a date', function(done) {
+        getAPIToken().then(function(token) {
+          const s = '2015-04-20';
+          request.get(`${baseUrl}times?start=${s}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              // ISO dates can be compared as strings
+              return t.date_worked >= s;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+
+      it('returns an error for an invalid start date', function(done) {
+        getAPIToken().then(function(token) {
+          const s = 'faux';
+          request.get(`${baseUrl}times?start=${s}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter start contained invalid value ${s}`,
+            };
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(jsonBody).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+
+      it('returns an error for a future start date', function(done) {
+        getAPIToken().then(function(token) {
+          const s = '2105-04-19';
+          request.get(`${baseUrl}times?start=${s}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter start contained invalid value ${s}`,
+            };
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(jsonBody).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?end=:end', function() {
+      it('returns all times before a date', function(done) {
+        getAPIToken().then(function(token) {
+          const e = '2015-04-21';
+          request.get(`${baseUrl}times?end=${e}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              // ISO dates can be lexically compared
+              return t.date_worked <= e;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+
+      it('returns an error for an invalid end date', function(done) {
+        getAPIToken().then(function(token) {
+          const e = 'namaak';
+          request.get(`${baseUrl}times?end=${e}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter end contained invalid value ${e}`,
+            };
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(jsonBody).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?start=:start&end=:end', function() {
+      it('returns all times between two dates', function(done) {
+        getAPIToken().then(function(token) {
+          const s = '2015-04-20';
+          const e = '2015-04-21';
+          request.get(`${baseUrl}times?start=${s}&end=${e}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.date_worked >= s && t.date_worked <= e;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+
+      it('returns an error for a start date after an end date', function(done) {
+        getAPIToken().then(function(token) {
+          const s = '2015-04-21';
+          const e = '2015-04-19';
+          request.get(`${baseUrl}times?start=${s}&end=${e}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+
+            /*
+             * This test needs to look a little different because
+             * there are two possible errors that could be returned.
+             */
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(400);
+
+            expect(jsonBody.status).to.equal(400);
+            expect(jsonBody.error).to.equal('Bad Query Value');
+
+            expect([
+              `Parameter end contained invalid value ${e}`,
+              `Parameter start contained invalid value ${s}`,
+            ]).to.include.members([jsonBody.text]);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user1&user=:user2', function() {
+      it('returns all times for two users', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'deanj';
+          const u2 = 'patcht';
+          request.get(`${baseUrl}times?user=${u}&user=${u2}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.user === u || t.user === u2;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&project=:project', function() {
+      it('returns all times for a user and a project', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'deanj';
+          const p = 'gwm';
+          request.get(`${baseUrl}times?user=${u}&project=${p}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.user === u && t.project.indexOf(p) >= 0;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&activity=:activity', function() {
+      it('returns all times for a user and an activity', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'deanj';
+          const a = 'docs';
+          request.get(`${baseUrl}times?user=${u}&activity=${a}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.user === u && t.activities.indexOf(a) >= 0;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&start=:start', function() {
+      it('returns all times for a user after a date', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'deanj';
+          const s = '2015-04-20';
+          request.get(`${baseUrl}times?user=${u}&start=${s}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.user === u && t.date_worked >= s;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&end=:end', function() {
+      it('returns all times for a user before a date', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'tschuy';
+          const e = '2015-04-21';
+          request.get(`${baseUrl}times?user=${u}&end=${e}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.user === u && t.date_worked <= e;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&start=:start&end=:end', function() {
+      it('returns all times for a user between two dates', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'deanj';
+          const s = '2015-04-19';
+          const e = '2015-04-20';
+          request.get(`${baseUrl}times?user=${u}&start=${s}&end=${e}&` +
+          `token=${token}`, function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.user === u && t.date_worked >= s && t.date_worked <= e;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?project=:project1&project=:project2', function() {
+      it('returns all times for two projects', function(done) {
+        getAPIToken().then(function(token) {
+          const p = 'gwm';
+          const p2 = 'wf';
+          request.get(`${baseUrl}times?project=${p}&project=${p2}&token=` +
+          token, function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.project.indexOf(p) >= 0 || t.project.indexOf(p2) >= 0;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?project=:project&activity=:activity', function() {
+      it('returns all times for a project and an activity', function(done) {
+        getAPIToken().then(function(token) {
+          const p = 'gwm';
+          const a = 'dev';
+          request.get(`${baseUrl}times?project=${p}&activity=${a}&token=` +
+          token, function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.project.indexOf(p) >= 0 && t.activities.indexOf(a) >= 0;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?project=:project&start=:start', function() {
+      it('returns all times for a project after a date', function(done) {
+        getAPIToken().then(function(token) {
+          const p = 'gwm';
+          const s = '2015-04-20';
+          request.get(`${baseUrl}times?project=${p}&start=${s}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.project.indexOf(p) >= 0 && t.date_worked >= s;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?project=:project&end=:end', function() {
+      it('returns all times for a project before a date', function(done) {
+        getAPIToken().then(function(token) {
+          const p = 'gwm';
+          const e = '2015-04-20';
+          request.get(`${baseUrl}times?project=${p}&end=${e}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.project.indexOf(p) >= 0 && t.date_worked <= e;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?project=:project&start=:start&end=:end', function() {
+      it('returns all times for a project between two dates', function(done) {
+        getAPIToken().then(function(token) {
+          const p = 'gwm';
+          const s = '2015-04-19';
+          const e = '2015-04-21';
+          request.get(`${baseUrl}times?project=${p}&start=${s}&end=${e}&` +
+          `token=${token}`, function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.project.indexOf(p) >= 0 && t.date_worked >= s &&
+                     t.date_worked <= e;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activity=:activity1&activity=:activity2', function() {
+      it('returns all times for two activities', function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'docs';
+          const a2 = 'dev';
+          request.get(`${baseUrl}times?activity=${a}&activity=${a2}&` +
+          `token=${token}`, function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.activities.indexOf(a) >= 0 ||
+                     t.activities.indexOf(a2) >= 0;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activity=:activity&start=:start', function() {
+      it('returns all times for an activity after a date', function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'dev';
+          const s = '2015-04-20';
+          request.get(`${baseUrl}times?activity=${a}&start=${s}&` +
+          `token=${token}`, function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.activities.indexOf(a) >= 0 && t.date_worked >= s;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activity=:activity&end=:end', function() {
+      it('returns all times for an activity before a date', function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'dev';
+          const e = '2015-04-21';
+          request.get(`${baseUrl}times?activity=${a}&end=${e}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.activities.indexOf(a) >= 0 && t.date_worked <= e;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activity=:activity&start=:start&end=:end', function() {
+      it('returns all times for an activity between two dates', function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'dev';
+          const s = '2015-04-19';
+          const e = '2015-04-21';
+          request.get(`${baseUrl}times?activity=${a}&start=${s}&end=${e}&` +
+          `token=${token}`, function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
+                     t.date_worked <= e;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&project=:project&activity=:activity&' +
+    'start=:start&end=:end', function() {
+      it('returns all times for a user, project, and activity between two ' +
+      'dates', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'tschuy';
+          const p = 'gwm';
+          const a = 'docs';
+          const s = '2015-04-20';
+          const e = '2015-04-22';
+          request.get(`${baseUrl}times?user=${u}&project=${p}&activity=${a}&` +
+          `start=${s}&end=${e}&token=${token}`, function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.user === u && t.project.indexOf(p) >= 0 &&
+                     t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
+                     t.date_worked <= e;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user1&user=:user2&project=:project&' +
+    'activity=:activity&start=:start&end=:end', function() {
+      it('returns all times for two users, a project, and activity ' +
+      'between two dates', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'tschuy';
+          const u2 = 'deanj';
+          const p = 'gwm';
+          const a = 'docs';
+          const s = '2015-04-19';
+          const e = '2015-04-21';
+          request.get(`${baseUrl}times?user=${u}&user=${u2}&project=${p}&` +
+          `activity=${a}&start=${s}&end=${e}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return (t.user === u || t.user === u2) &&
+                     t.project.indexOf(p) >= 0 &&
+                     t.activities.indexOf(a) >= 0 &&
+                     t.date_worked >= s && t.date_worked <= e;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&project=:project1&project=:project2&' +
+    'activity=:activity&start=:start&end=:end', function() {
+      it('returns all times for a user, two projects, and an ' +
+      'activity between two dates', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'deanj';
+          const p = 'gwm';
+          const p2 = 'pdj';
+          const a = 'docs';
+          const s = '2015-04-19';
+          const e = '2015-04-20';
+          request.get(`${baseUrl}times?user=${u}&project=${p}&project=${p2}&` +
+          `activity=${a}&start=${s}&end=${e}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.user === u && (t.project.indexOf(p) >= 0 ||
+                     t.project.indexOf(p2) >= 0) &&
+                     t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
+                     t.date_worked <= e;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&project=:project&activity=:activity1&' +
+    'activity=:activity2&start=:start&end=:end', function() {
+      it('returns all times for a user, project, and two activities ' +
+      'between two dates', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'deanj';
+          const p = 'gwm';
+          const a = 'docs';
+          const a2 = 'dev';
+          const s = '2015-04-19';
+          const e = '2015-04-20';
+          request.get(`${baseUrl}times?user=${u}&project=${p}&activity=${a}&` +
+          `activity=${a2}&start=${s}&end=${e}&token=${token}`,
+          function(err, res, body) {
+            const jsonBody = JSON.parse(body);
+            const expectedResults = initialData.filter(t => {
+              return t.user === u && t.project.indexOf(p) >= 0 &&
+              (t.activities.indexOf(a) >= 0 || t.activities.indexOf(a2) >= 0) &&
+              t.date_worked >= s && t.date_worked <= e;
+            });
+
+            expect(jsonBody).to.have.length(expectedResults.length);
+            for (let i = 0, len = jsonBody.length; i < len; i++) {
+              expectedResults[i].project.sort();
+              expectedResults[i].activities.sort();
+              jsonBody[i].project.sort();
+              jsonBody[i].activities.sort();
+            }
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(jsonBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?include_deleted=true', function() {
+      it('returns a list of all active and deleted times', function(done) {
+        getAPIToken().then(function(token) {
+          request.get(baseUrl + 'times?include_deleted=true&token=' + token,
+          function(err, res, body) {
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same
+              .members(initialDataWithDeleted);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&include_deleted=true', function() {
+      it('returns all times for a user', function(done) {
+        getAPIToken().then(function(token) {
+          const user = 'tschuy';
+          request.get(`${baseUrl}times?user=${user}&include_deleted=true&` +
+          'token=' + token, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.user === user;
+            });
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+
+      it('fails when given a nonexistent user', function(done) {
+        getAPIToken().then(function(token) {
+          const user = 'notauser';
+          request.get(`${baseUrl}times?user=${user}&include_deleted=true&` +
+          `token=${token}`, function(err, res, body) {
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter user contained invalid value ${user}`,
+            };
+
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+
+      it('fails when given an invalid user', function(done) {
+        getAPIToken().then(function(token) {
+          const user = 'wh4t3v3n.isTh%s';
+          request.get(`${baseUrl}times?user=${user}&include_deleted=true&` +
+          'token=' + token, function(err, res, body) {
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter user contained invalid value ${user}`,
+            };
+
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activity=:activity&include_deleted=true', function() {
+      it('returns all times for an activity', function(done) {
+        getAPIToken().then(function(token) {
+          const activity = 'dev';
+          request.get(`${baseUrl}times?activity=${activity}&include_deleted=` +
+          `true&token=${token}`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.activities.indexOf(activity) >= 0;
+            });
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+
+      it('fails when given a nonexistent activity', function(done) {
+        getAPIToken().then(function(token) {
+          const activity = 'review';
+          request.get(`${baseUrl}times?activity=${activity}&include_deleted=` +
+          `true&token=${token}`, function(err, res, body) {
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter activity contained invalid value ${activity}`,
+            };
+
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+
+      it('fails when given an invalid activity', function(done) {
+        getAPIToken().then(function(token) {
+          const activity = 'w_hA.t';
+          request.get(`${baseUrl}times?activity=${activity}&include_deleted=` +
+          `true&token=${token}`, function(err, res, body) {
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter activity contained invalid value ${activity}`,
+            };
+
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?project=:project?include_deleted=true', function() {
+      it('returns all times for a project', function(done) {
+        getAPIToken().then(function(token) {
+          const project = 'pgd';
+          request.get(`${baseUrl}times?project=${project}&` +
+          `include_deleted=true&token=${token}`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.project.indexOf(project) >= 0;
+            });
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+
+      it('fails when given a nonexistent project', function(done) {
+        getAPIToken().then(function(token) {
+          const project = 'chili';
+          request.get(`${baseUrl}times?project=${project}&` +
+          `include_deleted=true&token=${token}`, function(err, res, body) {
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter project contained invalid value ${project}`,
+            };
+
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+
+      it('fails when given an invalid project', function(done) {
+        getAPIToken().then(function(token) {
+          const project = 'not@slug!';
+          request.get(`${baseUrl}times?project=${project}&` +
+          `include_deleted=true&token=${token}`, function(err, res, body) {
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter project contained invalid value ${project}`,
+            };
+
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?start=:start&included_deleted=true', function() {
+      it('returns all times after a date', function(done) {
+        getAPIToken().then(function(token) {
+          const start = '2015-04-22';
+          request.get(`${baseUrl}times?start=${start}&include_deleted=true&` +
+          `token=${token}`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.date_worked >= start;
+            });
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+
+      it('fails when given an invalid start date', function(done) {
+        getAPIToken().then(function(token) {
+          const start = 'notaday';
+          request.get(`${baseUrl}times?start=${start}&include_deleted=true&` +
+          `token=${token}`, function(err, res, body) {
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter start contained invalid value ${start}`,
+            };
+
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+
+      it('fails when given a future start date', function(done) {
+        getAPIToken().then(function(token) {
+          const start = '2105-04-21';
+          request.get(`${baseUrl}times?start=${start}&include_deleted=true&` +
+          `token=${token}`, function(err, res, body) {
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter start contained invalid value ${start}`,
+            };
+
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?end=:end&include_deleted=true', function() {
+      it('returns all times before a date', function(done) {
+        getAPIToken().then(function(token) {
+          const end = '2015-04-20';
+          request.get(`${baseUrl}times?end=${end}&include_deleted=true&` +
+          `token=${token}`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.date_worked <= end;
+            });
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+
+      it('fails if given an invalid end date', function(done) {
+        getAPIToken().then(function(token) {
+          const end = 'theend';
+          request.get(`${baseUrl}times?end=${end}&include_deleted=true&` +
+          `token=${token}`, function(err, res, body) {
+            const expectedResult = {
+              status: 400,
+              error: 'Bad Query Value',
+              text: `Parameter end contained invalid value ${end}`,
+            };
+
+            expect(res.statusCode).to.equal(expectedResult.status);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&activity=:activity&include_deleted=true',
+    function() {
+      it('returns all times that match the given user and activity',
+      function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'tschuy';
+          const a = 'docs';
+          request.get(`${baseUrl}times?user=${u}&activity=${a}&token=${token}` +
+          '&include_deleted=true', function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.user === u && t.activities.indexOf(a) >= 0;
+            });
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&project=project&include_deleted=true',
+    function() {
+      it('returns all times that match the given user and project',
+      function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'patcht';
+          const p = 'pgd';
+          request.get(`${baseUrl}times?user=${u}&project=${p}&token=${token}&` +
+          'include_deleted=true', function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.user === u && t.project.indexOf(p) >= 0;
+            });
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&start:=start&include_deleted=true',
+    function() {
+      it('returns all times for a user after a date', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'tschuy';
+          const s = '2015-04-20';
+          request.get(`${baseUrl}times?user=${u}&start=${s}&token=${token}&` +
+          'include_deleted=true', function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.user === u && t.date_worked >= s;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&end=:end&include_deleted=true',
+    function() {
+      it('returns all times for a user before a date', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'patcht';
+          const e = '2015-04-22';
+          request.get(`${baseUrl}times?user=${u}&end=${e}&token=${token}&` +
+          'include_deleted=true', function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.user === u && t.date_worked <= e;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&start:=start&end=:end&include_deleted=true',
+    function() {
+      it('returns all times for a user within a date range', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'tschuy';
+          const s = '2015-04-20';
+          const e = '2015-04-25';
+          request.get(`${baseUrl}times?user=${u}&start=${s}&end=${e}&` +
+          `include_deleted=true&token=${token}`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.user === u && t.date_worked >= s && t.date_worked <= e;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&activitiy=:activity&project=:project&' +
+    'include_deleted=true', function() {
+      it('returns all times that match the given user, activity, and project',
+      function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'patcht';
+          const a = 'dev';
+          const p = 'pgd';
+          request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
+          `include_deleted=true&token=${token}`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.user === u && t.project.indexOf(p) >= 0 &&
+                     t.activities.indexOf(a) >= 0;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&activitiy=:activity&project=:project&' +
+    'start=:start&include_deleted=true', function() {
+      it('returns all times that match the given parameters after a date',
+      function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'patcht';
+          const a = 'dev';
+          const p = 'pgd';
+          const s = '2015-04-22';
+          request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
+          `start=${s}&include_deleted=true&token=${token}`,
+          function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.user === u && t.project.indexOf(p) >= 0 &&
+                     t.activities.indexOf(a) >= 0 && t.date_worked >= s;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&activitiy=:activity&project=:project&' +
+    'end=:end&include_deleted=true', function() {
+      it('returns all times that match the given parameters before a date',
+      function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'tschuy';
+          const a = 'docs';
+          const p = 'gwm';
+          const e = '2015-04-22';
+          request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
+          `end=${e}&include_deleted=true&token=${token}`,
+          function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.user === u && t.project.indexOf(p) >= 0 &&
+                     t.activities.indexOf(a) >= 0 && t.date_worked <= e;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?user=:user&activitiy=:activity&project=:project&' +
+    'start=:start&end=:end&include_deleted=true', function() {
+      it('returns all times that match the given parameters within a date ' +
+      'range', function(done) {
+        getAPIToken().then(function(token) {
+          const u = 'tschuy';
+          const a = 'docs';
+          const p = 'gwm';
+          const s = '2015-04-19';
+          const e = '2015-04-22';
+          request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
+          `start=${s}&end=${e}&include_deleted=true&token=${token}`,
+          function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.user === u && t.project.indexOf(p) >= 0 &&
+                     t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
+                     t.date_worked <= e;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activity=:activity&project=:project&' +
+    'include_deleted=true', function() {
+      it('returns all times that match the given activity and project',
+      function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'docs';
+          const p = 'gwm';
+          request.get(`${baseUrl}times?activity=${a}&project=${p}&` +
+          `include_deleted=true&token=${token}`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.project.indexOf(p) >= 0 && t.activities.indexOf(a) >= 0;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activity=:activity&start=:start&include_deleted=true',
+    function() {
+      it('returns all times for an activity after a date', function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'docs';
+          const s = '2015-04-17';
+          request.get(`${baseUrl}times?activity=${a}&start=${s}&` +
+          `token=${token}&include_deleted=true`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.activities.indexOf(a) >= 0 && t.date_worked >= s;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activitiy=:activity&end=:end&include_deleted=true',
+    function() {
+      it('returns all times for an activity before a date', function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'dev';
+          const e = '2015-04-25';
+          request.get(`${baseUrl}times?activity=${a}&end=${e}&token=${token}&` +
+          'include_deleted=true', function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.activities.indexOf(a) >= 0 && t.date_worked <= e;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activitiy=:activity&start=:start&end=:end&' +
+    'include_deleted=true', function() {
+      it('returns all times for an activity within a date range',
+      function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'dev';
+          const s = '2015-04-22';
+          const e = '2015-04-25';
+          request.get(`${baseUrl}times?activity=${a}&start=${s}&end=${e}&` +
+          `include_deleted=true&token=${token}`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
+                     t.date_worked <= e;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?project=:project&start=:start&include_deleted=true',
+    function() {
+      it('returns all times for a project after a date', function(done) {
+        getAPIToken().then(function(token) {
+          const p = 'pgd';
+          const s = '2015-04-20';
+          request.get(`${baseUrl}times?project=${p}&start=${s}&` +
+          `token=${token}&include_deleted=true`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.project.indexOf(p) >= 0 && t.date_worked >= s;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?project=:project&end=:end&include_deleted=true',
+    function() {
+      it('returns all times for a project before a date', function(done) {
+        getAPIToken().then(function(token) {
+          const p = 'gwm';
+          const e = '2015-04-20';
+          request.get(`${baseUrl}times?project=${p}&end=${e}&token=${token}&` +
+          'include_deleted=true', function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.project.indexOf(p) >= 0 && t.date_worked <= e;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?project=:project&start=:start&end=:end&' +
+    'include_deleted=true', function() {
+      it('returns all times for a project within a date range', function(done) {
+        getAPIToken().then(function(token) {
+          const p = 'gwm';
+          const s = '2015-04-20';
+          const e = '2015-04-25';
+          request.get(`${baseUrl}times?project=${p}&start=${s}&end=${e}&` +
+          `include_deleted=true&token=${token}`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.project.indexOf(p) >= 0 && t.date_worked >= s &&
+                     t.date_worked <= e;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activity=:activity&project=:project&start=:start&' +
+    'include_deleted=true', function() {
+      it('returns all times that match the given activity and project after ' +
+      'a date', function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'docs';
+          const p = 'gwm';
+          const s = '2015-04-17';
+          request.get(`${baseUrl}times?activity=${a}&project=${p}&start=${s}&` +
+          `include_deleted=true&token=${token}`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.activities.indexOf(a) >= 0 &&
+                     t.project.indexOf(p) >= 0 &&
+                     t.date_worked >= s;
+            });
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activity=:activity&project=:project&end=:end&' +
+    'include_deleted=true', function() {
+      it('returns all times that match the given activity and project before ' +
+      'a date', function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'dev';
+          const p = 'pgd';
+          const e = '2015-04-25';
+          request.get(`${baseUrl}times?activity=${a}&project=${p}&end=${e}&` +
+          `include_deleted=true&token=${token}`, function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.activities.indexOf(a) >= 0 &&
+                     t.project.indexOf(p) >= 0 &&
+                     t.date_worked <= e;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times?activity=:activity&project=:project&start=:start&' +
+    'end=:end&include_deleted=true', function() {
+      it('returns all times that match the given activity and project within ' +
+      'a date range', function(done) {
+        getAPIToken().then(function(token) {
+          const a = 'dev';
+          const p = 'pgd';
+          const s = '2015-04-21';
+          const e = '2015-04-25';
+          request.get(`${baseUrl}times?activity=${a}&project=${p}&start=${s}` +
+          `end=${e}&include_deleted=true&token=${token}`,
+          function(err, res, body) {
+            const expectedResults = initialDataWithDeleted.filter(t => {
+              return t.activities.indexOf(a) >= 0 &&
+                     t.project.indexOf(p) >= 0 &&
+                     t.date_worked >= s && t.date_worked <= e;
+            });
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times/:uuid', function() {
+      it('returns times by uuid', function(done) {
+        getAPIToken().then(function(token) {
+          const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
+          request.get(`${baseUrl}times/${uuid}?token=${token}`,
+          function(err, res, body) {
+            const expectedResult = initialData.filter(t => {
+              return t.uuid === uuid;
+            })[0];
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+
+      it('fails with Object not found error', function(done) {
+        getAPIToken().then(function(token) {
+          const uuid = '00000000-0000-0000-0000-000000000000';
+          request.get(`${baseUrl}times/${uuid}?token=${token}`,
+          function(err, res, body) {
+            const expectedResult = {
+              error: 'Object not found',
+              status: 404,
+              text: 'Nonexistent time',
+            };
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            expect(res.statusCode).to.equal(expectedResult.status);
+            done();
+          });
+        });
+      });
+
+      it('fails with Invalid Identifier error', function(done) {
+        getAPIToken().then(function(token) {
+          const uuid = 'cat';
+          request.get(`${baseUrl}times/${uuid}?token=${token}`,
+          function(err, res, body) {
+            const expectedResult = {
+              error: 'The provided identifier was invalid',
+              status: 400,
+              text: 'Expected UUID but received cat',
+              values: ['cat'],
+            };
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            expect(res.statusCode).to.equal(expectedResult.status);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times/:uuid?include_deleted=true', function() {
+      it('returns the soft-deleted time that corresponds with the given uuid',
+      function(done) {
+        getAPIToken().then(function(token) {
+          const uuid = 'b6ac75fb-7872-403f-ab71-e5542fae4212';
+          request.get(`${baseUrl}times/${uuid}?token=${token}&` +
+          'include_deleted=true', function(err, res, body) {
+            const expectedResult = initialDataWithDeleted.filter(t => {
+              return t.uuid === uuid;
+            })[0];
+
+            expect(err).to.equal(null);
+            expect(res.statusCode).to.equal(200);
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            done();
+          });
+        });
+      });
+
+      it('fails with Object Not Found error when given a nonexistent uuid',
+      function(done) {
+        getAPIToken().then(function(token) {
+          const uuid = '00000000-0000-0000-0000-000000000000';
+          request.get(`${baseUrl}times/${uuid}?token=${token}&` +
+          'include_deleted=true', function(err, res, body) {
+            const expectedResult = {
+              status: 404,
+              error: 'Object not found',
+              text: 'Nonexistent time',
+            };
+
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            expect(res.statusCode).to.equal(expectedResult.status);
+            done();
+          });
+        });
+      });
+
+      it('fails with Invalid Identifier error when given an invalid uuid',
+      function(done) {
+        getAPIToken().then(function(token) {
+          const uuid = 'nope';
+          request.get(`${baseUrl}times/${uuid}?token=${token}&` +
+          'include_deleted=true', function(err, res, body) {
+            const expectedResult = {
+              status: 400,
+              error: 'The provided identifier was invalid',
+              text: 'Expected UUID but received nope',
+              values: ['nope'],
+            };
+
+            expect(JSON.parse(body)).to.deep.equal(expectedResult);
+            expect(res.statusCode).to.equal(expectedResult.status);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('/times/?include_revisions=true', function() {
+      const currentTime = new Date().toISOString().substring(0, 10);
+
+      const noParentsData = {
+        duration: 13,
+        user: 'tschuy',
+        project: ['ganeti-webmgr', 'gwm'],
+        activities: ['docs'],
+        notes: 'forgot to add last hour',
+        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        date_worked: '2015-04-20',
+        created_at: '2015-04-20',
+        updated_at: currentTime,
+        deleted_at: null,
+        uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+        revision: 2,
+      };
+
+      const withParentsData = {
+        duration: 13,
+        user: 'tschuy',
+        project: ['ganeti-webmgr', 'gwm'],
+        activities: ['docs'],
+        notes: 'forgot to add last hour',
+        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        date_worked: '2015-04-20',
+        created_at: '2015-04-20',
+        updated_at: currentTime,
+        deleted_at: null,
+        uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+        revision: 2,
+        parents: [
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['ganeti-webmgr', 'gwm'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            deleted_at: null,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            revision: 1,
+          },
+        ],
+      };
+
+      beforeEach(function(done) {
+        function getPostObject(uri, obj) {
+          return {
+            uri: uri,
+            json: true,
+            body: {
+              auth: {
+                type: 'token',
+              },
+              object: obj,
+            },
           };
+        }
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-  });
+        const time = 'e0326905-ef25-46a0-bacd-4391155aca4a';
+        const postTime = {
+          duration: 13,
+          notes: 'forgot to add last hour',
+        };
+        const postArg = getPostObject(baseUrl + 'times/' + time, postTime);
 
-  describe('GET /times?project=:project', function() {
-    it('returns all times for a project', function(done) {
-      getAPIToken().then(function(token) {
-        const p = 'gwm';
-        request.get(`${baseUrl}times?project=${p}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.project.indexOf(p) >= 0;
+        getAPIToken().then(function(token) {
+          postArg.body.auth.token = token;
+          request.post(postArg, function() {
+            done();
           });
+        });
+      });
 
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
+      // Tests that include_revisions includes revisions
+      it('gets times + revisions when include_revisions=true', function(done) {
+        getAPIToken().then(function(token) {
+          request.get(baseUrl + 'times/?include_revisions=true&token=' + token,
+          function(err, res, body) {
+            expect(JSON.parse(body)).to.include(withParentsData);
+            done();
+          });
+        });
+      });
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
+      // Tests that include_revisions includes revisions
+      it('gets times + revisions when include_revisions is an empty parameter',
+      function(done) {
+        getAPIToken().then(function(token) {
+          request.get(baseUrl + 'times/?include_revisions&token=' + token,
+          function(err, res, body) {
+            expect(JSON.parse(body)).to.include(withParentsData);
+            done();
+          });
+        });
+      });
+
+      // Tests that include_revisions isn't always set to true
+      it('gets just times when include_revisions=false', function(done) {
+        getAPIToken().then(function(token) {
+          request.get(baseUrl + 'times/?include_revisions=false&token=' + token,
+          function(err, res, body) {
+            expect(JSON.parse(body)).to.include(noParentsData);
+            done();
+          });
+        });
+      });
+
+      // Tests that include_revisions defaults to false
+      it('gets just times when include_revisions is not set', function(done) {
+        getAPIToken().then(function(token) {
+          request.get(baseUrl + 'times/?token=' + token,
+          function(err, res, body) {
+            expect(JSON.parse(body)).to.include(noParentsData);
+            done();
+          });
         });
       });
     });
 
-    it('returns an error for a non-existent project', function(done) {
-      getAPIToken().then(function(token) {
-        const p = 'notreal';
-        request.get(`${baseUrl}times?project=${p}&token=${token}`,
-        function(err, res, body) {
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter project contained invalid value ${p}`,
+    describe('/times/:uuid?include_revisions=true', function() {
+      const currentTime = new Date().toISOString().substring(0, 10);
+      const time = 'e0326905-ef25-46a0-bacd-4391155aca4a';
+
+      const noParentsData = {
+        duration: 13,
+        user: 'tschuy',
+        project: ['ganeti-webmgr', 'gwm'],
+        activities: ['docs'],
+        notes: 'forgot to add last hour',
+        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        date_worked: '2015-04-20',
+        created_at: '2015-04-20',
+        updated_at: currentTime,
+        deleted_at: null,
+        uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+        revision: 2,
+      };
+
+      const withParentsData = {
+        duration: 13,
+        user: 'tschuy',
+        project: ['ganeti-webmgr', 'gwm'],
+        activities: ['docs'],
+        notes: 'forgot to add last hour',
+        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        date_worked: '2015-04-20',
+        created_at: '2015-04-20',
+        updated_at: currentTime,
+        deleted_at: null,
+        uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+        revision: 2,
+        parents: [
+          {
+            duration: 12,
+            user: 'tschuy',
+            project: ['ganeti-webmgr', 'gwm'],
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-20',
+            created_at: '2015-04-20',
+            updated_at: null,
+            deleted_at: null,
+            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            revision: 1,
+          },
+        ],
+      };
+
+      beforeEach(function(done) {
+        function getPostObject(uri, obj) {
+          return {
+            uri: uri,
+            json: true,
+            body: {
+              auth: {
+                type: 'token',
+              },
+              object: obj,
+            },
           };
+        }
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-  });
+        const postTime = {
+          duration: 13,
+          notes: 'forgot to add last hour',
+        };
+        const postArg = getPostObject(baseUrl + 'times/' + time, postTime);
 
-  describe('GET /times?activity=:activity', function() {
-    it('returns all times for an activity', function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'docs';
-        request.get(`${baseUrl}times?activity=${a}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.activities.indexOf(a) >= 0;
+        getAPIToken().then(function(token) {
+          postArg.body.auth.token = token;
+          request.post(postArg, function() {
+            done();
           });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
         });
       });
-    });
 
-    it('returns an error for a non-existent activity', function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'falsch';
-        request.get(`${baseUrl}times?activity=${a}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter activity contained invalid value ${a}`,
-          };
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(jsonBody).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?start=:start', function() {
-    it('returns all times after a date', function(done) {
-      getAPIToken().then(function(token) {
-        const s = '2015-04-20';
-        request.get(`${baseUrl}times?start=${s}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            // ISO dates can be compared as strings
-            return t.date_worked >= s;
+      // Tests that include_revisions includes revisions
+      it('gets time + revisions when include_revisions=true', function(done) {
+        getAPIToken().then(function(token) {
+          request.get(baseUrl + 'times/' + time + '?include_revisions=true&' +
+          'token=' + token,
+          function(err, res, body) {
+            expect(JSON.parse(body)).to.deep.equal(withParentsData);
+            expect(JSON.parse(body)).to.not.deep.equal(noParentsData);
+            done();
           });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
         });
       });
-    });
 
-    it('returns an error for an invalid start date', function(done) {
-      getAPIToken().then(function(token) {
-        const s = 'faux';
-        request.get(`${baseUrl}times?start=${s}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter start contained invalid value ${s}`,
-          };
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(jsonBody).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-
-    it('returns an error for a future start date', function(done) {
-      getAPIToken().then(function(token) {
-        const s = '2105-04-19';
-        request.get(`${baseUrl}times?start=${s}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter start contained invalid value ${s}`,
-          };
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(jsonBody).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?end=:end', function() {
-    it('returns all times before a date', function(done) {
-      getAPIToken().then(function(token) {
-        const e = '2015-04-21';
-        request.get(`${baseUrl}times?end=${e}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            // ISO dates can be lexically compared
-            return t.date_worked <= e;
+      // Tests that include_revisions includes revisions
+      it('gets times + revisions when include_revisions is an empty parameter',
+      function(done) {
+        getAPIToken().then(function(token) {
+          request.get(baseUrl + 'times/' + time + '?include_revisions&token=' +
+          token,
+          function(err, res, body) {
+            expect(JSON.parse(body)).to.deep.equal(withParentsData);
+            expect(JSON.parse(body)).to.not.deep.equal(noParentsData);
+            done();
           });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
         });
       });
-    });
 
-    it('returns an error for an invalid end date', function(done) {
-      getAPIToken().then(function(token) {
-        const e = 'namaak';
-        request.get(`${baseUrl}times?end=${e}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter end contained invalid value ${e}`,
-          };
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(jsonBody).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?start=:start&end=:end', function() {
-    it('returns all times between two dates', function(done) {
-      getAPIToken().then(function(token) {
-        const s = '2015-04-20';
-        const e = '2015-04-21';
-        request.get(`${baseUrl}times?start=${s}&end=${e}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.date_worked >= s && t.date_worked <= e;
+      // Tests that include_revisions isn't always set to true
+      it('gets just time when include_revisions=false', function(done) {
+        getAPIToken().then(function(token) {
+          request.get(baseUrl + 'times/' + time + '?include_revisions=false&' +
+          'token=' + token,
+          function(err, res, body) {
+            expect(JSON.parse(body)).to.deep.equal(noParentsData);
+            done();
           });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
         });
       });
-    });
 
-    it('returns an error for a start date after an end date', function(done) {
-      getAPIToken().then(function(token) {
-        const s = '2015-04-21';
-        const e = '2015-04-19';
-        request.get(`${baseUrl}times?start=${s}&end=${e}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-
-          /*
-           * This test needs to look a little different because
-           * there are two possible errors that could be returned.
-           */
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(400);
-
-          expect(jsonBody.status).to.equal(400);
-          expect(jsonBody.error).to.equal('Bad Query Value');
-
-          expect([
-            `Parameter end contained invalid value ${e}`,
-            `Parameter start contained invalid value ${s}`,
-          ]).to.include.members([jsonBody.text]);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user1&user=:user2', function() {
-    it('returns all times for two users', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'deanj';
-        const u2 = 'patcht';
-        request.get(`${baseUrl}times?user=${u}&user=${u2}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.user === u || t.user === u2;
+      // Tests that include_revisions defaults to false
+      it('gets just time when include_revisions is not set', function(done) {
+        getAPIToken().then(function(token) {
+          request.get(baseUrl + 'times/' + time + '?token=' + token,
+          function(err, res, body) {
+            expect(JSON.parse(body)).to.deep.equal(noParentsData);
+            done();
           });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&project=:project', function() {
-    it('returns all times for a user and a project', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'deanj';
-        const p = 'gwm';
-        request.get(`${baseUrl}times?user=${u}&project=${p}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.user === u && t.project.indexOf(p) >= 0;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&activity=:activity', function() {
-    it('returns all times for a user and an activity', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'deanj';
-        const a = 'docs';
-        request.get(`${baseUrl}times?user=${u}&activity=${a}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.user === u && t.activities.indexOf(a) >= 0;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&start=:start', function() {
-    it('returns all times for a user after a date', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'deanj';
-        const s = '2015-04-20';
-        request.get(`${baseUrl}times?user=${u}&start=${s}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.user === u && t.date_worked >= s;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&end=:end', function() {
-    it('returns all times for a user before a date', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'tschuy';
-        const e = '2015-04-21';
-        request.get(`${baseUrl}times?user=${u}&end=${e}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.user === u && t.date_worked <= e;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&start=:start&end=:end', function() {
-    it('returns all times for a user between two dates', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'deanj';
-        const s = '2015-04-19';
-        const e = '2015-04-20';
-        request.get(`${baseUrl}times?user=${u}&start=${s}&end=${e}&` +
-        `token=${token}`, function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.user === u && t.date_worked >= s && t.date_worked <= e;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?project=:project1&project=:project2', function() {
-    it('returns all times for two projects', function(done) {
-      getAPIToken().then(function(token) {
-        const p = 'gwm';
-        const p2 = 'wf';
-        request.get(`${baseUrl}times?project=${p}&project=${p2}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.project.indexOf(p) >= 0 || t.project.indexOf(p2) >= 0;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?project=:project&activity=:activity', function() {
-    it('returns all times for a project and an activity', function(done) {
-      getAPIToken().then(function(token) {
-        const p = 'gwm';
-        const a = 'dev';
-        request.get(`${baseUrl}times?project=${p}&activity=${a}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.project.indexOf(p) >= 0 && t.activities.indexOf(a) >= 0;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?project=:project&start=:start', function() {
-    it('returns all times for a project after a date', function(done) {
-      getAPIToken().then(function(token) {
-        const p = 'gwm';
-        const s = '2015-04-20';
-        request.get(`${baseUrl}times?project=${p}&start=${s}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.project.indexOf(p) >= 0 && t.date_worked >= s;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?project=:project&end=:end', function() {
-    it('returns all times for a project before a date', function(done) {
-      getAPIToken().then(function(token) {
-        const p = 'gwm';
-        const e = '2015-04-20';
-        request.get(`${baseUrl}times?project=${p}&end=${e}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.project.indexOf(p) >= 0 && t.date_worked <= e;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?project=:project&start=:start&end=:end', function() {
-    it('returns all times for a project between two dates', function(done) {
-      getAPIToken().then(function(token) {
-        const p = 'gwm';
-        const s = '2015-04-19';
-        const e = '2015-04-21';
-        request.get(`${baseUrl}times?project=${p}&start=${s}&end=${e}&` +
-        `token=${token}`, function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.project.indexOf(p) >= 0 && t.date_worked >= s &&
-                   t.date_worked <= e;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?activity=:activity1&activity=:activity2', function() {
-    it('returns all times for two activities', function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'docs';
-        const a2 = 'dev';
-        request.get(`${baseUrl}times?activity=${a}&activity=${a2}&` +
-        `token=${token}`, function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.activities.indexOf(a) >= 0 ||
-                   t.activities.indexOf(a2) >= 0;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?activity=:activity&start=:start', function() {
-    it('returns all times for an activity after a date', function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'dev';
-        const s = '2015-04-20';
-        request.get(`${baseUrl}times?activity=${a}&start=${s}&` +
-        `token=${token}`, function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.activities.indexOf(a) >= 0 && t.date_worked >= s;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?activity=:activity&end=:end', function() {
-    it('returns all times for an activity before a date', function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'dev';
-        const e = '2015-04-21';
-        request.get(`${baseUrl}times?activity=${a}&end=${e}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.activities.indexOf(a) >= 0 && t.date_worked <= e;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?activity=:activity&start=:start&end=:end', function() {
-    it('returns all times for an activity between two dates', function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'dev';
-        const s = '2015-04-19';
-        const e = '2015-04-21';
-        request.get(`${baseUrl}times?activity=${a}&start=${s}&end=${e}&` +
-        `token=${token}`, function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
-                   t.date_worked <= e;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&project=:project&activity=:activity&' +
-  'start=:start&end=:end', function() {
-    it('returns all times for a user, project, and activity between two dates',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'tschuy';
-        const p = 'gwm';
-        const a = 'docs';
-        const s = '2015-04-20';
-        const e = '2015-04-22';
-        request.get(`${baseUrl}times?user=${u}&project=${p}&activity=${a}&` +
-        `start=${s}&end=${e}&token=${token}`, function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.user === u && t.project.indexOf(p) >= 0 &&
-                   t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
-                   t.date_worked <= e;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user1&user=:user2&project=:project&' +
-  'activity=:activity&start=:start&end=:end', function() {
-    it('returns all times for two users, a project, and activity ' +
-    'between two dates', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'tschuy';
-        const u2 = 'deanj';
-        const p = 'gwm';
-        const a = 'docs';
-        const s = '2015-04-19';
-        const e = '2015-04-21';
-        request.get(`${baseUrl}times?user=${u}&user=${u2}&project=${p}&` +
-        `activity=${a}&start=${s}&end=${e}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return (t.user === u || t.user === u2) &&
-                   t.project.indexOf(p) >= 0 && t.activities.indexOf(a) >= 0 &&
-                   t.date_worked >= s && t.date_worked <= e;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&project=:project1&project=:project2&' +
-  'activity=:activity&start=:start&end=:end', function() {
-    it('returns all times for a user, two projects, and an ' +
-    'activity between two dates', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'deanj';
-        const p = 'gwm';
-        const p2 = 'pdj';
-        const a = 'docs';
-        const s = '2015-04-19';
-        const e = '2015-04-20';
-        request.get(`${baseUrl}times?user=${u}&project=${p}&project=${p2}&` +
-        `activity=${a}&start=${s}&end=${e}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.user === u && (t.project.indexOf(p) >= 0 ||
-                   t.project.indexOf(p2) >= 0) &&
-                   t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
-                   t.date_worked <= e;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&project=:project&activity=:activity1&' +
-  'activity=:activity2&start=:start&end=:end', function() {
-    it('returns all times for a user, project, and two activities ' +
-    'between two dates', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'deanj';
-        const p = 'gwm';
-        const a = 'docs';
-        const a2 = 'dev';
-        const s = '2015-04-19';
-        const e = '2015-04-20';
-        request.get(`${baseUrl}times?user=${u}&project=${p}&activity=${a}&` +
-        `activity=${a2}&start=${s}&end=${e}&token=${token}`,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(t => {
-            return t.user === u && t.project.indexOf(p) >= 0 &&
-            (t.activities.indexOf(a) >= 0 || t.activities.indexOf(a2) >= 0) &&
-            t.date_worked >= s && t.date_worked <= e;
-          });
-
-          expect(jsonBody).to.have.length(expectedResults.length);
-          for (let i = 0, len = jsonBody.length; i < len; i++) {
-            expectedResults[i].project.sort();
-            expectedResults[i].activities.sort();
-            jsonBody[i].project.sort();
-            jsonBody[i].activities.sort();
-          }
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?include_deleted=true', function() {
-    it('returns a list of all active and deleted times', function(done) {
-      getAPIToken().then(function(token) {
-        request.get(baseUrl + 'times?include_deleted=true&token=' + token,
-        function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same
-            .members(initialDataWithDeleted);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&include_deleted=true', function() {
-    it('returns all times for a user', function(done) {
-      getAPIToken().then(function(token) {
-        const user = 'tschuy';
-        request.get(`${baseUrl}times?user=${user}&include_deleted=true&token=` +
-        token, function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.user === user;
-          });
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-
-    it('fails when given a nonexistent user', function(done) {
-      getAPIToken().then(function(token) {
-        const user = 'notauser';
-        request.get(`${baseUrl}times?user=${user}&include_deleted=true&` +
-        `token=${token}`, function(err, res, body) {
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter user contained invalid value ${user}`,
-          };
-
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-
-    it('fails when given an invalid user', function(done) {
-      getAPIToken().then(function(token) {
-        const user = 'wh4t3v3n.isTh%s';
-        request.get(`${baseUrl}times?user=${user}&include_deleted=true&token=` +
-        token, function(err, res, body) {
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter user contained invalid value ${user}`,
-          };
-
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?activity=:activity&include_deleted=true', function() {
-    it('returns all times for an activity', function(done) {
-      getAPIToken().then(function(token) {
-        const activity = 'dev';
-        request.get(`${baseUrl}times?activity=${activity}&include_deleted=` +
-        `true&token=${token}`, function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.activities.indexOf(activity) >= 0;
-          });
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-
-    it('fails when given a nonexistent activity', function(done) {
-      getAPIToken().then(function(token) {
-        const activity = 'review';
-        request.get(`${baseUrl}times?activity=${activity}&include_deleted=` +
-        `true&token=${token}`, function(err, res, body) {
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter activity contained invalid value ${activity}`,
-          };
-
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-
-    it('fails when given an invalid activity', function(done) {
-      getAPIToken().then(function(token) {
-        const activity = 'w_hA.t';
-        request.get(`${baseUrl}times?activity=${activity}&include_deleted=` +
-        `true&token=${token}`, function(err, res, body) {
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter activity contained invalid value ${activity}`,
-          };
-
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?project=:project?include_deleted=true', function() {
-    it('returns all times for a project', function(done) {
-      getAPIToken().then(function(token) {
-        const project = 'pgd';
-        request.get(`${baseUrl}times?project=${project}&include_deleted=true&` +
-        `token=${token}`, function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.project.indexOf(project) >= 0;
-          });
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-
-    it('fails when given a nonexistent project', function(done) {
-      getAPIToken().then(function(token) {
-        const project = 'chili';
-        request.get(`${baseUrl}times?project=${project}&include_deleted=true&` +
-        `token=${token}`, function(err, res, body) {
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter project contained invalid value ${project}`,
-          };
-
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-
-    it('fails when given an invalid project', function(done) {
-      getAPIToken().then(function(token) {
-        const project = 'not@slug!';
-        request.get(`${baseUrl}times?project=${project}&include_deleted=true&` +
-        `token=${token}`, function(err, res, body) {
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter project contained invalid value ${project}`,
-          };
-
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?start=:start&included_deleted=true', function() {
-    it('returns all times after a date', function(done) {
-      getAPIToken().then(function(token) {
-        const start = '2015-04-22';
-        request.get(`${baseUrl}times?start=${start}&include_deleted=true&` +
-        `token=${token}`, function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.date_worked >= start;
-          });
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-
-    it('fails when given an invalid start date', function(done) {
-      getAPIToken().then(function(token) {
-        const start = 'notaday';
-        request.get(`${baseUrl}times?start=${start}&include_deleted=true&` +
-        `token=${token}`, function(err, res, body) {
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter start contained invalid value ${start}`,
-          };
-
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-
-    it('fails when given a future start date', function(done) {
-      getAPIToken().then(function(token) {
-        const start = '2105-04-21';
-        request.get(`${baseUrl}times?start=${start}&include_deleted=true&` +
-        `token=${token}`, function(err, res, body) {
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter start contained invalid value ${start}`,
-          };
-
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?end=:end&include_deleted=true', function() {
-    it('returns all times before a date', function(done) {
-      getAPIToken().then(function(token) {
-        const end = '2015-04-20';
-        request.get(`${baseUrl}times?end=${end}&include_deleted=true&` +
-        `token=${token}`, function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.date_worked <= end;
-          });
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-
-    it('fails if given an invalid end date', function(done) {
-      getAPIToken().then(function(token) {
-        const end = 'theend';
-        request.get(`${baseUrl}times?end=${end}&include_deleted=true&` +
-        `token=${token}`, function(err, res, body) {
-          const expectedResult = {
-            status: 400,
-            error: 'Bad Query Value',
-            text: `Parameter end contained invalid value ${end}`,
-          };
-
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&activity=:activity&include_deleted=true',
-  function() {
-    it('returns all times that match the given user and activity',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'tschuy';
-        const a = 'docs';
-        request.get(`${baseUrl}times?user=${u}&activity=${a}&token=${token}` +
-        '&include_deleted=true', function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.user === u && t.activities.indexOf(a) >= 0;
-          });
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&project=project&include_deleted=true',
-  function() {
-    it('returns all times that match the given user and project',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'patcht';
-        const p = 'pgd';
-        request.get(`${baseUrl}times?user=${u}&project=${p}&token=${token}&` +
-        'include_deleted=true', function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.user === u && t.project.indexOf(p) >= 0;
-          });
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&start:=start&include_deleted=true',
-  function() {
-    it('returns all times for a user after a date', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'tschuy';
-        const s = '2015-04-20';
-        request.get(`${baseUrl}times?user=${u}&start=${s}&token=${token}&` +
-        'include_deleted=true', function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.user === u && t.date_worked >= s;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&end=:end&include_deleted=true',
-  function() {
-    it('returns all times for a user before a date', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'patcht';
-        const e = '2015-04-22';
-        request.get(`${baseUrl}times?user=${u}&end=${e}&token=${token}&` +
-        'include_deleted=true', function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.user === u && t.date_worked <= e;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&start:=start&end=:end&include_deleted=true',
-  function() {
-    it('returns all times for a user within a date range', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'tschuy';
-        const s = '2015-04-20';
-        const e = '2015-04-25';
-        request.get(`${baseUrl}times?user=${u}&start=${s}&end=${e}&` +
-        `include_deleted=true&token=${token}`, function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.user === u && t.date_worked >= s && t.date_worked <= e;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&activitiy=:activity&project=:project&' +
-  'include_deleted=true', function() {
-    it('returns all times that match the given user, activity, and project',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'patcht';
-        const a = 'dev';
-        const p = 'pgd';
-        request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
-        `include_deleted=true&token=${token}`, function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.user === u && t.project.indexOf(p) >= 0 &&
-                   t.activities.indexOf(a) >= 0;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&activitiy=:activity&project=:project&' +
-  'start=:start&include_deleted=true', function() {
-    it('returns all times that match the given parameters after a date',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'patcht';
-        const a = 'dev';
-        const p = 'pgd';
-        const s = '2015-04-22';
-        request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
-        `start=${s}&include_deleted=true&token=${token}`,
-        function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.user === u && t.project.indexOf(p) >= 0 &&
-                   t.activities.indexOf(a) >= 0 && t.date_worked >= s;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&activitiy=:activity&project=:project&' +
-  'end=:end&include_deleted=true', function() {
-    it('returns all times that match the given parameters before a date',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'tschuy';
-        const a = 'docs';
-        const p = 'gwm';
-        const e = '2015-04-22';
-        request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
-        `end=${e}&include_deleted=true&token=${token}`,
-        function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.user === u && t.project.indexOf(p) >= 0 &&
-                   t.activities.indexOf(a) >= 0 && t.date_worked <= e;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?user=:user&activitiy=:activity&project=:project&' +
-  'start=:start&end=:end&include_deleted=true', function() {
-    it('returns all times that match the given parameters within a date ' +
-    'range', function(done) {
-      getAPIToken().then(function(token) {
-        const u = 'tschuy';
-        const a = 'docs';
-        const p = 'gwm';
-        const s = '2015-04-19';
-        const e = '2015-04-22';
-        request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
-        `start=${s}&end=${e}&include_deleted=true&token=${token}`,
-        function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.user === u && t.project.indexOf(p) >= 0 &&
-                   t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
-                   t.date_worked <= e;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?activity=:activity&project=:project&' +
-  'include_deleted=true', function() {
-    it('returns all times that match the given activity and project',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'docs';
-        const p = 'gwm';
-        request.get(`${baseUrl}times?activity=${a}&project=${p}&` +
-        `include_deleted=true&token=${token}`, function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.project.indexOf(p) >= 0 && t.activities.indexOf(a) >= 0;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?activity=:activity&start=:start&include_deleted=true',
-  function() {
-    it('returns all times for an activity after a date', function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'docs';
-        const s = '2015-04-17';
-        request.get(`${baseUrl}times?activity=${a}&start=${s}&token=${token}&` +
-        'include_deleted=true', function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.activities.indexOf(a) >= 0 && t.date_worked >= s;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?activitiy=:activity&end=:end&include_deleted=true',
-  function() {
-    it('returns all times for an activity before a date', function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'dev';
-        const e = '2015-04-25';
-        request.get(`${baseUrl}times?activity=${a}&end=${e}&token=${token}&` +
-        'include_deleted=true', function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.activities.indexOf(a) >= 0 && t.date_worked <= e;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?activitiy=:activity&start=:start&end=:end&' +
-  'include_deleted=true', function() {
-    it('returns all times for an activity within a date range',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'dev';
-        const s = '2015-04-22';
-        const e = '2015-04-25';
-        request.get(`${baseUrl}times?activity=${a}&start=${s}&end=${e}&` +
-        `include_deleted=true&token=${token}`, function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
-                   t.date_worked <= e;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?project=:project&start=:start&include_deleted=true',
-  function() {
-    it('returns all times for a project after a date', function(done) {
-      getAPIToken().then(function(token) {
-        const p = 'pgd';
-        const s = '2015-04-20';
-        request.get(`${baseUrl}times?project=${p}&start=${s}&token=${token}&` +
-        'include_deleted=true', function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.project.indexOf(p) >= 0 && t.date_worked >= s;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?project=:project&end=:end&include_deleted=true',
-  function() {
-    it('returns all times for a project before a date', function(done) {
-      getAPIToken().then(function(token) {
-        const p = 'gwm';
-        const e = '2015-04-20';
-        request.get(`${baseUrl}times?project=${p}&end=${e}&token=${token}&` +
-        'include_deleted=true', function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.project.indexOf(p) >= 0 && t.date_worked <= e;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?project=:project&start=:start&end=:end&' +
-  'include_deleted=true', function() {
-    it('returns all times for a project within a date range', function(done) {
-      getAPIToken().then(function(token) {
-        const p = 'gwm';
-        const s = '2015-04-20';
-        const e = '2015-04-25';
-        request.get(`${baseUrl}times?project=${p}&start=${s}&end=${e}&` +
-        `include_deleted=true&token=${token}`, function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.project.indexOf(p) >= 0 && t.date_worked >= s &&
-                   t.date_worked <= e;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?activity=:activity&project=:project&start=:start&' +
-  'include_deleted=true', function() {
-    it('returns all times that match the given activity and project after ' +
-    'a date', function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'docs';
-        const p = 'gwm';
-        const s = '2015-04-17';
-        request.get(`${baseUrl}times?activity=${a}&project=${p}&start=${s}&` +
-        `include_deleted=true&token=${token}`, function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.activities.indexOf(a) >= 0 && t.project.indexOf(p) >= 0 &&
-                   t.date_worked >= s;
-          });
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?activity=:activity&project=:project&end=:end&' +
-  'include_deleted=true', function() {
-    it('returns all times that match the given activity and project before ' +
-    'a date', function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'dev';
-        const p = 'pgd';
-        const e = '2015-04-25';
-        request.get(`${baseUrl}times?activity=${a}&project=${p}&end=${e}&` +
-        `include_deleted=true&token=${token}`, function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.activities.indexOf(a) >= 0 && t.project.indexOf(p) >= 0 &&
-                   t.date_worked <= e;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times?activity=:activity&project=:project&start=:start&' +
-  'end=:end&include_deleted=true', function() {
-    it('returns all times that match the given activity and project within ' +
-    'a date range', function(done) {
-      getAPIToken().then(function(token) {
-        const a = 'dev';
-        const p = 'pgd';
-        const s = '2015-04-21';
-        const e = '2015-04-25';
-        request.get(`${baseUrl}times?activity=${a}&project=${p}&start=${s}` +
-        `end=${e}&include_deleted=true&token=${token}`,
-        function(err, res, body) {
-          const expectedResults = initialDataWithDeleted.filter(t => {
-            return t.activities.indexOf(a) >= 0 && t.project.indexOf(p) >= 0 &&
-                   t.date_worked >= s && t.date_worked <= e;
-          });
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times/:uuid', function() {
-    it('returns times by uuid', function(done) {
-      getAPIToken().then(function(token) {
-        const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
-        request.get(`${baseUrl}times/${uuid}?token=${token}`,
-        function(err, res, body) {
-          const expectedResult = initialData.filter(t => {
-            return t.uuid === uuid;
-          })[0];
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-
-    it('fails with Object not found error', function(done) {
-      getAPIToken().then(function(token) {
-        const uuid = '00000000-0000-0000-0000-000000000000';
-        request.get(`${baseUrl}times/${uuid}?token=${token}`,
-        function(err, res, body) {
-          const expectedResult = {
-            error: 'Object not found',
-            status: 404,
-            text: 'Nonexistent time',
-          };
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          done();
-        });
-      });
-    });
-
-    it('fails with Invalid Identifier error', function(done) {
-      getAPIToken().then(function(token) {
-        const uuid = 'cat';
-        request.get(`${baseUrl}times/${uuid}?token=${token}`,
-        function(err, res, body) {
-          const expectedResult = {
-            error: 'The provided identifier was invalid',
-            status: 400,
-            text: 'Expected UUID but received cat',
-            values: ['cat'],
-          };
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times/:uuid?include_deleted=true', function() {
-    it('returns the soft-deleted time that corresponds with the given uuid',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const uuid = 'b6ac75fb-7872-403f-ab71-e5542fae4212';
-        request.get(`${baseUrl}times/${uuid}?token=${token}&` +
-        'include_deleted=true', function(err, res, body) {
-          const expectedResult = initialDataWithDeleted.filter(t => {
-            return t.uuid === uuid;
-          })[0];
-
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          done();
-        });
-      });
-    });
-
-    it('fails with Object Not Found error when given a nonexistent uuid',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const uuid = '00000000-0000-0000-0000-000000000000';
-        request.get(`${baseUrl}times/${uuid}?token=${token}&` +
-        'include_deleted=true', function(err, res, body) {
-          const expectedResult = {
-            status: 404,
-            error: 'Object not found',
-            text: 'Nonexistent time',
-          };
-
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          done();
-        });
-      });
-    });
-
-    it('fails with Invalid Identifier error when given an invalid uuid',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const uuid = 'nope';
-        request.get(`${baseUrl}times/${uuid}?token=${token}&` +
-        'include_deleted=true', function(err, res, body) {
-          const expectedResult = {
-            status: 400,
-            error: 'The provided identifier was invalid',
-            text: 'Expected UUID but received nope',
-            values: ['nope'],
-          };
-
-          expect(JSON.parse(body)).to.deep.equal(expectedResult);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          done();
         });
       });
     });
@@ -3362,270 +3625,16 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
-  describe('GET /times/?include_revisions=true', function() {
-    const currentTime = new Date().toISOString().substring(0, 10);
-
-    const noParentsData = {
-      duration: 13,
-      user: 'tschuy',
-      project: ['ganeti-webmgr', 'gwm'],
-      activities: ['docs'],
-      notes: 'forgot to add last hour',
-      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-      date_worked: '2015-04-20',
-      created_at: '2015-04-20',
-      updated_at: currentTime,
-      deleted_at: null,
-      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-      revision: 2,
-    };
-
-    const withParentsData = {
-      duration: 13,
-      user: 'tschuy',
-      project: ['ganeti-webmgr', 'gwm'],
-      activities: ['docs'],
-      notes: 'forgot to add last hour',
-      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-      date_worked: '2015-04-20',
-      created_at: '2015-04-20',
-      updated_at: currentTime,
-      deleted_at: null,
-      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-      revision: 2,
-      parents: [
-        {
-          duration: 12,
-          user: 'tschuy',
-          project: ['ganeti-webmgr', 'gwm'],
-          activities: ['docs'],
-          notes: '',
-          issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-          date_worked: '2015-04-20',
-          created_at: '2015-04-20',
-          updated_at: null,
-          deleted_at: null,
-          uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-          revision: 1,
-        },
-      ],
-    };
-
-    beforeEach(function(done) {
-      function getPostObject(uri, obj) {
-        return {
-          uri: uri,
-          json: true,
-          body: {
-            auth: {
-              type: 'token',
-            },
-            object: obj,
-          },
-        };
-      }
-
-      const time = 'e0326905-ef25-46a0-bacd-4391155aca4a';
-      const postTime = {
-        duration: 13,
-        notes: 'forgot to add last hour',
-      };
-      const postArg = getPostObject(baseUrl + 'times/' + time, postTime);
-
-      getAPIToken().then(function(token) {
-        postArg.body.auth.token = token;
-        request.post(postArg, function() {
-          done();
-        });
-      });
-    });
-
-    // Tests that include_revisions includes revisions
-    it('gets times + revisions when include_revisions=true', function(done) {
-      getAPIToken().then(function(token) {
-        request.get(baseUrl + 'times/?include_revisions=true&token=' + token,
-        function(err, res, body) {
-          expect(JSON.parse(body)).to.include(withParentsData);
-          done();
-        });
-      });
-    });
-
-    // Tests that include_revisions includes revisions
-    it('gets times + revisions when include_revisions is an empty parameter',
-    function(done) {
-      getAPIToken().then(function(token) {
-        request.get(baseUrl + 'times/?include_revisions&token=' + token,
-        function(err, res, body) {
-          expect(JSON.parse(body)).to.include(withParentsData);
-          done();
-        });
-      });
-    });
-
-    // Tests that include_revisions isn't always set to true
-    it('gets just times when include_revisions=false', function(done) {
-      getAPIToken().then(function(token) {
-        request.get(baseUrl + 'times/?include_revisions=false&token=' + token,
-        function(err, res, body) {
-          expect(JSON.parse(body)).to.include(noParentsData);
-          done();
-        });
-      });
-    });
-
-    // Tests that include_revisions defaults to false
-    it('gets just times when include_revisions is not set', function(done) {
-      getAPIToken().then(function(token) {
-        request.get(baseUrl + 'times/?token=' + token,
-        function(err, res, body) {
-          expect(JSON.parse(body)).to.include(noParentsData);
-          done();
-        });
-      });
-    });
-  });
-
-  describe('GET /times/:uuid?include_revisions=true', function() {
-    const currentTime = new Date().toISOString().substring(0, 10);
-    const time = 'e0326905-ef25-46a0-bacd-4391155aca4a';
-
-    const noParentsData = {
-      duration: 13,
-      user: 'tschuy',
-      project: ['ganeti-webmgr', 'gwm'],
-      activities: ['docs'],
-      notes: 'forgot to add last hour',
-      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-      date_worked: '2015-04-20',
-      created_at: '2015-04-20',
-      updated_at: currentTime,
-      deleted_at: null,
-      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-      revision: 2,
-    };
-
-    const withParentsData = {
-      duration: 13,
-      user: 'tschuy',
-      project: ['ganeti-webmgr', 'gwm'],
-      activities: ['docs'],
-      notes: 'forgot to add last hour',
-      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-      date_worked: '2015-04-20',
-      created_at: '2015-04-20',
-      updated_at: currentTime,
-      deleted_at: null,
-      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-      revision: 2,
-      parents: [
-        {
-          duration: 12,
-          user: 'tschuy',
-          project: ['ganeti-webmgr', 'gwm'],
-          activities: ['docs'],
-          notes: '',
-          issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-          date_worked: '2015-04-20',
-          created_at: '2015-04-20',
-          updated_at: null,
-          deleted_at: null,
-          uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-          revision: 1,
-        },
-      ],
-    };
-
-    beforeEach(function(done) {
-      function getPostObject(uri, obj) {
-        return {
-          uri: uri,
-          json: true,
-          body: {
-            auth: {
-              type: 'token',
-            },
-            object: obj,
-          },
-        };
-      }
-
-      const postTime = {
-        duration: 13,
-        notes: 'forgot to add last hour',
-      };
-      const postArg = getPostObject(baseUrl + 'times/' + time, postTime);
-
-      getAPIToken().then(function(token) {
-        postArg.body.auth.token = token;
-        request.post(postArg, function() {
-          done();
-        });
-      });
-    });
-
-    // Tests that include_revisions includes revisions
-    it('gets time + revisions when include_revisions=true', function(done) {
-      getAPIToken().then(function(token) {
-        request.get(baseUrl + 'times/' + time + '?include_revisions=true&' +
-        'token=' + token,
-        function(err, res, body) {
-          expect(JSON.parse(body)).to.deep.equal(withParentsData);
-          expect(JSON.parse(body)).to.not.deep.equal(noParentsData);
-          done();
-        });
-      });
-    });
-
-    // Tests that include_revisions includes revisions
-    it('gets times + revisions when include_revisions is an empty parameter',
-    function(done) {
-      getAPIToken().then(function(token) {
-        request.get(baseUrl + 'times/' + time + '?include_revisions&token=' +
-        token,
-        function(err, res, body) {
-          expect(JSON.parse(body)).to.deep.equal(withParentsData);
-          expect(JSON.parse(body)).to.not.deep.equal(noParentsData);
-          done();
-        });
-      });
-    });
-
-    // Tests that include_revisions isn't always set to true
-    it('gets just time when include_revisions=false', function(done) {
-      getAPIToken().then(function(token) {
-        request.get(baseUrl + 'times/' + time + '?include_revisions=false&' +
-        'token=' + token,
-        function(err, res, body) {
-          expect(JSON.parse(body)).to.deep.equal(noParentsData);
-          done();
-        });
-      });
-    });
-
-    // Tests that include_revisions defaults to false
-    it('gets just time when include_revisions is not set', function(done) {
-      getAPIToken().then(function(token) {
-        request.get(baseUrl + 'times/' + time + '?token=' + token,
-        function(err, res, body) {
-          expect(JSON.parse(body)).to.deep.equal(noParentsData);
-          done();
-        });
-      });
-    });
-  });
-
   describe('DELETE /times/:uuid', function() {
     it('deletes the object with a valid uuid by an admin', function(done) {
       getAPIToken().then(function(token) {
-        request.del(baseUrl +
-        'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
+        const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
+        request.del(`${baseUrl}times/${uuid}?token=${token}`,
         function(err, res, body) {
           expect(body.error).to.equal(undefined);
           expect(res.statusCode).to.equal(200);
 
-          request.get(baseUrl +
-          'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
+          request.get(`${baseUrl}times/${uuid}?token=${token}`,
           function(err0, res0, body0) {
             expect(JSON.parse(body0)).to.deep.equal({
               status: 404,
@@ -3641,14 +3650,13 @@ module.exports = function(expect, request, baseUrl) {
 
     it('deletes the object with a valid uuid by the user', function(done) {
       getAPIToken('deanj', 'pass').then(function(token) {
-        request.del(baseUrl +
-        'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
+        const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
+        request.del(`${baseUrl}times/${uuid}?token=${token}`,
         function(err, res, body) {
           expect(body.error).to.equal(undefined);
           expect(res.statusCode).to.equal(200);
 
-          request.get(baseUrl +
-          'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
+          request.get(`${baseUrl}times/${uuid}?token=${token}`,
           function(err0, res0, body0) {
             expect(res0.statusCode).to.equal(404);
             expect(JSON.parse(body0)).to.deep.equal({
@@ -3664,8 +3672,8 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails to delete the object with a non-existent uuid', function(done) {
       getAPIToken().then(function(token) {
-        request.del(baseUrl +
-        'times/66666666-6666-6666-6666-666666666666?token=' + token,
+        const uuid = '66666666-6666-6666-6666-666666666666';
+        request.del(`${baseUrl}times/${uuid}?token=${token}`,
         function(err, res, body) {
           expect(JSON.parse(body)).to.deep.equal({
             status: 404,
@@ -3687,7 +3695,8 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails to delete the object with an invalid uuid', function(done) {
       getAPIToken().then(function(token) {
-        request.del(baseUrl + 'times/myuuid?token=' + token,
+        const uuid = 'myuuid';
+        request.del(`${baseUrl}times/${uuid}?token=${token}`,
         function(err, res, body) {
           expect(JSON.parse(body)).to.deep.equal({
             'status': 400,
@@ -3710,8 +3719,8 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails to delete the object with invalid permissions', function(done) {
       getAPIToken('mrsj', 'word').then(function(token) {
-        request.del(baseUrl +
-          'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
+        const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
+        request.del(`${baseUrl}times/${uuid}?token=${token}`,
         function(err, res, body) {
           expect(JSON.parse(body)).to.deep.equal({
             'status': 401,
@@ -3721,12 +3730,22 @@ module.exports = function(expect, request, baseUrl) {
           });
           expect(res.statusCode).to.equal(401);
 
-          request.get(`${baseUrl}times?token=${token}`,
-          function(err0, res0, body0) {
-            expect(err0).to.equal(null);
-            expect(JSON.parse(body0)).to.deep.have.same.members(initialData);
-            expect(res0.statusCode).to.equal(200);
-            done();
+          request.get(`${baseUrl}times/${uuid}?token=${token}`,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.equal(null);
+            expect(JSON.parse(getBody)).to.deep.equal(initialData.filter(t => {
+              return t.uuid === uuid;
+            })[0]);
+            expect(getRes.statusCode).to.equal(200);
+
+            request.get(`${baseUrl}times?token=${token}`,
+            function(getErr0, getRes0, getBody0) {
+              expect(getErr0).to.equal(null);
+              expect(JSON.parse(getBody0)).to.deep.have.same
+                                                    .members(initialData);
+              expect(getRes0.statusCode).to.equal(200);
+              done();
+            });
           });
         });
       });
