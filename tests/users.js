@@ -794,7 +794,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'The user is missing a created_at field',
+            text: 'user does not have a created_at field',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -821,7 +821,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'The user is missing a updated_at field',
+            text: 'user does not have a updated_at field',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -848,7 +848,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'The user is missing a deleted_at field',
+            text: 'user does not have a deleted_at field',
           };
 
           expect(body).to.deep.equal(expectedResult);
