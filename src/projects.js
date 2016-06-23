@@ -468,7 +468,7 @@ module.exports = function(app) {
         return errors.send(errors.errorSlugsAlreadyExist(slugs.map(
           function(slug) {
             return slug.name;
-          })
+          }).sort()
         ), res);
       }
 
