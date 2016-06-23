@@ -730,7 +730,7 @@ module.exports = function(app) {
                 return errors.send(errors.errorSlugsAlreadyExist(
                   overlappingSlugs.map(function(slug) {
                     return slug.name;
-                  })), res);
+                  }).sort()), res);
               }
 
               // all checks have passed

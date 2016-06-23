@@ -1311,8 +1311,8 @@ module.exports = function(expect, request, baseUrl) {
       const error = {
         status: 409,
         error: 'The slug provided already exists',
-        text: `slugs ${postObj.slugs.join(', ')} already exist`,
-        values: postObj.slugs,
+        text: `slugs ${postObj.slugs.sort().join(', ')} already exist`,
+        values: postObj.slugs.sort(),
       };
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
