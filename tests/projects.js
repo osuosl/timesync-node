@@ -6,11 +6,11 @@ function copyJsonObject(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-let user = 'tschuy';
-let password = 'password';
+const defaultUsername = 'tschuy';
+const defaultPassword = 'password';
 
 module.exports = function(expect, request, baseUrl) {
-  function getAPIToken() {
+  function getAPIToken(username, password) {
     const requestOptions = {
       url: baseUrl + 'login',
       json: true,
@@ -18,13 +18,13 @@ module.exports = function(expect, request, baseUrl) {
     requestOptions.body = {
       auth: {
         type: 'password',
-        username: user,
-        password: password,
+        username: username || defaultUsername,
+        password: password || defaultPassword,
       },
     };
     return new Promise(function(resolve) {
       request.post(requestOptions, function(err, res, body) {
-        expect(err).to.be.a('null');
+        expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
 
         resolve(body.token);
@@ -120,18 +120,12 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /projects', function() {
     it('should return all projects in the database', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'projects?token=' + token,
+        request.get(`${baseUrl}projects?token=${token}`,
         function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          jsonBody.forEach(function(result) {
-            result.slugs.sort();
-          });
-
-          expect(jsonBody).to.deep.equal(initialData);
+          expect(JSON.parse(body)).to.deep.equal(initialData);
           done();
         });
       });
@@ -141,14 +135,12 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /projects?include_deleted=:bool', function() {
     it('returns a list of all active and deleted projects', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'projects?include_deleted=true&token=' + token,
+        request.get(`${baseUrl}projects?include_deleted=true&token=${token}`,
         function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expect(jsonBody).to.deep.equal(initialDataWithDeleted);
+          expect(JSON.parse(body)).to.deep.equal(initialDataWithDeleted);
           done();
         });
       });
@@ -162,14 +154,12 @@ module.exports = function(expect, request, baseUrl) {
     it('ignores extra param if user specifies query with a projectslug',
     function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'projects?project=chili&include_deleted=true&' +
-        'token=' + token, function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-
+        request.get(`${baseUrl}projects?project=chili&include_deleted=true&` +
+        `token=${token}`, function(err, res, body) {
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expect(jsonBody).to.deep.equal(initialDataWithDeleted);
+          expect(JSON.parse(body)).to.deep.equal(initialDataWithDeleted);
           done();
         });
       });
@@ -180,18 +170,16 @@ module.exports = function(expect, request, baseUrl) {
     it('returns an error if user specifies with /projects/:slug endpoint',
     function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'projects/chili?include_deleted=true&' +
-        'token=' + token,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
+        request.get(`${baseUrl}projects/chili?include_deleted=true&` +
+        `token=${token}`, function(err, res, body) {
           const expectedResult = {
             status: 404,
             error: 'Object not found',
             text: 'Nonexistent project',
           };
 
-          expect(jsonBody).to.deep.equal(expectedResult);
-          expect(res.statusCode).to.equal(404);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
           done();
         });
       });
@@ -202,16 +190,14 @@ module.exports = function(expect, request, baseUrl) {
     it('returns all projects for a user', function(done) {
       getAPIToken().then(function(token) {
         const username = 'tschuy';
-        request.get(baseUrl + 'projects?user=' + username + '&token=' + token,
+        request.get(`${baseUrl}projects?user=${username}&token=${token}`,
         function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const jsonBody = JSON.parse(body);
-          const expectedResult = initialData.filter(function(project) {
-            return project.users[username];
+          const expectedResult = initialData.filter(p => {
+            return p.users[username];
           });
 
-          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(err).to.equal(null);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
           expect(res.statusCode).to.equal(200);
           done();
         });
@@ -220,18 +206,17 @@ module.exports = function(expect, request, baseUrl) {
 
     it('returns an error for a nonexistent user', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'projects?user=notauser&token=' + token,
+        const user = 'notauser';
+        request.get(`${baseUrl}projects?user=${user}&token=${token}`,
         function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const jsonBody = JSON.parse(body);
           const expectedResult = {
             error: 'Bad Query Value',
             text: 'Parameter user contained invalid value notauser',
             status: 400,
           };
 
-          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(err).to.equal(null);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
           expect(res.statusCode).to.equal(expectedResult.status);
           done();
         });
@@ -242,14 +227,16 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /projects/:slug', function() {
     it('should return projects by slug', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'projects/gwm?token=' + token,
+        const slug = 'gwm';
+        request.get(`${baseUrl}projects/${slug}?token=${token}`,
         function(err, res, body) {
-          const jsonBody = JSON.parse(body);
+          const expectedResult = initialData.filter(p => {
+            return p.slugs.indexOf(slug) >= 0;
+          })[0];
 
           expect(err).to.equal(null);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
           expect(res.statusCode).to.equal(200);
-
-          expect(jsonBody).to.deep.equal(initialData[0]);
           done();
         });
       });
@@ -257,18 +244,16 @@ module.exports = function(expect, request, baseUrl) {
 
     it('should fail with Object Not Found error', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'projects/404?token=' + token,
+        request.get(`${baseUrl}projects/404?token=${token}`,
         function(err, res, body) {
-          const jsonBody = JSON.parse(body);
           const expectedResult = {
             status: 404,
             error: 'Object not found',
             text: 'Nonexistent project',
           };
 
-          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
           expect(res.statusCode).to.equal(404);
-
           done();
         });
       });
@@ -276,17 +261,17 @@ module.exports = function(expect, request, baseUrl) {
 
     it('should fail with Invalid Slug error', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'projects/test-!*@?token=' + token,
+        const slug = 'test-!*@';
+        request.get(`${baseUrl}projects/${slug}?token=${token}`,
         function(err, res, body) {
-          const jsonBody = JSON.parse(body);
           const expectedResult = {
             status: 400,
             error: 'The provided identifier was invalid',
-            text: 'Expected slug but received test-!*@',
-            values: ['test-!*@'],
+            text: `Expected slug but received ${slug}`,
+            values: [slug],
           };
 
-          expect(jsonBody).to.eql(expectedResult);
+          expect(JSON.parse(body)).to.eql(expectedResult);
           expect(res.statusCode).to.equal(400);
 
           done();
@@ -295,38 +280,592 @@ module.exports = function(expect, request, baseUrl) {
     });
   });
 
+  describe('POST /projects', function() {
+    // the project object to attempt to add
+    const project = {
+      uri: 'https://github.com/osuosl/timesync-node',
+      slugs: ['timesync-node', 'tsn'],
+      name: 'TimeSync Node',
+      default_activity: 'meeting',
+      users: {
+        patcht: {member: true, spectator: true, manager: true},
+        thai: {member: true, spectator: true, manager: false},
+      },
+    };
+
+    // the project as added to the database
+    const newProject = {
+      uri: 'https://github.com/osuosl/timesync-node',
+      slugs: ['timesync-node', 'tsn'],
+      name: 'TimeSync Node',
+      default_activity: 'meeting',
+      revision: 1,
+      created_at: new Date().toISOString().substring(0, 10),
+      users: {
+        patcht: {member: true, spectator: true, manager: true},
+        thai: {member: true, spectator: true, manager: false},
+      },
+    };
+
+    // The project as returned on GET
+    const getProject = {
+      uri: 'https://github.com/osuosl/timesync-node',
+      slugs: ['timesync-node', 'tsn'],
+      name: 'TimeSync Node',
+      default_activity: 'meeting',
+      revision: 1,
+      created_at: new Date().toISOString().substring(0, 10),
+      updated_at: null,
+      deleted_at: null,
+      users: {
+        patcht: {member: true, spectator: true, manager: true},
+        thai: {member: true, spectator: true, manager: false},
+      },
+    };
+
+    // the base POST JSON
+    const postArg = {
+      auth: {
+        type: 'token',
+      },
+      object: project,
+    };
+
+    const requestOptions = {
+      url: baseUrl + 'projects/',
+      json: true,
+      method: 'POST',
+    };
+
+    function checkListEndpoint(done, expectedResults, token) {
+      request.get(`${baseUrl}projects?token=${token}`,
+      function(err, res, body) {
+        expect(err).to.equal(null);
+        expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
+        expect(res.statusCode).to.equal(200);
+        done();
+      });
+    }
+
+    it('successfully creates a new project with slugs by an admin',
+    function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+
+          const addedProject = copyJsonObject(newProject);
+          addedProject.uuid = body.uuid;
+          expect(body).to.deep.equal(addedProject);
+
+          const expectedResult = copyJsonObject(getProject);
+          expectedResult.uuid = body.uuid;
+          checkListEndpoint(done, initialData.concat(expectedResult), token);
+        });
+      });
+    });
+
+    it('successfully creates a new project with slugs by a sitewide manager',
+    function(done) {
+      getAPIToken('patcht', 'drowssap').then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+
+          const addedProject = copyJsonObject(newProject);
+          addedProject.uuid = body.uuid;
+          expect(body).to.deep.equal(addedProject);
+
+          const expectedResult = copyJsonObject(getProject);
+          expectedResult.uuid = body.uuid;
+          checkListEndpoint(done, initialData.concat(expectedResult), token);
+        });
+      });
+    });
+
+    it('successfully creates a new project with no uri', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        delete requestOptions.body.object.uri;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+
+          const addedProject = copyJsonObject(newProject);
+          addedProject.uuid = body.uuid;
+          delete addedProject.uri;
+          expect(body).to.deep.equal(addedProject);
+
+          const expectedResult = copyJsonObject(getProject);
+          expectedResult.uuid = body.uuid;
+          expectedResult.uri = null;
+          checkListEndpoint(done, initialData.concat(expectedResult), token);
+        });
+      });
+    });
+
+    it('successfully creates a new project with no users', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        delete requestOptions.body.object.users;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+
+          const addedProject = copyJsonObject(newProject);
+          addedProject.uuid = body.uuid;
+          delete addedProject.users;
+          expect(body).to.deep.equal(addedProject);
+
+          const expectedResult = copyJsonObject(getProject);
+          expectedResult.uuid = body.uuid;
+          delete expectedResult.users;
+          checkListEndpoint(done, initialData.concat(expectedResult), token);
+        });
+      });
+    });
+
+    it('successfully creates a new project with a bad user', function(done) {
+      getAPIToken().then(function(token) {
+        const postBadUser = copyJsonObject(postArg);
+        postBadUser.object.users.wasd =
+                              {member: true, spectator: false, manager: false};
+        requestOptions.body = postBadUser;
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+
+          const addedProject = copyJsonObject(newProject);
+          addedProject.uuid = body.uuid;
+          expect(body).to.deep.equal(addedProject);
+
+          const expectedResult = copyJsonObject(getProject);
+          expectedResult.uuid = body.uuid;
+          checkListEndpoint(done, initialData.concat(expectedResult), token);
+        });
+      });
+    });
+
+    it('successfully creates a new project with no default activity',
+    function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        delete requestOptions.body.object.default_activity;
+
+        request.post(requestOptions, function(err, res, body) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+
+          const addedProject = copyJsonObject(newProject);
+          addedProject.uuid = body.uuid;
+          delete addedProject.default_activity;
+          expect(body).to.deep.equal(addedProject);
+
+          const expectedResult = copyJsonObject(getProject);
+          expectedResult.uuid = body.uuid;
+          expectedResult.default_activity = null;
+          checkListEndpoint(done, initialData.concat(expectedResult), token);
+        });
+      });
+    });
+
+    it('fails to create a new project with bad authentication', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = 'not_a_token';
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'Authentication failure',
+            status: 401,
+            text: 'Bad API token',
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new project with bad permissions', function(done) {
+      getAPIToken('mrsj', 'word').then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'Authorization failure',
+            status: 401,
+            text: 'mrsj is not authorized to create projects',
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new project with an invalid uri', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        requestOptions.body.object.uri = 'notauri';
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'Field uri of project should be uri but was sent as non-uri' +
+                  ' string',
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new project with an invalid slug', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        requestOptions.body.object.slugs = ['$*#*cat', 'dog', ')_!@#mouse'];
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'Field slugs of project should be slugs but was sent as ' +
+                  'non-slug strings',
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new project with an existing slug', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        const slugs = ['ganeti-webmgr', 'gwm'];
+        requestOptions.body.object.slugs = slugs;
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'The slug provided already exists',
+            status: 409,
+            text: `slugs ${slugs.join(', ')} already exist`,
+            values: slugs,
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new project with no slugs', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        delete requestOptions.body.object.slugs;
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'The project is missing a slugs',
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new project with no name', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        delete requestOptions.body.object.name;
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'The project is missing a name',
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new project with an existing name', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        requestOptions.body.object.name = 'Protein Geometry Database';
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'Field name of project should be unique name but was sent ' +
+                  'as name which already exists',
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a project with bad slugs datatype', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        requestOptions.body.object.slugs = {thisIs: 'the wrong data type'};
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'Field slugs of project should be array but was sent as ' +
+                  'object',
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a project with bad name datatype', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        requestOptions.body.object.name = {thisIs: 'the wrong data type'};
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'Field name of project should be string but was sent as ' +
+                  'object',
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new project with non-existent default activity',
+    function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        requestOptions.body.object.default_activity = 'sleeping';
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'Invalid foreign key',
+            status: 409,
+            text: 'The project does not contain a valid activity reference.',
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a new project with bad default activity datatype',
+    function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        requestOptions.body.object.default_activity = {thisIs: 'wrong'};
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'Field default_activity of project should be string but ' +
+                  'was sent as object',
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+
+    it('fails to create a project with bad uri datatype', function(done) {
+      getAPIToken().then(function(token) {
+        requestOptions.body = copyJsonObject(postArg);
+
+        requestOptions.body.auth.token = token;
+        requestOptions.body.object.uri = {thisIs: 'the wrong data type'};
+
+        request.post(requestOptions, function(err, res, body) {
+          const expectedResult = {
+            error: 'Bad object',
+            status: 400,
+            text: 'Field uri of project should be string but was sent as ' +
+                  'object',
+          };
+
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(body).to.deep.equal(expectedResult);
+
+          checkListEndpoint(done, initialData, token);
+        });
+      });
+    });
+  });
+
   // Tests Patching Projects
   describe('POST /projects/:slug', function() {
-    const patchedProject = {
+    // The database's entry for the project
+    const postOriginalProject = {
+      name: 'Ganeti Web Manager',
+      slugs: ['ganeti-webmgr', 'gwm'],
+      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      default_activity: null,
+    };
+
+    const getOriginalProject = {
+      name: 'Ganeti Web Manager',
+      slugs: ['ganeti-webmgr', 'gwm'],
+      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      default_activity: null,
+      uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
+      revision: 1,
+      created_at: '2014-01-01',
+      updated_at: null,
+      deleted_at: null,
+      users: {
+        deanj: {member: true, spectator: true, manager: false},
+        tschuy: {member: true, spectator: true, manager: true},
+        mrsj: {member: true, spectator: true, manager: false},
+        MaraJade: {member: true, spectator: true, manager: true},
+      },
+    };
+
+    // A completely patched version of the above project
+    const updatedAt = new Date().toISOString().substring(0, 10);
+    const postPatchedProject = {
       name: 'Ganeti Web Mgr',
       slugs: ['gan-web', 'gwm'],
       uri: 'https://code.osuosl.org/projects/',
       default_activity: 'docs',
     };
 
-    const originalProject = {
-      name: 'Ganeti Web Manager',
-      slugs: ['ganeti-webmgr', 'gwm'],
-      default_activity: null,
-      deleted_at: null,
-      updated_at: null,
-      created_at: '2014-01-01',
-      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+    const getPatchedProject = {
+      name: 'Ganeti Web Mgr',
+      slugs: ['gan-web', 'gwm'],
+      uri: 'https://code.osuosl.org/projects/',
+      default_activity: 'docs',
       uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
-      revision: 1,
+      revision: 2,
+      created_at: '2014-01-01',
+      updated_at: updatedAt,
+      deleted_at: null,
       users: {
+        deanj: {member: true, spectator: true, manager: false},
         tschuy: {member: true, spectator: true, manager: true},
         mrsj: {member: true, spectator: true, manager: false},
         MaraJade: {member: true, spectator: true, manager: true},
-        deanj: {member: true, spectator: true, manager: false},
       },
     };
 
-    const patchedProjectName = {name: patchedProject.name};
-    const patchedProjectUri = {uri: patchedProject.uri};
-    const patchedProjectSlugs = {slugs: patchedProject.slugs};
-    const patchedProjectActivity =
-            {default_activity: patchedProject.default_activity};
+    const invalidProjectDataType = {
+      name: {thisIs: 'the wrong data type'},
+      slugs: {thisIs: 'the wrong data type'},
+      uri: {thisIs: 'the wrong data type'},
+      default_activity: {thisIs: 'the wrong data type'},
+    };
+
+    const invalidProjectValue = {
+      name: 'Protein Geometry Database',
+      slugs: ['pgd', 'ts'],
+      uri: 'notauri',
+      default_activity: 'notreal',
+    };
+
     const patchedProjectNewMember = {users: {
       tschuy: {member: true, spectator: true, manager: true},
       mrsj: {member: true, spectator: true, manager: false},
@@ -360,20 +899,6 @@ module.exports = function(expect, request, baseUrl) {
       deanj: {member: true, spectator: true, manager: false},
     }};
 
-    const badProject = {
-      name: ['a name'],
-      uri: ['a website'],
-      slugs: 'a slug',
-      default_activity: [100],
-      key: 'value',
-    };
-
-    const badProjectName = {name: badProject.name};
-    const badProjectUri = {uri: badProject.uri};
-    const badProjectSlugs = {slugs: badProject.slugs};
-    const badProjectActivity = {default_activity: badProject.default_activity};
-    const badProjectKey = {key: 'value' };
-
     const postArg = {
       auth: {
         type: 'token',
@@ -385,1500 +910,534 @@ module.exports = function(expect, request, baseUrl) {
       json: true,
     };
 
-    // Function used for validating that the object in the database
-    // is in the correct state (change or unchanged based on if the POST
-    // was valid)
-    const checkListEndpoint = function(done, expectedResults, token) {
-      // Make a get request
-      request.get(requestOptions.url + '?token=' + token,
-      function(err, res, body) {
-        expect(err).to.be.a('null');
-        expect(res.statusCode).to.equal(200);
+    /*
+     * Okay so here's the deal.
+     * This endpoint has ~26 tests, which are honestly just 3 tests
+     * repeated 7 or 8 times (with a few exceptions).
+     * This function in theory gets rid of a lot of the repeated code in
+     * the tests.
+     * Without this function you would see this exact code pretty 26
+     * times over.
+     */
+    function checkPostToEndpoint(done, uri, postObj, expectedResults, error,
+    statusCode, postBodies, username, password) {
+      getAPIToken(username, password).then(function(token) {
+        const options = copyJsonObject(requestOptions);
+        postArg.object = postObj;
+        options.body = postArg;
 
-        const jsonBody = JSON.parse(body);
-        expect(jsonBody).to.deep.equal(expectedResults);
-        done();
+        options.body.auth.token = token;
+        if (uri) {
+          options.uri = uri;
+        }
+
+        // make a given post request
+        // check the error
+        // check the statusCode
+        // Also check the body of the request
+        request.post(options, function(err, res, body) {
+          expect(body.error).to.equal(error);
+          expect(res.statusCode).to.equal(statusCode);
+
+          if (postBodies !== undefined) {
+            // Is the recieved body within the array of expected bodies
+            expect(postBodies).to.include(body);
+          }
+
+          // Always checks for valid get request
+          // err is always 'null'
+          // res.statusCode is always 200
+          // body always equals expectedresults
+          request.get(requestOptions.url + '?token=' + token,
+          function(err0, res0, body0) {
+            const jsonBody = JSON.parse(body0);
+            expect(jsonBody.error).to.equal(undefined);
+            expect(res0.statusCode).to.equal(200);
+            expectedResults.updated_at = jsonBody.updated_at;
+            expect(jsonBody).to.deep.equal(expectedResults);
+            done();
+          });
+        });
       });
-    };
+    }
 
     it("successfully patches a project's uri, slugs, name, and default " +
     'activity by an admin',
     function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProject);
+      const postObj = copyJsonObject(postPatchedProject);
+      const expectedResults = copyJsonObject(getPatchedProject);
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          // Set expected results to the new state of the project gwm
-          const expectedResults = copyJsonObject(originalProject);
-          expectedResults.name = patchedProject.name;
-          expectedResults.uri = patchedProject.uri;
-          expectedResults.slugs = patchedProject.slugs;
-          expectedResults.default_activity = patchedProject.default_activity;
-          expectedResults.uuid = originalProject.uuid;
-          expectedResults.revision = 2;
-          expectedResults.updated_at = new Date().toISOString()
-                                                 .substring(0, 10);
-
-          const expectedPost = copyJsonObject(expectedResults);
-          delete expectedPost.deleted_at;
-          delete expectedPost.users;
-
-          // expect body of post request to be the new state of gwm
-          expect(body).to.deep.equal(expectedPost);
-
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("successfully patches a project's uri, slugs, name, and " +
     'default_activity by a sitewide manager', function(done) {
-      const oldUser = user;
-      const oldPass = password;
+      const postObj = copyJsonObject(postPatchedProject);
+      const expectedResults = copyJsonObject(getPatchedProject);
+      let error;
+      const statusCode = 200;
 
-      user = 'patcht';
-      password = 'drowssap';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProject);
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          // Set expected results to the new state of the project gwm
-          const expectedResults = copyJsonObject(originalProject);
-          expectedResults.name = patchedProject.name;
-          expectedResults.uri = patchedProject.uri;
-          expectedResults.slugs = patchedProject.slugs;
-          expectedResults.default_activity = patchedProject.default_activity;
-          expectedResults.uuid = originalProject.uuid;
-          expectedResults.revision = 2;
-          expectedResults.updated_at = new Date().toISOString()
-                                                 .substring(0, 10);
-
-          const expectedPost = copyJsonObject(expectedResults);
-          delete expectedPost.deleted_at;
-          delete expectedPost.users;
-
-          // expect body of post request to be the new state of gwm
-          expect(body).to.deep.equal(expectedPost);
-
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, undefined, 'patcht', 'drowssap');
     });
 
     it("successfully patches a project's uri, slugs, name, and " +
     'default_activity by its manager',
     function(done) {
-      const oldUser = user;
-      const oldPass = password;
+      const postObj = copyJsonObject(postPatchedProject);
+      const expectedResults = copyJsonObject(getPatchedProject);
+      let error;
+      const statusCode = 200;
 
-      user = 'MaraJade';
-      password = 'wording';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProject);
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          // Set expected results to the new state of the project gwm
-          const expectedResults = copyJsonObject(originalProject);
-          expectedResults.name = patchedProject.name;
-          expectedResults.uri = patchedProject.uri;
-          expectedResults.slugs = patchedProject.slugs;
-          expectedResults.default_activity = patchedProject.default_activity;
-          expectedResults.uuid = originalProject.uuid;
-          expectedResults.revision = 2;
-          expectedResults.updated_at = new Date().toISOString()
-                                                 .substring(0, 10);
-
-          const expectedPost = copyJsonObject(expectedResults);
-          delete expectedPost.deleted_at;
-          delete expectedPost.users;
-
-          // expect body of post request to be the new state of gwm
-          expect(body).to.deep.equal(expectedPost);
-
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, undefined, 'MaraJade', 'wording');
     });
 
     it("successfully patches a project's uri", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProjectUri);
+      const postObj = {uri: postPatchedProject.uri};
+      const expectedResults = copyJsonObject(getOriginalProject);
+      expectedResults.uri = postPatchedProject.uri;
+      expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResults = copyJsonObject(originalProject);
-          expectedResults.uri = patchedProject.uri;
-          expectedResults.uuid = originalProject.uuid;
-          expectedResults.revision = 2;
-          expectedResults.updated_at = new Date().toISOString()
-                                                 .substring(0, 10);
-
-          const expectedPost = copyJsonObject(expectedResults);
-          delete expectedPost.deleted_at;
-          delete expectedPost.users;
-
-          // expect body of post request to be the new state of gwm
-          expect(body).to.deep.equal(expectedPost);
-
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("successfully patches a project's slugs", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProjectSlugs);
+      const postObj = {slugs: postPatchedProject.slugs};
+      const expectedResults = copyJsonObject(getOriginalProject);
+      expectedResults.slugs = postPatchedProject.slugs;
+      expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResults = copyJsonObject(originalProject);
-          expectedResults.slugs = patchedProject.slugs;
-          expectedResults.uuid = originalProject.uuid;
-          expectedResults.revision = 2;
-          expectedResults.updated_at = new Date().toISOString()
-                                                 .substring(0, 10);
-
-          const expectedPost = copyJsonObject(expectedResults);
-          delete expectedPost.deleted_at;
-          delete expectedPost.users;
-
-          // expect body of post request to be the new state of gwm
-          expect(body).to.deep.equal(expectedPost);
-
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("successfully patches a project's name", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProjectName);
+      const postObj = {name: postPatchedProject.name};
+      const expectedResults = copyJsonObject(getOriginalProject);
+      expectedResults.name = postPatchedProject.name;
+      expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResults = copyJsonObject(originalProject);
-          expectedResults.name = patchedProject.name;
-          expectedResults.uuid = originalProject.uuid;
-          expectedResults.revision = 2;
-          expectedResults.updated_at = new Date().toISOString()
-                                                 .substring(0, 10);
-
-          const expectedPost = copyJsonObject(expectedResults);
-          delete expectedPost.deleted_at;
-          delete expectedPost.users;
-
-          // expect body of post request to be the new state of gwm
-          expect(body).to.deep.equal(expectedPost);
-
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it('successfully adds a new member', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProjectNewMember);
+      const postObj = patchedProjectNewMember;
+      const expectedResults = copyJsonObject(getOriginalProject);
+      expectedResults.users = patchedProjectNewMember.users;
+      expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResults = copyJsonObject(originalProject);
-          expectedResults.revision = 2;
-          expectedResults.updated_at = new Date().toISOString()
-                                                 .substring(0, 10);
-          expectedResults.users.thai = {member: true, spectator: false,
-                                                                manager: false};
-
-          const expectedPost = copyJsonObject(expectedResults);
-          delete expectedPost.deleted_at;
-          delete expectedPost.users;
-
-          // expect body of post request to be the new state of gwm
-          expect(body).to.deep.equal(expectedPost);
-
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it('successfully ignores nonexistent members', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProjectBadMember);
+      const postObj = patchedProjectBadMember;
+      const expectedResults = copyJsonObject(getOriginalProject);
+      expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResults = copyJsonObject(originalProject);
-          expectedResults.revision = 2;
-          expectedResults.updated_at = new Date().toISOString()
-                                                 .substring(0, 10);
-
-          const expectedPost = copyJsonObject(expectedResults);
-          delete expectedPost.deleted_at;
-          delete expectedPost.users;
-
-          // expect body of post request to be the new state of gwm
-          expect(body).to.deep.equal(expectedPost);
-
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it('successfully promotes an existing user', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProjectPromotion);
+      const postObj = patchedProjectPromotion;
+      const expectedResults = copyJsonObject(getOriginalProject);
+      expectedResults.users = patchedProjectPromotion.users;
+      expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResults = copyJsonObject(originalProject);
-          expectedResults.revision = 2;
-          expectedResults.updated_at = new Date().toISOString()
-                                                 .substring(0, 10);
-          expectedResults.users.mrsj = {member: true, spectator: true,
-                                                                manager: true};
-
-          const expectedPost = copyJsonObject(expectedResults);
-          delete expectedPost.deleted_at;
-          delete expectedPost.users;
-
-          // expect body of post request to be the new state of gwm
-          expect(body).to.deep.equal(expectedPost);
-
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it('successfully demotes an existing user', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProjectDemotion);
+      const postObj = patchedProjectDemotion;
+      const expectedResults = copyJsonObject(getOriginalProject);
+      expectedResults.users = patchedProjectDemotion.users;
+      expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResults = copyJsonObject(originalProject);
-          expectedResults.revision = 2;
-          expectedResults.updated_at = new Date().toISOString()
-                                                 .substring(0, 10);
-          expectedResults.users.mrsj = {member: true, spectator: false,
-                                                                manager: false};
-
-          const expectedPost = copyJsonObject(expectedResults);
-          delete expectedPost.deleted_at;
-          delete expectedPost.users;
-
-          // expect body of post request to be the new state of gwm
-          expect(body).to.deep.equal(expectedPost);
-
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it('successfully removes the calling user', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProjectSelfRemoval);
+      const postObj = patchedProjectSelfRemoval;
+      const expectedResults = copyJsonObject(getOriginalProject);
+      expectedResults.users = patchedProjectSelfRemoval.users;
+      expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResults = copyJsonObject(originalProject);
-          expectedResults.revision = 2;
-          expectedResults.updated_at = new Date().toISOString()
-                                                 .substring(0, 10);
-          delete expectedResults.users.tschuy;
-
-          const expectedPost = copyJsonObject(expectedResults);
-          delete expectedPost.deleted_at;
-          delete expectedPost.users;
-
-          // expect body of post request to be the new state of gwm
-          expect(body).to.deep.equal(expectedPost);
-
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("successfully patches a project's default activity", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProjectActivity);
+      const postObj = {default_activity: postPatchedProject.default_activity};
+      const expectedResults = copyJsonObject(getOriginalProject);
+      expectedResults.default_activity = postPatchedProject.default_activity;
+      expectedResults.updated_at = updatedAt;
+      expectedResults.revision = 2;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const expectedResults = copyJsonObject(originalProject);
-          expectedResults.default_activity = patchedProject.default_activity;
-          expectedResults.uuid = originalProject.uuid;
-          expectedResults.revision = 2;
-          expectedResults.updated_at = new Date().toISOString()
-                                                 .substring(0, 10);
-
-          const expectedPost = copyJsonObject(expectedResults);
-          delete expectedPost.deleted_at;
-          delete expectedPost.users;
-
-          // expect body of post request to be the new state of gwm
-          expect(body).to.deep.equal(expectedPost);
-
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("doesn't patch a non-existent project", function(done) {
-      getAPIToken().then(function(token) {
-        const options = copyJsonObject(requestOptions);
-        options.body = copyJsonObject(postArg);
-        options.body.object = copyJsonObject(patchedProject);
-        options.uri = baseUrl + 'projects/not-a-project';
+      const uri = baseUrl + 'projects/not-a-project';
+      const postObj = {name: postPatchedProject.name};
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Object not found';
+      const statusCode = 404;
+      const postBody = [
+        {
+          status: 404,
+          error: 'Object not found',
+          text: 'Nonexistent project',
+        },
+      ];
 
-        options.body.auth.token = token;
-
-        request.post(options, function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(body).to.deep.equal({
-            status: 404,
-            error: 'Object not found',
-            text: 'Nonexistent project',
-          });
-          expect(res.statusCode).to.equal(404);
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
-    });
-
-    it("doesn't patch a project with bad authentication", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProject);
-
-        requestOptions.body.auth.token = 'not_a_token';
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(res.statusCode).to.equal(401);
-
-          expect(body.error).to.equal('Authentication failure');
-          expect(body.text).to.equal('Bad API token');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, uri, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with invalid permissions", function(done) {
-      const oldUser = user;
-      const oldPass = password;
+      const postObj = {name: postPatchedProject.name};
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Authorization failure';
+      const statusCode = 401;
+      const postBody = [
+        {
+          status: 401,
+          error: 'Authorization failure',
+          text: 'thai is not authorized to make changes to Ganeti Web Manager',
+        },
+      ];
 
-      user = 'mrsj';
-      password = 'word';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProject);
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(res.statusCode).to.equal(401);
-
-          expect(body.error).to.equal('Authorization failure');
-          expect(body.text).to.equal('mrsj is not authorized to make changes ' +
-          'to ' + originalProject.name);
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody, 'thai', 'passing');
     });
 
     it("doesn't patch a project with bad uri, name, slugs, and default " +
     'activity',
     function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(badProject);
+      const postObj = copyJsonObject(invalidProjectValue);
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field uri of project should be uri but was sent as string',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field name of project should be string but was sent as array',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field slugs of project should be slugs but was sent as ' +
+                'non-slug strings',
+        },
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field default_activity of project should be string but was ' +
+          'sent as number',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-
-          expect([
-            'Field uri of project should be string but was sent as ' +
-            'array',
-            'Field name of project should be string but was sent as ' +
-            'array',
-            'Field slugs of project should be array but was sent as ' +
-            'string',
-            'Field default_activity of project should be string but was sent' +
-            ' as number',
-            'project does not have a key field',
-          ]).to.include.members([body.text]);
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with only bad uri", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = badProjectUri;
+      const postObj = {uri: invalidProjectValue.uri};
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field uri of project should be uri but was sent as string',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field uri of project' +
-          ' should be string but was sent as array');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with only bad slugs", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(badProjectSlugs);
+      const postObj = {slugs: ['test-!@#']};
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field slugs of project should be slugs but was sent as ' +
+                'non-slug strings',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field slugs of' +
-          ' project should be array but was sent as string');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with only bad name", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(badProjectName);
+      const postObj = {name: invalidProjectValue.name};
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field name of project should be unique name but was sent as ' +
+                'name which already exists',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field name of' +
-          ' project should be string but was sent as array');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with just bad default activity",
     function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(badProjectActivity);
+      const postObj = {default_activity: invalidProjectValue.default_activity};
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Invalid foreign key';
+      const statusCode = 409;
+      const postBody = [
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The project does not contain a valid activity reference.',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field default_activity of project ' +
-          'should be string but was sent as array');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
-    });
-
-    it("doesn't patch a project with just invalid key", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(badProjectKey);
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('project does not' +
-          ' have a key field');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with wrong-type uri", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.uuid;
-        delete requestOptions.body.object.revision;
-        delete requestOptions.body.object.deleted_at;
-        delete requestOptions.body.object.updated_at;
-        delete requestOptions.body.object.created_at;
-        requestOptions.body.object.uri = badProject.uri;
+      const postObj = {uri: invalidProjectDataType.uri};
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field uri of project should be string but was sent as object',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field uri of project' +
-          ' should be string but was sent as array');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with invalid uri", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.uuid;
-        delete requestOptions.body.object.revision;
-        delete requestOptions.body.object.deleted_at;
-        delete requestOptions.body.object.updated_at;
-        delete requestOptions.body.object.created_at;
-        requestOptions.body.object.uri = 'string but not uri';
+      const postObj = copyJsonObject(postOriginalProject);
+      postObj.uri = invalidProjectValue.uri;
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field uri of project should be uri but was sent as string',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field uri of project' +
-          ' should be uri but was sent as string');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with invalid slugs", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.uuid;
-        delete requestOptions.body.object.revision;
-        delete requestOptions.body.object.deleted_at;
-        delete requestOptions.body.object.updated_at;
-        delete requestOptions.body.object.created_at;
-        requestOptions.body.object.slugs = ['@#SAfsda', '232sa$%'];
+      const postObj = copyJsonObject(postOriginalProject);
+      postObj.slugs = ['test-!@#', 'wr()ng!'];
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field slugs of project should be slugs but was sent as ' +
+                'non-slug strings',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field slugs of project' +
-          ' should be slugs but was sent as non-slug strings');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with wrong-type slugs", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.uuid;
-        delete requestOptions.body.object.revision;
-        delete requestOptions.body.object.deleted_at;
-        delete requestOptions.body.object.updated_at;
-        delete requestOptions.body.object.created_at;
-        requestOptions.body.object.slugs = badProject.slugs;
+      const postObj = copyJsonObject(postOriginalProject);
+      postObj.slugs = invalidProjectDataType.slugs;
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field slugs of project should be array but was sent as object',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field slugs of' +
-          ' project should be array but was sent as string');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with missing slugs", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.uuid;
-        delete requestOptions.body.object.revision;
-        delete requestOptions.body.object.deleted_at;
-        delete requestOptions.body.object.updated_at;
-        delete requestOptions.body.object.created_at;
-        requestOptions.body.object.slugs = [];
+      const postObj = copyJsonObject(postOriginalProject);
+      postObj.slugs = [];
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field slugs of project should be array of slugs but was ' +
+                'sent as empty array',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field slugs of project should be array ' +
-          'of slugs but was sent as empty array');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with existent slugs", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(patchedProject);
-        delete requestOptions.body.object.uuid;
-        delete requestOptions.body.object.revision;
-        delete requestOptions.body.object.deleted_at;
-        delete requestOptions.body.object.updated_at;
-        delete requestOptions.body.object.created_at;
-        requestOptions.body.object.slugs = ['gwm', 'pgd'];
+      const postObj = copyJsonObject(postOriginalProject);
+      postObj.slugs = invalidProjectValue.slugs;
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'The slug provided already exists';
+      const statusCode = 409;
+      const postBody = [
+        {
+          status: 409,
+          error: 'The slug provided already exists',
+          text: `slugs ${postObj.slugs.join(', ')} already exist`,
+          values: postObj.slugs,
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('The slug provided already exists');
-          expect(res.statusCode).to.equal(409);
-          expect(body.text).to.equal('slug pgd already exists');
-          expect(body.values).to.deep.equal(['pgd']);
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with wrong-type name", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.uuid;
-        delete requestOptions.body.object.revision;
-        delete requestOptions.body.object.deleted_at;
-        delete requestOptions.body.object.updated_at;
-        delete requestOptions.body.object.created_at;
-        requestOptions.body.object.name = badProject.name;
+      const postObj = copyJsonObject(postOriginalProject);
+      postObj.name = invalidProjectDataType.name;
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field name of project should be string but was sent as object',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field name of' +
-          ' project should be string but was sent as array');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with existing name", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.uuid;
-        delete requestOptions.body.object.revision;
-        delete requestOptions.body.object.deleted_at;
-        delete requestOptions.body.object.updated_at;
-        delete requestOptions.body.object.created_at;
-        requestOptions.body.object.name = 'Protein Geometry Database';
+      const postObj = copyJsonObject(postOriginalProject);
+      postObj.name = invalidProjectValue.name;
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field name of project should be unique name but was sent as ' +
+                'name which already exists',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field name of project should be unique ' +
-          'name but was sent as name which already exists');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with non-existent default activity",
     function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.uuid;
-        delete requestOptions.body.object.revision;
-        delete requestOptions.body.object.deleted_at;
-        delete requestOptions.body.object.updated_at;
-        delete requestOptions.body.object.created_at;
-        requestOptions.body.object.default_activity = 'not_an_activity';
+      const postObj = copyJsonObject(postOriginalProject);
+      postObj.default_activity = invalidProjectValue.default_activity;
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Invalid foreign key';
+      const statusCode = 409;
+      const postBody = [
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The project does not contain a valid activity reference.',
+        },
+      ];
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Invalid foreign key');
-          expect(res.statusCode).to.equal(409);
-          expect(body.text).to.equal('The project does not contain a valid ' +
-          'activity reference.');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     it("doesn't patch a project with wrong-type default activity",
     function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.uuid;
-        delete requestOptions.body.object.revision;
-        delete requestOptions.body.object.deleted_at;
-        delete requestOptions.body.object.updated_at;
-        delete requestOptions.body.object.created_at;
-        requestOptions.body.object.default_activity =
-                                                    badProject.default_activity;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field default_activity of' +
-          ' project should be string but was sent as array');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
-    });
-
-    it("doesn't patch a project with invalid key", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(originalProject);
-        delete requestOptions.body.object.uuid;
-        delete requestOptions.body.object.revision;
-        delete requestOptions.body.object.deleted_at;
-        delete requestOptions.body.object.updated_at;
-        delete requestOptions.body.object.created_at;
-        requestOptions.body.object.key = badProject.key;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('project does not' +
-          ' have a key field');
-
-          const expectedResults = copyJsonObject(originalProject);
-          checkListEndpoint(done, expectedResults, token);
-        });
-      });
-    });
-  });
-
-  describe('POST /projects', function() {
-    // the project object to attempt to add
-    const project = {
-      uri: 'https://github.com/osuosl/timesync-node',
-      slugs: ['timesync-node', 'tsn'],
-      name: 'TimeSync Node',
-      default_activity: 'meeting',
-      users: {
-        patcht: {member: true, spectator: true, manager: true},
-        thai: {member: true, spectator: true, manager: false},
-      },
-    };
-
-    // the project as added to the database
-    const newProject = {
-      uri: 'https://github.com/osuosl/timesync-node',
-      slugs: ['timesync-node', 'tsn'],
-      name: 'TimeSync Node',
-      default_activity: 'meeting',
-      revision: 1,
-      created_at: new Date().toISOString().substring(0, 10),
-      users: {
-        patcht: {member: true, spectator: true, manager: true},
-        thai: {member: true, spectator: true, manager: false},
-      },
-    };
-
-    // the base POST JSON
-    const postArg = {
-      auth: {
-        type: 'token',
-      },
-      object: project,
-    };
-
-    const requestOptions = {
-      url: baseUrl + 'projects/',
-      json: true,
-      method: 'POST',
-    };
-
-    function checkListEndpoint(done, expectedGetResults, token) {
-      request.get(baseUrl + 'projects?token=' + token,
-      function(getErr, getRes, getBody) {
-        expect(getErr).to.be.a('null');
-        expect(getRes.statusCode).to.equal(200);
-
-        const jsonGetBody = JSON.parse(getBody);
-        // the projects/ list shouldn't have changed
-        expect(jsonGetBody).to.deep.have.same.members(expectedGetResults);
-        done();
-      });
-    }
-
-    it('successfully creates a new project with slugs by an admin',
-    function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = postArg;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const addedProject = copyJsonObject(newProject);
-          addedProject.uuid = body.uuid;
-          expect(body).to.deep.equal(addedProject);
-
-          const expectedGetResults = initialData.concat([
-            {
-              uri: 'https://github.com/osuosl/timesync-node',
-              slugs: ['timesync-node', 'tsn'],
-              name: 'TimeSync Node',
-              default_activity: 'meeting',
-              deleted_at: null,
-              updated_at: null,
-              created_at: new Date().toISOString().substring(0, 10),
-              revision: 1,
-              uuid: addedProject.uuid,
-              users: {
-                patcht: {member: true, spectator: true, manager: true},
-                thai: {member: true, spectator: true, manager: false},
-              },
-            },
-          ]);
-
-          checkListEndpoint(done, expectedGetResults, token);
-        });
-      });
-    });
-
-    it('successfully creates a new project with slugs by a sitewide manager',
-    function(done) {
-      const oldUser = user;
-      const oldPass = password;
-
-      user = 'patcht';
-      password = 'drowssap';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
-        requestOptions.body = postArg;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const addedProject = copyJsonObject(newProject);
-          addedProject.uuid = body.uuid;
-          expect(body).to.deep.equal(addedProject);
-
-          const expectedGetResults = initialData.concat([
-            {
-              uri: 'https://github.com/osuosl/timesync-node',
-              slugs: ['timesync-node', 'tsn'],
-              name: 'TimeSync Node',
-              default_activity: 'meeting',
-              deleted_at: null,
-              updated_at: null,
-              created_at: new Date().toISOString().substring(0, 10),
-              revision: 1,
-              uuid: addedProject.uuid,
-              users: {
-                patcht: {member: true, spectator: true, manager: true},
-                thai: {member: true, spectator: true, manager: false},
-              },
-            },
-          ]);
-
-          checkListEndpoint(done, expectedGetResults, token);
-        });
-      });
-    });
-
-    it('successfully creates a new project with no uri', function(done) {
-      getAPIToken().then(function(token) {
-        // remove uri from post data
-        const postNoUri = copyJsonObject(postArg);
-        postNoUri.object.uri = undefined;
-        requestOptions.body = postNoUri;
-
-        requestOptions.body.auth.token = token;
-
-        // remove uri from test object
-        const newProjectNoUri = copyJsonObject(newProject);
-        delete newProjectNoUri.uri;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const addedProject = copyJsonObject(newProjectNoUri);
-          addedProject.uuid = body.uuid;
-          expect(body).to.deep.equal(addedProject);
-
-          const expectedGetResults = initialData.concat([
-            {
-              uri: null,
-              slugs: ['timesync-node', 'tsn'],
-              name: 'TimeSync Node',
-              default_activity: 'meeting',
-              deleted_at: null,
-              updated_at: null,
-              created_at: new Date().toISOString().substring(0, 10),
-              revision: 1,
-              uuid: addedProject.uuid,
-              users: {
-                patcht: {member: true, spectator: true, manager: true},
-                thai: {member: true, spectator: true, manager: false},
-              },
-            },
-          ]);
-
-          checkListEndpoint(done, expectedGetResults, token);
-        });
-      });
-    });
-
-    it('successfully creates a new project with no users', function(done) {
-      getAPIToken().then(function(token) {
-        // remove uri from post data
-        const postNoUsers = copyJsonObject(postArg);
-        delete postNoUsers.object.users;
-        requestOptions.body = postNoUsers;
-
-        requestOptions.body.auth.token = token;
-
-        // remove uri from test object
-        const newProjectNoUsers = copyJsonObject(newProject);
-        delete newProjectNoUsers.users;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const addedProject = copyJsonObject(newProjectNoUsers);
-          addedProject.uuid = body.uuid;
-          expect(body).to.deep.equal(addedProject);
-
-          const expectedGetResults = initialData.concat([
-            {
-              uri: 'https://github.com/osuosl/timesync-node',
-              slugs: ['timesync-node', 'tsn'],
-              name: 'TimeSync Node',
-              default_activity: 'meeting',
-              deleted_at: null,
-              updated_at: null,
-              created_at: new Date().toISOString().substring(0, 10),
-              revision: 1,
-              uuid: addedProject.uuid,
-            },
-          ]);
-
-          checkListEndpoint(done, expectedGetResults, token);
-        });
-      });
-    });
-
-    it('successfully creates a new project with a bad user', function(done) {
-      getAPIToken().then(function(token) {
-        // remove uri from post data
-        const postBadUser = copyJsonObject(postArg);
-        postBadUser.object.users.wasd =
-                              {member: true, spectator: false, manager: false};
-        requestOptions.body = postBadUser;
-
-        requestOptions.body.auth.token = token;
-
-        const newProjectBadUser = copyJsonObject(newProject);
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const addedProject = copyJsonObject(newProjectBadUser);
-          addedProject.uuid = body.uuid;
-          expect(body).to.deep.equal(addedProject);
-
-          const expectedGetResults = initialData.concat([
-            {
-              uri: 'https://github.com/osuosl/timesync-node',
-              slugs: ['timesync-node', 'tsn'],
-              name: 'TimeSync Node',
-              default_activity: 'meeting',
-              deleted_at: null,
-              updated_at: null,
-              created_at: new Date().toISOString().substring(0, 10),
-              revision: 1,
-              uuid: addedProject.uuid,
-              users: {
-                patcht: {member: true, spectator: true, manager: true},
-                thai: {member: true, spectator: true, manager: false},
-              },
-            },
-          ]);
-
-          checkListEndpoint(done, expectedGetResults, token);
-        });
-      });
-    });
-
-    it('successfully creates a new project with no default activity',
-    function(done) {
-      getAPIToken().then(function(token) {
-        // remove uri from post data
-        const postNoActivity = copyJsonObject(postArg);
-        postNoActivity.object.default_activity = undefined;
-        requestOptions.body = postNoActivity;
-
-        requestOptions.body.auth.token = token;
-
-        // remove uri from test object
-        const newProjectNoActivity = copyJsonObject(newProject);
-        delete newProjectNoActivity.default_activity;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.be.a('null');
-          expect(res.statusCode).to.equal(200);
-
-          const addedProject = copyJsonObject(newProjectNoActivity);
-          addedProject.uuid = body.uuid;
-          expect(body).to.deep.equal(addedProject);
-
-          request.get(baseUrl + 'projects?token=' + token,
-          function(getErr, getRes, getBody) {
-            // the projects/ endpoint should now have one more project
-            const expectedGetResults = initialData.concat([
-              {
-                uri: 'https://github.com/osuosl/timesync-node',
-                slugs: ['timesync-node', 'tsn'],
-                name: 'TimeSync Node',
-                default_activity: null,
-                deleted_at: null,
-                updated_at: null,
-                created_at: new Date().toISOString().substring(0, 10),
-                revision: 1,
-                uuid: addedProject.uuid,
-                users: {
-                  patcht: {member: true, spectator: true, manager: true},
-                  thai: {member: true, spectator: true, manager: false},
-                },
-              },
-            ]);
-
-            expect(getErr).to.be.a('null');
-            expect(getRes.statusCode).to.equal(200);
-
-            const jsonBody = JSON.parse(getBody);
-            expect(jsonBody).to.deep.have.same.members(expectedGetResults);
-            done();
-          });
-        });
-      });
-    });
-
-    it('fails to create a new project with bad authentication', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(newProject);
-
-        requestOptions.body.auth.token = 'not_a_token';
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(res.statusCode).to.equal(401);
-
-          expect(body.error).to.equal('Authentication failure');
-          expect(body.text).to.equal('Bad API token');
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
-    });
-
-    it('fails to create a new project with bad permissions', function(done) {
-      const oldUser = user;
-      const oldPass = password;
-
-      user = 'mrsj';
-      password = 'word';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(newProject);
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(res.statusCode).to.equal(401);
-
-          expect(body.error).to.equal('Authorization failure');
-          expect(body.text).to.equal('mrsj is not authorized to create ' +
-              'projects');
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
-    });
-
-    it('fails to create a new project with an invalid uri', function(done) {
-      getAPIToken().then(function(token) {
-        const postInvalidUri = copyJsonObject(postArg);
-        postInvalidUri.object.uri = "Ceci n'est pas un url";
-        requestOptions.body = postInvalidUri;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field uri of project should be uri but was sent as ' +
-            'non-uri string',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
-    });
-
-    it('fails to create a new project with an invalid slug', function(done) {
-      getAPIToken().then(function(token) {
-        const postInvalidSlug = copyJsonObject(postArg);
-        // of these slugs, only 'dog' is valid
-        postInvalidSlug.object.slugs = ['$*#*cat', 'dog', ')_!@#mouse'];
-        requestOptions.body = postInvalidSlug;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field slugs of project should be slugs but was sent as ' +
-            'non-slug strings',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
-    });
-
-    it('fails to create a new project with an existing slug', function(done) {
-      getAPIToken().then(function(token) {
-        const postExistingSlug = copyJsonObject(postArg);
-        postExistingSlug.object.slugs = ['dog', 'ganeti-webmgr', 'gwm'];
-        requestOptions.body = postExistingSlug;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 409,
-            error: 'The slug provided already exists',
-            text: 'slugs gwm, ganeti-webmgr already exist',
-            values: ['ganeti-webmgr', 'gwm'],
-          };
-
-          body.values.sort();
-          expectedError.values.sort();
-
-          if (body.text.substring(0, 10) === 'slugs gane') {
-            expectedError.text = 'slugs ganeti-webmgr, gwm already exist';
-          }
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(409);
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
-    });
-
-    it('fails to create a new project with no slugs', function(done) {
-      getAPIToken().then(function(token) {
-        const postNoSlug = copyJsonObject(postArg);
-        postNoSlug.object.slugs = undefined;
-        requestOptions.body = postNoSlug;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'The project is missing a slugs',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
-    });
-
-    it('fails to create a new project with no name', function(done) {
-      getAPIToken().then(function(token) {
-        const postNoName = copyJsonObject(postArg);
-        postNoName.object.name = undefined;
-        requestOptions.body = postNoName;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'The project is missing a name',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
-    });
-
-    it('fails to create a new project with an existing name', function(done) {
-      getAPIToken().then(function(token) {
-        const postExistingName = copyJsonObject(postArg);
-        postExistingName.object.name = 'Protein Geometry Database';
-        requestOptions.body = postExistingName;
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field name of project should be unique name but was sent ' +
-            'as name which already exists',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
-    });
-
-    it('fails to create a project with bad slugs datatype', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object.slugs = 'test';
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field slugs of' +
-          ' project should be array but was sent as string');
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
-    });
-
-    it('fails to create a project with bad name datatype', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object.name = ['test'];
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field name of' +
-          ' project should be string but was sent as array');
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
-    });
-
-    it('fails to create a new project with non-existent default activity',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const postBadActivity = copyJsonObject(postArg);
-        postBadActivity.object.default_activity = 'not_an_activity';
-        requestOptions.body = postBadActivity;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 409,
-            error: 'Invalid foreign key',
-            text: 'The project does not contain a valid activity reference.',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(409);
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
-    });
-
-    it('fails to create a new project with bad default activity datatype',
-    function(done) {
-      getAPIToken().then(function(token) {
-        const postBadActivity = copyJsonObject(postArg);
-        postBadActivity.object.default_activity = [105];
-        requestOptions.body = postBadActivity;
-
-        request.post(requestOptions, function(err, res, body) {
-          const expectedError = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field default_activity of project should be string but ' +
-                  'was sent as array',
-          };
-
-          expect(body).to.deep.equal(expectedError);
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
-    });
-
-    it('fails to create a project with bad uri datatype', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object.uri = ['test'];
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(body.error).to.equal('Bad object');
-          expect(res.statusCode).to.equal(400);
-          expect(body.text).to.equal('Field uri of' +
-          ' project should be string but was sent as array');
-
-          checkListEndpoint(done, initialData, token);
-        });
-      });
+      const postObj = copyJsonObject(postOriginalProject);
+      postObj.default_activity = invalidProjectDataType.default_activity;
+      const expectedResults = copyJsonObject(getOriginalProject);
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field default_activity of project should be string but was ' +
+                'sent as object',
+        },
+      ];
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
   });
 
@@ -1886,85 +1445,104 @@ module.exports = function(expect, request, baseUrl) {
     it('deletes the desired project if no times are associated with it',
     function(done) {
       getAPIToken().then(function(token) {
-        request.del(baseUrl + 'projects/ts?token=' + token, function(err, res) {
+        const project = 'ts';
+        request.del(`${baseUrl}projects/${project}?token=${token}`,
+        function(err, res) {
+          expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
-          request.get(baseUrl + 'projects/ts?token=' + token,
+
+          request.get(`${baseUrl}projects/${project}?token=${token}`,
           function(getErr, getRes, getBody) {
-            const jsonBody = JSON.parse(getBody);
             const expectedResult = {
               status: 404,
               error: 'Object not found',
               text: 'Nonexistent project',
             };
 
-            expect(jsonBody).to.deep.equal(expectedResult);
-            expect(getRes.statusCode).to.equal(404);
-            done();
+            expect(JSON.parse(getBody)).to.deep.equal(expectedResult);
+            expect(getRes.statusCode).to.equal(expectedResult.status);
+
+            request.get(`${baseUrl}projects?token=${token}`,
+            function(getErr0, getRes0, getBody0) {
+              const expectedResults = initialData.filter(p => {
+                return p.slugs.indexOf(project) < 0;
+              });
+
+              expect(getErr0).to.equal(null);
+              expect(JSON.parse(getBody0)).to.deep.have.same
+                                                      .members(expectedResults);
+              expect(getRes0.statusCode).to.equal(200);
+              done();
+            });
           });
         });
       });
     });
 
-    it('Fails if it recieves a project with times associated', function(done) {
+    it('fails if it recieves a project with times associated', function(done) {
       getAPIToken().then(function(token) {
-        request.del(baseUrl + 'projects/pgd?token=' + token,
+        const project = 'pgd';
+        request.del(`${baseUrl}projects/${project}?token=${token}`,
         function(err, res, body) {
-          const jsonBody = JSON.parse(body);
-          const expectedResult = {
+          const expectedError = {
             status: 405,
             error: 'Method not allowed',
             text: 'The method specified is not allowed for ' +
             'the project identified',
           };
 
-          expect(res.statusCode).to.equal(405);
-          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(res.headers.allow).to.equal('GET, POST');
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(expectedError.status);
 
-          request.get(baseUrl + 'projects?token=' + token,
+          request.get(`${baseUrl}projects/${project}?token=${token}`,
           function(getErr, getRes, getBody) {
-            const jsonGetBody = JSON.parse(getBody);
-            const expectedGetResult = initialData.filter(function(project) {
-              return project.deleted_at === null;
-            });
+            const expectedResult = initialData.filter(p => {
+              return p.slugs.indexOf(project) >= 0;
+            })[0];
 
+            expect(getErr).to.equal(null);
+            expect(JSON.parse(getBody)).to.deep.equal(expectedResult);
             expect(getRes.statusCode).to.equal(200);
-            expect(jsonGetBody).to.deep.have.same.members(expectedGetResult);
 
-            done();
+            request.get(`${baseUrl}projects?token=${token}`,
+            function(getErr0, getRes0, getBody0) {
+              expect(getRes.statusCode).to.equal(200);
+              expect(JSON.parse(getBody0)).to.deep.have.same
+                                                      .members(initialData);
+              done();
+            });
           });
         });
       });
     });
 
-    it('Fails if it receives an invalid project', function(done) {
+    it('fails if it receives an invalid project', function(done) {
       getAPIToken().then(function(token) {
-        request.del(baseUrl + 'projects/Not.a!project?token=' + token,
+        const slug = 'Not.a!project';
+        request.del(`${baseUrl}projects/${slug}?token=${token}`,
         function(err, res, body) {
-          const jsonBody = JSON.parse(body);
           const expectedResult = {
             status: 400,
             error: 'The provided identifier was invalid',
-            text: 'Expected slug but received Not.a!project',
-            values: ['Not.a!project'],
+            text: `Expected slug but received ${slug}`,
+            values: [slug],
           };
 
-          expect(res.statusCode).to.equal(400);
-          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
 
           request.get(baseUrl + 'projects?token=' + token,
           function(getErr, getRes, getBody) {
-            const jsonGetBody = JSON.parse(getBody);
-
             expect(getRes.statusCode).to.equal(200);
-            expect(jsonGetBody).to.deep.have.same.members(initialData);
-
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
             done();
           });
         });
       });
     });
 
-    it('Fails if it receives a non-existent project', function(done) {
+    it('fails if it receives a non-existent project', function(done) {
       getAPIToken().then(function(token) {
         request.del(baseUrl + 'projects/doesntexist?token=' + token,
         function(err, res, body) {
@@ -1975,7 +1553,7 @@ module.exports = function(expect, request, baseUrl) {
             text: 'Nonexistent slug',
           };
 
-          expect(res.statusCode).to.equal(404);
+          expect(res.statusCode).to.equal(expectedResult.status);
           expect(jsonBody).to.deep.equal(expectedResult);
 
           request.get(baseUrl + 'projects?token=' + token,
@@ -1990,35 +1568,37 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    it('Fails with bad permissions', function(done) {
-      const oldUser = user;
-      const oldPass = password;
-
-      user = 'mrsj';
-      password = 'word';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
-        request.del(baseUrl + 'projects/ts?token=' + token,
+    it('fails with bad permissions', function(done) {
+      getAPIToken('mrsj', 'word').then(function(token) {
+        const slug = 'ts';
+        request.del(`${baseUrl}projects/${slug}?token=${token}`,
         function(err, res, body) {
           const jsonBody = JSON.parse(body);
-          const expectedResult = {
+          const expectedError = {
             status: 401,
             error: 'Authorization failure',
-            text: 'mrsj is not authorized to delete project ts',
+            text: `mrsj is not authorized to delete project ${slug}`,
           };
 
-          expect(res.statusCode).to.equal(401);
-          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(jsonBody).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(expectedError.status);
 
-          request.get(baseUrl + 'projects?token=' + token,
+          request.get(`${baseUrl}projects/${slug}?token=${token}`,
           function(getErr, getRes, getBody) {
-            const jsonGetBody = JSON.parse(getBody);
-
+            const expectedResult = initialData.filter(p => {
+              return p.slugs.indexOf(slug) >= 0;
+            })[0];
+            expect(getErr).to.equal(null);
+            expect(JSON.parse(getBody)).to.deep.equal(expectedResult);
             expect(getRes.statusCode).to.equal(200);
-            expect(jsonGetBody).to.deep.have.same.members(initialData);
-            done();
+
+            request(`${baseUrl}projects?token=${token}`,
+            function(getErr0, getRes0, getBody0) {
+              expect(getRes0.statusCode).to.equal(200);
+              expect(JSON.parse(getBody0)).to.deep.have.same
+                                                        .members(initialData);
+              done();
+            });
           });
         });
       });
