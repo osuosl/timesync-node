@@ -8,13 +8,13 @@ module.exports = function(expect, localPassport) {
     it('returns user for good user/pass', function(done) {
       chai.passport.use(localPassport).success(function(user) {
         // Called when passport successfully logs in
-        expect(user.username).to.equal('tschuy');
+        expect(user.username).to.equal('admin1');
         done();
       }).req(function(req) {
         req.body = {};
         req.body.auth = {};
         req.body.auth.type = 'password';
-        req.body.auth.username = 'tschuy';
+        req.body.auth.username = 'admin1';
         req.body.auth.password = 'password';
       }).authenticate();
     });
@@ -42,7 +42,7 @@ module.exports = function(expect, localPassport) {
         req.body = {};
         req.body.auth = {};
         req.body.auth.type = 'password';
-        req.body.auth.username = 'tschuy';
+        req.body.auth.username = 'admin1';
         req.body.auth.password = 'pass';
       }).authenticate();
     });

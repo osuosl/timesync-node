@@ -6,7 +6,7 @@ function copyJsonObject(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-const defaultUsername = 'tschuy';
+const defaultUsername = 'admin1';
 const defaultPassword = 'password';
 
 module.exports = function(expect, request, baseUrl) {
@@ -506,7 +506,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('successfully creates a new activity by a manager', function(done) {
-      getAPIToken('patcht', 'drowssap').then(function(token) {
+      getAPIToken('sManager', 'drowssap').then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
@@ -549,7 +549,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails to create a new activity by a regular user', function(done) {
-      getAPIToken('mrsj', 'word').then(function(token) {
+      getAPIToken('sSpectator', 'word').then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
@@ -559,7 +559,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             error: 'Authorization failure',
             status: 401,
-            text: 'mrsj is not authorized to create activities',
+            text: 'sSpectator is not authorized to create activities',
           };
           expect(body).to.deep.equal(expectedResult);
           expect(res.statusCode).to.equal(expectedResult.status);
@@ -753,12 +753,12 @@ module.exports = function(expect, request, baseUrl) {
     // Only contains valid patch elements
     const updatedAt = new Date().toISOString().substring(0, 10);
     const postPatchedActivity = {
-      name: 'TimeSync Documentation',
+      name: 'Project With Activity Documentation',
       slug: 'dev-docs',
     };
 
     const getPatchedActivity = {
-      name: 'TimeSync Documentation',
+      name: 'Project With Activity Documentation',
       slug: 'dev-docs',
       uuid: '986fe650-4bef-4e36-a99d-ad880b7f6cad',
       revision: 2,
@@ -851,7 +851,7 @@ module.exports = function(expect, request, baseUrl) {
       const statusCode = 200;
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, undefined, 'patcht', 'drowssap');
+                 statusCode, undefined, 'sManager', 'drowssap');
     });
 
     it('successfully updates the activity name', function(done) {
@@ -985,11 +985,11 @@ module.exports = function(expect, request, baseUrl) {
       const error = {
         status: 401,
         error: 'Authorization failure',
-        text: 'mrsj is not authorized to update activities',
+        text: 'sSpectator is not authorized to update activities',
       };
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error], 'mrsj', 'word');
+                 error.status, [error], 'sSpectator', 'word');
     });
 
     it('fails to update when given an invalid slug', function(done) {
@@ -1128,14 +1128,14 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails with invalid permissions', function(done) {
-      getAPIToken('mrsj', 'word').then(function(token) {
+      getAPIToken('sSpectator', 'word').then(function(token) {
         const slug = 'meeting';
         request.del(`${baseUrl}activities/${slug}?token=${token}`,
         function(err, res, body) {
           const expectedError = {
             status: 401,
             error: 'Authorization failure',
-            text: 'mrsj is not authorized to delete activities',
+            text: 'sSpectator is not authorized to delete activities',
           };
 
           expect(JSON.parse(body)).to.deep.equal(expectedError);

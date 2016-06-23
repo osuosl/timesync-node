@@ -21,11 +21,11 @@ db = {
       name: 'Valid User'
     }
   },
-  'tschuy': {
+  'admin1': {
     dn: 'cn=valid, ou=passport-ldapauth',
     attributes:  {
-      uid:  'tschuy',
-      name: 'Evan Tschuy'
+      uid:  'admin1',
+      name: 'Admin User'
     }
   },
   'james': {

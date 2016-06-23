@@ -59,8 +59,8 @@
   ],
   "users":[
     {
-      "display_name": "Dean Johnson",
-      "username":"deanj",
+      "display_name": "Project Manager",
+      "username":"pManager",
       "email": null,
       "site_spectator": false,
       "site_manager": false,
@@ -74,8 +74,8 @@
       "meta": null
     },
     {
-      "display_name": "Evan Tschuy",
-      "username":"tschuy",
+      "display_name": "Admin User",
+      "username":"admin1",
       "email": null,
       "site_spectator": true,
       "site_manager": true,
@@ -89,8 +89,8 @@
       "meta": null
     },
     {
-      "display_name": "Tristan Patch",
-      "username":"patcht",
+      "display_name": "Site Manager",
+      "username":"sManager",
       "email": null,
       "site_spectator": true,
       "site_manager":true,
@@ -104,8 +104,8 @@
       "meta": null
     },
     {
-      "display_name": "Matthew Johnson",
-      "username":"mrsj",
+      "display_name": "Site Spectator",
+      "username":"sSpectator",
       "email": null,
       "site_spectator": true,
       "site_manager": false,
@@ -119,8 +119,8 @@
       "meta": null
     },
     {
-      "display_name": "Aileen Thai",
-      "username":"thai",
+      "display_name": "Normal User",
+      "username":"user1",
       "email": null,
       "site_spectator": false,
       "site_manager": false,
@@ -134,8 +134,8 @@
       "meta": null
     },
     {
-      "display_name": "Megan Goossens",
-      "username":"MaraJade",
+      "display_name": "Deleted Project Manager",
+      "username":"delPManager",
       "email": null,
       "site_spectator": false,
       "site_manager": false,
@@ -149,9 +149,9 @@
       "meta": null
     },
     {
-      "display_name": "Old Timer",
-      "username": "timero",
-      "email": "timero@example.com",
+      "display_name": "Deleted User",
+      "username": "deleted",
+      "email": "deleted@example.com",
       "site_spectator": false,
       "site_manager": false,
       "site_admin": false,
@@ -166,8 +166,8 @@
   ],
   "projects":[
     {
-      "uri":"https:://code.osuosl.org/projects/ganeti-webmgr",
-      "name":"Ganeti Web Manager",
+      "uri":"http:://example.com/project1",
+      "name":"Project1",
       "default_activity": null,
       "id": 1,
       "uuid": "c285963e-192b-4e99-9d92-a940519f1fbd",
@@ -178,8 +178,8 @@
       "newest": true
     },
     {
-      "uri":"https:://code.osuosl.org/projects/pgd",
-      "name":"Protein Geometry Database",
+      "uri":"http:://example.com/project2",
+      "name":"Project2",
       "default_activity": null,
       "id": 2,
       "uuid": "e3e25e6a-5e45-4df2-8561-796b07e8f974",
@@ -190,8 +190,8 @@
       "newest": true
     },
     {
-      "uri":"https:://github.com/osu-cass/whats-fresh-api",
-      "name":"Whats Fresh",
+      "uri":"http:://example.com/project3",
+      "name":"Project3",
       "default_activity": null,
       "id": 3,
       "uuid": "9369f959-26f2-490d-8721-2948c49c3c09",
@@ -202,8 +202,8 @@
       "newest": true
     },
     {
-      "uri":"https:://github.com/osuosl/timesync",
-      "name":"Timesync",
+      "uri":"http:://example.com/project-activity",
+      "name":"Project With Activity",
       "default_activity": "activities:1",
       "id": 4,
       "uuid": "1f8788bd-0909-4397-be2c-79047f90c575",
@@ -214,8 +214,8 @@
       "newest": true
     },
     {
-      "uri":"https:://github.com/osuosl/chiliproject",
-      "name":"Chili Project",
+      "uri":"http:://example.com/deleted-project",
+      "name":"Deleted Project",
       "default_activity": null,
       "id": 5,
       "uuid": "6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29",
@@ -232,7 +232,7 @@
       "user":"users:0",
       "project":"projects:0",
       "notes":"",
-      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "issue_uri":"http:://example.com/project3/issues/56",
       "date_worked":1429401600000,
       "created_at":1429401600000,
       "updated_at": null,
@@ -247,7 +247,7 @@
       "user":"users:1",
       "project":"projects:0",
       "notes":"",
-      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "issue_uri":"http:://example.com/project3/issues/56",
       "date_worked":1429488000000,
       "created_at":1429488000000,
       "updated_at": null,
@@ -262,7 +262,7 @@
       "user":"users:0",
       "project":"projects:1",
       "notes":"",
-      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "issue_uri":"http:://example.com/project3/issues/56",
       "date_worked":1429574400000,
       "created_at":1429574400000,
       "updated_at": null,
@@ -277,7 +277,7 @@
       "user":"users:2",
       "project":"projects:1",
       "notes":"",
-      "issue_uri":"https:://github.com/osu-cass/whats-fresh-api/issues/56",
+      "issue_uri":"http:://example.com/project3/issues/56",
       "date_worked":1429660800000,
       "created_at":1429660800000,
       "updated_at": null,
@@ -335,37 +335,37 @@
   ],
   "projectslugs":[
     {
-      "name":"gwm",
+      "name":"project1",
       "id": 1,
       "project": "projects:0",
       "activity": null
     },
     {
-      "name":"pgd",
+      "name":"project2",
       "id": 2,
       "project": "projects:1",
       "activity": null
     },
     {
-      "name":"wf",
+      "name":"project3",
       "id": 3,
       "project": "projects:2",
       "activity": null
     },
     {
-      "name": "ganeti-webmgr",
+      "name": "p1",
       "project": "projects:0",
       "id": 4,
       "activity": null
     },
     {
-      "name": "timesync",
+      "name": "pa",
       "id": 5,
       "project": "projects:3",
       "activity": null
     },
     {
-      "name": "ts",
+      "name": "project-activity",
       "id": 6,
       "project": "projects:3",
       "activity": null

@@ -6,7 +6,7 @@ function copyJsonObject(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-const defaultUsername = 'tschuy';
+const defaultUsername = 'admin1';
 const defaultPassword = 'password';
 
 module.exports = function(expect, request, baseUrl) {
@@ -36,12 +36,12 @@ module.exports = function(expect, request, baseUrl) {
   const initialDataWithDeleted = [
     {
       duration: 12,
-      user: 'deanj',
-      project: ['gwm', 'ganeti-webmgr'].sort(),
+      user: 'pManager',
+      project: ['project1', 'p1'].sort(),
       activities: ['docs', 'dev'].sort(),
       notes: '',
       issue_uri:
-        'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        'http://example.com/project3/issues/56',
       date_worked: '2015-04-19',
       created_at: '2015-04-19',
       updated_at: null,
@@ -51,12 +51,12 @@ module.exports = function(expect, request, baseUrl) {
     },
     {
       duration: 12,
-      user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'].sort(),
+      user: 'admin1',
+      project: ['project1', 'p1'].sort(),
       activities: ['docs'],
       notes: '',
       issue_uri:
-        'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        'http://example.com/project3/issues/56',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
@@ -66,12 +66,12 @@ module.exports = function(expect, request, baseUrl) {
     },
     {
       duration: 12,
-      user: 'deanj',
-      project: ['pgd'],
+      user: 'pManager',
+      project: ['project2'],
       activities: ['sys'],
       notes: '',
       issue_uri:
-        'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        'http://example.com/project3/issues/56',
       date_worked: '2015-04-21',
       created_at: '2015-04-21',
       updated_at: null,
@@ -81,12 +81,12 @@ module.exports = function(expect, request, baseUrl) {
     },
     {
       duration: 12,
-      user: 'patcht',
-      project: ['pgd'],
+      user: 'sManager',
+      project: ['project2'],
       activities: ['dev'],
       notes: '',
       issue_uri:
-        'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        'http://example.com/project3/issues/56',
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
@@ -96,8 +96,8 @@ module.exports = function(expect, request, baseUrl) {
     },
     {
       duration: 18,
-      user: 'thai',
-      project: ['wf'],
+      user: 'user1',
+      project: ['project3'],
       activities: ['docs'],
       notes: '',
       issue_uri: '',
@@ -110,8 +110,8 @@ module.exports = function(expect, request, baseUrl) {
     },
     {
       duration: 12,
-      user: 'tschuy',
-      project: ['ganeti-webmgr', 'gwm'].sort(),
+      user: 'admin1',
+      project: ['p1', 'project1'].sort(),
       activities: ['docs'],
       notes: '',
       issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
@@ -124,8 +124,8 @@ module.exports = function(expect, request, baseUrl) {
     },
     {
       duration: 12,
-      user: 'patcht',
-      project: ['pgd'],
+      user: 'sManager',
+      project: ['project2'],
       activities: ['dev'],
       notes: '',
       issue_uri: '',
@@ -159,7 +159,7 @@ module.exports = function(expect, request, baseUrl) {
 
       it('returns all times in the database to a sitewide spectator',
       function(done) {
-        getAPIToken('mrsj', 'word').then(function(token) {
+        getAPIToken('sSpectator', 'word').then(function(token) {
           request.get(`${baseUrl}times?token=${token}`,
           function(err, res, body) {
             expect(err).to.equal(null);
@@ -171,7 +171,7 @@ module.exports = function(expect, request, baseUrl) {
       });
 
       it("returns only a normal user's times", function(done) {
-        const user = 'thai';
+        const user = 'user1';
         getAPIToken(user, 'passing').then(function(token) {
           request.get(`${baseUrl}times?token=${token}`,
           function(err, res, body) {
@@ -188,13 +188,13 @@ module.exports = function(expect, request, baseUrl) {
       });
 
       it("returns a project spectator's set of times", function(done) {
-        getAPIToken('deanj', 'pass').then(function(token) {
+        getAPIToken('pManager', 'pass').then(function(token) {
           request.get(`${baseUrl}times?token=${token}`,
           function(err, res, body) {
             const expectedResults = initialData.filter(t => {
-              // deanj is spectator on pgd and gwm
-              return t.project.indexOf('pgd') >= 0 ||
-                     t.project.indexOf('gwm') >= 0;
+              // pManager is spectator on project2 and project1
+              return t.project.indexOf('project2') >= 0 ||
+                     t.project.indexOf('project1') >= 0;
             });
 
             expect(err).to.equal(null);
@@ -209,7 +209,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?user=:user', function() {
       it('returns all times for a user', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'deanj';
+          const u = 'pManager';
           request.get(`${baseUrl}times?user=${u}&token=${token}`,
           function(err, res, body) {
             const jsonBody = JSON.parse(body);
@@ -256,7 +256,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?project=:project', function() {
       it('returns all times for a project', function(done) {
         getAPIToken().then(function(token) {
-          const p = 'gwm';
+          const p = 'project1';
           request.get(`${baseUrl}times?project=${p}&token=${token}`,
           function(err, res, body) {
             const jsonBody = JSON.parse(body);
@@ -522,11 +522,11 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    describe('/times?user=:user1&user=:user2', function() {
+    describe('/times?user=:pManager&user=:user2', function() {
       it('returns all times for two users', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'deanj';
-          const u2 = 'patcht';
+          const u = 'pManager';
+          const u2 = 'sManager';
           request.get(`${baseUrl}times?user=${u}&user=${u2}&token=${token}`,
           function(err, res, body) {
             const jsonBody = JSON.parse(body);
@@ -554,8 +554,8 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?user=:user&project=:project', function() {
       it('returns all times for a user and a project', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'deanj';
-          const p = 'gwm';
+          const u = 'pManager';
+          const p = 'project1';
           request.get(`${baseUrl}times?user=${u}&project=${p}&token=${token}`,
           function(err, res, body) {
             const jsonBody = JSON.parse(body);
@@ -583,7 +583,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?user=:user&activity=:activity', function() {
       it('returns all times for a user and an activity', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'deanj';
+          const u = 'pManager';
           const a = 'docs';
           request.get(`${baseUrl}times?user=${u}&activity=${a}&token=${token}`,
           function(err, res, body) {
@@ -612,7 +612,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?user=:user&start=:start', function() {
       it('returns all times for a user after a date', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'deanj';
+          const u = 'pManager';
           const s = '2015-04-20';
           request.get(`${baseUrl}times?user=${u}&start=${s}&token=${token}`,
           function(err, res, body) {
@@ -641,7 +641,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?user=:user&end=:end', function() {
       it('returns all times for a user before a date', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'tschuy';
+          const u = 'admin1';
           const e = '2015-04-21';
           request.get(`${baseUrl}times?user=${u}&end=${e}&token=${token}`,
           function(err, res, body) {
@@ -670,7 +670,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?user=:user&start=:start&end=:end', function() {
       it('returns all times for a user between two dates', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'deanj';
+          const u = 'pManager';
           const s = '2015-04-19';
           const e = '2015-04-20';
           request.get(`${baseUrl}times?user=${u}&start=${s}&end=${e}&` +
@@ -700,8 +700,8 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?project=:project1&project=:project2', function() {
       it('returns all times for two projects', function(done) {
         getAPIToken().then(function(token) {
-          const p = 'gwm';
-          const p2 = 'wf';
+          const p = 'project1';
+          const p2 = 'project3';
           request.get(`${baseUrl}times?project=${p}&project=${p2}&token=` +
           token, function(err, res, body) {
             const jsonBody = JSON.parse(body);
@@ -729,7 +729,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?project=:project&activity=:activity', function() {
       it('returns all times for a project and an activity', function(done) {
         getAPIToken().then(function(token) {
-          const p = 'gwm';
+          const p = 'project1';
           const a = 'dev';
           request.get(`${baseUrl}times?project=${p}&activity=${a}&token=` +
           token, function(err, res, body) {
@@ -758,7 +758,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?project=:project&start=:start', function() {
       it('returns all times for a project after a date', function(done) {
         getAPIToken().then(function(token) {
-          const p = 'gwm';
+          const p = 'project1';
           const s = '2015-04-20';
           request.get(`${baseUrl}times?project=${p}&start=${s}&token=${token}`,
           function(err, res, body) {
@@ -787,7 +787,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?project=:project&end=:end', function() {
       it('returns all times for a project before a date', function(done) {
         getAPIToken().then(function(token) {
-          const p = 'gwm';
+          const p = 'project1';
           const e = '2015-04-20';
           request.get(`${baseUrl}times?project=${p}&end=${e}&token=${token}`,
           function(err, res, body) {
@@ -816,7 +816,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?project=:project&start=:start&end=:end', function() {
       it('returns all times for a project between two dates', function(done) {
         getAPIToken().then(function(token) {
-          const p = 'gwm';
+          const p = 'project1';
           const s = '2015-04-19';
           const e = '2015-04-21';
           request.get(`${baseUrl}times?project=${p}&start=${s}&end=${e}&` +
@@ -968,8 +968,8 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times for a user, project, and activity between two ' +
       'dates', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'tschuy';
-          const p = 'gwm';
+          const u = 'admin1';
+          const p = 'project1';
           const a = 'docs';
           const s = '2015-04-20';
           const e = '2015-04-22';
@@ -999,14 +999,14 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    describe('/times?user=:user1&user=:user2&project=:project&' +
+    describe('/times?user=:pManager&user=:user2&project=:project&' +
     'activity=:activity&start=:start&end=:end', function() {
       it('returns all times for two users, a project, and activity ' +
       'between two dates', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'tschuy';
-          const u2 = 'deanj';
-          const p = 'gwm';
+          const u = 'admin1';
+          const u2 = 'pManager';
+          const p = 'project1';
           const a = 'docs';
           const s = '2015-04-19';
           const e = '2015-04-21';
@@ -1043,8 +1043,8 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times for a user, two projects, and an ' +
       'activity between two dates', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'deanj';
-          const p = 'gwm';
+          const u = 'pManager';
+          const p = 'project1';
           const p2 = 'pdj';
           const a = 'docs';
           const s = '2015-04-19';
@@ -1082,8 +1082,8 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times for a user, project, and two activities ' +
       'between two dates', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'deanj';
-          const p = 'gwm';
+          const u = 'pManager';
+          const p = 'project1';
           const a = 'docs';
           const a2 = 'dev';
           const s = '2015-04-19';
@@ -1133,7 +1133,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?user=:user&include_deleted=true', function() {
       it('returns all times for a user', function(done) {
         getAPIToken().then(function(token) {
-          const user = 'tschuy';
+          const user = 'admin1';
           request.get(`${baseUrl}times?user=${user}&include_deleted=true&` +
           'token=' + token, function(err, res, body) {
             const expectedResults = initialDataWithDeleted.filter(t => {
@@ -1243,7 +1243,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?project=:project?include_deleted=true', function() {
       it('returns all times for a project', function(done) {
         getAPIToken().then(function(token) {
-          const project = 'pgd';
+          const project = 'project2';
           request.get(`${baseUrl}times?project=${project}&` +
           `include_deleted=true&token=${token}`, function(err, res, body) {
             const expectedResults = initialDataWithDeleted.filter(t => {
@@ -1392,7 +1392,7 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times that match the given user and activity',
       function(done) {
         getAPIToken().then(function(token) {
-          const u = 'tschuy';
+          const u = 'admin1';
           const a = 'docs';
           request.get(`${baseUrl}times?user=${u}&activity=${a}&token=${token}` +
           '&include_deleted=true', function(err, res, body) {
@@ -1414,8 +1414,8 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times that match the given user and project',
       function(done) {
         getAPIToken().then(function(token) {
-          const u = 'patcht';
-          const p = 'pgd';
+          const u = 'sManager';
+          const p = 'project2';
           request.get(`${baseUrl}times?user=${u}&project=${p}&token=${token}&` +
           'include_deleted=true', function(err, res, body) {
             const expectedResults = initialDataWithDeleted.filter(t => {
@@ -1435,7 +1435,7 @@ module.exports = function(expect, request, baseUrl) {
     function() {
       it('returns all times for a user after a date', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'tschuy';
+          const u = 'admin1';
           const s = '2015-04-20';
           request.get(`${baseUrl}times?user=${u}&start=${s}&token=${token}&` +
           'include_deleted=true', function(err, res, body) {
@@ -1455,7 +1455,7 @@ module.exports = function(expect, request, baseUrl) {
     function() {
       it('returns all times for a user before a date', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'patcht';
+          const u = 'sManager';
           const e = '2015-04-22';
           request.get(`${baseUrl}times?user=${u}&end=${e}&token=${token}&` +
           'include_deleted=true', function(err, res, body) {
@@ -1475,7 +1475,7 @@ module.exports = function(expect, request, baseUrl) {
     function() {
       it('returns all times for a user within a date range', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'tschuy';
+          const u = 'admin1';
           const s = '2015-04-20';
           const e = '2015-04-25';
           request.get(`${baseUrl}times?user=${u}&start=${s}&end=${e}&` +
@@ -1497,9 +1497,9 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times that match the given user, activity, and project',
       function(done) {
         getAPIToken().then(function(token) {
-          const u = 'patcht';
+          const u = 'sManager';
           const a = 'dev';
-          const p = 'pgd';
+          const p = 'project2';
           request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
           `include_deleted=true&token=${token}`, function(err, res, body) {
             const expectedResults = initialDataWithDeleted.filter(t => {
@@ -1520,9 +1520,9 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times that match the given parameters after a date',
       function(done) {
         getAPIToken().then(function(token) {
-          const u = 'patcht';
+          const u = 'sManager';
           const a = 'dev';
-          const p = 'pgd';
+          const p = 'project2';
           const s = '2015-04-22';
           request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
           `start=${s}&include_deleted=true&token=${token}`,
@@ -1545,9 +1545,9 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times that match the given parameters before a date',
       function(done) {
         getAPIToken().then(function(token) {
-          const u = 'tschuy';
+          const u = 'admin1';
           const a = 'docs';
-          const p = 'gwm';
+          const p = 'project1';
           const e = '2015-04-22';
           request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
           `end=${e}&include_deleted=true&token=${token}`,
@@ -1570,9 +1570,9 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times that match the given parameters within a date ' +
       'range', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'tschuy';
+          const u = 'admin1';
           const a = 'docs';
-          const p = 'gwm';
+          const p = 'project1';
           const s = '2015-04-19';
           const e = '2015-04-22';
           request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
@@ -1598,7 +1598,7 @@ module.exports = function(expect, request, baseUrl) {
       function(done) {
         getAPIToken().then(function(token) {
           const a = 'docs';
-          const p = 'gwm';
+          const p = 'project1';
           request.get(`${baseUrl}times?activity=${a}&project=${p}&` +
           `include_deleted=true&token=${token}`, function(err, res, body) {
             const expectedResults = initialDataWithDeleted.filter(t => {
@@ -1680,7 +1680,7 @@ module.exports = function(expect, request, baseUrl) {
     function() {
       it('returns all times for a project after a date', function(done) {
         getAPIToken().then(function(token) {
-          const p = 'pgd';
+          const p = 'project2';
           const s = '2015-04-20';
           request.get(`${baseUrl}times?project=${p}&start=${s}&` +
           `token=${token}&include_deleted=true`, function(err, res, body) {
@@ -1700,7 +1700,7 @@ module.exports = function(expect, request, baseUrl) {
     function() {
       it('returns all times for a project before a date', function(done) {
         getAPIToken().then(function(token) {
-          const p = 'gwm';
+          const p = 'project1';
           const e = '2015-04-20';
           request.get(`${baseUrl}times?project=${p}&end=${e}&token=${token}&` +
           'include_deleted=true', function(err, res, body) {
@@ -1720,7 +1720,7 @@ module.exports = function(expect, request, baseUrl) {
     'include_deleted=true', function() {
       it('returns all times for a project within a date range', function(done) {
         getAPIToken().then(function(token) {
-          const p = 'gwm';
+          const p = 'project1';
           const s = '2015-04-20';
           const e = '2015-04-25';
           request.get(`${baseUrl}times?project=${p}&start=${s}&end=${e}&` +
@@ -1744,7 +1744,7 @@ module.exports = function(expect, request, baseUrl) {
       'a date', function(done) {
         getAPIToken().then(function(token) {
           const a = 'docs';
-          const p = 'gwm';
+          const p = 'project1';
           const s = '2015-04-17';
           request.get(`${baseUrl}times?activity=${a}&project=${p}&start=${s}&` +
           `include_deleted=true&token=${token}`, function(err, res, body) {
@@ -1769,7 +1769,7 @@ module.exports = function(expect, request, baseUrl) {
       'a date', function(done) {
         getAPIToken().then(function(token) {
           const a = 'dev';
-          const p = 'pgd';
+          const p = 'project2';
           const e = '2015-04-25';
           request.get(`${baseUrl}times?activity=${a}&project=${p}&end=${e}&` +
           `include_deleted=true&token=${token}`, function(err, res, body) {
@@ -1793,7 +1793,7 @@ module.exports = function(expect, request, baseUrl) {
       'a date range', function(done) {
         getAPIToken().then(function(token) {
           const a = 'dev';
-          const p = 'pgd';
+          const p = 'project2';
           const s = '2015-04-21';
           const e = '2015-04-25';
           request.get(`${baseUrl}times?activity=${a}&project=${p}&start=${s}` +
@@ -1930,11 +1930,11 @@ module.exports = function(expect, request, baseUrl) {
 
       const noParentsData = {
         duration: 13,
-        user: 'tschuy',
-        project: ['ganeti-webmgr', 'gwm'],
+        user: 'admin1',
+        project: ['p1', 'project1'],
         activities: ['docs'],
         notes: 'forgot to add last hour',
-        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        issue_uri: 'http://example.com/project3/issues/56',
         date_worked: '2015-04-20',
         created_at: '2015-04-20',
         updated_at: currentTime,
@@ -1945,11 +1945,11 @@ module.exports = function(expect, request, baseUrl) {
 
       const withParentsData = {
         duration: 13,
-        user: 'tschuy',
-        project: ['ganeti-webmgr', 'gwm'],
+        user: 'admin1',
+        project: ['p1', 'project1'],
         activities: ['docs'],
         notes: 'forgot to add last hour',
-        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        issue_uri: 'http://example.com/project3/issues/56',
         date_worked: '2015-04-20',
         created_at: '2015-04-20',
         updated_at: currentTime,
@@ -1959,11 +1959,11 @@ module.exports = function(expect, request, baseUrl) {
         parents: [
           {
             duration: 12,
-            user: 'tschuy',
-            project: ['ganeti-webmgr', 'gwm'],
+            user: 'admin1',
+            project: ['p1', 'project1'],
             activities: ['docs'],
             notes: '',
-            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            issue_uri: 'http://example.com/project3/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
@@ -2055,11 +2055,11 @@ module.exports = function(expect, request, baseUrl) {
 
       const noParentsData = {
         duration: 13,
-        user: 'tschuy',
-        project: ['ganeti-webmgr', 'gwm'],
+        user: 'admin1',
+        project: ['p1', 'project1'],
         activities: ['docs'],
         notes: 'forgot to add last hour',
-        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        issue_uri: 'http://example.com/project3/issues/56',
         date_worked: '2015-04-20',
         created_at: '2015-04-20',
         updated_at: currentTime,
@@ -2070,11 +2070,11 @@ module.exports = function(expect, request, baseUrl) {
 
       const withParentsData = {
         duration: 13,
-        user: 'tschuy',
-        project: ['ganeti-webmgr', 'gwm'],
+        user: 'admin1',
+        project: ['p1', 'project1'],
         activities: ['docs'],
         notes: 'forgot to add last hour',
-        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        issue_uri: 'http://example.com/project3/issues/56',
         date_worked: '2015-04-20',
         created_at: '2015-04-20',
         updated_at: currentTime,
@@ -2084,11 +2084,11 @@ module.exports = function(expect, request, baseUrl) {
         parents: [
           {
             duration: 12,
-            user: 'tschuy',
-            project: ['ganeti-webmgr', 'gwm'],
+            user: 'admin1',
+            project: ['p1', 'project1'],
             activities: ['docs'],
             notes: '',
-            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            issue_uri: 'http://example.com/project3/issues/56',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
@@ -2183,22 +2183,22 @@ module.exports = function(expect, request, baseUrl) {
     // The time to attempt to add
     const time = {
       duration: 20,
-      user: 'tschuy',
-      project: 'ts',
+      user: 'admin1',
+      project: 'project-activity',
       activities: ['dev', 'docs'].sort(),
       notes: '',
-      issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+      issue_uri: 'https://github.com/osuosl/project1/issues/1',
       date_worked: '2015-07-30',
     };
 
     // The time as returned from the POST endpoint
     const newTime = {
       duration: 20,
-      user: 'tschuy',
-      project: 'ts',
+      user: 'admin1',
+      project: 'project-activity',
       activities: ['docs', 'dev'].sort(),
       notes: '',
-      issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+      issue_uri: 'https://github.com/osuosl/project1/issues/1',
       date_worked: '2015-07-30',
       revision: 1,
     };
@@ -2206,11 +2206,11 @@ module.exports = function(expect, request, baseUrl) {
     // The time as returned from the GET endpoint
     const getTime = {
       duration: 20,
-      user: 'tschuy',
-      project: ['ts', 'timesync'].sort(),
+      user: 'admin1',
+      project: ['project-activity', 'pa'].sort(),
       activities: ['docs', 'dev'].sort(),
       notes: '',
-      issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+      issue_uri: 'https://github.com/osuosl/project1/issues/1',
       date_worked: '2015-07-30',
       created_at: new Date().toISOString().substring(0, 10),
       updated_at: null,
@@ -2311,18 +2311,18 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it("fails when user isn't member of project", function(done) {
-      getAPIToken('thai', 'passing').then(function(token) {
+      getAPIToken('user1', 'passing').then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
-        requestOptions.body.object.user = 'thai';
+        requestOptions.body.object.user = 'user1';
 
         request.post(requestOptions, function(err, res, body) {
           const expectedResult = {
             error: 'Authorization failure',
             status: 401,
-            text: 'thai is not authorized to create time entries for project ' +
-                  'ts.',
+            text: 'user1 is not authorized to create time entries for ' +
+                  'project project-activity.',
           };
 
           expect(err).to.equal(null);
@@ -2529,7 +2529,7 @@ module.exports = function(expect, request, baseUrl) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
-        requestOptions.body.object.project = 'gwm';
+        requestOptions.body.object.project = 'project1';
         delete requestOptions.body.object.activities;
 
         request.post(requestOptions, function(err, res, body) {
@@ -2745,7 +2745,7 @@ module.exports = function(expect, request, baseUrl) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
-        requestOptions.body.object.user = {username: 'tschuy'};
+        requestOptions.body.object.user = {username: 'admin1'};
 
         request.post(requestOptions, function(err, res, body) {
           const expectedResult = {
@@ -2861,14 +2861,14 @@ module.exports = function(expect, request, baseUrl) {
   });
 
   describe('POST /times/:uuid', function() {
-    // The database's entry for `Whats Fresh`'s time entry
+    // The database's entry for `Project3`'s time entry
     const postOriginalTime = {
       duration: 12,
-      user: 'deanj',
-      project: ['ganeti-webmgr', 'gwm'],
+      user: 'pManager',
+      project: ['p1', 'project1'],
       notes: '',
       activities: ['dev', 'docs'],
-      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      issue_uri: 'http://example.com/project3/issues/56',
       date_worked: '2015-04-20',
       uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
       revision: 1,
@@ -2876,11 +2876,11 @@ module.exports = function(expect, request, baseUrl) {
 
     const getOriginalTime = {
       duration: 12,
-      user: 'deanj',
-      project: ['ganeti-webmgr', 'gwm'],
+      user: 'pManager',
+      project: ['p1', 'project1'],
       activities: ['dev', 'docs'],
       notes: '',
-      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      issue_uri: 'http://example.com/project3/issues/56',
       date_worked: '2015-04-19',
       created_at: '2015-04-19',
       updated_at: null,
@@ -2894,20 +2894,20 @@ module.exports = function(expect, request, baseUrl) {
     const updatedAt = new Date().toISOString().substring(0, 10);
     const postPatchedTime = {
       duration: 15,
-      project: 'pgd',
+      project: 'project2',
       activities: ['docs', 'sys'],
       notes: 'Now this is a note',
-      issue_uri: 'https://github.com/osuosl/pgd/pull/19',
+      issue_uri: 'https://github.com/osuosl/project2/pull/19',
       date_worked: '2015-04-28',
     };
 
     const getPatchedTime = {
       duration: 15,
-      user: 'deanj',
-      project: ['pgd'],
+      user: 'pManager',
+      project: ['project2'],
       activities: ['docs', 'sys'],
       notes: 'Now this is a note',
-      issue_uri: 'https://github.com/osuosl/pgd/pull/19',
+      issue_uri: 'https://github.com/osuosl/project2/pull/19',
       date_worked: '2015-04-28',
       created_at: '2015-04-19',
       updated_at: null,
@@ -2931,7 +2931,7 @@ module.exports = function(expect, request, baseUrl) {
     // Sends invalid data to the /times/:id endpoint
     const invalidTimeValue = {
       duration: -1,
-      user1: 'validusername',
+      pManager: 'validusername',
       user2: 'invalid-us]ername',
       project1: 'valid-project-slug',
       project2: 'invalid_project_slug',
@@ -3019,12 +3019,12 @@ module.exports = function(expect, request, baseUrl) {
     ' activity notes, issue_uri, and date_worked by the user', function(done) {
       const postObj = copyJsonObject(postPatchedTime);
       const expectedResults = copyJsonObject(getPatchedTime);
-      expectedResults.project = ['pgd'];
+      expectedResults.project = ['project2'];
       let error;
       const statusCode = 200;
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, undefined, 'deanj', 'pass');
+                 statusCode, undefined, 'pManager', 'pass');
     });
 
     // Tests valid duration field
@@ -3045,7 +3045,7 @@ module.exports = function(expect, request, baseUrl) {
     it('successfully patches time with valid project', function(done) {
       const postObj = {project: postPatchedTime.project};
       const expectedResults = copyJsonObject(getOriginalTime);
-      expectedResults.project = ['pgd'];
+      expectedResults.project = ['project2'];
       expectedResults.updated_at = updatedAt;
       expectedResults.revision = 2;
       const statusCode = 200;
@@ -3326,7 +3326,7 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.activities = invalidTimeDataType.activities;
-      postObj.project = 'gwm';
+      postObj.project = 'project1';
       delete postObj.uuid;
       delete postObj.revision;
 
@@ -3347,7 +3347,7 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.notes = invalidTimeDataType.notes;
-      postObj.project = 'gwm';
+      postObj.project = 'project1';
       delete postObj.uuid;
       delete postObj.revision;
 
@@ -3368,7 +3368,7 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.issue_uri = invalidTimeDataType.issue_uri;
-      postObj.project = 'gwm';
+      postObj.project = 'project1';
       delete postObj.uuid;
       delete postObj.revision;
 
@@ -3389,7 +3389,7 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = copyJsonObject(postOriginalTime);
       postObj.date_worked = invalidTimeDataType.date_worked;
-      postObj.project = 'gwm';
+      postObj.project = 'project1';
       delete postObj.uuid;
       delete postObj.revision;
 
@@ -3564,7 +3564,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('deletes the object with a valid uuid by the user', function(done) {
-      getAPIToken('deanj', 'pass').then(function(token) {
+      getAPIToken('pManager', 'pass').then(function(token) {
         const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
         request.del(`${baseUrl}times/${uuid}?token=${token}`,
         function(err, res, body) {
@@ -3633,14 +3633,14 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails to delete the object with invalid permissions', function(done) {
-      getAPIToken('mrsj', 'word').then(function(token) {
+      getAPIToken('sSpectator', 'word').then(function(token) {
         const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
         request.del(`${baseUrl}times/${uuid}?token=${token}`,
         function(err, res, body) {
           expect(JSON.parse(body)).to.deep.equal({
             'status': 401,
             'error': 'Authorization failure',
-            'text': 'mrsj is not authorized to delete time ' +
+            'text': 'sSpectator is not authorized to delete time ' +
               '32764929-1bea-4a17-8c8a-22d7fb144941',
           });
           expect(res.statusCode).to.equal(401);

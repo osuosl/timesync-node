@@ -4,7 +4,7 @@ module.exports = function(expect, app) {
   const helpers = require('../src/helpers')(app);
   describe('checkUser', function() {
     it('Returns user ID if username == user', function(done) {
-      helpers.checkUser('tschuy', 'tschuy').then(function(userID) {
+      helpers.checkUser('admin1', 'admin1').then(function(userID) {
         expect(userID).to.equal(2);
         done();
       });
@@ -12,7 +12,7 @@ module.exports = function(expect, app) {
 
     // Later: Include a test that checks if username is admin
     it('Returns false if username !== user', function(done) {
-      helpers.checkUser('notauser', 'tschuy').then().catch(function(err) {
+      helpers.checkUser('notauser', 'admin1').then().catch(function(err) {
         expect(err).to.deep.equal({type: 'invalid', value: 'notauser'});
         done();
       });
@@ -172,7 +172,7 @@ module.exports = function(expect, app) {
 
   describe('checkProject', function() {
     it('returns a project ID for proper slug', function(done) {
-      helpers.checkProject('ganeti-webmgr').then(function(project) {
+      helpers.checkProject('p1').then(function(project) {
         expect(project).to.equal(1);
         done();
       });

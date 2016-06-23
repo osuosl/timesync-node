@@ -6,7 +6,7 @@ function copyJsonObject(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-const defaultUsername = 'tschuy';
+const defaultUsername = 'admin1';
 const defaultPassword = 'password';
 
 module.exports = function(expect, request, baseUrl) {
@@ -34,8 +34,8 @@ module.exports = function(expect, request, baseUrl) {
 
   const initialDataWithDeleted = [
     {
-      display_name: 'Dean Johnson',
-      username: 'deanj',
+      display_name: 'Project Manager',
+      username: 'pManager',
       email: null,
       site_spectator: false,
       site_manager: false,
@@ -47,8 +47,8 @@ module.exports = function(expect, request, baseUrl) {
       meta: null,
     },
     {
-      display_name: 'Evan Tschuy',
-      username: 'tschuy',
+      display_name: 'Admin User',
+      username: 'admin1',
       email: null,
       site_spectator: true,
       site_manager: true,
@@ -60,8 +60,8 @@ module.exports = function(expect, request, baseUrl) {
       meta: null,
     },
     {
-      display_name: 'Tristan Patch',
-      username: 'patcht',
+      display_name: 'Site Manager',
+      username: 'sManager',
       email: null,
       site_spectator: true,
       site_manager: true,
@@ -73,8 +73,8 @@ module.exports = function(expect, request, baseUrl) {
       meta: null,
     },
     {
-      display_name: 'Matthew Johnson',
-      username: 'mrsj',
+      display_name: 'Site Spectator',
+      username: 'sSpectator',
       email: null,
       site_spectator: true,
       site_manager: false,
@@ -86,8 +86,8 @@ module.exports = function(expect, request, baseUrl) {
       meta: null,
     },
     {
-      display_name: 'Aileen Thai',
-      username: 'thai',
+      display_name: 'Normal User',
+      username: 'user1',
       email: null,
       site_spectator: false,
       site_manager: false,
@@ -99,8 +99,8 @@ module.exports = function(expect, request, baseUrl) {
       meta: null,
     },
     {
-      display_name: 'Megan Goossens',
-      username: 'MaraJade',
+      display_name: 'Deleted Project Manager',
+      username: 'delPManager',
       email: null,
       site_spectator: false,
       site_manager: false,
@@ -112,9 +112,9 @@ module.exports = function(expect, request, baseUrl) {
       meta: null,
     },
     {
-      display_name: 'Old Timer',
-      username: 'timero',
-      email: 'timero@example.com',
+      display_name: 'Deleted User',
+      username: 'deleted',
+      email: 'deleted@example.com',
       site_spectator: false,
       site_manager: false,
       site_admin: false,
@@ -174,7 +174,7 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /users/:usernames', function() {
     it('returns a single user by username', function(done) {
       getAPIToken().then(function(token) {
-        const user = 'tschuy';
+        const user = 'admin1';
         request.get(`${baseUrl}users/${user}?token=${token}`,
         function(err, res, body) {
           const expectedResult = initialData.filter(u => {
@@ -191,7 +191,7 @@ module.exports = function(expect, request, baseUrl) {
 
     it('returns a deleted user if ?include_deleted is passed', function(done) {
       getAPIToken().then(function(token) {
-        const user = 'timero';
+        const user = 'deleted';
         request.get(`${baseUrl}users/${user}?include_deleted=true&token=` +
         token, function(err, res, body) {
           const expectedResult = initialDataWithDeleted.filter(u => {
@@ -414,7 +414,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails to create a new user with bad authorization', function(done) {
-      getAPIToken('mrsj', 'word').then(function(token) {
+      getAPIToken('sSpectator', 'word').then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(postNewUserMinimum);
 
@@ -426,7 +426,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 401,
             error: 'Authorization failure',
-            text: 'mrsj is not authorized to create users',
+            text: 'sSpectator is not authorized to create users',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -473,7 +473,7 @@ module.exports = function(expect, request, baseUrl) {
 
         requestOptions.body.auth.token = token;
 
-        requestOptions.body.object.username = 'patcht';
+        requestOptions.body.object.username = 'sManager';
 
         request.post(requestOptions, function(err, res, body) {
           expect(err).to.equal(null);
@@ -481,8 +481,8 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 409,
             error: 'Username already exists',
-            text: 'username patcht already exists',
-            values: ['patcht'],
+            text: 'username sManager already exists',
+            values: ['sManager'],
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -917,9 +917,9 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('POST /users/:username', function() {
     const originalUser = {
-      username: 'timero',
-      display_name: 'Old Timer',
-      email: 'timero@example.com',
+      username: 'deleted',
+      display_name: 'Deleted User',
+      email: 'deleted@example.com',
       site_spectator: false,
       site_manager: false,
       site_admin: false,
@@ -932,15 +932,15 @@ module.exports = function(expect, request, baseUrl) {
 
     const updatedAt = new Date().toISOString().substring(0, 10);
     const postUpdatedUser = {
-      display_name: 'Old J. Timer',
-      email: 'otimer@example.com',
+      display_name: 'Undeleted User',
+      email: 'undeleted@example.com',
       password: 'new_password',
       meta: 'An undeleted user',
     };
 
     const postUpdatedUserPermissions = {
-      display_name: 'Old J. Timer',
-      email: 'otimer@example.com',
+      display_name: 'Undeleted User',
+      email: 'undeleted@example.com',
       password: 'new_password',
       site_spectator: true,
       site_manager: true,
@@ -950,9 +950,9 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const getUpdatedUser = {
-      username: 'timero',
-      display_name: 'Old J. Timer',
-      email: 'otimer@example.com',
+      username: 'deleted',
+      display_name: 'Undeleted User',
+      email: 'undeleted@example.com',
       site_spectator: false,
       site_manager: false,
       site_admin: false,
@@ -964,9 +964,9 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const getUpdatedUserPermissions = {
-      username: 'timero',
-      display_name: 'Old J. Timer',
-      email: 'otimer@example.com',
+      username: 'deleted',
+      display_name: 'Undeleted User',
+      email: 'undeleted@example.com',
       site_spectator: true,
       site_manager: true,
       site_admin: true,
@@ -978,7 +978,7 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const badUpdatedUser = { // Invalid values but correct types
-      username: 'otimer', // Username can't be changed
+      username: 'undeleted', // Username can't be changed
       email: 'notanemail',
       created_at: '2016-02-17',
       updated_at: '2016-02-18',
@@ -1003,7 +1003,7 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const requestOptions = {
-      url: baseUrl + 'users/timero',
+      url: baseUrl + 'users/deleted',
       json: true,
     };
 
@@ -1211,11 +1211,11 @@ module.exports = function(expect, request, baseUrl) {
       const error = {
         status: 401,
         error: 'Authorization failure',
-        text: 'mrsj is not authorized to modify user timero',
+        text: 'sSpectator is not authorized to modify user deleted',
       };
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error], 'mrsj', 'word');
+                 error.status, [error], 'sSpectator', 'word');
     });
 
     it("doesn't update a user's username", function(done) {
@@ -1398,7 +1398,7 @@ module.exports = function(expect, request, baseUrl) {
   describe('DELETE /users/:username', function() {
     it('successfully deletes a user', function(done) {
       getAPIToken().then(function(token) {
-        const user = 'MaraJade';
+        const user = 'delPManager';
         request.del(`${baseUrl}users/${user}?token=${token}`,
         function(err, res) {
           expect(err).to.equal(null);

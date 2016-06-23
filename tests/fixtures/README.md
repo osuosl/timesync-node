@@ -4,34 +4,34 @@ Fixtures
 ``test_data.json``
 ------------------
 Each user listed below has a different set of permissions for their respective
-projects.
+Projects.
 
-1) deanj's password is ``pass``
-  - Project manager for: Protein Geometry Database
-  - Member of: PGD, What's Fresh, and GWM
-  - Spectator of: PGD and GWM
+1) pManager's password is ``pass``
+  - Project manager for: Project2
+  - Member of: Project2, Project3, and Project1
+  - Spectator of: Project2 and Project1
 
-2) tschuy's password is ``password``
-  - Project manager for: Ganeti Web Manager and WF
-  - Member of: GWM and WF
-  - Spectator of: GWM and WF
+2) admin1's password is ``password``
+  - Project manager for: Project1 and Project3
+  - Member of: Project1 and Project3
+  - Spectator of: Project1 and Project3
 
-3) patcht's password is ``drowssap``
-  - Project manager for: TimeSync
-  - Member of: PGD and TS
-  - Spectator of: PGD and TS
+3) sManager's password is ``drowssap``
+  - Project manager for: Project With Activity
+  - Member of: Project2 and TS
+  - Spectator of: Project2 and TS
 
-4) mrsj's password is ``word``
-  - Member of: GWM
-  - Spectator of: GWM
+4) sSpectator's password is ``word``
+  - Member of: Project1
+  - Spectator of: Project1
 
-5) thai's password is ``passing``
-  - Member of: WF
+5) user1's password is ``passing``
+  - Member of: Project3
 
-6) MaraJade's password is ``wording``
-  - Project manager for: Chili Project (deleted) and GWM
-  - Member of: Chili Project and GWM
-  - Spectator of: Chili Project and GWM
+6) delPManager's password is ``wording``
+  - Project manager for: Deleted Project (deleted) and Project1
+  - Member of: Deleted Project and Project1
+  - Spectator of: Deleted Project and Project1
 
-7) timero's password = ``test``
+7) deleted's password = ``test``
   - Deleted and inactive; used for tests
