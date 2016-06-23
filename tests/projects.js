@@ -1116,35 +1116,27 @@ module.exports = function(expect, request, baseUrl) {
       const uri = baseUrl + 'projects/not-a-project';
       const postObj = {name: postPatchedProject.name};
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Object not found';
-      const statusCode = 404;
-      const postBody = [
-        {
-          status: 404,
-          error: 'Object not found',
-          text: 'Nonexistent project',
-        },
-      ];
+      const error = {
+        status: 404,
+        error: 'Object not found',
+        text: 'Nonexistent project',
+      };
 
-      checkPostToEndpoint(done, uri, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, uri, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with invalid permissions", function(done) {
       const postObj = {name: postPatchedProject.name};
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Authorization failure';
-      const statusCode = 401;
-      const postBody = [
-        {
-          status: 401,
-          error: 'Authorization failure',
-          text: 'thai is not authorized to make changes to Ganeti Web Manager',
-        },
-      ];
+      const error = {
+        status: 401,
+        error: 'Authorization failure',
+        text: 'thai is not authorized to make changes to Ganeti Web Manager',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody, 'thai', 'passing');
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error], 'thai', 'passing');
     });
 
     it("doesn't patch a project with bad uri, name, slugs, and default " +
@@ -1186,219 +1178,171 @@ module.exports = function(expect, request, baseUrl) {
     it("doesn't patch a project with only bad uri", function(done) {
       const postObj = {uri: invalidProjectValue.uri};
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field uri of project should be uri but was sent as string',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field uri of project should be uri but was sent as string',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with only bad slugs", function(done) {
       const postObj = {slugs: ['test-!@#']};
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field slugs of project should be slugs but was sent as ' +
-                'non-slug strings',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field slugs of project should be slugs but was sent as ' +
+              'non-slug strings',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with only bad name", function(done) {
       const postObj = {name: invalidProjectValue.name};
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field name of project should be unique name but was sent as ' +
-                'name which already exists',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field name of project should be unique name but was sent as ' +
+              'name which already exists',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with just bad default activity",
     function(done) {
       const postObj = {default_activity: invalidProjectValue.default_activity};
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Invalid foreign key';
-      const statusCode = 409;
-      const postBody = [
-        {
-          status: 409,
-          error: 'Invalid foreign key',
-          text: 'The project does not contain a valid activity reference.',
-        },
-      ];
+      const error = {
+        status: 409,
+        error: 'Invalid foreign key',
+        text: 'The project does not contain a valid activity reference.',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with wrong-type uri", function(done) {
       const postObj = {uri: invalidProjectDataType.uri};
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field uri of project should be string but was sent as object',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field uri of project should be string but was sent as object',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with invalid uri", function(done) {
       const postObj = copyJsonObject(postOriginalProject);
       postObj.uri = invalidProjectValue.uri;
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field uri of project should be uri but was sent as string',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field uri of project should be uri but was sent as string',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with invalid slugs", function(done) {
       const postObj = copyJsonObject(postOriginalProject);
       postObj.slugs = ['test-!@#', 'wr()ng!'];
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field slugs of project should be slugs but was sent as ' +
-                'non-slug strings',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field slugs of project should be slugs but was sent as ' +
+              'non-slug strings',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with wrong-type slugs", function(done) {
       const postObj = copyJsonObject(postOriginalProject);
       postObj.slugs = invalidProjectDataType.slugs;
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field slugs of project should be array but was sent as object',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field slugs of project should be array but was sent as object',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with missing slugs", function(done) {
       const postObj = copyJsonObject(postOriginalProject);
       postObj.slugs = [];
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field slugs of project should be array of slugs but was ' +
-                'sent as empty array',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field slugs of project should be array of slugs but was ' +
+              'sent as empty array',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with existent slugs", function(done) {
       const postObj = copyJsonObject(postOriginalProject);
       postObj.slugs = invalidProjectValue.slugs;
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'The slug provided already exists';
-      const statusCode = 409;
-      const postBody = [
-        {
-          status: 409,
-          error: 'The slug provided already exists',
-          text: `slugs ${postObj.slugs.join(', ')} already exist`,
-          values: postObj.slugs,
-        },
-      ];
+      const error = {
+        status: 409,
+        error: 'The slug provided already exists',
+        text: `slugs ${postObj.slugs.join(', ')} already exist`,
+        values: postObj.slugs,
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with wrong-type name", function(done) {
       const postObj = copyJsonObject(postOriginalProject);
       postObj.name = invalidProjectDataType.name;
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field name of project should be string but was sent as object',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field name of project should be string but was sent as object',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with existing name", function(done) {
       const postObj = copyJsonObject(postOriginalProject);
       postObj.name = invalidProjectValue.name;
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field name of project should be unique name but was sent as ' +
-                'name which already exists',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field name of project should be unique name but was sent as ' +
+              'name which already exists',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with non-existent default activity",
@@ -1406,18 +1350,14 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = copyJsonObject(postOriginalProject);
       postObj.default_activity = invalidProjectValue.default_activity;
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Invalid foreign key';
-      const statusCode = 409;
-      const postBody = [
-        {
-          status: 409,
-          error: 'Invalid foreign key',
-          text: 'The project does not contain a valid activity reference.',
-        },
-      ];
+      const error = {
+        status: 409,
+        error: 'Invalid foreign key',
+        text: 'The project does not contain a valid activity reference.',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't patch a project with wrong-type default activity",
@@ -1425,19 +1365,15 @@ module.exports = function(expect, request, baseUrl) {
       const postObj = copyJsonObject(postOriginalProject);
       postObj.default_activity = invalidProjectDataType.default_activity;
       const expectedResults = copyJsonObject(getOriginalProject);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field default_activity of project should be string but was ' +
-                'sent as object',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field default_activity of project should be string but was ' +
+              'sent as object',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
   });
 

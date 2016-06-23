@@ -884,163 +884,127 @@ module.exports = function(expect, request, baseUrl) {
       const uri = baseUrl + 'activities/not-an-activity';
       const postObj = {name: postPatchedActivity.name};
       const expectedResults = copyJsonObject(getOriginalActivity);
-      const error = 'Object not found';
-      const statusCode = 404;
-      const postBody = [
-        {
-          status: 404,
-          error: 'Object not found',
-          text: 'Nonexistent activity',
-        },
-      ];
+      const error = {
+        status: 404,
+        error: 'Object not found',
+        text: 'Nonexistent activity',
+      };
 
-      checkPostToEndpoint(done, uri, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, uri, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     // Returns an error 400 - errorBadObjectInvalidField
     it('fails to update an activity to have no name', function(done) {
       const postObj = {name: ''};
       const expectedResults = copyJsonObject(getOriginalActivity);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field name of activity should be string but was sent as ' +
-                'empty string',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field name of activity should be string but was sent as ' +
+              'empty string',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it('fails to update an activity to have no slug', function(done) {
       const postObj = {slug: ''};
       const expectedResults = copyJsonObject(getOriginalActivity);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field slug of activity should be slug but was sent as ' +
-                'empty string',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field slug of activity should be slug but was sent as ' +
+              'empty string',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it('fails to update an activity to have an existent name', function(done) {
       const postObj = {name: 'Development'};
       const expectedResults = copyJsonObject(getOriginalActivity);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field name of activity should be unique name but was sent ' +
-                'as name which already exists',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field name of activity should be unique name but was sent ' +
+              'as name which already exists',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it('fails to update an activity to have an existent slug', function(done) {
       const postObj = {slug: 'dev'};
       const expectedResults = copyJsonObject(getOriginalActivity);
-      const error = 'The slug provided already exists';
-      const statusCode = 409;
-      const postBody = [
-        {
-          status: 409,
-          error: 'The slug provided already exists',
-          text: 'slug dev already exists',
-          values: ['dev'],
-        },
-      ];
+      const error = {
+        status: 409,
+        error: 'The slug provided already exists',
+        text: 'slug dev already exists',
+        values: ['dev'],
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it('fails to update activity if name is invalid type', function(done) {
       const postObj = {name: invalidActivityDataType.name};
       const expectedResults = copyJsonObject(getOriginalActivity);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field name of activity should be string but was sent as ' +
-                'object',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field name of activity should be string but was sent as ' +
+              'object',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it('fails to update activity if slug is invalid type', function(done) {
       const postObj = {slug: invalidActivityDataType.slug};
       const expectedResults = copyJsonObject(getOriginalActivity);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field slug of activity should be string but was sent as ' +
-                'object',
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field slug of activity should be string but was sent as ' +
+              'object',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it('fails to update an activity from regular user', function(done) {
       const postObj = {name: 'Development'};
       const expectedResults = copyJsonObject(getOriginalActivity);
-      const error = 'Authorization failure';
-      const statusCode = 401;
-      const postBody = [
-        {
-          status: 401,
-          error: 'Authorization failure',
-          text: 'mrsj is not authorized to update activities',
-        },
-      ];
+      const error = {
+        status: 401,
+        error: 'Authorization failure',
+        text: 'mrsj is not authorized to update activities',
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody, 'mrsj', 'word');
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error], 'mrsj', 'word');
     });
 
     it('fails to update when given an invalid slug', function(done) {
       const slug = invalidActivityValue.slug;
       const postObj = {slug: slug};
       const expectedResults = copyJsonObject(getOriginalActivity);
-      const error = 'Bad object';
-      const statusCode = 400;
-      const postBody = [
-        {
-          status: 400,
-          error: 'Bad object',
-          text: 'Field slug of activity should be valid slug but was sent ' +
-                `as invalid slug ${slug}`,
-        },
-      ];
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field slug of activity should be valid slug but was sent ' +
+              `as invalid slug ${slug}`,
+      };
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, postBody);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
   });
 
