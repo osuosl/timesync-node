@@ -468,7 +468,7 @@ module.exports = function(app) {
         return errors.send(errors.errorSlugsAlreadyExist(slugs.map(
           function(slug) {
             return slug.name;
-          })
+          }).sort()
         ), res);
       }
 
@@ -707,7 +707,7 @@ module.exports = function(app) {
 
         const update = function(activityId) {
           knex('projects').where('name', obj.name).then(function(names) {
-            if (names.length) {
+            if (obj.name !== project.name && names.length) {
               const err = errors.errorBadObjectInvalidField('project', 'name',
                 'unique name', 'name which already exists');
               return res.status(err.status).send(err);

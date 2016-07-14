@@ -6,11 +6,11 @@ function copyJsonObject(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-let user = 'tschuy';
-let password = 'password';
+const defaultUsername = 'tschuy';
+const defaultPassword = 'password';
 
 module.exports = function(expect, request, baseUrl) {
-  function getAPIToken() {
+  function getAPIToken(username, password) {
     const requestOptions = {
       url: baseUrl + 'login',
       json: true,
@@ -18,8 +18,8 @@ module.exports = function(expect, request, baseUrl) {
     requestOptions.body = {
       auth: {
         type: 'password',
-        username: user,
-        password: password,
+        username: username || defaultUsername,
+        password: password || defaultPassword,
       },
     };
     return new Promise(function(resolve) {
@@ -32,7 +32,7 @@ module.exports = function(expect, request, baseUrl) {
     });
   }
 
-  const initialData = [
+  const initialDataWithDeleted = [
     {
       display_name: 'Dean Johnson',
       username: 'deanj',
@@ -125,21 +125,18 @@ module.exports = function(expect, request, baseUrl) {
       meta: 'A sample deleted user',
     },
   ];
+  const initialData = initialDataWithDeleted.filter(u => {
+    return u.deleted_at === null;
+  });
 
   describe('GET /users', function() {
     it('returns all active users in the database', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'users?token=' + token,
-        function(err, res, body) {
+        request.get(`${baseUrl}users?token=${token}`, function(err, res, body) {
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          const jsonBody = JSON.parse(body);
-          const expectedResults = initialData.filter(function(data) {
-            return data.deleted_at === null;
-          });
-
-          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          expect(JSON.parse(body)).to.deep.have.same.members(initialData);
           done();
         });
       });
@@ -149,15 +146,12 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /users?include_deleted=true', function() {
     it('returns all active and deleted users in the database', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'users?include_deleted=true&token=' + token,
+        request.get(`${baseUrl}users?include_deleted=true&token=${token}`,
         function(err, res, body) {
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
-
-          const jsonBody = JSON.parse(body);
-
-          expect(jsonBody).to.deep.have.same.members(initialData);
-
+          expect(JSON.parse(body)).to.deep.have.same
+                                              .members(initialDataWithDeleted);
           done();
         });
       });
@@ -165,16 +159,12 @@ module.exports = function(expect, request, baseUrl) {
 
     it('ignores extra params if user specifies invalid params', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'users?include_deleted=truefoo=bar&token=' +
-        token,
+        request.get(`${baseUrl}users?include_deleted=true&f=b&token=${token}`,
         function(err, res, body) {
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
-
-          const jsonBody = JSON.parse(body);
-
-          expect(jsonBody).to.deep.have.same.members(initialData);
-
+          expect(JSON.parse(body)).to.deep.have.same
+                                              .members(initialDataWithDeleted);
           done();
         });
       });
@@ -184,16 +174,16 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /users/:usernames', function() {
     it('returns a single user by username', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'users/' + initialData[0].username +
-        '?token=' + token,
+        const user = 'tschuy';
+        request.get(`${baseUrl}users/${user}?token=${token}`,
         function(err, res, body) {
+          const expectedResult = initialData.filter(u => {
+            return u.username === user;
+          })[0];
+
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
-
-          const jsonBody = JSON.parse(body);
-
-          expect(jsonBody).to.deep.equal(initialData[0]);
-
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
           done();
         });
       });
@@ -201,13 +191,16 @@ module.exports = function(expect, request, baseUrl) {
 
     it('returns a deleted user if ?include_deleted is passed', function(done) {
       getAPIToken().then(function(token) {
-        request.get(baseUrl + 'users/' + initialData[6].username +
-        '?include_deleted=true&token=' + token,
-        function(err, res, body) {
-          const jsonBody = JSON.parse(body);
+        const user = 'timero';
+        request.get(`${baseUrl}users/${user}?include_deleted=true&token=` +
+        token, function(err, res, body) {
+          const expectedResult = initialDataWithDeleted.filter(u => {
+            return u.username === user;
+          })[0];
 
-          expect(jsonBody).to.deep.equal(initialData[6]);
+          expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
           done();
         });
       });
@@ -333,13 +326,10 @@ module.exports = function(expect, request, baseUrl) {
     // was valid)
     const checkListEndpoint = function(done, expectedResults, token) {
       // Make a get request
-      request.get(requestOptions.url + '?include_deleted=true&token=' + token,
+      request.get(requestOptions.url + '?token=' + token,
       function(err, res, body) {
         expect(err).to.equal(null);
-
-        const jsonBody = JSON.parse(body);
-        expect(jsonBody).to.deep.have.same.members(expectedResults);
-
+        expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
         expect(res.statusCode).to.equal(200);
         done();
       });
@@ -424,15 +414,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails to create a new user with bad authorization', function(done) {
-      const oldUser = user;
-      const oldPass = password;
-
-      user = 'mrsj';
-      password = 'word';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
+      getAPIToken('mrsj', 'word').then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(postNewUserMinimum);
 
@@ -812,7 +794,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'The user is missing a created_at field',
+            text: 'user does not have a created_at field',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -839,7 +821,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'The user is missing a updated_at field',
+            text: 'user does not have a updated_at field',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -866,7 +848,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 400,
             error: 'Bad object',
-            text: 'The user is missing a deleted_at field',
+            text: 'user does not have a deleted_at field',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -948,7 +930,41 @@ module.exports = function(expect, request, baseUrl) {
       meta: 'A sample deleted user',
     };
 
-    const updatedUser = {
+    const updatedAt = new Date().toISOString().substring(0, 10);
+    const postUpdatedUser = {
+      display_name: 'Old J. Timer',
+      email: 'otimer@example.com',
+      password: 'new_password',
+      meta: 'An undeleted user',
+    };
+
+    const postUpdatedUserPermissions = {
+      display_name: 'Old J. Timer',
+      email: 'otimer@example.com',
+      password: 'new_password',
+      site_spectator: true,
+      site_manager: true,
+      site_admin: true,
+      active: true,
+      meta: 'An undeleted user',
+    };
+
+    const getUpdatedUser = {
+      username: 'timero',
+      display_name: 'Old J. Timer',
+      email: 'otimer@example.com',
+      site_spectator: false,
+      site_manager: false,
+      site_admin: false,
+      active: false,
+      meta: 'An undeleted user',
+      created_at: '2014-01-01',
+      updated_at: updatedAt,
+      deleted_at: null,
+    };
+
+    const getUpdatedUserPermissions = {
+      username: 'timero',
       display_name: 'Old J. Timer',
       email: 'otimer@example.com',
       site_spectator: true,
@@ -956,6 +972,9 @@ module.exports = function(expect, request, baseUrl) {
       site_admin: true,
       active: true,
       meta: 'An undeleted user',
+      created_at: '2014-01-01',
+      updated_at: updatedAt,
+      deleted_at: null,
     };
 
     const badUpdatedUser = { // Invalid values but correct types
@@ -988,731 +1007,422 @@ module.exports = function(expect, request, baseUrl) {
       json: true,
     };
 
-    // Function used for validating that the object in the database
-    // is in the correct state (change or unchanged based on if the POST
-    // was valid)
-    const checkListEndpoint = function(done, expectedResults, token) {
-      // Make a get request
-      request.get(requestOptions.url + '?include_deleted=true&token=' + token,
-      function(err, res, body) {
-        expect(err).to.equal(null);
+    function checkPostToEndpoint(done, uri, postObj, expectedResults, error,
+    statusCode, postBodies, username, password, callback) {
+      getAPIToken(username, password).then(function(token) {
+        const options = copyJsonObject(requestOptions);
+        postArg.object = postObj;
+        options.body = postArg;
 
-        const jsonBody = JSON.parse(body);
-        expect(jsonBody).to.deep.equal(expectedResults);
+        options.body.auth.token = token;
+        if (uri) {
+          options.uri = uri;
+        }
 
-        expect(res.statusCode).to.equal(200);
-        done();
-      });
-    };
+        // make a given post request
+        // check the error
+        // check the statusCode
+        // Also check the body of the request
+        request.post(options, function(err, res, body) {
+          expect(body.error).to.equal(error);
+          expect(res.statusCode).to.equal(statusCode);
 
-    it("successfully updates a user's display name, password, email, and meta",
-    function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          display_name: updatedUser.display_name,
-          password: updatedUser.password,
-          email: updatedUser.email,
-          meta: updatedUser.meta,
-        };
+          if (postBodies !== undefined) {
+            // Is the recieved body within the array of expected bodies
+            expect(body).to.deep.equal(postBodies[0]);
+          }
 
-        requestOptions.body.auth.token = token;
+          // Always checks for valid get request
+          // err is always 'null'
+          // res.statusCode is always 200
+          // body always equals expectedresults
+          request.get(requestOptions.url + '?include_deleted=true&token=' +
+          token, function(err0, res0, body0) {
+            const jsonBody = JSON.parse(body0);
+            expect(jsonBody.error).to.equal(undefined);
+            expect(res0.statusCode).to.equal(200);
+            expectedResults.updated_at = jsonBody.updated_at;
+            expect(jsonBody).to.deep.equal(expectedResults);
 
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = copyJsonObject(originalUser);
-          expectedResult.display_name = updatedUser.display_name;
-          expectedResult.email = updatedUser.email;
-          expectedResult.meta = updatedUser.meta;
-          expectedResult.updated_at = body.updated_at;
-          expectedResult.deleted_at = null;
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(200);
-
-          checkListEndpoint(done, expectedResult, token);
+            if (callback) {
+              callback(done);
+            } else {
+              done();
+            }
+          });
         });
       });
+    }
+
+    it("successfully updates a user's display name, password, email, and meta" +
+    ' by an admin', function(done) {
+      const postObj = copyJsonObject(postUpdatedUser);
+      const expectedResults = copyJsonObject(getUpdatedUser);
+      let error;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
+    });
+
+    it("successfully updates a user's display name, password, email, meta" +
+    ' active state, and permissions by an admin', function(done) {
+      const postObj = copyJsonObject(postUpdatedUserPermissions);
+      const expectedResults = copyJsonObject(getUpdatedUserPermissions);
+      let error;
+      const statusCode = 200;
+
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("successfully updates a user's display name", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          display_name: updatedUser.display_name,
-        };
+      const postObj = {display_name: postUpdatedUser.display_name};
+      const expectedResults = copyJsonObject(originalUser);
+      expectedResults.display_name = postObj.display_name;
+      expectedResults.deleted_at = null;
+      expectedResults.updated_at = updatedAt;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = copyJsonObject(originalUser);
-          expectedResult.display_name = updatedUser.display_name;
-          expectedResult.updated_at = body.updated_at;
-          expectedResult.deleted_at = null;
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(200);
-
-          checkListEndpoint(done, expectedResult, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("successfully updates a user's password", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          password: updatedUser.password,
-        };
+      const bcrypt = require('bcrypt');
+      bcrypt.genSalt(10, function(genSaltErr, salt) {
+        bcrypt.hash(postUpdatedUser.password, salt, function(hashErr, hash) {
+          const postObj = {password: hash};
+          const expectedResults = copyJsonObject(originalUser);
+          expectedResults.deleted_at = null;
+          expectedResults.updated_at = updatedAt;
+          let error;
+          const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = copyJsonObject(originalUser);
-          expectedResult.updated_at = body.updated_at;
-          expectedResult.deleted_at = null;
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(200);
-
-          checkListEndpoint(done, expectedResult, token);
+          checkPostToEndpoint(done, null, postObj, expectedResults, error,
+          statusCode, undefined, undefined, undefined, function(done0) {
+            getAPIToken(originalUser.username, postUpdatedUser.password)
+            .then(function(token) {
+              expect(token).to.be.a('string');
+              done0();
+            });
+          });
         });
       });
     });
 
     it("successfully updates a user's email", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          email: updatedUser.email,
-        };
+      const postObj = {email: postUpdatedUser.email};
+      const expectedResults = copyJsonObject(originalUser);
+      expectedResults.email = postObj.email;
+      expectedResults.deleted_at = null;
+      expectedResults.updated_at = updatedAt;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = copyJsonObject(originalUser);
-          expectedResult.email = updatedUser.email;
-          expectedResult.updated_at = body.updated_at;
-          expectedResult.deleted_at = null;
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(200);
-
-          checkListEndpoint(done, expectedResult, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("successfully updates a user's meta", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          meta: updatedUser.meta,
-        };
+      const postObj = {meta: postUpdatedUser.meta};
+      const expectedResults = copyJsonObject(originalUser);
+      expectedResults.meta = postObj.meta;
+      expectedResults.deleted_at = null;
+      expectedResults.updated_at = updatedAt;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = copyJsonObject(originalUser);
-          expectedResult.meta = updatedUser.meta;
-          expectedResult.updated_at = body.updated_at;
-          expectedResult.deleted_at = null;
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(200);
-
-          checkListEndpoint(done, expectedResult, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("successfully updates a user's site_spectator status", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          site_spectator: updatedUser.site_spectator,
-        };
+      const postObj = {site_spectator:
+                                    postUpdatedUserPermissions.site_spectator};
+      const expectedResults = copyJsonObject(originalUser);
+      expectedResults.site_spectator = postObj.site_spectator;
+      expectedResults.deleted_at = null;
+      expectedResults.updated_at = updatedAt;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = copyJsonObject(originalUser);
-          expectedResult.site_spectator = updatedUser.site_spectator;
-          expectedResult.updated_at = body.updated_at;
-          expectedResult.deleted_at = null;
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(200);
-
-          checkListEndpoint(done, expectedResult, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("successfully updates a user's site_manager status", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          site_manager: updatedUser.site_manager,
-        };
+      const postObj = {site_manager: postUpdatedUserPermissions.site_manager};
+      const expectedResults = copyJsonObject(originalUser);
+      expectedResults.site_manager = postObj.site_manager;
+      expectedResults.deleted_at = null;
+      expectedResults.updated_at = updatedAt;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = copyJsonObject(originalUser);
-          expectedResult.site_manager = updatedUser.site_manager;
-          expectedResult.updated_at = body.updated_at;
-          expectedResult.deleted_at = null;
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(200);
-
-          checkListEndpoint(done, expectedResult, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("successfully updates a user's site_admin status", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          site_admin: updatedUser.site_admin,
-        };
+      const postObj = {site_admin: postUpdatedUserPermissions.site_admin};
+      const expectedResults = copyJsonObject(originalUser);
+      expectedResults.site_admin = postObj.site_admin;
+      expectedResults.deleted_at = null;
+      expectedResults.updated_at = updatedAt;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = copyJsonObject(originalUser);
-          expectedResult.site_admin = updatedUser.site_admin;
-          expectedResult.updated_at = body.updated_at;
-          expectedResult.deleted_at = null;
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(200);
-
-          checkListEndpoint(done, expectedResult, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("successfully updates a user's active status", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          active: updatedUser.active,
-        };
+      const postObj = {active: postUpdatedUserPermissions.active};
+      const expectedResults = copyJsonObject(originalUser);
+      expectedResults.active = postObj.active;
+      expectedResults.deleted_at = null;
+      expectedResults.updated_at = updatedAt;
+      let error;
+      const statusCode = 200;
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = copyJsonObject(originalUser);
-          expectedResult.active = updatedUser.active;
-          expectedResult.updated_at = body.updated_at;
-          expectedResult.deleted_at = null;
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(200);
-
-          checkListEndpoint(done, expectedResult, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode);
     });
 
     it("doesn't update a non-existent user", function(done) {
-      getAPIToken().then(function(token) {
-        const options = copyJsonObject(requestOptions);
-        options.body = copyJsonObject(postArg);
-        options.body.object = copyJsonObject(updatedUser);
+      const uri = baseUrl + 'users/nonexistent';
+      const postObj = {meta: postUpdatedUser.meta};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 404,
+        error: 'Object not found',
+        text: 'Nonexistent user',
+      };
 
-        options.body.auth.token = token;
-        options.uri = baseUrl + 'users/nonexistent';
-
-        request.post(options, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 404,
-            error: 'Object not found',
-            text: 'Nonexistent user',
-          };
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(404);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
-    });
-
-    it("doesn't update a user with bad authentication", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(updatedUser);
-
-        requestOptions.body.auth.token = 'not_a_token';
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 401,
-            error: 'Authentication failure',
-            text: 'Bad API token',
-          };
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(401);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, uri, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with bad authorization", function(done) {
-      const oldUser = user;
-      const oldPass = password;
+      const postObj = {meta: postUpdatedUser.meta};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 401,
+        error: 'Authorization failure',
+        text: 'mrsj is not authorized to modify user timero',
+      };
 
-      user = 'mrsj';
-      password = 'word';
-      getAPIToken().then(function(token) {
-        user = oldUser;
-        password = oldPass;
-
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = copyJsonObject(updatedUser);
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 401,
-            error: 'Authorization failure',
-            text: 'mrsj is not authorized to modify user timero',
-          };
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(401);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error], 'mrsj', 'word');
     });
 
     it("doesn't update a user's username", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          username: badUpdatedUser.username,
-        };
+      const postObj = {username: badUpdatedUser.username};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'user does not have a username field',
+      };
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'The user is missing a username field',
-          };
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with bad email", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          email: badUpdatedUser.email,
-        };
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field email of user should be valid email but was sent as ' +
+      const postObj = {email: badUpdatedUser.email};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field email of user should be valid email but was sent as ' +
               'string',
-          };
+      };
 
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with invalid display name type", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          display_name: invalidUpdatedUser.display_name,
-        };
+      const postObj = {display_name: invalidUpdatedUser.display_name};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field display_name of user should be string but was sent as ' +
+              'array',
+      };
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field display_name of user should be string but was sent ' +
-              'as array',
-          };
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with invalid password type", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          password: invalidUpdatedUser.password,
-        };
+      const postObj = {password: invalidUpdatedUser.password};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field password of user should be string but was sent as array',
+      };
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field password of user should be string but was sent ' +
-              'as array',
-          };
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with invalid email type", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          email: invalidUpdatedUser.email,
-        };
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field email of user should be valid email but was sent as ' +
+      const postObj = {email: invalidUpdatedUser.email};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field email of user should be valid email but was sent as ' +
               'object',
-          };
+      };
 
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with invalid site_spectator type",
     function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          site_spectator: invalidUpdatedUser.site_spectator,
-        };
+      const postObj = {site_spectator: invalidUpdatedUser.site_spectator};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field site_spectator of user should be boolean but was sent ' +
+              'as string',
+      };
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field site_spectator of user should be boolean but was ' +
-              'sent as string',
-          };
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with invalid site_manager type", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          site_manager: invalidUpdatedUser.site_manager,
-        };
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field site_manager of user should be boolean but was sent ' +
+      const postObj = {site_manager: invalidUpdatedUser.site_manager};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field site_manager of user should be boolean but was sent ' +
               'as string',
-          };
+      };
 
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with invalid site_admin type", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          site_admin: invalidUpdatedUser.site_admin,
-        };
-
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field site_admin of user should be boolean but was sent ' +
+      const postObj = {site_admin: invalidUpdatedUser.site_admin};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field site_admin of user should be boolean but was sent ' +
               'as string',
-          };
+      };
 
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with invalid active type", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          active: invalidUpdatedUser.active,
-        };
+      const postObj = {active: invalidUpdatedUser.active};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field active of user should be boolean but was sent as string',
+      };
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field active of user should be boolean but was sent ' +
-              'as string',
-          };
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with invalid meta type", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          meta: invalidUpdatedUser.meta,
-        };
+      const postObj = {meta: invalidUpdatedUser.meta};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'Field meta of user should be string but was sent as array',
+      };
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'Field meta of user should be string but was sent as array',
-          };
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with explicit created_at", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          created_at: badUpdatedUser.created_at,
-        };
+      const postObj = {created_at: badUpdatedUser.created_at};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'user does not have a created_at field',
+      };
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'The user is missing a created_at field',
-          };
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with explicit updated_at", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          updated_at: badUpdatedUser.updated_at,
-        };
+      const postObj = {updated_at: badUpdatedUser.updated_at};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'user does not have a updated_at field',
+      };
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'The user is missing a updated_at field',
-          };
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
 
     it("doesn't update a user with explicit deleted_at", function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
-        requestOptions.body.object = {
-          deleted_at: badUpdatedUser.deleted_at,
-        };
+      const postObj = {deleted_at: badUpdatedUser.deleted_at};
+      const expectedResults = copyJsonObject(originalUser);
+      const error = {
+        status: 400,
+        error: 'Bad object',
+        text: 'user does not have a deleted_at field',
+      };
 
-        requestOptions.body.auth.token = token;
-
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-
-          const expectedResult = {
-            status: 400,
-            error: 'Bad object',
-            text: 'The user is missing a deleted_at field',
-          };
-
-          expect(body).to.deep.equal(expectedResult);
-
-          expect(res.statusCode).to.equal(400);
-
-          checkListEndpoint(done, originalUser, token);
-        });
-      });
+      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
+                 error.status, [error]);
     });
   });
 
   describe('DELETE /users/:username', function() {
     it('successfully deletes a user', function(done) {
       getAPIToken().then(function(token) {
-        request.del(baseUrl + 'users/MaraJade?token=' + token,
-        function(delErr, delRes) {
-          expect(delErr).to.equal(null);
-          expect(delRes.statusCode).to.equal(200);
+        const user = 'MaraJade';
+        request.del(`${baseUrl}users/${user}?token=${token}`,
+        function(err, res) {
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
 
-          request.get(baseUrl + 'users/MaraJade?token=' + token,
+          request.get(`${baseUrl}users/${user}?token=${token}`,
           function(getErr, getRes, getBody) {
-            expect(getErr).to.equal(null);
-            expect(JSON.parse(getBody)).to.deep.equal({
+            const expectedError = {
               status: 404,
               error: 'Object not found',
               text: 'Nonexistent user',
-            });
-            expect(getRes.statusCode).to.equal(404);
+            };
+            expect(getErr).to.equal(null);
+            expect(JSON.parse(getBody)).to.deep.equal(expectedError);
+            expect(getRes.statusCode).to.equal(expectedError.status);
 
-            request.get(baseUrl + 'users?token=' + token,
+            request.get(`${baseUrl}users?token=${token}`,
             function(getAllErr, getAllRes, getAllBody) {
+              const expectedResults = initialData.filter(u => {
+                return u.username !== user;
+              });
               expect(getAllErr).to.equal(null);
-              expect(JSON.parse(getAllBody)).to.deep.have.same.
-                                            members(initialData.slice(0, -2));
+              expect(JSON.parse(getAllBody)).to.deep.have.same
+                                                    .members(expectedResults);
               expect(getAllRes.statusCode).to.equal(200);
               done();
             });
@@ -1723,23 +1433,21 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails if it receives a nonexistent user', function(done) {
       getAPIToken().then(function(token) {
-        request.del(baseUrl + 'users/notauser?token=' + token,
-        function(delErr, delRes, delBody) {
-          expect(delErr).to.equal(null);
-          expect(JSON.parse(delBody)).to.deep.equal({
+        request.del(`${baseUrl}users/notauser?token=${token}`,
+        function(err, res, body) {
+          const expectedError = {
             status: 404,
             error: 'Object not found',
             text: 'Nonexistent user',
-          });
-          expect(delRes.statusCode).to.equal(404);
+          };
+          expect(err).to.equal(null);
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(expectedError.status);
 
-          request.get(baseUrl + 'users?token=' + token,
+          request.get(`${baseUrl}users?token=${token}`,
           function(getErr, getRes, getBody) {
             expect(getErr).to.equal(null);
-            expect(JSON.parse(getBody)).to.deep.have.same
-            .members(initialData.filter(function(u) {
-              return u.deleted_at === null;
-            }));
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
             expect(getRes.statusCode).to.equal(200);
             done();
           });
@@ -1749,24 +1457,23 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails if it receives an invalid user', function(done) {
       getAPIToken().then(function(token) {
-        request.del(baseUrl + 'users/!nv4l|d?token=' + token,
-        function(delErr, delRes, delBody) {
-          expect(delErr).to.equal(null);
-          expect(JSON.parse(delBody)).to.deep.equal({
+        const user = '!nv4l|d';
+        request.del(`${baseUrl}users/${user}?token=${token}`,
+        function(err, res, body) {
+          const expectedError = {
             status: 400,
             error: 'The provided identifier was invalid',
-            text: 'Expected username but received !nv4l|d',
-            values: ['!nv4l|d'],
-          });
-          expect(delRes.statusCode).to.equal(400);
+            text: `Expected username but received ${user}`,
+            values: [user],
+          };
+          expect(err).to.equal(null);
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
+          expect(res.statusCode).to.equal(expectedError.status);
 
-          request.get(baseUrl + 'users?token=' + token,
+          request.get(`${baseUrl}users?token=${token}`,
           function(getErr, getRes, getBody) {
             expect(getErr).to.equal(null);
-            expect(JSON.parse(getBody)).to.deep.have.same
-            .members(initialData.filter(function(u) {
-              return u.deleted_at === null;
-            }));
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
             expect(getRes.statusCode).to.equal(200);
             done();
           });
