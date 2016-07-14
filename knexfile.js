@@ -36,7 +36,7 @@ module.exports = {
   },
 
   production_sqlite: {
-    client: 'sqite3',
+    client: 'sqlite3',
     connection: {
       filename: process.env.SQLITE_CONNECTION_FILE,
     },
