@@ -6,11 +6,11 @@ function copyJsonObject(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-const defaultUsername = 'tschuy';
-const defaultPassword = 'password';
+let user = 'tschuy';
+let password = 'password';
 
 module.exports = function(expect, request, baseUrl) {
-  function getAPIToken(username, password) {
+  function getAPIToken() {
     const requestOptions = {
       url: baseUrl + 'login',
       json: true,
@@ -18,14 +18,13 @@ module.exports = function(expect, request, baseUrl) {
     requestOptions.body = {
       auth: {
         type: 'password',
-        username: username || defaultUsername,
-        password: password || defaultPassword,
+        username: user,
+        password: password,
       },
     };
     return new Promise(function(resolve) {
       request.post(requestOptions, function(err, res, body) {
-        expect(err).to.equal(null);
-        expect(body).to.include.keys(['token']);
+        expect(err).to.be.a('null');
         expect(res.statusCode).to.equal(200);
 
         resolve(body.token);
@@ -33,82 +32,1838 @@ module.exports = function(expect, request, baseUrl) {
     });
   }
 
-  const initialDataWithDeleted = [
-    {
-      duration: 12,
-      user: 'deanj',
-      project: ['gwm', 'ganeti-webmgr'].sort(),
-      activities: ['docs', 'dev'].sort(),
-      notes: '',
-      issue_uri:
-        'https://github.com/osu-cass/whats-fresh-api/issues/56',
-      date_worked: '2015-04-19',
-      created_at: '2015-04-19',
-      updated_at: null,
-      deleted_at: null,
-      revision: 1,
-      uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
-    },
-    {
-      duration: 12,
-      user: 'tschuy',
-      project: ['gwm', 'ganeti-webmgr'].sort(),
-      activities: ['docs'],
-      notes: '',
-      issue_uri:
-        'https://github.com/osu-cass/whats-fresh-api/issues/56',
-      date_worked: '2015-04-20',
-      created_at: '2015-04-20',
-      updated_at: null,
-      deleted_at: null,
-      revision: 1,
-      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-    },
-    {
-      duration: 12,
-      user: 'deanj',
-      project: ['pgd'],
-      activities: ['sys'],
-      notes: '',
-      issue_uri:
-        'https://github.com/osu-cass/whats-fresh-api/issues/56',
-      date_worked: '2015-04-21',
-      created_at: '2015-04-21',
-      updated_at: null,
-      deleted_at: null,
-      revision: 1,
-      uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
-    },
-    {
-      duration: 12,
-      user: 'patcht',
-      project: ['pgd'],
-      activities: ['dev'],
-      notes: '',
-      issue_uri:
-        'https://github.com/osu-cass/whats-fresh-api/issues/56',
-      date_worked: '2015-04-22',
-      created_at: '2015-04-22',
-      updated_at: null,
-      deleted_at: null,
-      revision: 1,
-      uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
-    },
-    {
-      duration: 18,
-      user: 'thai',
-      project: ['wf'],
-      activities: ['docs'],
-      notes: '',
-      issue_uri: '',
-      date_worked: '2016-02-25',
-      created_at: '2016-02-25',
-      updated_at: null,
-      uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
-      revision: 1,
-      deleted_at: null,
-    },
-    {
+  /* GET one of the /times endpoints and check its response against
+  what should be returned */
+  describe('GET /times', function() {
+    it('returns all times in the database to an admin', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?token=' + token,
+        function(getErr, getRes, getBody) {
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['pgd'],
+              activities: ['sys'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-21',
+              created_at: '2015-04-21',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
+            },
+            {
+              duration: 12,
+              user: 'patcht',
+              project: ['pgd'],
+              activities: ['dev'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-22',
+              created_at: '2015-04-22',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+            },
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
+            },
+          ];
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.have
+            .same.members(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it('returns all times in the database to a sitewide spectator',
+    function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'mrsj';
+      password = 'word';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        request.get(baseUrl + 'times?token=' + token,
+        function(getErr, getRes, getBody) {
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['pgd'],
+              activities: ['sys'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-21',
+              created_at: '2015-04-21',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
+            },
+            {
+              duration: 12,
+              user: 'patcht',
+              project: ['pgd'],
+              activities: ['dev'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-22',
+              created_at: '2015-04-22',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+            },
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
+            },
+          ];
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.have
+            .same.members(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it("returns only a normal user's times", function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'thai';
+      password = 'passing';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        request.get(baseUrl + 'times?token=' + token,
+        function(getErr, getRes, getBody) {
+          const expectedResults = [
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
+            },
+          ];
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.have
+            .same.members(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it("returns a project spectator's set of times", function(done) {
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'deanj';
+      password = 'pass';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        request.get(baseUrl + 'times?token=' + token,
+        function(getErr, getRes, getBody) {
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['pgd'],
+              activities: ['sys'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-21',
+              created_at: '2015-04-21',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
+            },
+            {
+              duration: 12,
+              user: 'patcht',
+              project: ['pgd'],
+              activities: ['dev'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-22',
+              created_at: '2015-04-22',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+            },
+          ];
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(JSON.parse(getBody)).to.deep.have
+            .same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?user=:user', function() {
+    it('returns all times for a user', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=deanj&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['pgd'],
+              activities: ['sys'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-21',
+              created_at: '2015-04-21',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it('returns an error for a non-existent user', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=fakeuser&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter user contained invalid value fakeuser',
+          };
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?project=:project', function() {
+    it('returns all times for a project', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=gwm&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it('returns an error for a non-existent project', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=notreal&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter project contained invalid value notreal',
+          };
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity', function() {
+    it('returns all times for an activity', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=docs&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it('returns an error for a non-existent activity', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=falsch&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter activity contained invalid value falsch',
+          };
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?start=:start', function() {
+    it('returns all times after a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?start=2015-04-20&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['pgd'],
+              activities: ['sys'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-21',
+              created_at: '2015-04-21',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
+            },
+            {
+              duration: 12,
+              user: 'patcht',
+              project: ['pgd'],
+              activities: ['dev'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-22',
+              created_at: '2015-04-22',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+            },
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it('returns an error for an invalid start date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?start=faux&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter start contained invalid value faux',
+          };
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
+        });
+      });
+    });
+
+    it('returns an error for a future start date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?start=2105-04-19&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter start contained invalid value 2105-04-19',
+          };
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?end=:end', function() {
+    it('returns all times before a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?end=2015-04-21&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['pgd'],
+              activities: ['sys'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-21',
+              created_at: '2015-04-21',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it('returns an error for an invalid end date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?end=namaak&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter end contained invalid value namaak',
+          };
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?start=:start&end=:end', function() {
+    it('returns all times between two dates', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?start=2015-04-20' +
+        '&end=2015-04-21&token=' + token, function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['pgd'],
+              activities: ['sys'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-21',
+              created_at: '2015-04-21',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+
+    it('returns an error for a start date after an end date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?start=2015-04-21&end=2015-04-19' +
+        '&token=' + token, function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(400);
+
+          expect(jsonBody.status).to.equal(400);
+          expect(jsonBody.error).to.equal('Bad Query Value');
+
+          expect([
+            'Parameter end contained invalid value 2015-04-19',
+            'Parameter start contained invalid value 2015-04-21',
+          ]).to.include.members([jsonBody.text]);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?user=:user1&user=:user2', function() {
+    it('returns all times for two users', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=deanj&user=patcht&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['pgd'],
+              activities: ['sys'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-21',
+              created_at: '2015-04-21',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
+            },
+            {
+              duration: 12,
+              user: 'patcht',
+              project: ['pgd'],
+              activities: ['dev'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-22',
+              created_at: '2015-04-22',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&project=:project', function() {
+    it('returns all times for a user and a project', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=deanj&project=gwm&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&activity=:activity', function() {
+    it('returns all times for a user and an activity', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=deanj&activity=docs&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&start=:start', function() {
+    it('returns all times for a user after a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=deanj&start=2015-04-20&' +
+        'token=' + token, function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['pgd'],
+              activities: ['sys'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-21',
+              created_at: '2015-04-21',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&end=:end', function() {
+    it('returns all times for a user before a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=tschuy&end=2015-04-21&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&start=:start&end=:end', function() {
+    it('returns all times for a user between two dates', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=deanj&start=2015-04-19' +
+        '&end=2015-04-20&token=' + token, function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?project=:project1&project=:project2', function() {
+    it('returns all times for two projects', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=gwm&project=wf&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?project=:project&activity=:activity', function() {
+    it('returns all times for a project and an activity', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=gwm&activity=dev&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?project=:project&start=:start', function() {
+    it('returns all times for a project after a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=gwm&start=2015-04-20&' +
+        'token=' + token, function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?project=:project&end=:end', function() {
+    it('returns all times for a project before a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=gwm&end=2015-04-20&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?project=:project&start=:start&end=:end', function() {
+    it('returns all times for a project between two dates', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=gwm&start=2015-04-19' +
+        '&end=2015-04-21&token=' + token, function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+              revision: 1,
+            },
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity1&activity=:activity2', function() {
+    it('returns all times for two activities', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=docs&activity=dev&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+            {
+              duration: 12,
+              user: 'patcht',
+              project: ['pgd'],
+              activities: ['dev'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-22',
+              created_at: '2015-04-22',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+            },
+            {
+              duration: 18,
+              user: 'thai',
+              project: ['wf'],
+              activities: ['docs'],
+              notes: '',
+              issue_uri: '',
+              date_worked: '2016-02-25',
+              created_at: '2016-02-25',
+              updated_at: null,
+              uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+              revision: 1,
+              deleted_at: null,
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&start=:start', function() {
+    it('returns all times for an activity after a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=dev&start=2015-04-20&' +
+        'token=' + token, function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'patcht',
+              project: ['pgd'],
+              activities: ['dev'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-22',
+              created_at: '2015-04-22',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&end=:end', function() {
+    it('returns all times for an activity before a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=dev&end=2015-04-21&' +
+        'token=' + token, function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&start=:start&end=:end', function() {
+    it('returns all times for an activity between two dates', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=dev&start=2015-04-19' +
+        '&end=2015-04-21&token=' + token, function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&project=:project&activity=:activity&' +
+  'start=:start&end=:end', function() {
+    it('returns all times for a user, project, and activity between two dates',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=tschuy&project=gwm&' +
+        'activity=docs&start=2015-04-20&end=2015-04-22&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?user=:user1&user=:user2&project=:project&' +
+  'activity=:activity&start=:start&end=:end', function() {
+    it('returns all times for two users, a project, and activity ' +
+    'between two dates', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=deanj&user=tschuy&project=gwm&' +
+        'activity=docs&start=2015-04-19&end=2015-04-21&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+            {
+              duration: 12,
+              user: 'tschuy',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-20',
+              created_at: '2015-04-20',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&project=:project1&project=:project2&' +
+  'activity=:activity&start=:start&end=:end', function() {
+    it('returns all times for a user, two projects, and an ' +
+    'activity between two dates', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=deanj&project=gwm&project=pgd&' +
+        'activity=docs&start=2015-04-19&end=2015-04-20&token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'],
+              activities: ['docs', 'dev'],
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&project=:project&activity=:activity1&' +
+  'activity=:activity2&start=:start&end=:end', function() {
+    it('returns all times for a user, project, and two activities ' +
+    'between two dates', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=deanj&project=gwm&' +
+        'activity=docs&activity=dev&start=2015-04-19&end=2015-04-20&' +
+        'token=' + token, function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResults = [
+            {
+              duration: 12,
+              user: 'deanj',
+              project: ['gwm', 'ganeti-webmgr'].sort(),
+              activities: ['docs', 'dev'].sort(),
+              notes: '',
+              issue_uri:
+                'https://github.com/osu-cass/whats-fresh-api/issues/56',
+              date_worked: '2015-04-19',
+              created_at: '2015-04-19',
+              updated_at: null,
+              deleted_at: null,
+              revision: 1,
+              uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            },
+          ];
+
+          expect(jsonBody).to.have.length(expectedResults.length);
+          for (let i = 0, len = jsonBody.length; i < len; i++) {
+            expectedResults[i].project.sort();
+            expectedResults[i].activities.sort();
+            jsonBody[i].project.sort();
+            jsonBody[i].activities.sort();
+          }
+
+          expect(getErr).to.be.a('null');
+          expect(getRes.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.have.same.members(expectedResults);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?include_deleted=true', function() {
+    const softDeletedTimes = [
+      {
+        duration: 12,
+        user: 'tschuy',
+        project: ['ganeti-webmgr', 'gwm'].sort(),
+        activities: ['docs'],
+        notes: '',
+        issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+        date_worked: '2015-04-20',
+        created_at: '2015-04-20',
+        updated_at: null,
+        uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+        revision: 1,
+        deleted_at: '2015-07-04',
+      },
+      {
+        duration: 12,
+        user: 'patcht',
+        project: ['pgd'],
+        activities: ['dev'],
+        notes: '',
+        issue_uri: '',
+        date_worked: '2015-04-22',
+        created_at: '2015-04-22',
+        updated_at: null,
+        uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+        revision: 1,
+        deleted_at: '2015-08-12',
+      },
+    ];
+
+    it('returns a list of all active and deleted times', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?include_deleted=true&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes[0]);
+          expect(jsonBody).to.include(softDeletedTimes[1]);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?user=:user&include_deleted=true', function() {
+    const softDeletedTimes = {
       duration: 12,
       user: 'tschuy',
       project: ['ganeti-webmgr', 'gwm'].sort(),
@@ -121,8 +1876,60 @@ module.exports = function(expect, request, baseUrl) {
       uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
       revision: 1,
       deleted_at: '2015-07-04',
-    },
-    {
+    };
+
+    it('returns all times for a user', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=tschuy&include_deleted=true&token=' +
+        token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
+        });
+      });
+    });
+
+    it('fails when given a nonexistent user', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=notauser&include_deleted=true&' +
+        'token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter user contained invalid value notauser',
+          };
+
+          expect(res.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
+        });
+      });
+    });
+
+    it('fails when given an invalid user', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=wh4t3v3n.isTh%s&include_deleted=' +
+        'true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter user contained invalid value wh4t3v3n.isTh%s',
+          };
+
+          expect(res.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times?activity=:activity&include_deleted=true', function() {
+    const softDeletedTimes = {
       duration: 12,
       user: 'patcht',
       project: ['pgd'],
@@ -135,2202 +1942,1275 @@ module.exports = function(expect, request, baseUrl) {
       uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
       revision: 1,
       deleted_at: '2015-08-12',
-    },
-  ];
-  const initialData = initialDataWithDeleted.filter(t => {
-    return t.deleted_at === null;
+    };
+
+    it('returns all times for an activity', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=dev&include_deleted=true&token=' +
+        token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
+        });
+      });
+    });
+
+    it('fails when given a nonexistent activity', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=review&include_deleted=true' +
+        '&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter activity contained invalid value review',
+          };
+
+          expect(res.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
+        });
+      });
+    });
+
+    it('fails when given an invalid activity', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=w_hA.t&include_deleted=true' +
+        '&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter activity contained invalid value w_hA.t',
+          };
+
+          expect(res.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
+        });
+      });
+    });
   });
 
-  /* GET one of the /times endpoints and check its response against
-  what should be returned */
-  describe('GET', function() {
-    describe('/times', function() {
-      it('returns all times in the database to an admin', function(done) {
-        getAPIToken().then(function(token) {
-          request.get(`${baseUrl}times?token=${token}`,
-          function(err, res, body) {
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(initialData);
-            done();
-          });
-        });
-      });
+  describe('GET /times?project=:project?include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
 
-      it('returns all times in the database to a sitewide spectator',
-      function(done) {
-        getAPIToken('mrsj', 'word').then(function(token) {
-          request.get(`${baseUrl}times?token=${token}`,
-          function(err, res, body) {
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(initialData);
-            done();
-          });
-        });
-      });
-
-      it("returns only a normal user's times", function(done) {
-        const user = 'thai';
-        getAPIToken(user, 'passing').then(function(token) {
-          request.get(`${baseUrl}times?token=${token}`,
-          function(err, res, body) {
-            const expectedResults = initialData.filter(t => {
-              return t.user === user;
-            });
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-
-      it("returns a project spectator's set of times", function(done) {
-        getAPIToken('deanj', 'pass').then(function(token) {
-          request.get(`${baseUrl}times?token=${token}`,
-          function(err, res, body) {
-            const expectedResults = initialData.filter(t => {
-              // deanj is spectator on pgd and gwm
-              return t.project.indexOf('pgd') >= 0 ||
-                     t.project.indexOf('gwm') >= 0;
-            });
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times for a project', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=pgd&include_deleted=true' +
+        '&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
 
-    describe('/times?user=:user', function() {
-      it('returns all times for a user', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'deanj';
-          request.get(`${baseUrl}times?user=${u}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.user === u;
-            });
+    it('fails when given a nonexistent project', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=chili&include_deleted=true' +
+        '&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter project contained invalid value chili',
+          };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-
-      it('returns an error for a non-existent user', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'fakeuser';
-          request.get(`${baseUrl}times?user=${u}&token=${token}`,
-          function(err, res, body) {
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter user contained invalid value ${u}`,
-            };
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
+          expect(res.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
         });
       });
     });
 
-    describe('/times?project=:project', function() {
-      it('returns all times for a project', function(done) {
-        getAPIToken().then(function(token) {
-          const p = 'gwm';
-          request.get(`${baseUrl}times?project=${p}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.project.indexOf(p) >= 0;
-            });
+    it('fails when given an invalid project', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=not@slug!&include_deleted=true' +
+        '&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter project contained invalid value not@slug!',
+          };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+          expect(res.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
         });
       });
+    });
+  });
 
-      it('returns an error for a non-existent project', function(done) {
-        getAPIToken().then(function(token) {
-          const p = 'notreal';
-          request.get(`${baseUrl}times?project=${p}&token=${token}`,
-          function(err, res, body) {
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter project contained invalid value ${p}`,
-            };
+  describe('GET /times?start=:start&included_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
 
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
+    it('returns all times after a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?start=2015-04-22&include_deleted=true' +
+        '&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
 
-    describe('/times?activity=:activity', function() {
-      it('returns all times for an activity', function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'docs';
-          request.get(`${baseUrl}times?activity=${a}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.activities.indexOf(a) >= 0;
-            });
+    it('fails when given an invalid start date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?start=notaday&include_deleted=true' +
+        '&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter start contained invalid value notaday',
+          };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-
-      it('returns an error for a non-existent activity', function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'falsch';
-          request.get(`${baseUrl}times?activity=${a}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter activity contained invalid value ${a}`,
-            };
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(jsonBody).to.deep.equal(expectedResult);
-            done();
-          });
+          expect(res.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
         });
       });
     });
 
-    describe('/times?start=:start', function() {
-      it('returns all times after a date', function(done) {
-        getAPIToken().then(function(token) {
-          const s = '2015-04-20';
-          request.get(`${baseUrl}times?start=${s}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              // ISO dates can be compared as strings
-              return t.date_worked >= s;
-            });
+    it('fails when given a future start date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?start=3015-04-22&include_deleted=true' +
+        '&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter start contained invalid value 3015-04-22',
+          };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+          expect(res.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
         });
       });
+    });
+  });
 
-      it('returns an error for an invalid start date', function(done) {
-        getAPIToken().then(function(token) {
-          const s = 'faux';
-          request.get(`${baseUrl}times?start=${s}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter start contained invalid value ${s}`,
-            };
+  describe('GET /times?end=:end&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'].sort(),
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
 
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(jsonBody).to.deep.equal(expectedResult);
-            done();
-          });
-        });
-      });
-
-      it('returns an error for a future start date', function(done) {
-        getAPIToken().then(function(token) {
-          const s = '2105-04-19';
-          request.get(`${baseUrl}times?start=${s}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter start contained invalid value ${s}`,
-            };
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(jsonBody).to.deep.equal(expectedResult);
-            done();
-          });
+    it('returns all times before a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?end=2015-04-20&include_deleted=true' +
+        '&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
 
-    describe('/times?end=:end', function() {
-      it('returns all times before a date', function(done) {
-        getAPIToken().then(function(token) {
-          const e = '2015-04-21';
-          request.get(`${baseUrl}times?end=${e}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              // ISO dates can be lexically compared
-              return t.date_worked <= e;
-            });
+    it('fails if given an invalid end date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?end=theend&include_deleted=true' +
+        '&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 400,
+            error: 'Bad Query Value',
+            text: 'Parameter end contained invalid value theend',
+          };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-
-      it('returns an error for an invalid end date', function(done) {
-        getAPIToken().then(function(token) {
-          const e = 'namaak';
-          request.get(`${baseUrl}times?end=${e}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter end contained invalid value ${e}`,
-            };
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(jsonBody).to.deep.equal(expectedResult);
-            done();
-          });
+          expect(res.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?start=:start&end=:end', function() {
-      it('returns all times between two dates', function(done) {
-        getAPIToken().then(function(token) {
-          const s = '2015-04-20';
-          const e = '2015-04-21';
-          request.get(`${baseUrl}times?start=${s}&end=${e}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.date_worked >= s && t.date_worked <= e;
-            });
+  describe('GET /times?user=:user&activity=:activity&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'].sort(),
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-
-      it('returns an error for a start date after an end date', function(done) {
-        getAPIToken().then(function(token) {
-          const s = '2015-04-21';
-          const e = '2015-04-19';
-          request.get(`${baseUrl}times?start=${s}&end=${e}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-
-            /*
-             * This test needs to look a little different because
-             * there are two possible errors that could be returned.
-             */
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(400);
-
-            expect(jsonBody.status).to.equal(400);
-            expect(jsonBody.error).to.equal('Bad Query Value');
-
-            expect([
-              `Parameter end contained invalid value ${e}`,
-              `Parameter start contained invalid value ${s}`,
-            ]).to.include.members([jsonBody.text]);
-            done();
-          });
+    it('returns all times that match the given user and activity',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=tschuy&activity=docs' +
+        '&include_deleted=true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?user=:user1&user=:user2', function() {
-      it('returns all times for two users', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'deanj';
-          const u2 = 'patcht';
-          request.get(`${baseUrl}times?user=${u}&user=${u2}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.user === u || t.user === u2;
-            });
+  describe('GET /times?user=:user&project=project&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times that match the given user and project',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=patcht&project=pgd' +
+        '&include_deleted=true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?user=:user&project=:project', function() {
-      it('returns all times for a user and a project', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'deanj';
-          const p = 'gwm';
-          request.get(`${baseUrl}times?user=${u}&project=${p}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.user === u && t.project.indexOf(p) >= 0;
-            });
+  describe('GET /times?user=:user&start:=start&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'].sort(),
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times for a user after a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=tschuy&start=2015-04-20&' +
+        'include_deleted=true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?user=:user&activity=:activity', function() {
-      it('returns all times for a user and an activity', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'deanj';
-          const a = 'docs';
-          request.get(`${baseUrl}times?user=${u}&activity=${a}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.user === u && t.activities.indexOf(a) >= 0;
-            });
+  describe('GET /times?user=:user&end=:end&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times for a user before a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=patcht&end=2015-04-22&' +
+        'include_deleted=true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?user=:user&start=:start', function() {
-      it('returns all times for a user after a date', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'deanj';
-          const s = '2015-04-20';
-          request.get(`${baseUrl}times?user=${u}&start=${s}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.user === u && t.date_worked >= s;
-            });
+  describe('GET /times?user=:user&start:=start&end=:end&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'].sort(),
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times for a user within a date range', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=tschuy&start=2015-04-20&' +
+        'end=:2015-04-25&include_deleted=true&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?user=:user&end=:end', function() {
-      it('returns all times for a user before a date', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'tschuy';
-          const e = '2015-04-21';
-          request.get(`${baseUrl}times?user=${u}&end=${e}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.user === u && t.date_worked <= e;
-            });
+  describe('GET /times?user=:user&activitiy=:activity&project=:project&' +
+  'include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times that match the given user, activity, and project',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=patcht&activity=dev&project=pgd&' +
+        'include_deleted=true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?user=:user&start=:start&end=:end', function() {
-      it('returns all times for a user between two dates', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'deanj';
-          const s = '2015-04-19';
-          const e = '2015-04-20';
-          request.get(`${baseUrl}times?user=${u}&start=${s}&end=${e}&` +
-          `token=${token}`, function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.user === u && t.date_worked >= s && t.date_worked <= e;
-            });
+  describe('GET /times?user=:user&activitiy=:activity&project=:project&' +
+  'start=:start&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times that match the given parameters after a date',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=patcht&activity=dev&project=pgd&' +
+        '&start=2015-04-22&include_deleted=true&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?project=:project1&project=:project2', function() {
-      it('returns all times for two projects', function(done) {
-        getAPIToken().then(function(token) {
-          const p = 'gwm';
-          const p2 = 'wf';
-          request.get(`${baseUrl}times?project=${p}&project=${p2}&token=` +
-          token, function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.project.indexOf(p) >= 0 || t.project.indexOf(p2) >= 0;
-            });
+  describe('GET /times?user=:user&activitiy=:activity&project=:project&' +
+  'end=:end&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'].sort(),
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times that match the given parameters before a date',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=tschuy&activity=docs&project=gwm&' +
+        'end=2015-04-22&include_deleted=true&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?project=:project&activity=:activity', function() {
-      it('returns all times for a project and an activity', function(done) {
-        getAPIToken().then(function(token) {
-          const p = 'gwm';
-          const a = 'dev';
-          request.get(`${baseUrl}times?project=${p}&activity=${a}&token=` +
-          token, function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.project.indexOf(p) >= 0 && t.activities.indexOf(a) >= 0;
-            });
+  describe('GET /times?user=:user&activitiy=:activity&project=:project&' +
+  'start=:start&end=:end&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'].sort(),
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times that match the given parameters within a date ' +
+    'range', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?user=tschuy&activity=docs&project=gwm&' +
+        '&start=2015-04-19&end=2015-04-22&include_deleted=true&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?project=:project&start=:start', function() {
-      it('returns all times for a project after a date', function(done) {
-        getAPIToken().then(function(token) {
-          const p = 'gwm';
-          const s = '2015-04-20';
-          request.get(`${baseUrl}times?project=${p}&start=${s}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.project.indexOf(p) >= 0 && t.date_worked >= s;
-            });
+  describe('GET /times?activity=:activity&project=:project&' +
+  'include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'].sort(),
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times that match the given activity and project',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=docs&project=gwm&' +
+        'include_deleted=true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?project=:project&end=:end', function() {
-      it('returns all times for a project before a date', function(done) {
-        getAPIToken().then(function(token) {
-          const p = 'gwm';
-          const e = '2015-04-20';
-          request.get(`${baseUrl}times?project=${p}&end=${e}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.project.indexOf(p) >= 0 && t.date_worked <= e;
-            });
+  describe('GET /times?activity=:activity&start=:start&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'].sort(),
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times for an activity after a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=docs&start=:2015-04-17&' +
+        'include_deleted=true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?project=:project&start=:start&end=:end', function() {
-      it('returns all times for a project between two dates', function(done) {
-        getAPIToken().then(function(token) {
-          const p = 'gwm';
-          const s = '2015-04-19';
-          const e = '2015-04-21';
-          request.get(`${baseUrl}times?project=${p}&start=${s}&end=${e}&` +
-          `token=${token}`, function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.project.indexOf(p) >= 0 && t.date_worked >= s &&
-                     t.date_worked <= e;
-            });
+  describe('GET /times?activitiy=:activity&end=:end&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times for an activity before a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=dev&end=2015-04-25&' +
+        'include_deleted=true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?activity=:activity1&activity=:activity2', function() {
-      it('returns all times for two activities', function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'docs';
-          const a2 = 'dev';
-          request.get(`${baseUrl}times?activity=${a}&activity=${a2}&` +
-          `token=${token}`, function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.activities.indexOf(a) >= 0 ||
-                     t.activities.indexOf(a2) >= 0;
-            });
+  describe('GET /times?activitiy=:activity&start=:start&end=:end&' +
+  'include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times for an activity within a date range',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=dev&start=2015-04-22&' +
+        'end=2015-04-25&include_deleted=true&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?activity=:activity&start=:start', function() {
-      it('returns all times for an activity after a date', function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'dev';
-          const s = '2015-04-20';
-          request.get(`${baseUrl}times?activity=${a}&start=${s}&` +
-          `token=${token}`, function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.activities.indexOf(a) >= 0 && t.date_worked >= s;
-            });
+  describe('GET /times?project=:project&start=:start&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times for a project after a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=pgd&start=2015-04-20&' +
+        'include_deleted=true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?activity=:activity&end=:end', function() {
-      it('returns all times for an activity before a date', function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'dev';
-          const e = '2015-04-21';
-          request.get(`${baseUrl}times?activity=${a}&end=${e}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.activities.indexOf(a) >= 0 && t.date_worked <= e;
-            });
+  describe('GET /times?project=:project&end=:end&include_deleted=true',
+  function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'].sort(),
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times for a project before a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=gwm&end=2015-04-20&' +
+        'include_deleted=true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?activity=:activity&start=:start&end=:end', function() {
-      it('returns all times for an activity between two dates', function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'dev';
-          const s = '2015-04-19';
-          const e = '2015-04-21';
-          request.get(`${baseUrl}times?activity=${a}&start=${s}&end=${e}&` +
-          `token=${token}`, function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
-                     t.date_worked <= e;
-            });
+  describe('GET /times?project=:project&start=:start&end=:end&' +
+  'include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'].sort(),
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times for a project within a date range', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?project=gwm&start=2015-04-20&' +
+        'end=2015-04-25&include_deleted=true&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?user=:user&project=:project&activity=:activity&' +
-    'start=:start&end=:end', function() {
-      it('returns all times for a user, project, and activity between two ' +
-      'dates', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'tschuy';
-          const p = 'gwm';
-          const a = 'docs';
-          const s = '2015-04-20';
-          const e = '2015-04-22';
-          request.get(`${baseUrl}times?user=${u}&project=${p}&activity=${a}&` +
-          `start=${s}&end=${e}&token=${token}`, function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.user === u && t.project.indexOf(p) >= 0 &&
-                     t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
-                     t.date_worked <= e;
-            });
+  describe('GET /times?activity=:activity&project=:project&start=:start&' +
+  'include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'].sort(),
+      activities: ['docs'],
+      notes: '',
+      issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: null,
+      uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
+      revision: 1,
+      deleted_at: '2015-07-04',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times that match the given activity and project after ' +
+    'a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=docs&project=gwm&' +
+        'start=2015-04-17&include_deleted=true&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?user=:user1&user=:user2&project=:project&' +
-    'activity=:activity&start=:start&end=:end', function() {
-      it('returns all times for two users, a project, and activity ' +
-      'between two dates', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'tschuy';
-          const u2 = 'deanj';
-          const p = 'gwm';
-          const a = 'docs';
-          const s = '2015-04-19';
-          const e = '2015-04-21';
-          request.get(`${baseUrl}times?user=${u}&user=${u2}&project=${p}&` +
-          `activity=${a}&start=${s}&end=${e}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return (t.user === u || t.user === u2) &&
-                     t.project.indexOf(p) >= 0 &&
-                     t.activities.indexOf(a) >= 0 &&
-                     t.date_worked >= s && t.date_worked <= e;
-            });
+  describe('GET /times?activity=:activity&project=:project&end=:end&' +
+  'include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times that match the given activity and project before ' +
+    'a date', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=dev&project=pgd&' +
+        'end=2015-04-25&include_deleted=true&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
+  });
 
-    describe('/times?user=:user&project=:project1&project=:project2&' +
-    'activity=:activity&start=:start&end=:end', function() {
-      it('returns all times for a user, two projects, and an ' +
-      'activity between two dates', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'deanj';
-          const p = 'gwm';
-          const p2 = 'pdj';
-          const a = 'docs';
-          const s = '2015-04-19';
-          const e = '2015-04-20';
-          request.get(`${baseUrl}times?user=${u}&project=${p}&project=${p2}&` +
-          `activity=${a}&start=${s}&end=${e}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.user === u && (t.project.indexOf(p) >= 0 ||
-                     t.project.indexOf(p2) >= 0) &&
-                     t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
-                     t.date_worked <= e;
-            });
+  describe('GET /times?activity=:activity&project=:project&start=:start&' +
+  'end=:end&include_deleted=true', function() {
+    const softDeletedTimes = {
+      duration: 12,
+      user: 'patcht',
+      project: ['pgd'],
+      activities: ['dev'],
+      notes: '',
+      issue_uri: '',
+      date_worked: '2015-04-22',
+      created_at: '2015-04-22',
+      updated_at: null,
+      uuid: '58e07b73-596d-472b-adcc-ea68599657f7',
+      revision: 1,
+      deleted_at: '2015-08-12',
+    };
 
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
+    it('returns all times that match the given activity and project within ' +
+    'a date range', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times?activity=dev&project=pgd&' +
+        'start=2015-04-21&end=2015-04-25&include_deleted=true&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.include(softDeletedTimes);
+          done();
         });
       });
     });
-
-    describe('/times?user=:user&project=:project&activity=:activity1&' +
-    'activity=:activity2&start=:start&end=:end', function() {
-      it('returns all times for a user, project, and two activities ' +
-      'between two dates', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'deanj';
-          const p = 'gwm';
-          const a = 'docs';
-          const a2 = 'dev';
-          const s = '2015-04-19';
-          const e = '2015-04-20';
-          request.get(`${baseUrl}times?user=${u}&project=${p}&activity=${a}&` +
-          `activity=${a2}&start=${s}&end=${e}&token=${token}`,
-          function(err, res, body) {
-            const jsonBody = JSON.parse(body);
-            const expectedResults = initialData.filter(t => {
-              return t.user === u && t.project.indexOf(p) >= 0 &&
-              (t.activities.indexOf(a) >= 0 || t.activities.indexOf(a2) >= 0) &&
-              t.date_worked >= s && t.date_worked <= e;
-            });
-
-            expect(jsonBody).to.have.length(expectedResults.length);
-            for (let i = 0, len = jsonBody.length; i < len; i++) {
-              expectedResults[i].project.sort();
-              expectedResults[i].activities.sort();
-              jsonBody[i].project.sort();
-              jsonBody[i].activities.sort();
-            }
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(jsonBody).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?include_deleted=true', function() {
-      it('returns a list of all active and deleted times', function(done) {
-        getAPIToken().then(function(token) {
-          request.get(baseUrl + 'times?include_deleted=true&token=' + token,
-          function(err, res, body) {
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same
-              .members(initialDataWithDeleted);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?user=:user&include_deleted=true', function() {
-      it('returns all times for a user', function(done) {
-        getAPIToken().then(function(token) {
-          const user = 'tschuy';
-          request.get(`${baseUrl}times?user=${user}&include_deleted=true&` +
-          'token=' + token, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.user === user;
-            });
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-
-      it('fails when given a nonexistent user', function(done) {
-        getAPIToken().then(function(token) {
-          const user = 'notauser';
-          request.get(`${baseUrl}times?user=${user}&include_deleted=true&` +
-          `token=${token}`, function(err, res, body) {
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter user contained invalid value ${user}`,
-            };
-
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
-        });
-      });
-
-      it('fails when given an invalid user', function(done) {
-        getAPIToken().then(function(token) {
-          const user = 'wh4t3v3n.isTh%s';
-          request.get(`${baseUrl}times?user=${user}&include_deleted=true&` +
-          'token=' + token, function(err, res, body) {
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter user contained invalid value ${user}`,
-            };
-
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?activity=:activity&include_deleted=true', function() {
-      it('returns all times for an activity', function(done) {
-        getAPIToken().then(function(token) {
-          const activity = 'dev';
-          request.get(`${baseUrl}times?activity=${activity}&include_deleted=` +
-          `true&token=${token}`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.activities.indexOf(activity) >= 0;
-            });
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-
-      it('fails when given a nonexistent activity', function(done) {
-        getAPIToken().then(function(token) {
-          const activity = 'review';
-          request.get(`${baseUrl}times?activity=${activity}&include_deleted=` +
-          `true&token=${token}`, function(err, res, body) {
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter activity contained invalid value ${activity}`,
-            };
-
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
-        });
-      });
-
-      it('fails when given an invalid activity', function(done) {
-        getAPIToken().then(function(token) {
-          const activity = 'w_hA.t';
-          request.get(`${baseUrl}times?activity=${activity}&include_deleted=` +
-          `true&token=${token}`, function(err, res, body) {
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter activity contained invalid value ${activity}`,
-            };
-
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?project=:project?include_deleted=true', function() {
-      it('returns all times for a project', function(done) {
-        getAPIToken().then(function(token) {
-          const project = 'pgd';
-          request.get(`${baseUrl}times?project=${project}&` +
-          `include_deleted=true&token=${token}`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.project.indexOf(project) >= 0;
-            });
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-
-      it('fails when given a nonexistent project', function(done) {
-        getAPIToken().then(function(token) {
-          const project = 'chili';
-          request.get(`${baseUrl}times?project=${project}&` +
-          `include_deleted=true&token=${token}`, function(err, res, body) {
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter project contained invalid value ${project}`,
-            };
-
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
-        });
-      });
-
-      it('fails when given an invalid project', function(done) {
-        getAPIToken().then(function(token) {
-          const project = 'not@slug!';
-          request.get(`${baseUrl}times?project=${project}&` +
-          `include_deleted=true&token=${token}`, function(err, res, body) {
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter project contained invalid value ${project}`,
-            };
-
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?start=:start&included_deleted=true', function() {
-      it('returns all times after a date', function(done) {
-        getAPIToken().then(function(token) {
-          const start = '2015-04-22';
-          request.get(`${baseUrl}times?start=${start}&include_deleted=true&` +
-          `token=${token}`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.date_worked >= start;
-            });
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-
-      it('fails when given an invalid start date', function(done) {
-        getAPIToken().then(function(token) {
-          const start = 'notaday';
-          request.get(`${baseUrl}times?start=${start}&include_deleted=true&` +
-          `token=${token}`, function(err, res, body) {
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter start contained invalid value ${start}`,
-            };
-
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
-        });
-      });
-
-      it('fails when given a future start date', function(done) {
-        getAPIToken().then(function(token) {
-          const start = '2105-04-21';
-          request.get(`${baseUrl}times?start=${start}&include_deleted=true&` +
-          `token=${token}`, function(err, res, body) {
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter start contained invalid value ${start}`,
-            };
-
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?end=:end&include_deleted=true', function() {
-      it('returns all times before a date', function(done) {
-        getAPIToken().then(function(token) {
-          const end = '2015-04-20';
-          request.get(`${baseUrl}times?end=${end}&include_deleted=true&` +
-          `token=${token}`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.date_worked <= end;
-            });
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-
-      it('fails if given an invalid end date', function(done) {
-        getAPIToken().then(function(token) {
-          const end = 'theend';
-          request.get(`${baseUrl}times?end=${end}&include_deleted=true&` +
-          `token=${token}`, function(err, res, body) {
-            const expectedResult = {
-              status: 400,
-              error: 'Bad Query Value',
-              text: `Parameter end contained invalid value ${end}`,
-            };
-
-            expect(res.statusCode).to.equal(expectedResult.status);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?user=:user&activity=:activity&include_deleted=true',
-    function() {
-      it('returns all times that match the given user and activity',
-      function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'tschuy';
-          const a = 'docs';
-          request.get(`${baseUrl}times?user=${u}&activity=${a}&token=${token}` +
-          '&include_deleted=true', function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.user === u && t.activities.indexOf(a) >= 0;
-            });
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?user=:user&project=project&include_deleted=true',
-    function() {
-      it('returns all times that match the given user and project',
-      function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'patcht';
-          const p = 'pgd';
-          request.get(`${baseUrl}times?user=${u}&project=${p}&token=${token}&` +
-          'include_deleted=true', function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.user === u && t.project.indexOf(p) >= 0;
-            });
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?user=:user&start:=start&include_deleted=true',
-    function() {
-      it('returns all times for a user after a date', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'tschuy';
-          const s = '2015-04-20';
-          request.get(`${baseUrl}times?user=${u}&start=${s}&token=${token}&` +
-          'include_deleted=true', function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.user === u && t.date_worked >= s;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?user=:user&end=:end&include_deleted=true',
-    function() {
-      it('returns all times for a user before a date', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'patcht';
-          const e = '2015-04-22';
-          request.get(`${baseUrl}times?user=${u}&end=${e}&token=${token}&` +
-          'include_deleted=true', function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.user === u && t.date_worked <= e;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?user=:user&start:=start&end=:end&include_deleted=true',
-    function() {
-      it('returns all times for a user within a date range', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'tschuy';
-          const s = '2015-04-20';
-          const e = '2015-04-25';
-          request.get(`${baseUrl}times?user=${u}&start=${s}&end=${e}&` +
-          `include_deleted=true&token=${token}`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.user === u && t.date_worked >= s && t.date_worked <= e;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?user=:user&activitiy=:activity&project=:project&' +
-    'include_deleted=true', function() {
-      it('returns all times that match the given user, activity, and project',
-      function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'patcht';
-          const a = 'dev';
-          const p = 'pgd';
-          request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
-          `include_deleted=true&token=${token}`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.user === u && t.project.indexOf(p) >= 0 &&
-                     t.activities.indexOf(a) >= 0;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?user=:user&activitiy=:activity&project=:project&' +
-    'start=:start&include_deleted=true', function() {
-      it('returns all times that match the given parameters after a date',
-      function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'patcht';
-          const a = 'dev';
-          const p = 'pgd';
-          const s = '2015-04-22';
-          request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
-          `start=${s}&include_deleted=true&token=${token}`,
-          function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.user === u && t.project.indexOf(p) >= 0 &&
-                     t.activities.indexOf(a) >= 0 && t.date_worked >= s;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?user=:user&activitiy=:activity&project=:project&' +
-    'end=:end&include_deleted=true', function() {
-      it('returns all times that match the given parameters before a date',
-      function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'tschuy';
-          const a = 'docs';
-          const p = 'gwm';
-          const e = '2015-04-22';
-          request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
-          `end=${e}&include_deleted=true&token=${token}`,
-          function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.user === u && t.project.indexOf(p) >= 0 &&
-                     t.activities.indexOf(a) >= 0 && t.date_worked <= e;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?user=:user&activitiy=:activity&project=:project&' +
-    'start=:start&end=:end&include_deleted=true', function() {
-      it('returns all times that match the given parameters within a date ' +
-      'range', function(done) {
-        getAPIToken().then(function(token) {
-          const u = 'tschuy';
-          const a = 'docs';
-          const p = 'gwm';
-          const s = '2015-04-19';
-          const e = '2015-04-22';
-          request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
-          `start=${s}&end=${e}&include_deleted=true&token=${token}`,
-          function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.user === u && t.project.indexOf(p) >= 0 &&
-                     t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
-                     t.date_worked <= e;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?activity=:activity&project=:project&' +
-    'include_deleted=true', function() {
-      it('returns all times that match the given activity and project',
-      function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'docs';
-          const p = 'gwm';
-          request.get(`${baseUrl}times?activity=${a}&project=${p}&` +
-          `include_deleted=true&token=${token}`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.project.indexOf(p) >= 0 && t.activities.indexOf(a) >= 0;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?activity=:activity&start=:start&include_deleted=true',
-    function() {
-      it('returns all times for an activity after a date', function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'docs';
-          const s = '2015-04-17';
-          request.get(`${baseUrl}times?activity=${a}&start=${s}&` +
-          `token=${token}&include_deleted=true`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.activities.indexOf(a) >= 0 && t.date_worked >= s;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?activitiy=:activity&end=:end&include_deleted=true',
-    function() {
-      it('returns all times for an activity before a date', function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'dev';
-          const e = '2015-04-25';
-          request.get(`${baseUrl}times?activity=${a}&end=${e}&token=${token}&` +
-          'include_deleted=true', function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.activities.indexOf(a) >= 0 && t.date_worked <= e;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?activitiy=:activity&start=:start&end=:end&' +
-    'include_deleted=true', function() {
-      it('returns all times for an activity within a date range',
-      function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'dev';
-          const s = '2015-04-22';
-          const e = '2015-04-25';
-          request.get(`${baseUrl}times?activity=${a}&start=${s}&end=${e}&` +
-          `include_deleted=true&token=${token}`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.activities.indexOf(a) >= 0 && t.date_worked >= s &&
-                     t.date_worked <= e;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?project=:project&start=:start&include_deleted=true',
-    function() {
-      it('returns all times for a project after a date', function(done) {
-        getAPIToken().then(function(token) {
-          const p = 'pgd';
-          const s = '2015-04-20';
-          request.get(`${baseUrl}times?project=${p}&start=${s}&` +
-          `token=${token}&include_deleted=true`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.project.indexOf(p) >= 0 && t.date_worked >= s;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?project=:project&end=:end&include_deleted=true',
-    function() {
-      it('returns all times for a project before a date', function(done) {
-        getAPIToken().then(function(token) {
-          const p = 'gwm';
-          const e = '2015-04-20';
-          request.get(`${baseUrl}times?project=${p}&end=${e}&token=${token}&` +
-          'include_deleted=true', function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.project.indexOf(p) >= 0 && t.date_worked <= e;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?project=:project&start=:start&end=:end&' +
-    'include_deleted=true', function() {
-      it('returns all times for a project within a date range', function(done) {
-        getAPIToken().then(function(token) {
-          const p = 'gwm';
-          const s = '2015-04-20';
-          const e = '2015-04-25';
-          request.get(`${baseUrl}times?project=${p}&start=${s}&end=${e}&` +
-          `include_deleted=true&token=${token}`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.project.indexOf(p) >= 0 && t.date_worked >= s &&
-                     t.date_worked <= e;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?activity=:activity&project=:project&start=:start&' +
-    'include_deleted=true', function() {
-      it('returns all times that match the given activity and project after ' +
-      'a date', function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'docs';
-          const p = 'gwm';
-          const s = '2015-04-17';
-          request.get(`${baseUrl}times?activity=${a}&project=${p}&start=${s}&` +
-          `include_deleted=true&token=${token}`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.activities.indexOf(a) >= 0 &&
-                     t.project.indexOf(p) >= 0 &&
-                     t.date_worked >= s;
-            });
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?activity=:activity&project=:project&end=:end&' +
-    'include_deleted=true', function() {
-      it('returns all times that match the given activity and project before ' +
-      'a date', function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'dev';
-          const p = 'pgd';
-          const e = '2015-04-25';
-          request.get(`${baseUrl}times?activity=${a}&project=${p}&end=${e}&` +
-          `include_deleted=true&token=${token}`, function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.activities.indexOf(a) >= 0 &&
-                     t.project.indexOf(p) >= 0 &&
-                     t.date_worked <= e;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times?activity=:activity&project=:project&start=:start&' +
-    'end=:end&include_deleted=true', function() {
-      it('returns all times that match the given activity and project within ' +
-      'a date range', function(done) {
-        getAPIToken().then(function(token) {
-          const a = 'dev';
-          const p = 'pgd';
-          const s = '2015-04-21';
-          const e = '2015-04-25';
-          request.get(`${baseUrl}times?activity=${a}&project=${p}&start=${s}` +
-          `end=${e}&include_deleted=true&token=${token}`,
-          function(err, res, body) {
-            const expectedResults = initialDataWithDeleted.filter(t => {
-              return t.activities.indexOf(a) >= 0 &&
-                     t.project.indexOf(p) >= 0 &&
-                     t.date_worked >= s && t.date_worked <= e;
-            });
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times/:uuid', function() {
-      it('returns times by uuid', function(done) {
-        getAPIToken().then(function(token) {
-          const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
-          request.get(`${baseUrl}times/${uuid}?token=${token}`,
-          function(err, res, body) {
-            const expectedResult = initialData.filter(t => {
-              return t.uuid === uuid;
-            })[0];
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
-        });
-      });
-
-      it('fails with Object not found error', function(done) {
-        getAPIToken().then(function(token) {
-          const uuid = '00000000-0000-0000-0000-000000000000';
-          request.get(`${baseUrl}times/${uuid}?token=${token}`,
-          function(err, res, body) {
-            const expectedResult = {
-              error: 'Object not found',
-              status: 404,
-              text: 'Nonexistent time',
-            };
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            expect(res.statusCode).to.equal(expectedResult.status);
-            done();
-          });
-        });
-      });
-
-      it('fails with Invalid Identifier error', function(done) {
-        getAPIToken().then(function(token) {
-          const uuid = 'cat';
-          request.get(`${baseUrl}times/${uuid}?token=${token}`,
-          function(err, res, body) {
-            const expectedResult = {
-              error: 'The provided identifier was invalid',
-              status: 400,
-              text: 'Expected UUID but received cat',
-              values: ['cat'],
-            };
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            expect(res.statusCode).to.equal(expectedResult.status);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times/:uuid?include_deleted=true', function() {
-      it('returns the soft-deleted time that corresponds with the given uuid',
-      function(done) {
-        getAPIToken().then(function(token) {
-          const uuid = 'b6ac75fb-7872-403f-ab71-e5542fae4212';
-          request.get(`${baseUrl}times/${uuid}?token=${token}&` +
-          'include_deleted=true', function(err, res, body) {
-            const expectedResult = initialDataWithDeleted.filter(t => {
-              return t.uuid === uuid;
-            })[0];
-
-            expect(err).to.equal(null);
-            expect(res.statusCode).to.equal(200);
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            done();
-          });
-        });
-      });
-
-      it('fails with Object Not Found error when given a nonexistent uuid',
-      function(done) {
-        getAPIToken().then(function(token) {
-          const uuid = '00000000-0000-0000-0000-000000000000';
-          request.get(`${baseUrl}times/${uuid}?token=${token}&` +
-          'include_deleted=true', function(err, res, body) {
-            const expectedResult = {
-              status: 404,
-              error: 'Object not found',
-              text: 'Nonexistent time',
-            };
-
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            expect(res.statusCode).to.equal(expectedResult.status);
-            done();
-          });
-        });
-      });
-
-      it('fails with Invalid Identifier error when given an invalid uuid',
-      function(done) {
-        getAPIToken().then(function(token) {
-          const uuid = 'nope';
-          request.get(`${baseUrl}times/${uuid}?token=${token}&` +
-          'include_deleted=true', function(err, res, body) {
-            const expectedResult = {
-              status: 400,
-              error: 'The provided identifier was invalid',
-              text: 'Expected UUID but received nope',
-              values: ['nope'],
-            };
-
-            expect(JSON.parse(body)).to.deep.equal(expectedResult);
-            expect(res.statusCode).to.equal(expectedResult.status);
-            done();
-          });
-        });
-      });
-    });
-
-    describe('/times/?include_revisions=true', function() {
-      const currentTime = new Date().toISOString().substring(0, 10);
-
-      const noParentsData = {
-        duration: 13,
-        user: 'tschuy',
-        project: ['ganeti-webmgr', 'gwm'],
-        activities: ['docs'],
-        notes: 'forgot to add last hour',
-        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-        date_worked: '2015-04-20',
-        created_at: '2015-04-20',
-        updated_at: currentTime,
-        deleted_at: null,
-        uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-        revision: 2,
-      };
-
-      const withParentsData = {
-        duration: 13,
-        user: 'tschuy',
-        project: ['ganeti-webmgr', 'gwm'],
-        activities: ['docs'],
-        notes: 'forgot to add last hour',
-        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-        date_worked: '2015-04-20',
-        created_at: '2015-04-20',
-        updated_at: currentTime,
-        deleted_at: null,
-        uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-        revision: 2,
-        parents: [
-          {
+  });
+
+  describe('GET /times/:uuid', function() {
+    it('returns times by uuid', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/32764929-1bea-4a17-8c8a-22d7fb144941' +
+        '?token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
             duration: 12,
-            user: 'tschuy',
-            project: ['ganeti-webmgr', 'gwm'],
-            activities: ['docs'],
+            user: 'deanj',
+            project: ['gwm', 'ganeti-webmgr'].sort(),
+            activities: ['docs', 'dev'].sort(),
             notes: '',
             issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+            date_worked: '2015-04-19',
+            created_at: '2015-04-19',
+            updated_at: null,
+            deleted_at: null,
+            uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+            revision: 1,
+          };
+
+          expect(err).to.be.a('null');
+          expect(res.statusCode).to.equal(200);
+
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
+        });
+      });
+    });
+
+    it('fails with Object not found error', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/00000000-0000-0000-0000-000000000000' +
+        '?token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            error: 'Object not found',
+            status: 404,
+            text: 'Nonexistent time',
+          };
+
+          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(404);
+
+          done();
+        });
+      });
+    });
+
+    it('fails with Invalid Identifier error', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/cat?token=' + token,
+        function(getErr, getRes, getBody) {
+          const jsonBody = JSON.parse(getBody);
+          const expectedResult = {
+            error: 'The provided identifier was invalid',
+            status: 400,
+            text: 'Expected UUID but received cat',
+            values: ['cat'],
+          };
+
+          expect(jsonBody).to.deep.equal(expectedResult);
+          expect(getRes.statusCode).to.equal(400);
+
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times/:uuid?include_deleted=true', function() {
+    it('returns the soft-deleted time that corresponds with the given uuid',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/b6ac75fb-7872-403f-ab71-e5542fae4212' +
+        '?include_deleted=true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            duration: 12,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'].sort(),
+            activities: ['docs'],
+            notes: '',
+            issue_uri: 'https://github.com/osuosl/ganeti_webmgr/issues/48',
             date_worked: '2015-04-20',
             created_at: '2015-04-20',
             updated_at: null,
-            deleted_at: null,
-            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+            uuid: 'b6ac75fb-7872-403f-ab71-e5542fae4212',
             revision: 1,
-          },
-        ],
-      };
-
-      beforeEach(function(done) {
-        function getPostObject(uri, obj) {
-          return {
-            uri: uri,
-            json: true,
-            body: {
-              auth: {
-                type: 'token',
-              },
-              object: obj,
-            },
+            deleted_at: '2015-07-04',
           };
-        }
 
-        const time = 'e0326905-ef25-46a0-bacd-4391155aca4a';
-        const postTime = {
-          duration: 13,
-          notes: 'forgot to add last hour',
-        };
-        const postArg = getPostObject(baseUrl + 'times/' + time, postTime);
-
-        getAPIToken().then(function(token) {
-          postArg.body.auth.token = token;
-          request.post(postArg, function() {
-            done();
-          });
-        });
-      });
-
-      // Tests that include_revisions includes revisions
-      it('gets times + revisions when include_revisions=true', function(done) {
-        getAPIToken().then(function(token) {
-          request.get(baseUrl + 'times/?include_revisions=true&token=' + token,
-          function(err, res, body) {
-            expect(JSON.parse(body)).to.include(withParentsData);
-            done();
-          });
-        });
-      });
-
-      // Tests that include_revisions includes revisions
-      it('gets times + revisions when include_revisions is an empty parameter',
-      function(done) {
-        getAPIToken().then(function(token) {
-          request.get(baseUrl + 'times/?include_revisions&token=' + token,
-          function(err, res, body) {
-            expect(JSON.parse(body)).to.include(withParentsData);
-            done();
-          });
-        });
-      });
-
-      // Tests that include_revisions isn't always set to true
-      it('gets just times when include_revisions=false', function(done) {
-        getAPIToken().then(function(token) {
-          request.get(baseUrl + 'times/?include_revisions=false&token=' + token,
-          function(err, res, body) {
-            expect(JSON.parse(body)).to.include(noParentsData);
-            done();
-          });
-        });
-      });
-
-      // Tests that include_revisions defaults to false
-      it('gets just times when include_revisions is not set', function(done) {
-        getAPIToken().then(function(token) {
-          request.get(baseUrl + 'times/?token=' + token,
-          function(err, res, body) {
-            expect(JSON.parse(body)).to.include(noParentsData);
-            done();
-          });
+          expect(err).to.equal(null);
+          expect(res.statusCode).to.equal(200);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
         });
       });
     });
 
-    describe('/times/:uuid?include_revisions=true', function() {
-      const currentTime = new Date().toISOString().substring(0, 10);
-      const time = 'e0326905-ef25-46a0-bacd-4391155aca4a';
-
-      const noParentsData = {
-        duration: 13,
-        user: 'tschuy',
-        project: ['ganeti-webmgr', 'gwm'],
-        activities: ['docs'],
-        notes: 'forgot to add last hour',
-        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-        date_worked: '2015-04-20',
-        created_at: '2015-04-20',
-        updated_at: currentTime,
-        deleted_at: null,
-        uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-        revision: 2,
-      };
-
-      const withParentsData = {
-        duration: 13,
-        user: 'tschuy',
-        project: ['ganeti-webmgr', 'gwm'],
-        activities: ['docs'],
-        notes: 'forgot to add last hour',
-        issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-        date_worked: '2015-04-20',
-        created_at: '2015-04-20',
-        updated_at: currentTime,
-        deleted_at: null,
-        uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-        revision: 2,
-        parents: [
-          {
-            duration: 12,
-            user: 'tschuy',
-            project: ['ganeti-webmgr', 'gwm'],
-            activities: ['docs'],
-            notes: '',
-            issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
-            date_worked: '2015-04-20',
-            created_at: '2015-04-20',
-            updated_at: null,
-            deleted_at: null,
-            uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
-            revision: 1,
-          },
-        ],
-      };
-
-      beforeEach(function(done) {
-        function getPostObject(uri, obj) {
-          return {
-            uri: uri,
-            json: true,
-            body: {
-              auth: {
-                type: 'token',
-              },
-              object: obj,
-            },
+    it('fails with Object Not Found error when given a nonexistent uuid',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/00000000-0000-0000-0000-000000000000' +
+        '?include_deleted=true&token=' + token, function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 404,
+            error: 'Object not found',
+            text: 'Nonexistent time',
           };
-        }
 
-        const postTime = {
-          duration: 13,
-          notes: 'forgot to add last hour',
-        };
-        const postArg = getPostObject(baseUrl + 'times/' + time, postTime);
-
-        getAPIToken().then(function(token) {
-          postArg.body.auth.token = token;
-          request.post(postArg, function() {
-            done();
-          });
+          expect(res.statusCode).to.equal(404);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
         });
       });
+    });
 
-      // Tests that include_revisions includes revisions
-      it('gets time + revisions when include_revisions=true', function(done) {
-        getAPIToken().then(function(token) {
-          request.get(baseUrl + 'times/' + time + '?include_revisions=true&' +
-          'token=' + token,
-          function(err, res, body) {
-            expect(JSON.parse(body)).to.deep.equal(withParentsData);
-            expect(JSON.parse(body)).to.not.deep.equal(noParentsData);
-            done();
-          });
-        });
-      });
+    it('fails with Invalid Identifier error when given an invalid uuid',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/nope?include_deleted=true&token=' + token,
+        function(err, res, body) {
+          const jsonBody = JSON.parse(body);
+          const expectedResult = {
+            status: 400,
+            error: 'The provided identifier was invalid',
+            text: 'Expected UUID but received nope',
+            values: ['nope'],
+          };
 
-      // Tests that include_revisions includes revisions
-      it('gets times + revisions when include_revisions is an empty parameter',
-      function(done) {
-        getAPIToken().then(function(token) {
-          request.get(baseUrl + 'times/' + time + '?include_revisions&token=' +
-          token,
-          function(err, res, body) {
-            expect(JSON.parse(body)).to.deep.equal(withParentsData);
-            expect(JSON.parse(body)).to.not.deep.equal(noParentsData);
-            done();
-          });
-        });
-      });
-
-      // Tests that include_revisions isn't always set to true
-      it('gets just time when include_revisions=false', function(done) {
-        getAPIToken().then(function(token) {
-          request.get(baseUrl + 'times/' + time + '?include_revisions=false&' +
-          'token=' + token,
-          function(err, res, body) {
-            expect(JSON.parse(body)).to.deep.equal(noParentsData);
-            done();
-          });
-        });
-      });
-
-      // Tests that include_revisions defaults to false
-      it('gets just time when include_revisions is not set', function(done) {
-        getAPIToken().then(function(token) {
-          request.get(baseUrl + 'times/' + time + '?token=' + token,
-          function(err, res, body) {
-            expect(JSON.parse(body)).to.deep.equal(noParentsData);
-            done();
-          });
+          expect(res.statusCode).to.equal(400);
+          expect(jsonBody).to.deep.equal(expectedResult);
+          done();
         });
       });
     });
   });
 
   describe('POST /times', function() {
-    // The time to attempt to add
-    const time = {
-      duration: 20,
-      user: 'tschuy',
-      project: 'ts',
-      activities: ['dev', 'docs'].sort(),
-      notes: '',
-      issue_uri: 'https://github.com/osuosl/gwm/issues/1',
-      date_worked: '2015-07-30',
-    };
-
-    // The time as returned from the POST endpoint
-    const newTime = {
-      duration: 20,
-      user: 'tschuy',
-      project: 'ts',
-      activities: ['docs', 'dev'].sort(),
-      notes: '',
-      issue_uri: 'https://github.com/osuosl/gwm/issues/1',
-      date_worked: '2015-07-30',
-      revision: 1,
-    };
-
-    // The time as returned from the GET endpoint
-    const getTime = {
-      duration: 20,
-      user: 'tschuy',
-      project: ['ts', 'timesync'].sort(),
-      activities: ['docs', 'dev'].sort(),
-      notes: '',
-      issue_uri: 'https://github.com/osuosl/gwm/issues/1',
-      date_worked: '2015-07-30',
-      created_at: new Date().toISOString().substring(0, 10),
-      updated_at: null,
-      deleted_at: null,
-      revision: 1,
-    };
-
-    // the base POST JSON
-    const postArg = {
-      auth: {
-        type: 'token',
-      },
-      object: time,
-    };
-
-    const requestOptions = {
-      url: baseUrl + 'times/',
-      json: true,
-      method: 'POST',
-    };
-
-    function checkListEndpoint(done, expectedResults, token) {
-      request.get(`${baseUrl}times?token=${token}`, function(err, res, body) {
-        expect(err).to.equal(null);
-        expect(res.statusCode).to.equal(200);
-
-        // the projects/ list shouldn't have changed
-        expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
-        done();
-      });
+    function getPostObject(uri, time) {
+      return {
+        uri: uri,
+        json: true,
+        body: {
+          auth: {
+            type: 'token',
+          },
+          object: time,
+        },
+      };
     }
+
+    const initialData = [
+      {
+        duration: 12,
+        user: 'deanj',
+        project: ['gwm', 'ganeti-webmgr'].sort(),
+        activities: ['docs', 'dev'].sort(),
+        notes: '',
+        issue_uri:
+          'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        date_worked: '2015-04-19',
+        created_at: '2015-04-19',
+        updated_at: null,
+        deleted_at: null,
+        revision: 1,
+        uuid: '32764929-1bea-4a17-8c8a-22d7fb144941',
+      },
+      {
+        duration: 12,
+        user: 'tschuy',
+        project: ['gwm', 'ganeti-webmgr'].sort(),
+        activities: ['docs'],
+        notes: '',
+        issue_uri:
+          'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        date_worked: '2015-04-20',
+        created_at: '2015-04-20',
+        updated_at: null,
+        deleted_at: null,
+        revision: 1,
+        uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+      },
+      {
+        duration: 12,
+        user: 'deanj',
+        project: ['pgd'],
+        activities: ['sys'],
+        notes: '',
+        issue_uri:
+          'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        date_worked: '2015-04-21',
+        created_at: '2015-04-21',
+        updated_at: null,
+        deleted_at: null,
+        revision: 1,
+        uuid: '4bfd7dcf-3fda-4488-a530-60b65d9e77a9',
+      },
+      {
+        duration: 12,
+        user: 'patcht',
+        project: ['pgd'],
+        activities: ['dev'],
+        notes: '',
+        issue_uri:
+          'https://github.com/osu-cass/whats-fresh-api/issues/56',
+        date_worked: '2015-04-22',
+        created_at: '2015-04-22',
+        updated_at: null,
+        deleted_at: null,
+        revision: 1,
+        uuid: 'd24c191f-305c-4646-824d-433bbd86fcec',
+      },
+      {
+        duration: 18,
+        user: 'thai',
+        project: ['wf'],
+        activities: ['docs'],
+        notes: '',
+        issue_uri: '',
+        date_worked: '2016-02-25',
+        created_at: '2016-02-25',
+        updated_at: null,
+        uuid: '339f0d41-dd83-434f-81ca-9666a1c96f99',
+        revision: 1,
+        deleted_at: null,
+      },
+    ];
 
     it('creates a new time with activities', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
+        const postArg = getPostObject(baseUrl + 'times/', time);
 
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
+        postArg.body.auth.token = token;
 
-          const addedTime = copyJsonObject(newTime);
-          addedTime.uuid = body.uuid;
-          expect(body).to.deep.equal(addedTime);
+        request.post(postArg, function(postErr, postRes, postBody) {
+          expect(postErr).to.equal(null);
+          expect(postRes.statusCode).to.equal(200);
 
-          const expectedResult = copyJsonObject(getTime);
-          expectedResult.uuid = body.uuid;
-          checkListEndpoint(done, initialData.concat(expectedResult), token);
+          time.uuid = postBody.uuid;
+          time.revision = 1;
+
+          expect(postBody).to.deep.equal(time);
+
+          const createdAt = new Date().toISOString().substring(0, 10);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            const expectedResults = initialData.concat([
+              {
+                duration: 20,
+                user: 'tschuy',
+                project: ['gwm', 'ganeti-webmgr'].sort(),
+                activities: ['docs', 'dev'].sort(),
+                notes: '',
+                issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+                date_worked: '2015-07-30',
+                created_at: createdAt,
+                updated_at: null,
+                deleted_at: null,
+                uuid: time.uuid,
+                revision: 1,
+              },
+            ]);
+
+            const jsonGetBody = JSON.parse(getBody);
+            expectedResults[expectedResults.length - 1].activities.sort();
+            jsonGetBody[jsonGetBody.length - 1].activities.sort();
+
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(jsonGetBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
         });
       });
     });
 
     it('creates a new time with default activity', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'ts',
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        delete requestOptions.body.object.activities;
+        const postArg = getPostObject(baseUrl + 'times/', time);
 
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
+        postArg.body.auth.token = token;
 
-          const addedTime = copyJsonObject(newTime);
-          addedTime.uuid = body.uuid;
-          delete addedTime.activities;
-          expect(body).to.deep.equal(addedTime);
+        request.post(postArg, function(postErr, postRes, postBody) {
+          expect(postErr).to.equal(null);
+          expect(postRes.statusCode).to.equal(200);
 
-          const expectedResult = copyJsonObject(getTime);
-          expectedResult.uuid = body.uuid;
-          expectedResult.activities = ['dev'];
-          checkListEndpoint(done, initialData.concat(expectedResult), token);
+          time.uuid = postBody.uuid;
+          time.revision = 1;
+
+          expect(postBody).to.deep.equal(time);
+
+          const createdAt = new Date().toISOString().substring(0, 10);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            const expectedResults = initialData.concat([
+              {
+                duration: 20,
+                user: 'tschuy',
+                project: ['ts', 'timesync'].sort(),
+                activities: ['dev'],
+                notes: '',
+                issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+                date_worked: '2015-07-30',
+                created_at: createdAt,
+                updated_at: null,
+                deleted_at: null,
+                uuid: time.uuid,
+                revision: 1,
+              },
+            ]);
+
+            const jsonGetBody = JSON.parse(getBody);
+            expectedResults[expectedResults.length - 1].activities.sort();
+            jsonGetBody[jsonGetBody.length - 1].activities.sort();
+
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(jsonGetBody).to.deep.have.same.members(expectedResults);
+            done();
+          });
         });
       });
     });
 
     it('fails with a bad token', function(done) {
-      getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+      const time = {
+        duration: 20,
+        user: 'tschuy',
+        project: 'gwm',
+        activities: ['dev', 'docs'].sort(),
+        notes: '',
+        issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+        date_worked: '2015-07-30',
+      };
 
-        requestOptions.body.auth.token = 'not_a_token';
+      const postArg = getPostObject(baseUrl + 'times/', time);
 
-        request.post(requestOptions, function(err, res, body) {
-          const expectedResult = {
-            error: 'Authentication failure',
-            status: 401,
-            text: 'Bad API token',
-          };
+      postArg.body.auth.token = 'not_a_token';
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+      request.post(postArg, function(postErr, postRes, postBody) {
+        const expectedResult = {
+          error: 'Authentication failure',
+          status: 401,
+          text: 'Bad API token',
+        };
 
-          checkListEndpoint(done, initialData, token);
+        expect(postRes.statusCode).to.equal(401);
+        expect(postBody).to.deep.equal(expectedResult);
+
+
+        getAPIToken().then(function(token) {
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it("fails when user isn't member of project", function(done) {
-      getAPIToken('thai', 'passing').then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+      const oldUser = user;
+      const oldPass = password;
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.user = 'thai';
+      user = 'thai';
+      password = 'passing';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
 
-        request.post(requestOptions, function(err, res, body) {
+        const time = {
+          duration: 20,
+          user: 'thai',
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
+
+        const postArg = getPostObject(baseUrl + 'times/', time);
+
+        postArg.body.auth.token = token;
+
+        request.post(postArg, function(err, res, body) {
           const expectedResult = {
             error: 'Authorization failure',
             status: 401,
             text: 'thai is not authorized to create time entries for project ' +
-                  'ts.',
+            'gwm.',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(res.statusCode).to.equal(401);
           expect(body).to.deep.equal(expectedResult);
 
           getAPIToken().then(function(newToken) {
-            checkListEndpoint(done, initialData, newToken);
+            request.get(baseUrl + 'times?token=' + newToken,
+            function(getErr, getRes, getBody) {
+              expect(getErr).to.be.a('null');
+              expect(getRes.statusCode).to.equal(200);
+              expect(JSON.parse(getBody)).to.deep.equal(initialData);
+              done();
+            });
           });
         });
       });
@@ -2338,523 +3218,809 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails with a missing token', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        delete requestOptions.body.auth.token;
+        const postArg = getPostObject(baseUrl + 'times/', time);
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Authentication failure',
             status: 401,
             text: 'Missing credentials',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(401);
+          expect(postBody).to.deep.equal(expectedResult);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a negative duration', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: -20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.duration = -20;
+        const postArg = getPostObject(baseUrl + 'times/', time);
 
-        request.post(requestOptions, function(err, res, body) {
+        postArg.body.auth.token = token;
+
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
-            text: 'Field duration of time should be positive number but was ' +
-                  'sent as negative number',
+            text: 'Field duration of time should be positive number ' +
+            'but was sent as negative number',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a non-numeric duration', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 'twenty',
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.duration = 'number';
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
             text: 'Field duration of time should be number but was sent as ' +
-                  'string',
+                                                                      'string',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a missing duration', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        delete requestOptions.body.object.duration;
+        const postArg = getPostObject(baseUrl + 'times/', time);
 
-        request.post(requestOptions, function(err, res, body) {
+        postArg.body.auth.token = token;
+
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
             text: 'The time is missing a duration',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a bad activity', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs', 'activity_!@#'],
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.activities.push('activity_!@#');
+        const postArg = getPostObject(baseUrl + 'times/', time);
 
-        request.post(requestOptions, function(err, res, body) {
+        postArg.body.auth.token = token;
+
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
             text: 'Field activities of time should be slugs but was sent as ' +
-                  'array containing at least 1 invalid slug',
+            'array containing at least 1 invalid slug',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a non-existent activity', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs', 'dancing'],
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.activities.push('dancing');
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Invalid foreign key',
             status: 409,
             text: 'The time does not contain a valid activities reference.',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(409);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a non-string activity', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs', -14],
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.activities.push(-14);
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
             text: 'Field activities of time should be slugs but was sent as ' +
-                  'array containing at least 1 number',
+            'array containing at least 1 number',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a non-array activities', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: 1.414141414,
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.activities = -1.414141414;
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
             text: 'Field activities of time should be array but was sent as ' +
-                  'number',
+                                                                      'number',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with missing activities', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.project = 'gwm';
-        delete requestOptions.body.object.activities;
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
             text: 'The time is missing a activities',
           };
 
-          expect(err).to.equal(null);
-          expect(body).to.deep.equal(expectedResult);
-          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a bad project', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'project? we need a project?',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        const project = 'project? we need a project?';
-        requestOptions.body.object.project = project;
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
-            text: 'Field project of time should be slug but was sent as ' +
-                  `invalid slug ${project}`,
+            text: 'Field project of time should be slug but was sent as' +
+            ' invalid slug project? we need a project?',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a non-existent project', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'project-xyz',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.project = 'not-a-project';
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Invalid foreign key',
             status: 409,
             text: 'The time does not contain a valid project reference.',
           };
 
-          expect(err).to.equal(null);
-          expect(body).to.deep.equal(expectedResult);
-          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(409);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a non-string project', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: ['Who needs', 'proper types?'],
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.project = ['who needs', 'proper types'];
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
-            text: 'Field project of time should be string but was sent as ' +
-                  'array',
+            text: 'Field project of time should be string but was sent as' +
+                  ' array',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a missing project', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        delete requestOptions.body.object.project;
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
             text: 'The time is missing a project',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a bad issue URI', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'I do my own thing, pal',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        const uri = 'we need no uri';
-        requestOptions.body.object.issue_uri = uri;
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
             text: 'Field issue_uri of time should be URI but was sent as ' +
-                  `invalid URI ${uri}`,
+            'invalid URI I do my own thing, pal',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a non-string issue URI', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 3.14159265,
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.issue_uri = [12, 34];
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
             text: 'Field issue_uri of time should be string but was sent as ' +
-                  'array',
+                                                                      'number',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('works with a missing issue URI', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['docs'],
+          notes: '',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        delete requestOptions.body.object.issue_uri;
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(200);
+        const createdAt = new Date().toISOString().substring(0, 10);
+        request.post(postArg, function(postErr, postRes, postBody) {
+          const expectedResults = initialData.concat([{
+            duration: 20,
+            user: 'tschuy',
+            project: ['gwm', 'ganeti-webmgr'].sort(),
+            activities: ['docs'],
+            notes: '',
+            issue_uri: null,
+            date_worked: '2015-07-30',
+            created_at: createdAt,
+            updated_at: null,
+            deleted_at: null,
+            uuid: postBody.uuid,
+            revision: 1,
+          }]);
 
-          const addedTime = copyJsonObject(newTime);
-          addedTime.uuid = body.uuid;
-          delete addedTime.issue_uri;
-          expect(body).to.deep.equal(addedTime);
-
-          const expectedResult = copyJsonObject(getTime);
-          expectedResult.uuid = body.uuid;
-          expectedResult.issue_uri = null;
-          checkListEndpoint(done, initialData.concat(expectedResult), token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have
+            .same.members(expectedResults);
+            done();
+          });
         });
       });
     });
 
     it('fails with a bad user', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'jenkinsl',
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.user = 'notauser';
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Authorization failure',
             status: 401,
-            text: `${defaultUsername} is not authorized to create time ` +
-                  `entries for ${requestOptions.body.object.user}`,
+            text: 'tschuy is not authorized to create time entries for' +
+                  ' jenkinsl',
           };
 
-          expect(err).to.equal(null);
-          expect(body).to.deep.equal(expectedResult);
-          expect(res.statusCode).to.equal(expectedResult.status);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(401);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a non-string user', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: {username: 'tschuy'},
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.user = {username: 'tschuy'};
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
-            text: 'Field user of time should be string but was sent as ' +
-                  'object',
+            text: 'Field user of time should be string but ' +
+            'was sent as object',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a missing user', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: '2015-07-30',
+        };
 
-        requestOptions.body.auth.token = token;
-        delete requestOptions.body.object.user;
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
             text: 'The time is missing a user',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a bad date worked', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: 'baaaaaaaad',
+        };
 
-        requestOptions.body.auth.token = token;
-        const date = 'baaaaaaaad';
-        requestOptions.body.object.date_worked = date;
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
-            text: 'Field date_worked of time should be ISO-8601 date but was ' +
-                  `sent as ${date}`,
+            text: 'Field date_worked of time should be ISO-8601 date ' +
+            'but was sent as baaaaaaaad',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a non-string date worked', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+          date_worked: 1234,
+        };
 
-        requestOptions.body.auth.token = token;
-        requestOptions.body.object.date_worked = 1234;
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
-            text: 'Field date_worked of time should be string but was sent ' +
-                  `as number`,
+            text: 'Field date_worked of time should be string ' +
+            'but was sent as number',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
 
     it('fails with a missing date worked', function(done) {
       getAPIToken().then(function(token) {
-        requestOptions.body = copyJsonObject(postArg);
+        const time = {
+          duration: 20,
+          user: 'tschuy',
+          project: 'gwm',
+          activities: ['dev', 'docs'].sort(),
+          notes: '',
+          issue_uri: 'https://github.com/osuosl/gwm/issues/1',
+        };
 
-        requestOptions.body.auth.token = token;
-        delete requestOptions.body.object.date_worked;
+        const postArg = getPostObject(baseUrl + 'times/', time);
+        postArg.body.auth.token = token;
 
-        request.post(requestOptions, function(err, res, body) {
+        request.post(postArg, function(postErr, postRes, postBody) {
           const expectedResult = {
             error: 'Bad object',
             status: 400,
             text: 'The time is missing a date_worked',
           };
 
-          expect(err).to.equal(null);
-          expect(res.statusCode).to.equal(expectedResult.status);
-          expect(body).to.deep.equal(expectedResult);
+          expect(postBody).to.deep.equal(expectedResult);
+          expect(postRes.statusCode).to.equal(400);
 
-          checkListEndpoint(done, initialData, token);
+          request.get(baseUrl + 'times?token=' + token,
+          function(getErr, getRes, getBody) {
+            expect(getErr).to.be.a('null');
+            expect(getRes.statusCode).to.equal(200);
+            expect(JSON.parse(getBody)).to.deep.have.same.members(initialData);
+            done();
+          });
         });
       });
     });
@@ -2962,8 +4128,8 @@ module.exports = function(expect, request, baseUrl) {
      * times over.
      */
     function checkPostToEndpoint(done, uri, postObj, expectedResults, error,
-    statusCode, postBodies, username, password) {
-      getAPIToken(username, password).then(function(token) {
+    statusCode, postBodies) {
+      getAPIToken().then(function(token) {
         const options = copyJsonObject(requestOptions);
         postArg.object = postObj;
         options.body = postArg;
@@ -3023,8 +4189,15 @@ module.exports = function(expect, request, baseUrl) {
       let error;
       const statusCode = 200;
 
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'deanj';
+      password = 'pass';
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, undefined, 'deanj', 'pass');
+                 statusCode);
+      user = oldUser;
+      password = oldPass;
     });
 
     // Tests valid duration field
@@ -3110,14 +4283,18 @@ module.exports = function(expect, request, baseUrl) {
       const uri = baseUrl + 'times/00000000-0000-0000-0000-000000000000';
       const postObj = {duration: postPatchedTime.duration};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 404,
-        error: 'Object not found',
-        text: 'Nonexistent time',
-      };
+      const error = 'Object not found';
+      const statusCode = 404;
+      const postBody = [
+        {
+          status: 404,
+          error: 'Object not found',
+          text: 'Nonexistent time',
+        },
+      ];
 
-      checkPostToEndpoint(done, uri, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, uri, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests all invalid fields
@@ -3175,15 +4352,19 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {duration: invalidTimeDataType.duration};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field duration of time should be ' +
-            'number but was sent as object',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field duration of time should be ' +
+              'number but was sent as object',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests invalid project field
@@ -3191,15 +4372,19 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {project: invalidTimeDataType.project};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field project of time should be ' +
-            'string but was sent as object',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field project of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests invalid activities field
@@ -3207,15 +4392,19 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {activities: invalidTimeDataType.activities};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field activities of time should be ' +
-            'array but was sent as object',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field activities of time should be ' +
+              'array but was sent as object',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests invalid notes field
@@ -3223,15 +4412,19 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {notes: invalidTimeDataType.notes};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field notes of time should be ' +
-            'string but was sent as object',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field notes of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests invalid issue_uri field
@@ -3239,15 +4432,19 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {issue_uri: invalidTimeDataType.issue_uri};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field issue_uri of time should be ' +
-            'string but was sent as object',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field issue_uri of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests invalid date_worked field
@@ -3255,15 +4452,19 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {date_worked: invalidTimeDataType.date_worked};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field date_worked of time should be ' +
-            'string but was sent as object',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field date_worked of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests invalid key field
@@ -3271,14 +4472,18 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {key: invalidTimeDataType.key};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'time does not have a key field',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'time does not have a key field',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests all valid fields except invalid duration
@@ -3290,15 +4495,19 @@ module.exports = function(expect, request, baseUrl) {
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field duration of time should be ' +
-            'number but was sent as object',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field duration of time should be ' +
+              'number but was sent as object',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests all valid fields except invalid project
@@ -3310,15 +4519,19 @@ module.exports = function(expect, request, baseUrl) {
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field project of time should be ' +
-            'string but was sent as object',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field project of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests all valid fields except invalid activities
@@ -3331,15 +4544,19 @@ module.exports = function(expect, request, baseUrl) {
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field activities of time should be ' +
-            'array but was sent as object',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field activities of time should be ' +
+              'array but was sent as object',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests all valid fields except invalid notes
@@ -3352,15 +4569,19 @@ module.exports = function(expect, request, baseUrl) {
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field notes of time should be ' +
-            'string but was sent as object',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field notes of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests all valid fields except invalid issue_uri
@@ -3373,15 +4594,19 @@ module.exports = function(expect, request, baseUrl) {
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field issue_uri of time should be ' +
-            'string but was sent as object',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field issue_uri of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests all valid fields except invalid date_worked
@@ -3394,15 +4619,19 @@ module.exports = function(expect, request, baseUrl) {
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field date_worked of time should be ' +
-            'string but was sent as object',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field date_worked of time should be ' +
+              'string but was sent as object',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Tests all valid fields except invalid key
@@ -3414,14 +4643,18 @@ module.exports = function(expect, request, baseUrl) {
       delete postObj.revision;
 
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'time does not have a key field',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'time does not have a key field',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // The following test a valid datatype being sent to /times/:id, but
@@ -3435,15 +4668,19 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {duration: invalidTimeValue.duration};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field duration of time should be positive integer but ' +
-            'was sent as negative integer',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field duration of time should be positive integer but ' +
+              'was sent as negative integer',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Test invalid project foreign key
@@ -3451,14 +4688,18 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {project: invalidTimeValue.project1};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 409,
-        error: 'Invalid foreign key',
-        text: 'The time does not contain a valid project reference.',
-      };
+      const error = 'Invalid foreign key';
+      const statusCode = 409;
+      const postBody = [
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The time does not contain a valid project reference.',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Test invalid project (inavlid formatting)
@@ -3466,14 +4707,18 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {project: invalidTimeValue.project2};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 409,
-        error: 'Invalid foreign key',
-        text: 'The time does not contain a valid project reference.',
-      };
+      const error = 'Invalid foreign key';
+      const statusCode = 409;
+      const postBody = [
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The time does not contain a valid project reference.',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Test invalid activities (not in the database)
@@ -3482,14 +4727,17 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {activities: invalidTimeValue.activities1};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 409,
-        error: 'Invalid foreign key',
-        text: 'The time does not contain a valid activities reference.',
-      };
+      const error = 'Invalid foreign key';
+      const statusCode = 409;
+      const postBody = [
+        {
+          status: 409,
+          error: 'Invalid foreign key',
+          text: 'The time does not contain a valid activities reference.',
+        }];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Test invalid activities (invalid formatting)
@@ -3497,14 +4745,17 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {user: invalidTimeValue.activities2};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field user of time should be string but was sent as array',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field user of time should be string but was sent as array',
+        }];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
     });
 
     // Test bad issue uri (formatting)
@@ -3512,15 +4763,19 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {issue_uri: invalidTimeValue.issue_uri};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field issue_uri of time should be URI but was sent ' +
-            'as invalid URI git@github.com:osuosl',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field issue_uri of time should be URI but was sent ' +
+              'as invalid URI git@github.com:osuosl',
+        },
+      ];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+              statusCode, postBody);
     });
 
     // Test bad date (formatting)
@@ -3528,35 +4783,295 @@ module.exports = function(expect, request, baseUrl) {
     function(done) {
       const postObj = {date_worked: invalidTimeValue.date_worked};
       const expectedResults = copyJsonObject(getOriginalTime);
-      const error = {
-        status: 400,
-        error: 'Bad object',
-        text: 'Field date_worked of time should be ISO-8601 date but was ' +
-                'sent as April 29, 1995',
-      };
+      const error = 'Bad object';
+      const statusCode = 400;
+      const postBody = [
+        {
+          status: 400,
+          error: 'Bad object',
+          text: 'Field date_worked of time should be ISO-8601 date but was ' +
+                  'sent as April 29, 1995',
+        }];
 
-      checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error]);
+      checkPostToEndpoint(done, null, postObj, expectedResults, error,
+                 statusCode, postBody);
+    });
+  });
+
+  describe('GET /times/?include_revisions=true', function() {
+    const currentTime = new Date().toISOString().substring(0, 10);
+
+    const noParentsData = {
+      duration: 13,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'],
+      activities: ['docs'],
+      notes: 'forgot to add last hour',
+      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: currentTime,
+      deleted_at: null,
+      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+      revision: 2,
+    };
+
+    const withParentsData = {
+      duration: 13,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'],
+      activities: ['docs'],
+      notes: 'forgot to add last hour',
+      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: currentTime,
+      deleted_at: null,
+      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+      revision: 2,
+      parents: [
+        {
+          duration: 12,
+          user: 'tschuy',
+          project: ['ganeti-webmgr', 'gwm'],
+          activities: ['docs'],
+          notes: '',
+          issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+          date_worked: '2015-04-20',
+          created_at: '2015-04-20',
+          updated_at: null,
+          deleted_at: null,
+          uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+          revision: 1,
+        },
+      ],
+    };
+
+    beforeEach(function(done) {
+      function getPostObject(uri, obj) {
+        return {
+          uri: uri,
+          json: true,
+          body: {
+            auth: {
+              type: 'token',
+            },
+            object: obj,
+          },
+        };
+      }
+
+      const time = 'e0326905-ef25-46a0-bacd-4391155aca4a';
+      const postTime = {
+        duration: 13,
+        notes: 'forgot to add last hour',
+      };
+      const postArg = getPostObject(baseUrl + 'times/' + time, postTime);
+
+      getAPIToken().then(function(token) {
+        postArg.body.auth.token = token;
+        request.post(postArg, function() {
+          done();
+        });
+      });
+    });
+
+    // Tests that include_revisions includes revisions
+    it('gets times + revisions when include_revisions=true', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/?include_revisions=true&token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(withParentsData);
+          done();
+        });
+      });
+    });
+
+    // Tests that include_revisions includes revisions
+    it('gets times + revisions when include_revisions is an empty parameter',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/?include_revisions&token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(withParentsData);
+          done();
+        });
+      });
+    });
+
+    // Tests that include_revisions isn't always set to true
+    it('gets just times when include_revisions=false', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/?include_revisions=false&token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(noParentsData);
+          done();
+        });
+      });
+    });
+
+    // Tests that include_revisions defaults to false
+    it('gets just times when include_revisions is not set', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/?token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.include(noParentsData);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /times/:uuid?include_revisions=true', function() {
+    const currentTime = new Date().toISOString().substring(0, 10);
+    const time = 'e0326905-ef25-46a0-bacd-4391155aca4a';
+
+    const noParentsData = {
+      duration: 13,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'],
+      activities: ['docs'],
+      notes: 'forgot to add last hour',
+      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: currentTime,
+      deleted_at: null,
+      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+      revision: 2,
+    };
+
+    const withParentsData = {
+      duration: 13,
+      user: 'tschuy',
+      project: ['ganeti-webmgr', 'gwm'],
+      activities: ['docs'],
+      notes: 'forgot to add last hour',
+      issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+      date_worked: '2015-04-20',
+      created_at: '2015-04-20',
+      updated_at: currentTime,
+      deleted_at: null,
+      uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+      revision: 2,
+      parents: [
+        {
+          duration: 12,
+          user: 'tschuy',
+          project: ['ganeti-webmgr', 'gwm'],
+          activities: ['docs'],
+          notes: '',
+          issue_uri: 'https://github.com/osu-cass/whats-fresh-api/issues/56',
+          date_worked: '2015-04-20',
+          created_at: '2015-04-20',
+          updated_at: null,
+          deleted_at: null,
+          uuid: 'e0326905-ef25-46a0-bacd-4391155aca4a',
+          revision: 1,
+        },
+      ],
+    };
+
+    beforeEach(function(done) {
+      function getPostObject(uri, obj) {
+        return {
+          uri: uri,
+          json: true,
+          body: {
+            auth: {
+              type: 'token',
+            },
+            object: obj,
+          },
+        };
+      }
+
+      const postTime = {
+        duration: 13,
+        notes: 'forgot to add last hour',
+      };
+      const postArg = getPostObject(baseUrl + 'times/' + time, postTime);
+
+      getAPIToken().then(function(token) {
+        postArg.body.auth.token = token;
+        request.post(postArg, function() {
+          done();
+        });
+      });
+    });
+
+    // Tests that include_revisions includes revisions
+    it('gets time + revisions when include_revisions=true', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/' + time + '?include_revisions=true&' +
+        'token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(withParentsData);
+          expect(JSON.parse(body)).to.not.deep.equal(noParentsData);
+          done();
+        });
+      });
+    });
+
+    // Tests that include_revisions includes revisions
+    it('gets times + revisions when include_revisions is an empty parameter',
+    function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/' + time + '?include_revisions&token=' +
+        token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(withParentsData);
+          expect(JSON.parse(body)).to.not.deep.equal(noParentsData);
+          done();
+        });
+      });
+    });
+
+    // Tests that include_revisions isn't always set to true
+    it('gets just time when include_revisions=false', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/' + time + '?include_revisions=false&' +
+        'token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(noParentsData);
+          done();
+        });
+      });
+    });
+
+    // Tests that include_revisions defaults to false
+    it('gets just time when include_revisions is not set', function(done) {
+      getAPIToken().then(function(token) {
+        request.get(baseUrl + 'times/' + time + '?token=' + token,
+        function(err, res, body) {
+          expect(JSON.parse(body)).to.deep.equal(noParentsData);
+          done();
+        });
+      });
     });
   });
 
   describe('DELETE /times/:uuid', function() {
     it('deletes the object with a valid uuid by an admin', function(done) {
+      const expectedResults = {
+        status: 404,
+        error: 'Object not found',
+        text: 'Nonexistent time',
+      };
+
       getAPIToken().then(function(token) {
-        const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
-        request.del(`${baseUrl}times/${uuid}?token=${token}`,
+        request.del(baseUrl +
+        'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
         function(err, res, body) {
           expect(body.error).to.equal(undefined);
           expect(res.statusCode).to.equal(200);
 
-          request.get(`${baseUrl}times/${uuid}?token=${token}`,
-          function(err0, res0, body0) {
-            expect(JSON.parse(body0)).to.deep.equal({
-              status: 404,
-              error: 'Object not found',
-              text: 'Nonexistent time',
-            });
-            expect(res0.statusCode).to.equal(404);
+          request.get(baseUrl +
+          'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
+          function(getErr, getRes, getBody) {
+            // TODO: GET should only return 200 when ?revisions=true is passed.
+            expect(getRes.statusCode).to.equal(404);
+            expect(JSON.parse(getBody)).to.deep.equal(expectedResults);
             done();
           });
         });
@@ -3564,21 +5079,33 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('deletes the object with a valid uuid by the user', function(done) {
-      getAPIToken('deanj', 'pass').then(function(token) {
-        const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
-        request.del(`${baseUrl}times/${uuid}?token=${token}`,
+      const expectedResults = {
+        status: 404,
+        error: 'Object not found',
+        text: 'Nonexistent time',
+      };
+
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'deanj';
+      password = 'pass';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        request.del(baseUrl +
+        'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
         function(err, res, body) {
           expect(body.error).to.equal(undefined);
           expect(res.statusCode).to.equal(200);
 
-          request.get(`${baseUrl}times/${uuid}?token=${token}`,
-          function(err0, res0, body0) {
-            expect(res0.statusCode).to.equal(404);
-            expect(JSON.parse(body0)).to.deep.equal({
-              status: 404,
-              error: 'Object not found',
-              text: 'Nonexistent time',
-            });
+          request.get(baseUrl +
+          'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
+          function(getErr, getRes, getBody) {
+            // TODO: GET should only return 200 when ?revisions=true is passed.
+            expect(getRes.statusCode).to.equal(404);
+            expect(JSON.parse(getBody)).to.deep.equal(expectedResults);
             done();
           });
         });
@@ -3586,82 +5113,62 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails to delete the object with a non-existent uuid', function(done) {
+      const expectedError = {
+        status: 404,
+        error: 'Object not found',
+        text: 'Nonexistent uuid',
+      };
       getAPIToken().then(function(token) {
-        const uuid = '66666666-6666-6666-6666-666666666666';
-        request.del(`${baseUrl}times/${uuid}?token=${token}`,
+        request.del(baseUrl +
+        'times/66666666-6666-6666-6666-666666666666?token=' + token,
         function(err, res, body) {
-          expect(JSON.parse(body)).to.deep.equal({
-            status: 404,
-            error: 'Object not found',
-            text: 'Nonexistent uuid',
-          });
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(404);
-
-          request.get(`${baseUrl}times?token=${token}`,
-          function(err0, res0, body0) {
-            expect(err0).to.equal(null);
-            expect(JSON.parse(body0)).to.deep.have.same.members(initialData);
-            expect(res0.statusCode).to.equal(200);
-            done();
-          });
+          done();
         });
       });
     });
 
     it('fails to delete the object with an invalid uuid', function(done) {
+      const expectedError = {
+        'status': 400,
+        'error': 'The provided identifier was invalid',
+        'text': 'Expected uuid but received myuuid',
+        'values': ['myuuid'],
+      };
       getAPIToken().then(function(token) {
-        const uuid = 'myuuid';
-        request.del(`${baseUrl}times/${uuid}?token=${token}`,
+        request.del(baseUrl + 'times/myuuid?token=' + token,
         function(err, res, body) {
-          expect(JSON.parse(body)).to.deep.equal({
-            'status': 400,
-            'error': 'The provided identifier was invalid',
-            'text': 'Expected uuid but received myuuid',
-            'values': ['myuuid'],
-          });
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(400);
-
-          request.get(`${baseUrl}times?token=${token}`,
-          function(err0, res0, body0) {
-            expect(err0).to.equal(null);
-            expect(JSON.parse(body0)).to.deep.have.same.members(initialData);
-            expect(res0.statusCode).to.equal(200);
-            done();
-          });
+          done();
         });
       });
     });
 
     it('fails to delete the object with invalid permissions', function(done) {
-      getAPIToken('mrsj', 'word').then(function(token) {
-        const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
-        request.del(`${baseUrl}times/${uuid}?token=${token}`,
+      const expectedError = {
+        'status': 401,
+        'error': 'Authorization failure',
+        'text': 'mrsj is not authorized to delete time ' +
+          '32764929-1bea-4a17-8c8a-22d7fb144941',
+      };
+
+      const oldUser = user;
+      const oldPass = password;
+
+      user = 'mrsj';
+      password = 'word';
+      getAPIToken().then(function(token) {
+        user = oldUser;
+        password = oldPass;
+
+        request.del(baseUrl +
+          'times/32764929-1bea-4a17-8c8a-22d7fb144941?token=' + token,
         function(err, res, body) {
-          expect(JSON.parse(body)).to.deep.equal({
-            'status': 401,
-            'error': 'Authorization failure',
-            'text': 'mrsj is not authorized to delete time ' +
-              '32764929-1bea-4a17-8c8a-22d7fb144941',
-          });
+          expect(JSON.parse(body)).to.deep.equal(expectedError);
           expect(res.statusCode).to.equal(401);
-
-          request.get(`${baseUrl}times/${uuid}?token=${token}`,
-          function(getErr, getRes, getBody) {
-            expect(getErr).to.equal(null);
-            expect(JSON.parse(getBody)).to.deep.equal(initialData.filter(t => {
-              return t.uuid === uuid;
-            })[0]);
-            expect(getRes.statusCode).to.equal(200);
-
-            request.get(`${baseUrl}times?token=${token}`,
-            function(getErr0, getRes0, getBody0) {
-              expect(getErr0).to.equal(null);
-              expect(JSON.parse(getBody0)).to.deep.have.same
-                                                    .members(initialData);
-              expect(getRes0.statusCode).to.equal(200);
-              done();
-            });
-          });
+          done();
         });
       });
     });

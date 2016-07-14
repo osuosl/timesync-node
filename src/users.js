@@ -6,6 +6,7 @@ module.exports = function(app) {
   const authRequest = require('./authenticatedRequest');
   const log = app.get('log');
 
+
   function compileUser(rawUser) {
     const strings = ['display_name', 'username', 'email', 'meta'];
     const bools = ['site_spectator', 'site_manager', 'site_admin', 'active'];
@@ -43,6 +44,7 @@ module.exports = function(app) {
     return compiledUser;
   }
 
+
   function compileUsersQueryPromise(req, res, additional) {
     return new Promise(function(resolve) {
       const knex = app.get('knex');
@@ -55,6 +57,7 @@ module.exports = function(app) {
       return resolve(usersQ);
     });
   }
+
 
   authRequest.get(app, app.get('version') + '/users', function(req, res) {
     if (req.query.include_deleted === 'false' ||
@@ -70,6 +73,7 @@ module.exports = function(app) {
       });
     }
   });
+
 
   authRequest.get(app, app.get('version') + '/users/:username',
   function(req, res) {
@@ -107,6 +111,7 @@ module.exports = function(app) {
     }
   });
 
+
   authRequest.post(app, app.get('version') + '/users',
   function(req, res, authUser) {
     const knex = app.get('knex');
@@ -129,7 +134,8 @@ module.exports = function(app) {
     for (let at of ['created_at', 'updated_at', 'deleted_at']) {
     /* eslint-enable prefer-const */
       if (user[at]) {
-        return errors.send(errors.errorBadObjectUnknownField('user', at), res);
+        return errors.send(errors.errorBadObjectMissingField('user',
+          at + ' field'), res);
       }
     }
 
@@ -219,6 +225,7 @@ module.exports = function(app) {
     });
   });
 
+
   authRequest.post(app, app.get('version') + '/users/:username',
   function(req, res, authUser) {
     const knex = app.get('knex');
@@ -228,7 +235,8 @@ module.exports = function(app) {
     for (let at of ['created_at', 'updated_at', 'deleted_at', 'username']) {
     /* eslint-enable prefer-const */
       if (modUser[at]) {
-        return errors.send(errors.errorBadObjectUnknownField('user', at), res);
+        return errors.send(errors.errorBadObjectMissingField('user',
+          at + ' field'), res);
       }
     }
 
