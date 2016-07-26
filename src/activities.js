@@ -277,7 +277,7 @@ module.exports = function(app) {
 
     if (currObj.slug && !helpers.validateSlug(currObj.slug)) {
       return errors.send(errors.errorBadObjectInvalidField('activity', 'slug',
-                          'valid slug', `invalid slug ${currObj.slug}`), res);
+                          'valid slug', 'invalid slug ' + currObj.slug), res);
     }
 
     knex('activities').where('slug', currObj.slug)
