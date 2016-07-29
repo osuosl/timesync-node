@@ -102,13 +102,13 @@ $ curl -XGET -s localhost:8000/v0/times?token=<token> | python -m json.tool
     "created_at": "2016-02-19",
     "date_worked": "2016-02-19",
     "duration": 12000,
-    "issue_uri": "https://github.com/osu-cass/whats-fresh-api/issues/56",
-    "notes": "",
+    "issue_uri": "https://github.com/example/project1/issues/1",
+    "notes": "Example project.",
     "project": [
-      "wf"
+      "project1"
     ],
     "updated_at": null,
-    "user": "tschuy"
+    "user": "me"
   }
 ]
 
