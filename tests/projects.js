@@ -125,7 +125,7 @@ module.exports = function(expect, request, baseUrl) {
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expect(JSON.parse(body)).to.deep.equal(initialData);
+          expect(JSON.parse(body)).to.deep.have.same.members(initialData);
           done();
         });
       });
@@ -140,7 +140,8 @@ module.exports = function(expect, request, baseUrl) {
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expect(JSON.parse(body)).to.deep.equal(initialDataWithDeleted);
+          expect(JSON.parse(body)).to.deep.have.same.
+                                                members(initialDataWithDeleted);
           done();
         });
       });
@@ -159,7 +160,8 @@ module.exports = function(expect, request, baseUrl) {
           expect(err).to.equal(null);
           expect(res.statusCode).to.equal(200);
 
-          expect(JSON.parse(body)).to.deep.equal(initialDataWithDeleted);
+          expect(JSON.parse(body)).to.deep.include.same.
+                                                members(initialDataWithDeleted);
           done();
         });
       });
