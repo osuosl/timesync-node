@@ -18,13 +18,13 @@ module.exports = function(expect, ldapPassport) {
     it('returns user if user exists in LDAP and locally', function(done) {
       chai.passport.use(ldapPassport).success(function(user) {
         // Called when passport successfully logs in
-        expect(user.username).to.equal('tschuy');
+        expect(user.username).to.equal('admin1');
         done();
       }).req(function(req) {
         req.body = {
           auth: {
             type: 'ldap',
-            username: 'tschuy',
+            username: 'admin1',
             password: 'valid',
           },
         };

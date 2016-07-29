@@ -6,7 +6,7 @@ function copyJsonObject(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-const defaultUsername = 'tschuy';
+const defaultUsername = 'admin1';
 const defaultPassword = 'password';
 
 module.exports = function(expect, request, baseUrl) {
@@ -34,9 +34,9 @@ module.exports = function(expect, request, baseUrl) {
 
   const initialDataWithDeleted = [
     {
-      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-      name: 'Ganeti Web Manager',
-      slugs: ['ganeti-webmgr', 'gwm'],
+      uri: 'http://example.com/project1',
+      name: 'Project1',
+      slugs: ['p1', 'project1'],
       default_activity: null,
       deleted_at: null,
       updated_at: null,
@@ -44,16 +44,16 @@ module.exports = function(expect, request, baseUrl) {
       uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
       revision: 1,
       users: {
-        tschuy: {member: true, spectator: true, manager: true},
-        mrsj: {member: true, spectator: true, manager: false},
-        MaraJade: {member: true, spectator: true, manager: true},
-        deanj: {member: true, spectator: true, manager: false},
+        admin1: {member: true, spectator: true, manager: true},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
+        Proj_Manager: {member: true, spectator: true, manager: false},
       },
     },
     {
-      uri: 'https://code.osuosl.org/projects/pgd',
-      name: 'Protein Geometry Database',
-      slugs: ['pgd'],
+      uri: 'http://example.com/project2',
+      name: 'Project2',
+      slugs: ['project2'],
       default_activity: null,
       deleted_at: null,
       updated_at: null,
@@ -61,14 +61,14 @@ module.exports = function(expect, request, baseUrl) {
       uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
       revision: 1,
       users: {
-        deanj: {member: true, spectator: true, manager: true},
-        patcht: {member: true, spectator: true, manager: false},
+        Proj_Manager: {member: true, spectator: true, manager: true},
+        Site_Manager: {member: true, spectator: true, manager: false},
       },
     },
     {
-      uri: 'https://github.com/osu-cass/whats-fresh-api',
-      name: 'Whats Fresh',
-      slugs: ['wf'],
+      uri: 'http://example.com/project3',
+      name: 'Project3',
+      slugs: ['project3'],
       default_activity: null,
       deleted_at: null,
       updated_at: null,
@@ -76,15 +76,15 @@ module.exports = function(expect, request, baseUrl) {
       uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
       revision: 1,
       users: {
-        deanj: {member: true, spectator: false, manager: false},
-        tschuy: {member: true, spectator: true, manager: true},
-        thai: {member: true, spectator: false, manager: false},
+        Proj_Manager: {member: true, spectator: false, manager: false},
+        admin1: {member: true, spectator: true, manager: true},
+        user1: {member: true, spectator: false, manager: false},
       },
     },
     {
-      uri: 'https://github.com/osuosl/timesync',
-      name: 'Timesync',
-      slugs: ['timesync', 'ts'],
+      uri: 'http://example.com/project-activity',
+      name: 'Project With Activity',
+      slugs: ['pa', 'project-activity'],
       default_activity: 'dev',
       deleted_at: null,
       updated_at: null,
@@ -92,12 +92,12 @@ module.exports = function(expect, request, baseUrl) {
       uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
       revision: 1,
       users: {
-        patcht: {member: true, spectator: true, manager: true},
+        Site_Manager: {member: true, spectator: true, manager: true},
       },
     },
     {
-      uri: 'https://github.com/osuosl/chiliproject',
-      name: 'Chili Project',
+      uri: 'http://example.com/deleted-project',
+      name: 'Deleted Project',
       slugs: [],
       default_activity: null,
       deleted_at: '2014-01-01',
@@ -106,7 +106,7 @@ module.exports = function(expect, request, baseUrl) {
       uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
       revision: 1,
       users: {
-        MaraJade: {member: true, spectator: true, manager: true},
+        delProj_Manager: {member: true, spectator: true, manager: true},
       },
     },
   ];
@@ -191,7 +191,7 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /projects?user=:username', function() {
     it('returns all projects for a user', function(done) {
       getAPIToken().then(function(token) {
-        const username = 'tschuy';
+        const username = 'admin1';
         request.get(`${baseUrl}projects?user=${username}&token=${token}`,
         function(err, res, body) {
           const expectedResult = initialData.filter(p => {
@@ -229,7 +229,7 @@ module.exports = function(expect, request, baseUrl) {
   describe('GET /projects/:slug', function() {
     it('should return projects by slug', function(done) {
       getAPIToken().then(function(token) {
-        const slug = 'gwm';
+        const slug = 'project1';
         request.get(`${baseUrl}projects/${slug}?token=${token}`,
         function(err, res, body) {
           const expectedResult = initialData.filter(p => {
@@ -285,43 +285,43 @@ module.exports = function(expect, request, baseUrl) {
   describe('POST /projects', function() {
     // the project object to attempt to add
     const project = {
-      uri: 'https://github.com/osuosl/timesync-node',
-      slugs: ['timesync-node', 'tsn'],
-      name: 'TimeSync Node',
+      uri: 'https://github.com/osuosl/pa-new',
+      slugs: ['pa-new', 'project-activity-new'],
+      name: 'Project With Activity New',
       default_activity: 'meeting',
       users: {
-        patcht: {member: true, spectator: true, manager: true},
-        thai: {member: true, spectator: true, manager: false},
+        Site_Manager: {member: true, spectator: true, manager: true},
+        user1: {member: true, spectator: true, manager: false},
       },
     };
 
     // the project as added to the database
     const newProject = {
-      uri: 'https://github.com/osuosl/timesync-node',
-      slugs: ['timesync-node', 'tsn'],
-      name: 'TimeSync Node',
+      uri: 'https://github.com/osuosl/pa-new',
+      slugs: ['pa-new', 'project-activity-new'],
+      name: 'Project With Activity New',
       default_activity: 'meeting',
       revision: 1,
       created_at: new Date().toISOString().substring(0, 10),
       users: {
-        patcht: {member: true, spectator: true, manager: true},
-        thai: {member: true, spectator: true, manager: false},
+        Site_Manager: {member: true, spectator: true, manager: true},
+        user1: {member: true, spectator: true, manager: false},
       },
     };
 
     // The project as returned on GET
     const getProject = {
-      uri: 'https://github.com/osuosl/timesync-node',
-      slugs: ['timesync-node', 'tsn'],
-      name: 'TimeSync Node',
+      uri: 'https://github.com/osuosl/pa-new',
+      slugs: ['pa-new', 'project-activity-new'],
+      name: 'Project With Activity New',
       default_activity: 'meeting',
       revision: 1,
       created_at: new Date().toISOString().substring(0, 10),
       updated_at: null,
       deleted_at: null,
       users: {
-        patcht: {member: true, spectator: true, manager: true},
-        thai: {member: true, spectator: true, manager: false},
+        Site_Manager: {member: true, spectator: true, manager: true},
+        user1: {member: true, spectator: true, manager: false},
       },
     };
 
@@ -373,7 +373,7 @@ module.exports = function(expect, request, baseUrl) {
 
     it('successfully creates a new project with slugs by a sitewide manager',
     function(done) {
-      getAPIToken('patcht', 'drowssap').then(function(token) {
+      getAPIToken('Site_Manager', 'drowssap').then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
@@ -513,7 +513,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails to create a new project with bad permissions', function(done) {
-      getAPIToken('mrsj', 'word').then(function(token) {
+      getAPIToken('Site_Spectator', 'word').then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
@@ -522,7 +522,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             error: 'Authorization failure',
             status: 401,
-            text: 'mrsj is not authorized to create projects',
+            text: 'Site_Spectator is not authorized to create projects',
           };
 
           expect(err).to.equal(null);
@@ -587,7 +587,7 @@ module.exports = function(expect, request, baseUrl) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
-        const slugs = ['ganeti-webmgr', 'gwm'];
+        const slugs = ['p1', 'project1'];
         requestOptions.body.object.slugs = slugs;
 
         request.post(requestOptions, function(err, res, body) {
@@ -658,7 +658,7 @@ module.exports = function(expect, request, baseUrl) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
-        requestOptions.body.object.name = 'Protein Geometry Database';
+        requestOptions.body.object.name = 'Project2';
 
         request.post(requestOptions, function(err, res, body) {
           const expectedResult = {
@@ -803,16 +803,16 @@ module.exports = function(expect, request, baseUrl) {
   describe('POST /projects/:slug', function() {
     // The database's entry for the project
     const postOriginalProject = {
-      name: 'Ganeti Web Manager',
-      slugs: ['ganeti-webmgr', 'gwm'],
-      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      name: 'Project1',
+      slugs: ['p1', 'project1'],
+      uri: 'http://example.com/project1',
       default_activity: null,
     };
 
     const getOriginalProject = {
-      name: 'Ganeti Web Manager',
-      slugs: ['ganeti-webmgr', 'gwm'],
-      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
+      name: 'Project1',
+      slugs: ['p1', 'project1'],
+      uri: 'http://example.com/project1',
       default_activity: null,
       uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
       revision: 1,
@@ -820,26 +820,26 @@ module.exports = function(expect, request, baseUrl) {
       updated_at: null,
       deleted_at: null,
       users: {
-        deanj: {member: true, spectator: true, manager: false},
-        tschuy: {member: true, spectator: true, manager: true},
-        mrsj: {member: true, spectator: true, manager: false},
-        MaraJade: {member: true, spectator: true, manager: true},
+        Proj_Manager: {member: true, spectator: true, manager: false},
+        admin1: {member: true, spectator: true, manager: true},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
       },
     };
 
     // A completely patched version of the above project
     const updatedAt = new Date().toISOString().substring(0, 10);
     const postPatchedProject = {
-      name: 'Ganeti Web Mgr',
-      slugs: ['gan-web', 'gwm'],
-      uri: 'https://code.osuosl.org/projects/',
+      name: 'Project 1 New',
+      slugs: ['p1n', 'project1'],
+      uri: 'http://example.com/p1n',
       default_activity: 'docs',
     };
 
     const getPatchedProject = {
-      name: 'Ganeti Web Mgr',
-      slugs: ['gan-web', 'gwm'],
-      uri: 'https://code.osuosl.org/projects/',
+      name: 'Project 1 New',
+      slugs: ['p1n', 'project1'],
+      uri: 'http://example.com/p1n',
       default_activity: 'docs',
       uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
       revision: 2,
@@ -847,10 +847,10 @@ module.exports = function(expect, request, baseUrl) {
       updated_at: updatedAt,
       deleted_at: null,
       users: {
-        deanj: {member: true, spectator: true, manager: false},
-        tschuy: {member: true, spectator: true, manager: true},
-        mrsj: {member: true, spectator: true, manager: false},
-        MaraJade: {member: true, spectator: true, manager: true},
+        Proj_Manager: {member: true, spectator: true, manager: false},
+        admin1: {member: true, spectator: true, manager: true},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
       },
     };
 
@@ -862,43 +862,44 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const invalidProjectValue = {
-      name: 'Protein Geometry Database',
-      slugs: ['pgd', 'ts'],
+      name: 'Project2',
+      slugs: ['project-activity', 'project2'].sort(),
       uri: 'notauri',
       default_activity: 'notreal',
     };
 
     const patchedProjectNewMember = {users: {
-      tschuy: {member: true, spectator: true, manager: true},
-      mrsj: {member: true, spectator: true, manager: false},
-      MaraJade: {member: true, spectator: true, manager: true},
-      deanj: {member: true, spectator: true, manager: false},
-      thai: {member: true, spectator: false, manager: false}, // Add thai
+      admin1: {member: true, spectator: true, manager: true},
+      Site_Spectator: {member: true, spectator: true, manager: false},
+      delProj_Manager: {member: true, spectator: true, manager: true},
+      Proj_Manager: {member: true, spectator: true, manager: false},
+      user1: {member: true, spectator: false, manager: false}, // Add user1
     }};
     const patchedProjectBadMember = {users: {
-      tschuy: {member: true, spectator: true, manager: true},
-      mrsj: {member: true, spectator: true, manager: false},
-      MaraJade: {member: true, spectator: true, manager: true},
-      deanj: {member: true, spectator: true, manager: false},
+      admin1: {member: true, spectator: true, manager: true},
+      Site_Spectator: {member: true, spectator: true, manager: false},
+      delProj_Manager: {member: true, spectator: true, manager: true},
+      Proj_Manager: {member: true, spectator: true, manager: false},
       wasd: {member: true, spectator: false, manager: false}, // no wasd
     }};
     const patchedProjectPromotion = {users: {
-      tschuy: {member: true, spectator: true, manager: true},
-      mrsj: {member: true, spectator: true, manager: true}, // mrsj now manager
-      MaraJade: {member: true, spectator: true, manager: true},
-      deanj: {member: true, spectator: true, manager: false},
+      admin1: {member: true, spectator: true, manager: true},
+      // Site_Spectator now manager
+      Site_Spectator: {member: true, spectator: true, manager: true},
+      delProj_Manager: {member: true, spectator: true, manager: true},
+      Proj_Manager: {member: true, spectator: true, manager: false},
     }};
     const patchedProjectDemotion = {users: {
-      tschuy: {member: true, spectator: true, manager: true},
-      // mrsj no longer spectator
-      mrsj: {member: true, spectator: false, manager: false},
-      MaraJade: {member: true, spectator: true, manager: true},
-      deanj: {member: true, spectator: true, manager: false},
+      admin1: {member: true, spectator: true, manager: true},
+      // Site_Spectator no longer spectator
+      Site_Spectator: {member: true, spectator: false, manager: false},
+      delProj_Manager: {member: true, spectator: true, manager: true},
+      Proj_Manager: {member: true, spectator: true, manager: false},
     }};
     const patchedProjectSelfRemoval = {users: {
-      mrsj: {member: true, spectator: true, manager: false},
-      MaraJade: {member: true, spectator: true, manager: true},
-      deanj: {member: true, spectator: true, manager: false},
+      Site_Spectator: {member: true, spectator: true, manager: false},
+      delProj_Manager: {member: true, spectator: true, manager: true},
+      Proj_Manager: {member: true, spectator: true, manager: false},
     }};
 
     const postArg = {
@@ -908,7 +909,7 @@ module.exports = function(expect, request, baseUrl) {
     };
 
     const requestOptions = {
-      url: baseUrl + 'projects/gwm',
+      url: baseUrl + 'projects/project1',
       json: true,
     };
 
@@ -983,7 +984,7 @@ module.exports = function(expect, request, baseUrl) {
       const statusCode = 200;
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, undefined, 'patcht', 'drowssap');
+                 statusCode, undefined, 'Site_Manager', 'drowssap');
     });
 
     it("successfully patches a project's uri, slugs, name, and " +
@@ -995,7 +996,7 @@ module.exports = function(expect, request, baseUrl) {
       const statusCode = 200;
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, undefined, 'MaraJade', 'wording');
+                 statusCode, undefined, 'delProj_Manager', 'wording');
     });
 
     it("successfully patches a project's uri", function(done) {
@@ -1134,11 +1135,11 @@ module.exports = function(expect, request, baseUrl) {
       const error = {
         status: 401,
         error: 'Authorization failure',
-        text: 'thai is not authorized to make changes to Ganeti Web Manager',
+        text: 'user1 is not authorized to make changes to Project1',
       };
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error], 'thai', 'passing');
+                 error.status, [error], 'user1', 'passing');
     });
 
     it("doesn't patch a project with bad uri, name, slugs, and default " +
@@ -1310,8 +1311,8 @@ module.exports = function(expect, request, baseUrl) {
       const error = {
         status: 409,
         error: 'The slug provided already exists',
-        text: `slugs ${postObj.slugs.join(', ')} already exist`,
-        values: postObj.slugs,
+        text: `slugs ${postObj.slugs.sort().join(', ')} already exist`,
+        values: postObj.slugs.sort(),
       };
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
@@ -1383,7 +1384,7 @@ module.exports = function(expect, request, baseUrl) {
     it('deletes the desired project if no times are associated with it',
     function(done) {
       getAPIToken().then(function(token) {
-        const project = 'ts';
+        const project = 'project-activity';
         request.del(`${baseUrl}projects/${project}?token=${token}`,
         function(err, res) {
           expect(err).to.equal(null);
@@ -1419,7 +1420,7 @@ module.exports = function(expect, request, baseUrl) {
 
     it('fails if it recieves a project with times associated', function(done) {
       getAPIToken().then(function(token) {
-        const project = 'pgd';
+        const project = 'project2';
         request.del(`${baseUrl}projects/${project}?token=${token}`,
         function(err, res, body) {
           const expectedError = {
@@ -1507,15 +1508,15 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails with bad permissions', function(done) {
-      getAPIToken('mrsj', 'word').then(function(token) {
-        const slug = 'ts';
+      getAPIToken('Site_Spectator', 'word').then(function(token) {
+        const slug = 'project-activity';
         request.del(`${baseUrl}projects/${slug}?token=${token}`,
         function(err, res, body) {
           const jsonBody = JSON.parse(body);
           const expectedError = {
             status: 401,
             error: 'Authorization failure',
-            text: `mrsj is not authorized to delete project ${slug}`,
+            text: `Site_Spectator is not authorized to delete project ${slug}`,
           };
 
           expect(jsonBody).to.deep.equal(expectedError);
@@ -1547,43 +1548,43 @@ module.exports = function(expect, request, baseUrl) {
     const currentTime = new Date().toISOString().substring(0, 10);
 
     const noParentsData = {
-      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-      name: 'GANETI WEB MANAGER',
+      uri: 'http://example.com/project1',
+      name: 'Project1',
       uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
       default_activity: null,
       revision: 2,
       deleted_at: null,
       updated_at: currentTime,
       created_at: '2014-01-01',
-      slugs: ['ganeti-webmgr', 'gwm'],
+      slugs: ['p1', 'project1'],
       users: {
-        tschuy: {member: true, spectator: true, manager: true},
-        mrsj: {member: true, spectator: true, manager: false},
-        MaraJade: {member: true, spectator: true, manager: true},
-        deanj: {member: true, spectator: true, manager: false},
+        admin1: {member: true, spectator: true, manager: true},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
+        Proj_Manager: {member: true, spectator: true, manager: false},
       },
     };
 
     const withParentsData = {
-      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-      name: 'GANETI WEB MANAGER',
+      uri: 'http://example.com/project1',
+      name: 'Project1',
       uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
       default_activity: null,
       revision: 2,
       deleted_at: null,
       updated_at: currentTime,
       created_at: '2014-01-01',
-      slugs: ['ganeti-webmgr', 'gwm'],
+      slugs: ['p1', 'project1'],
       users: {
-        tschuy: {member: true, spectator: true, manager: true},
-        mrsj: {member: true, spectator: true, manager: false},
-        MaraJade: {member: true, spectator: true, manager: true},
-        deanj: {member: true, spectator: true, manager: false},
+        admin1: {member: true, spectator: true, manager: true},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
+        Proj_Manager: {member: true, spectator: true, manager: false},
       },
       'parents': [
         {
-          uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-          name: 'Ganeti Web Manager',
+          uri: 'http://example.com/project1',
+          name: 'Project1',
           uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
           default_activity: null,
           revision: 1,
@@ -1608,9 +1609,9 @@ module.exports = function(expect, request, baseUrl) {
         };
       }
 
-      const project = 'gwm';
+      const project = 'project1';
       const postProject = {
-        name: 'GANETI WEB MANAGER',
+        name: 'Project1',
       };
       const postArg = getPostObject(baseUrl + 'projects/' + project,
                       postProject);
@@ -1674,46 +1675,46 @@ module.exports = function(expect, request, baseUrl) {
 
   describe('GET /projects/:slug?include_revisions', function() {
     const currentTime = new Date().toISOString().substring(0, 10);
-    const project = 'gwm';
+    const project = 'project1';
 
     const noParentsData = {
-      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-      name: 'GANETI WEB MANAGER',
+      uri: 'http://example.com/project1',
+      name: 'Project1',
       uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
       default_activity: null,
       revision: 2,
       deleted_at: null,
       updated_at: currentTime,
       created_at: '2014-01-01',
-      slugs: ['ganeti-webmgr', 'gwm'],
+      slugs: ['p1', 'project1'],
       users: {
-        tschuy: {member: true, spectator: true, manager: true},
-        mrsj: {member: true, spectator: true, manager: false},
-        MaraJade: {member: true, spectator: true, manager: true},
-        deanj: {member: true, spectator: true, manager: false},
+        admin1: {member: true, spectator: true, manager: true},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
+        Proj_Manager: {member: true, spectator: true, manager: false},
       },
     };
 
     const withParentsData = {
-      uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-      name: 'GANETI WEB MANAGER',
+      uri: 'http://example.com/project1',
+      name: 'Project1',
       uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
       default_activity: null,
       revision: 2,
       deleted_at: null,
       updated_at: currentTime,
       created_at: '2014-01-01',
-      slugs: ['ganeti-webmgr', 'gwm'],
+      slugs: ['p1', 'project1'],
       users: {
-        tschuy: {member: true, spectator: true, manager: true},
-        mrsj: {member: true, spectator: true, manager: false},
-        MaraJade: {member: true, spectator: true, manager: true},
-        deanj: {member: true, spectator: true, manager: false},
+        admin1: {member: true, spectator: true, manager: true},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
+        Proj_Manager: {member: true, spectator: true, manager: false},
       },
       'parents': [
         {
-          uri: 'https://code.osuosl.org/projects/ganeti-webmgr',
-          name: 'Ganeti Web Manager',
+          uri: 'http://example.com/project1',
+          name: 'Project1',
           uuid: 'c285963e-192b-4e99-9d92-a940519f1fbd',
           default_activity: null,
           revision: 1,
@@ -1739,7 +1740,7 @@ module.exports = function(expect, request, baseUrl) {
       }
 
       const postProject = {
-        name: 'GANETI WEB MANAGER',
+        name: 'Project1',
       };
       const postArg = getPostObject(baseUrl + 'projects/' + project,
                       postProject);
