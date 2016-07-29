@@ -801,11 +801,10 @@ module.exports = function(app) {
       'times.uuid as uuid',
       'times.revision as revision',
       'users.username as username',
-      'projectslugs.name as projectName')
+      'projectslugs.name as projectSlug')
     .where('times.uuid', '=', req.params.uuid)
     .innerJoin('users', 'users.id', 'times.user')
-    .innerJoin('projectslugs', 'projectslugs.id',
-               'times.project')
+    .innerJoin('projectslugs', 'projectslugs.project', 'times.project')
     .orderBy('times.revision', 'desc')
     .then(function(time) {
       if (!time) {
@@ -825,8 +824,8 @@ module.exports = function(app) {
           time.user = time.user;
         }
 
-        const projectName = obj.project || time.projectName;
-        helpers.checkProject(projectName).then(function(projectId) {
+        const projectSlug = obj.project || time.projectSlug;
+        helpers.checkProject(projectSlug).then(function(projectId) {
           time.project = projectId || time.project;
           time.duration = obj.duration || time.duration;
           time.notes = obj.notes || time.notes;
@@ -836,7 +835,7 @@ module.exports = function(app) {
           time.updated_at = Date.now();
           time.revision += 1;
           delete time.username;
-          delete time.projectName;
+          delete time.projectSlug;
 
           if (obj.date_worked) {
             time.date_worked = Date.parse(obj.date_worked);

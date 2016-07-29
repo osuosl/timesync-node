@@ -83,8 +83,8 @@ describe('Basic', function() {
   it('should return an error on invalid JSON', function(done) {
     const requestOptions = {
       url: baseUrl + 'login',
-      body: '{"auth": {"type": "password", username: "patcht". password: ' +
-      'drowssap}',
+      body: '{"auth": {"type": "password", username: "Site_Manager".' +
+      'password: drowssap}',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

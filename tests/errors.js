@@ -45,18 +45,18 @@ module.exports = function(expect) {
 
   describe('8: errorSlugsAlreadyExist', function() {
     it('returns slug already exists for single slug', function(done) {
-      const err = errors.errorSlugsAlreadyExist(['gwm']);
+      const err = errors.errorSlugsAlreadyExist(['project1']);
       expect(err.status).to.equal(409);
       expect(err.error).to.equal('The slug provided already exists');
-      expect(err.text).to.equal('slug gwm already exists');
+      expect(err.text).to.equal('slug project1 already exists');
       done();
     });
 
     it('returns slugs already exist for multiple slug', function(done) {
-      const err = errors.errorSlugsAlreadyExist(['ganeti-webmgr', 'gwm']);
+      const err = errors.errorSlugsAlreadyExist(['p1', 'project1']);
       expect(err.status).to.equal(409);
       expect(err.error).to.equal('The slug provided already exists');
-      expect(err.text).to.equal('slugs ganeti-webmgr, gwm already exist');
+      expect(err.text).to.equal('slugs p1, project1 already exist');
       done();
     });
   });
