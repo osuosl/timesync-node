@@ -45,9 +45,9 @@ module.exports = function(expect, request, baseUrl) {
       revision: 1,
       users: {
         admin1: {member: true, spectator: true, manager: true},
-        sSpectator: {member: true, spectator: true, manager: false},
-        delPManager: {member: true, spectator: true, manager: true},
-        pManager: {member: true, spectator: true, manager: false},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
+        Proj_Manager: {member: true, spectator: true, manager: false},
       },
     },
     {
@@ -61,8 +61,8 @@ module.exports = function(expect, request, baseUrl) {
       uuid: 'e3e25e6a-5e45-4df2-8561-796b07e8f974',
       revision: 1,
       users: {
-        pManager: {member: true, spectator: true, manager: true},
-        sManager: {member: true, spectator: true, manager: false},
+        Proj_Manager: {member: true, spectator: true, manager: true},
+        Site_Manager: {member: true, spectator: true, manager: false},
       },
     },
     {
@@ -76,7 +76,7 @@ module.exports = function(expect, request, baseUrl) {
       uuid: '9369f959-26f2-490d-8721-2948c49c3c09',
       revision: 1,
       users: {
-        pManager: {member: true, spectator: false, manager: false},
+        Proj_Manager: {member: true, spectator: false, manager: false},
         admin1: {member: true, spectator: true, manager: true},
         user1: {member: true, spectator: false, manager: false},
       },
@@ -92,7 +92,7 @@ module.exports = function(expect, request, baseUrl) {
       uuid: '1f8788bd-0909-4397-be2c-79047f90c575',
       revision: 1,
       users: {
-        sManager: {member: true, spectator: true, manager: true},
+        Site_Manager: {member: true, spectator: true, manager: true},
       },
     },
     {
@@ -106,7 +106,7 @@ module.exports = function(expect, request, baseUrl) {
       uuid: '6abe7f9a-2c4b-4c1d-b4f9-1222b47b8a29',
       revision: 1,
       users: {
-        delPManager: {member: true, spectator: true, manager: true},
+        delProj_Manager: {member: true, spectator: true, manager: true},
       },
     },
   ];
@@ -290,7 +290,7 @@ module.exports = function(expect, request, baseUrl) {
       name: 'Project With Activity New',
       default_activity: 'meeting',
       users: {
-        sManager: {member: true, spectator: true, manager: true},
+        Site_Manager: {member: true, spectator: true, manager: true},
         user1: {member: true, spectator: true, manager: false},
       },
     };
@@ -304,7 +304,7 @@ module.exports = function(expect, request, baseUrl) {
       revision: 1,
       created_at: new Date().toISOString().substring(0, 10),
       users: {
-        sManager: {member: true, spectator: true, manager: true},
+        Site_Manager: {member: true, spectator: true, manager: true},
         user1: {member: true, spectator: true, manager: false},
       },
     };
@@ -320,7 +320,7 @@ module.exports = function(expect, request, baseUrl) {
       updated_at: null,
       deleted_at: null,
       users: {
-        sManager: {member: true, spectator: true, manager: true},
+        Site_Manager: {member: true, spectator: true, manager: true},
         user1: {member: true, spectator: true, manager: false},
       },
     };
@@ -373,7 +373,7 @@ module.exports = function(expect, request, baseUrl) {
 
     it('successfully creates a new project with slugs by a sitewide manager',
     function(done) {
-      getAPIToken('sManager', 'drowssap').then(function(token) {
+      getAPIToken('Site_Manager', 'drowssap').then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
@@ -513,7 +513,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails to create a new project with bad permissions', function(done) {
-      getAPIToken('sSpectator', 'word').then(function(token) {
+      getAPIToken('Site_Spectator', 'word').then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
@@ -522,7 +522,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             error: 'Authorization failure',
             status: 401,
-            text: 'sSpectator is not authorized to create projects',
+            text: 'Site_Spectator is not authorized to create projects',
           };
 
           expect(err).to.equal(null);
@@ -820,10 +820,10 @@ module.exports = function(expect, request, baseUrl) {
       updated_at: null,
       deleted_at: null,
       users: {
-        pManager: {member: true, spectator: true, manager: false},
+        Proj_Manager: {member: true, spectator: true, manager: false},
         admin1: {member: true, spectator: true, manager: true},
-        sSpectator: {member: true, spectator: true, manager: false},
-        delPManager: {member: true, spectator: true, manager: true},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
       },
     };
 
@@ -847,10 +847,10 @@ module.exports = function(expect, request, baseUrl) {
       updated_at: updatedAt,
       deleted_at: null,
       users: {
-        pManager: {member: true, spectator: true, manager: false},
+        Proj_Manager: {member: true, spectator: true, manager: false},
         admin1: {member: true, spectator: true, manager: true},
-        sSpectator: {member: true, spectator: true, manager: false},
-        delPManager: {member: true, spectator: true, manager: true},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
       },
     };
 
@@ -870,36 +870,36 @@ module.exports = function(expect, request, baseUrl) {
 
     const patchedProjectNewMember = {users: {
       admin1: {member: true, spectator: true, manager: true},
-      sSpectator: {member: true, spectator: true, manager: false},
-      delPManager: {member: true, spectator: true, manager: true},
-      pManager: {member: true, spectator: true, manager: false},
+      Site_Spectator: {member: true, spectator: true, manager: false},
+      delProj_Manager: {member: true, spectator: true, manager: true},
+      Proj_Manager: {member: true, spectator: true, manager: false},
       user1: {member: true, spectator: false, manager: false}, // Add user1
     }};
     const patchedProjectBadMember = {users: {
       admin1: {member: true, spectator: true, manager: true},
-      sSpectator: {member: true, spectator: true, manager: false},
-      delPManager: {member: true, spectator: true, manager: true},
-      pManager: {member: true, spectator: true, manager: false},
+      Site_Spectator: {member: true, spectator: true, manager: false},
+      delProj_Manager: {member: true, spectator: true, manager: true},
+      Proj_Manager: {member: true, spectator: true, manager: false},
       wasd: {member: true, spectator: false, manager: false}, // no wasd
     }};
     const patchedProjectPromotion = {users: {
       admin1: {member: true, spectator: true, manager: true},
-      // sSpectator now manager
-      sSpectator: {member: true, spectator: true, manager: true},
-      delPManager: {member: true, spectator: true, manager: true},
-      pManager: {member: true, spectator: true, manager: false},
+      // Site_Spectator now manager
+      Site_Spectator: {member: true, spectator: true, manager: true},
+      delProj_Manager: {member: true, spectator: true, manager: true},
+      Proj_Manager: {member: true, spectator: true, manager: false},
     }};
     const patchedProjectDemotion = {users: {
       admin1: {member: true, spectator: true, manager: true},
-      // sSpectator no longer spectator
-      sSpectator: {member: true, spectator: false, manager: false},
-      delPManager: {member: true, spectator: true, manager: true},
-      pManager: {member: true, spectator: true, manager: false},
+      // Site_Spectator no longer spectator
+      Site_Spectator: {member: true, spectator: false, manager: false},
+      delProj_Manager: {member: true, spectator: true, manager: true},
+      Proj_Manager: {member: true, spectator: true, manager: false},
     }};
     const patchedProjectSelfRemoval = {users: {
-      sSpectator: {member: true, spectator: true, manager: false},
-      delPManager: {member: true, spectator: true, manager: true},
-      pManager: {member: true, spectator: true, manager: false},
+      Site_Spectator: {member: true, spectator: true, manager: false},
+      delProj_Manager: {member: true, spectator: true, manager: true},
+      Proj_Manager: {member: true, spectator: true, manager: false},
     }};
 
     const postArg = {
@@ -984,7 +984,7 @@ module.exports = function(expect, request, baseUrl) {
       const statusCode = 200;
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, undefined, 'sManager', 'drowssap');
+                 statusCode, undefined, 'Site_Manager', 'drowssap');
     });
 
     it("successfully patches a project's uri, slugs, name, and " +
@@ -996,7 +996,7 @@ module.exports = function(expect, request, baseUrl) {
       const statusCode = 200;
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, undefined, 'delPManager', 'wording');
+                 statusCode, undefined, 'delProj_Manager', 'wording');
     });
 
     it("successfully patches a project's uri", function(done) {
@@ -1508,7 +1508,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails with bad permissions', function(done) {
-      getAPIToken('sSpectator', 'word').then(function(token) {
+      getAPIToken('Site_Spectator', 'word').then(function(token) {
         const slug = 'project-activity';
         request.del(`${baseUrl}projects/${slug}?token=${token}`,
         function(err, res, body) {
@@ -1516,7 +1516,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedError = {
             status: 401,
             error: 'Authorization failure',
-            text: `sSpectator is not authorized to delete project ${slug}`,
+            text: `Site_Spectator is not authorized to delete project ${slug}`,
           };
 
           expect(jsonBody).to.deep.equal(expectedError);
@@ -1559,9 +1559,9 @@ module.exports = function(expect, request, baseUrl) {
       slugs: ['p1', 'project1'],
       users: {
         admin1: {member: true, spectator: true, manager: true},
-        sSpectator: {member: true, spectator: true, manager: false},
-        delPManager: {member: true, spectator: true, manager: true},
-        pManager: {member: true, spectator: true, manager: false},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
+        Proj_Manager: {member: true, spectator: true, manager: false},
       },
     };
 
@@ -1577,9 +1577,9 @@ module.exports = function(expect, request, baseUrl) {
       slugs: ['p1', 'project1'],
       users: {
         admin1: {member: true, spectator: true, manager: true},
-        sSpectator: {member: true, spectator: true, manager: false},
-        delPManager: {member: true, spectator: true, manager: true},
-        pManager: {member: true, spectator: true, manager: false},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
+        Proj_Manager: {member: true, spectator: true, manager: false},
       },
       'parents': [
         {
@@ -1689,9 +1689,9 @@ module.exports = function(expect, request, baseUrl) {
       slugs: ['p1', 'project1'],
       users: {
         admin1: {member: true, spectator: true, manager: true},
-        sSpectator: {member: true, spectator: true, manager: false},
-        delPManager: {member: true, spectator: true, manager: true},
-        pManager: {member: true, spectator: true, manager: false},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
+        Proj_Manager: {member: true, spectator: true, manager: false},
       },
     };
 
@@ -1707,9 +1707,9 @@ module.exports = function(expect, request, baseUrl) {
       slugs: ['p1', 'project1'],
       users: {
         admin1: {member: true, spectator: true, manager: true},
-        sSpectator: {member: true, spectator: true, manager: false},
-        delPManager: {member: true, spectator: true, manager: true},
-        pManager: {member: true, spectator: true, manager: false},
+        Site_Spectator: {member: true, spectator: true, manager: false},
+        delProj_Manager: {member: true, spectator: true, manager: true},
+        Proj_Manager: {member: true, spectator: true, manager: false},
       },
       'parents': [
         {

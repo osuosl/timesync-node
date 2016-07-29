@@ -60,7 +60,7 @@
   "users":[
     {
       "display_name": "Project Manager",
-      "username":"pManager",
+      "username":"Proj_Manager",
       "email": null,
       "site_spectator": false,
       "site_manager": false,
@@ -90,7 +90,7 @@
     },
     {
       "display_name": "Site Manager",
-      "username":"sManager",
+      "username":"Site_Manager",
       "email": null,
       "site_spectator": true,
       "site_manager":true,
@@ -105,7 +105,7 @@
     },
     {
       "display_name": "Site Spectator",
-      "username":"sSpectator",
+      "username":"Site_Spectator",
       "email": null,
       "site_spectator": true,
       "site_manager": false,
@@ -135,7 +135,7 @@
     },
     {
       "display_name": "Deleted Project Manager",
-      "username":"delPManager",
+      "username":"delProj_Manager",
       "email": null,
       "site_spectator": false,
       "site_manager": false,

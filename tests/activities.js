@@ -506,7 +506,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('successfully creates a new activity by a manager', function(done) {
-      getAPIToken('sManager', 'drowssap').then(function(token) {
+      getAPIToken('Site_Manager', 'drowssap').then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
@@ -549,7 +549,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails to create a new activity by a regular user', function(done) {
-      getAPIToken('sSpectator', 'word').then(function(token) {
+      getAPIToken('Site_Spectator', 'word').then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
 
         requestOptions.body.auth.token = token;
@@ -559,7 +559,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             error: 'Authorization failure',
             status: 401,
-            text: 'sSpectator is not authorized to create activities',
+            text: 'Site_Spectator is not authorized to create activities',
           };
           expect(body).to.deep.equal(expectedResult);
           expect(res.statusCode).to.equal(expectedResult.status);
@@ -851,7 +851,7 @@ module.exports = function(expect, request, baseUrl) {
       const statusCode = 200;
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, undefined, 'sManager', 'drowssap');
+                 statusCode, undefined, 'Site_Manager', 'drowssap');
     });
 
     it('successfully updates the activity name', function(done) {
@@ -985,11 +985,11 @@ module.exports = function(expect, request, baseUrl) {
       const error = {
         status: 401,
         error: 'Authorization failure',
-        text: 'sSpectator is not authorized to update activities',
+        text: 'Site_Spectator is not authorized to update activities',
       };
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error], 'sSpectator', 'word');
+                 error.status, [error], 'Site_Spectator', 'word');
     });
 
     it('fails to update when given an invalid slug', function(done) {
@@ -1128,14 +1128,14 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails with invalid permissions', function(done) {
-      getAPIToken('sSpectator', 'word').then(function(token) {
+      getAPIToken('Site_Spectator', 'word').then(function(token) {
         const slug = 'meeting';
         request.del(`${baseUrl}activities/${slug}?token=${token}`,
         function(err, res, body) {
           const expectedError = {
             status: 401,
             error: 'Authorization failure',
-            text: 'sSpectator is not authorized to delete activities',
+            text: 'Site_Spectator is not authorized to delete activities',
           };
 
           expect(JSON.parse(body)).to.deep.equal(expectedError);

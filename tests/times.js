@@ -36,7 +36,7 @@ module.exports = function(expect, request, baseUrl) {
   const initialDataWithDeleted = [
     {
       duration: 12,
-      user: 'pManager',
+      user: 'Proj_Manager',
       project: ['project1', 'p1'].sort(),
       activities: ['docs', 'dev'].sort(),
       notes: '',
@@ -66,7 +66,7 @@ module.exports = function(expect, request, baseUrl) {
     },
     {
       duration: 12,
-      user: 'pManager',
+      user: 'Proj_Manager',
       project: ['project2'],
       activities: ['sys'],
       notes: '',
@@ -81,7 +81,7 @@ module.exports = function(expect, request, baseUrl) {
     },
     {
       duration: 12,
-      user: 'sManager',
+      user: 'Site_Manager',
       project: ['project2'],
       activities: ['dev'],
       notes: '',
@@ -124,7 +124,7 @@ module.exports = function(expect, request, baseUrl) {
     },
     {
       duration: 12,
-      user: 'sManager',
+      user: 'Site_Manager',
       project: ['project2'],
       activities: ['dev'],
       notes: '',
@@ -159,7 +159,7 @@ module.exports = function(expect, request, baseUrl) {
 
       it('returns all times in the database to a sitewide spectator',
       function(done) {
-        getAPIToken('sSpectator', 'word').then(function(token) {
+        getAPIToken('Site_Spectator', 'word').then(function(token) {
           request.get(`${baseUrl}times?token=${token}`,
           function(err, res, body) {
             expect(err).to.equal(null);
@@ -188,11 +188,11 @@ module.exports = function(expect, request, baseUrl) {
       });
 
       it("returns a project spectator's set of times", function(done) {
-        getAPIToken('pManager', 'pass').then(function(token) {
+        getAPIToken('Proj_Manager', 'pass').then(function(token) {
           request.get(`${baseUrl}times?token=${token}`,
           function(err, res, body) {
             const expectedResults = initialData.filter(t => {
-              // pManager is spectator on project2 and project1
+              // Proj_Manager is spectator on project2 and project1
               return t.project.indexOf('project2') >= 0 ||
                      t.project.indexOf('project1') >= 0;
             });
@@ -209,7 +209,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?user=:user', function() {
       it('returns all times for a user', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'pManager';
+          const u = 'Proj_Manager';
           request.get(`${baseUrl}times?user=${u}&token=${token}`,
           function(err, res, body) {
             const jsonBody = JSON.parse(body);
@@ -522,11 +522,11 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    describe('/times?user=:pManager&user=:user2', function() {
+    describe('/times?user=:Proj_Manager&user=:user2', function() {
       it('returns all times for two users', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'pManager';
-          const u2 = 'sManager';
+          const u = 'Proj_Manager';
+          const u2 = 'Site_Manager';
           request.get(`${baseUrl}times?user=${u}&user=${u2}&token=${token}`,
           function(err, res, body) {
             const jsonBody = JSON.parse(body);
@@ -554,7 +554,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?user=:user&project=:project', function() {
       it('returns all times for a user and a project', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'pManager';
+          const u = 'Proj_Manager';
           const p = 'project1';
           request.get(`${baseUrl}times?user=${u}&project=${p}&token=${token}`,
           function(err, res, body) {
@@ -583,7 +583,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?user=:user&activity=:activity', function() {
       it('returns all times for a user and an activity', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'pManager';
+          const u = 'Proj_Manager';
           const a = 'docs';
           request.get(`${baseUrl}times?user=${u}&activity=${a}&token=${token}`,
           function(err, res, body) {
@@ -612,7 +612,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?user=:user&start=:start', function() {
       it('returns all times for a user after a date', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'pManager';
+          const u = 'Proj_Manager';
           const s = '2015-04-20';
           request.get(`${baseUrl}times?user=${u}&start=${s}&token=${token}`,
           function(err, res, body) {
@@ -670,7 +670,7 @@ module.exports = function(expect, request, baseUrl) {
     describe('/times?user=:user&start=:start&end=:end', function() {
       it('returns all times for a user between two dates', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'pManager';
+          const u = 'Proj_Manager';
           const s = '2015-04-19';
           const e = '2015-04-20';
           request.get(`${baseUrl}times?user=${u}&start=${s}&end=${e}&` +
@@ -999,13 +999,13 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    describe('/times?user=:pManager&user=:user2&project=:project&' +
+    describe('/times?user=:Proj_Manager&user=:user2&project=:project&' +
     'activity=:activity&start=:start&end=:end', function() {
       it('returns all times for two users, a project, and activity ' +
       'between two dates', function(done) {
         getAPIToken().then(function(token) {
           const u = 'admin1';
-          const u2 = 'pManager';
+          const u2 = 'Proj_Manager';
           const p = 'project1';
           const a = 'docs';
           const s = '2015-04-19';
@@ -1043,7 +1043,7 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times for a user, two projects, and an ' +
       'activity between two dates', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'pManager';
+          const u = 'Proj_Manager';
           const p = 'project1';
           const p2 = 'pdj';
           const a = 'docs';
@@ -1082,7 +1082,7 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times for a user, project, and two activities ' +
       'between two dates', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'pManager';
+          const u = 'Proj_Manager';
           const p = 'project1';
           const a = 'docs';
           const a2 = 'dev';
@@ -1414,7 +1414,7 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times that match the given user and project',
       function(done) {
         getAPIToken().then(function(token) {
-          const u = 'sManager';
+          const u = 'Site_Manager';
           const p = 'project2';
           request.get(`${baseUrl}times?user=${u}&project=${p}&token=${token}&` +
           'include_deleted=true', function(err, res, body) {
@@ -1455,7 +1455,7 @@ module.exports = function(expect, request, baseUrl) {
     function() {
       it('returns all times for a user before a date', function(done) {
         getAPIToken().then(function(token) {
-          const u = 'sManager';
+          const u = 'Site_Manager';
           const e = '2015-04-22';
           request.get(`${baseUrl}times?user=${u}&end=${e}&token=${token}&` +
           'include_deleted=true', function(err, res, body) {
@@ -1497,7 +1497,7 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times that match the given user, activity, and project',
       function(done) {
         getAPIToken().then(function(token) {
-          const u = 'sManager';
+          const u = 'Site_Manager';
           const a = 'dev';
           const p = 'project2';
           request.get(`${baseUrl}times?user=${u}&activity=${a}&project=${p}&` +
@@ -1520,7 +1520,7 @@ module.exports = function(expect, request, baseUrl) {
       it('returns all times that match the given parameters after a date',
       function(done) {
         getAPIToken().then(function(token) {
-          const u = 'sManager';
+          const u = 'Site_Manager';
           const a = 'dev';
           const p = 'project2';
           const s = '2015-04-22';
@@ -2864,7 +2864,7 @@ module.exports = function(expect, request, baseUrl) {
     // The database's entry for `Project3`'s time entry
     const postOriginalTime = {
       duration: 12,
-      user: 'pManager',
+      user: 'Proj_Manager',
       project: ['p1', 'project1'],
       notes: '',
       activities: ['dev', 'docs'],
@@ -2876,7 +2876,7 @@ module.exports = function(expect, request, baseUrl) {
 
     const getOriginalTime = {
       duration: 12,
-      user: 'pManager',
+      user: 'Proj_Manager',
       project: ['p1', 'project1'],
       activities: ['dev', 'docs'],
       notes: '',
@@ -2903,7 +2903,7 @@ module.exports = function(expect, request, baseUrl) {
 
     const getPatchedTime = {
       duration: 15,
-      user: 'pManager',
+      user: 'Proj_Manager',
       project: ['project2'],
       activities: ['docs', 'sys'],
       notes: 'Now this is a note',
@@ -2931,7 +2931,7 @@ module.exports = function(expect, request, baseUrl) {
     // Sends invalid data to the /times/:id endpoint
     const invalidTimeValue = {
       duration: -1,
-      pManager: 'validusername',
+      Proj_Manager: 'validusername',
       user2: 'invalid-us]ername',
       project1: 'valid-project-slug',
       project2: 'invalid_project_slug',
@@ -3024,7 +3024,7 @@ module.exports = function(expect, request, baseUrl) {
       const statusCode = 200;
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, undefined, 'pManager', 'pass');
+                 statusCode, undefined, 'Proj_Manager', 'pass');
     });
 
     // Tests valid duration field
@@ -3564,7 +3564,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('deletes the object with a valid uuid by the user', function(done) {
-      getAPIToken('pManager', 'pass').then(function(token) {
+      getAPIToken('Proj_Manager', 'pass').then(function(token) {
         const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
         request.del(`${baseUrl}times/${uuid}?token=${token}`,
         function(err, res, body) {
@@ -3633,14 +3633,14 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails to delete the object with invalid permissions', function(done) {
-      getAPIToken('sSpectator', 'word').then(function(token) {
+      getAPIToken('Site_Spectator', 'word').then(function(token) {
         const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
         request.del(`${baseUrl}times/${uuid}?token=${token}`,
         function(err, res, body) {
           expect(JSON.parse(body)).to.deep.equal({
             'status': 401,
             'error': 'Authorization failure',
-            'text': 'sSpectator is not authorized to delete time ' +
+            'text': 'Site_Spectator is not authorized to delete time ' +
               '32764929-1bea-4a17-8c8a-22d7fb144941',
           });
           expect(res.statusCode).to.equal(401);

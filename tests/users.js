@@ -35,7 +35,7 @@ module.exports = function(expect, request, baseUrl) {
   const initialDataWithDeleted = [
     {
       display_name: 'Project Manager',
-      username: 'pManager',
+      username: 'Proj_Manager',
       email: null,
       site_spectator: false,
       site_manager: false,
@@ -61,7 +61,7 @@ module.exports = function(expect, request, baseUrl) {
     },
     {
       display_name: 'Site Manager',
-      username: 'sManager',
+      username: 'Site_Manager',
       email: null,
       site_spectator: true,
       site_manager: true,
@@ -74,7 +74,7 @@ module.exports = function(expect, request, baseUrl) {
     },
     {
       display_name: 'Site Spectator',
-      username: 'sSpectator',
+      username: 'Site_Spectator',
       email: null,
       site_spectator: true,
       site_manager: false,
@@ -100,7 +100,7 @@ module.exports = function(expect, request, baseUrl) {
     },
     {
       display_name: 'Deleted Project Manager',
-      username: 'delPManager',
+      username: 'delProj_Manager',
       email: null,
       site_spectator: false,
       site_manager: false,
@@ -414,7 +414,7 @@ module.exports = function(expect, request, baseUrl) {
     });
 
     it('fails to create a new user with bad authorization', function(done) {
-      getAPIToken('sSpectator', 'word').then(function(token) {
+      getAPIToken('Site_Spectator', 'word').then(function(token) {
         requestOptions.body = copyJsonObject(postArg);
         requestOptions.body.object = copyJsonObject(postNewUserMinimum);
 
@@ -426,7 +426,7 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 401,
             error: 'Authorization failure',
-            text: 'sSpectator is not authorized to create users',
+            text: 'Site_Spectator is not authorized to create users',
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -473,7 +473,7 @@ module.exports = function(expect, request, baseUrl) {
 
         requestOptions.body.auth.token = token;
 
-        requestOptions.body.object.username = 'sManager';
+        requestOptions.body.object.username = 'Site_Manager';
 
         request.post(requestOptions, function(err, res, body) {
           expect(err).to.equal(null);
@@ -481,8 +481,8 @@ module.exports = function(expect, request, baseUrl) {
           const expectedResult = {
             status: 409,
             error: 'Username already exists',
-            text: 'username sManager already exists',
-            values: ['sManager'],
+            text: 'username Site_Manager already exists',
+            values: ['Site_Manager'],
           };
 
           expect(body).to.deep.equal(expectedResult);
@@ -1211,11 +1211,11 @@ module.exports = function(expect, request, baseUrl) {
       const error = {
         status: 401,
         error: 'Authorization failure',
-        text: 'sSpectator is not authorized to modify user deleted',
+        text: 'Site_Spectator is not authorized to modify user deleted',
       };
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error.error,
-                 error.status, [error], 'sSpectator', 'word');
+                 error.status, [error], 'Site_Spectator', 'word');
     });
 
     it("doesn't update a user's username", function(done) {
@@ -1398,7 +1398,7 @@ module.exports = function(expect, request, baseUrl) {
   describe('DELETE /users/:username', function() {
     it('successfully deletes a user', function(done) {
       getAPIToken().then(function(token) {
-        const user = 'delPManager';
+        const user = 'delProj_Manager';
         request.del(`${baseUrl}users/${user}?token=${token}`,
         function(err, res) {
           expect(err).to.equal(null);

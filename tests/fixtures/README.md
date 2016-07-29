@@ -6,7 +6,7 @@ Fixtures
 Each user listed below has a different set of permissions for their respective
 Projects.
 
-1) pManager's password is ``pass``
+1) Proj_Manager's password is ``pass``
   - Project manager for: Project2
   - Member of: Project2, Project3, and Project1
   - Spectator of: Project2 and Project1
@@ -16,19 +16,19 @@ Projects.
   - Member of: Project1 and Project3
   - Spectator of: Project1 and Project3
 
-3) sManager's password is ``drowssap``
+3) Site_Manager's password is ``drowssap``
   - Project manager for: Project With Activity
   - Member of: Project2 and TS
   - Spectator of: Project2 and TS
 
-4) sSpectator's password is ``word``
+4) Site_Spectator's password is ``word``
   - Member of: Project1
   - Spectator of: Project1
 
 5) user1's password is ``passing``
   - Member of: Project3
 
-6) delPManager's password is ``wording``
+6) delProj_Manager's password is ``wording``
   - Project manager for: Deleted Project (deleted) and Project1
   - Member of: Deleted Project and Project1
   - Spectator of: Deleted Project and Project1

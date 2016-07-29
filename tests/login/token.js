@@ -14,7 +14,7 @@ module.exports = function(expect, request, baseUrl) {
       requestOptions.body = {
         auth: {
           type: 'password',
-          username: 'sManager',
+          username: 'Site_Manager',
           password: 'drowssap',
         },
       };
@@ -30,7 +30,7 @@ module.exports = function(expect, request, baseUrl) {
         };
         const payload = {
           iss: process.env.INSTANCE_NAME,
-          sub: 'sManager',
+          sub: 'Site_Manager',
           exp: now + (30 * 60 * 1000),
           iat: now,
         };
@@ -87,7 +87,7 @@ module.exports = function(expect, request, baseUrl) {
       requestOptions.body = {
         auth: {
           type: 'password',
-          username: 'sManager',
+          username: 'Site_Manager',
           password: 'not_a_real_password',
         },
       };
