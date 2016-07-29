@@ -1,6 +1,6 @@
 {
   "name": "timesync",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TimeSync time tracker implemented in js",
   "main": "app.js",
   "directories": {
