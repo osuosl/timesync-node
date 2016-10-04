@@ -29,7 +29,7 @@ exports.up = function(knex) {
     table.increments('id').primary();
     table.string('name').notNullable();
     table.string('uri');
-    table.uuid('default_activity').notNullable();
+    table.uuid('default_activity');
     table.bigInteger('created_at').notNullable();
     table.bigInteger('updated_at').defaultTo(null);
     table.bigInteger('deleted_at').defaultTo(null);
