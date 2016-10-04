@@ -197,7 +197,8 @@ module.exports = {
     invalid or unsupported authentication type.
    */
   errorAuthenticationTypeFailure: function(authType) {
-    return createError(401, authType + ' is not a valid authentication type');
+    return createError(401, 'Bad Query Value', authType + ' is not a valid ' +
+    'authentication type');
   },
 
   /*
