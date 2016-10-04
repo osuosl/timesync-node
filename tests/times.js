@@ -2236,8 +2236,6 @@ module.exports = function(expect, request, baseUrl) {
       request.get(`${baseUrl}times?token=${token}`, function(err, res, body) {
         expect(err).to.equal(null);
         expect(res.statusCode).to.equal(200);
-
-        // the projects/ list shouldn't have changed
         expect(JSON.parse(body)).to.deep.have.same.members(expectedResults);
         done();
       });

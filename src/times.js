@@ -591,95 +591,116 @@ module.exports = function(app) {
     // Finish checks for user, project, and activity
     helpers.checkUser(user.username, time.user).then(function(userId) {
       helpers.checkProject(time.project).then(function(projectId) {
-        const insert = function(activityIds) {
-          knex('userroles').first().where({user: userId, project: projectId})
-          .then(function(roles) {
-            if ((!roles || roles.member === false) && !user.site_admin) {
-              return errors.send(errors.errorAuthorizationFailure(user.username,
-                'create time entries for project ' + time.project + '.'), res);
-            }
+        knex('projects').select('uuid').first().where('id', projectId)
+        .then(function(projectUuid) {
+          const insert = function(activityIds) {
+            knex('userroles').first().where({user: userId, project: projectId})
+            .then(function(roles) {
+              if ((!roles || roles.member === false) && !user.site_admin) {
+                return errors.send(errors.errorAuthorizationFailure(
+                    user.username,
+                    'create time entries for project ' + time.project + '.'),
+                  res);
+              }
 
-            time.uuid = uuid.v4();
-            time.revision = 1;
-            const insertion = {
-              duration: time.duration,
-              user: userId,
-              project: projectId,
-              notes: time.notes,
-              issue_uri: time.issue_uri,
-              date_worked: new Date(time.date_worked).getTime(),
-              created_at: Date.now(),
-              uuid: time.uuid,
-              revision: 1,
-            };
+              time.uuid = uuid.v4();
+              time.revision = 1;
+              const insertion = {
+                duration: time.duration,
+                user: userId,
+                project: projectUuid.uuid,
+                notes: time.notes,
+                issue_uri: time.issue_uri,
+                date_worked: new Date(time.date_worked).getTime(),
+                created_at: Date.now(),
+                uuid: time.uuid,
+                revision: 1,
+              };
 
-            knex.transaction(function(trx) {
-              // trx can be used just like knex, but every call is temporary
-              // until trx.commit() is called. Until then, they're stored
-              // separately, and, if something goes wrong, can be rolled back
-              // without side effects.
-              trx('times').insert(insertion).returning('id')
-              .then(function(timeIds) {
-                const timeId = timeIds[0];
+              knex.transaction(function(trx) {
+                // trx can be used just like knex, but every call is temporary
+                // until trx.commit() is called. Until then, they're stored
+                // separately, and, if something goes wrong, can be rolled back
+                // without side effects.
+                trx('times').insert(insertion).returning('id')
+                .then(function(timeIds) {
+                  const timeId = timeIds[0];
 
-                if (activityIds) {
-                  const taInsertion = [];
-                  /* eslint-disable prefer-const */
-                  for (let activityId of activityIds) {
-                    /* eslint-enable prefer-const */
-                    taInsertion.push({
-                      time: timeId,
-                      activity: activityId,
-                    });
-                  }
+                  if (activityIds) {
+                    const taInsertion = [];
+                    /* eslint-disable prefer-const */
+                    for (let activityId of activityIds) {
+                      /* eslint-enable prefer-const */
+                      taInsertion.push({
+                        time: timeId,
+                        activity: activityId,
+                      });
+                    }
 
-                  trx('timesactivities').insert(taInsertion).then(function() {
-                    trx.commit();
-                    return res.send(JSON.stringify(time));
-                  }).catch(function(error) {
-                    log.error(req, 'Error creating activity references for ' +
+                    trx('timesactivities').insert(taInsertion).then(function() {
+                      trx.commit();
+                      return res.send(JSON.stringify(time));
+                    }).catch(function(error) {
+                      log.error(req, 'Error creating activity references for ' +
                                                               'time: ' + error);
-                    trx.rollback();
-                  });
-                } else {
-                  trx.commit();
-                  time.activities = time.activities.sort();
-                  return res.send(JSON.stringify(time));
-                }
+                      trx.rollback();
+                    });
+                  } else {
+                    trx.commit();
+                    time.activities = time.activities.sort();
+                    return res.send(JSON.stringify(time));
+                  }
+                }).catch(function(error) {
+                  log.error(req, 'Error inserting updated time entry: ' +
+                                                                        error);
+                  trx.rollback();
+                });
               }).catch(function(error) {
-                log.error(req, 'Error inserting updated time entry: ' + error);
-                trx.rollback();
+                log.error(req, 'Rolling back transaction.');
+                return errors.send(errors.errorServerError(error), res);
               });
             }).catch(function(error) {
-              log.error(req, 'Rolling back transaction.');
+              log.error(req, 'Error retrieving user roles: ' + error);
               return errors.send(errors.errorServerError(error), res);
             });
-          }).catch(function(error) {
-            log.error(req, 'Error retrieving user roles: ' + error);
-            return errors.send(errors.errorServerError(error), res);
-          });
-        };
+          };
 
-        if (time.activities) {
-          helpers.checkActivities(time.activities).then(insert)
-          .catch(function() {
-            return errors.send(errors.errorInvalidForeignKey('time',
-              'activities'), res);
-          });
-        } else {
-          knex('projects').select('default_activity').first()
-          .where('id', projectId).then(function(activityId) {
-            if (activityId.default_activity) {
-              insert([activityId.default_activity]);
-            } else {
-              return errors.send(errors.errorBadObjectMissingField('time',
+          if (time.activities) {
+            helpers.checkActivities(time.activities).then(insert)
+            .catch(function() {
+              return errors.send(errors.errorInvalidForeignKey('time',
+                'activities'), res);
+            });
+          } else {
+            knex('projects').select('default_activity').first()
+            .where('id', projectId).then(function(activityUuid) {
+              if (!activityUuid.default_activity) {
+                return errors.send(errors.errorBadObjectMissingField('time',
+                                                          'activities'), res);
+              }
+              knex('activities').select('id').first()
+              .orderBy('revision', 'desc')
+              .where('uuid', activityUuid.default_activity)
+              .then(function(activityId) {
+                if (activityId.id) {
+                  insert([activityId.id]);
+                } else {
+                  return errors.send(errors.errorBadObjectMissingField('time',
                                                             'activities'), res);
-            }
-          }).catch(function(error) {
-            log.error(req, 'Error selecting default activity.');
-            return errors.send(errors.errorServerError(error), res);
-          });
-        }
+                }
+              }).catch(function(error) {
+                log.error(req, 'Error getting default activity ID.');
+                return errors.send(errors.errorServerError(error), res);
+              });
+            }).catch(function(error) {
+              log.error(req, 'Error selecting default activity.');
+              return errors.send(errors.errorServerError(error), res);
+            });
+          }
+        }).catch(function(error) {
+          log.error(req, 'Error selecting project UUID.');
+          return errors.send(errors.errorServerError(error), res);
+        });
       }).catch(function() {
         return errors.send(errors.errorInvalidForeignKey('time', 'project'),
           res);
