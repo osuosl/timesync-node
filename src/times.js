@@ -68,7 +68,8 @@ module.exports = function(app) {
           'times.newest as newest',
           'activities.slug as activity')
         .join('users', 'times.user', 'users.id')
-        .join('projectslugs', 'times.project', 'projectslugs.project')
+        .join('projects', 'projects.uuid', 'times.project')
+        .join('projectslugs', 'projectslugs.project', 'projects.id')
         .join('timesactivities', 'timesactivities.time', 'times.id')
         .join('activities', 'timesactivities.activity', 'activities.id')
         .orderBy('times.revision', 'desc');
@@ -78,9 +79,10 @@ module.exports = function(app) {
       if (!user.site_spectator && !user.site_admin) {
         const spectatorQ = knex('userroles').select('project')
                             .where('user', user.id).andWhere('spectator', true);
+        const uuidQ = knex('projects').select('uuid').whereIn('id', spectatorQ);
         timesQ = timesQ.where(function() {
           this.where('times.user', user.id)
-          .orWhere('times.project', 'in', spectatorQ);
+          .orWhere('times.project', 'in', uuidQ);
         });
       }
 
