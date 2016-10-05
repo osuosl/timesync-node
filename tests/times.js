@@ -40,8 +40,7 @@ module.exports = function(expect, request, baseUrl) {
       project: ['project1', 'p1'].sort(),
       activities: ['docs', 'dev'].sort(),
       notes: '',
-      issue_uri:
-        'http://example.com/project3/issues/56',
+      issue_uri: 'http://example.com/project3/issues/56',
       date_worked: '2015-04-19',
       created_at: '2015-04-19',
       updated_at: null,
@@ -55,8 +54,7 @@ module.exports = function(expect, request, baseUrl) {
       project: ['project1', 'p1'].sort(),
       activities: ['docs'],
       notes: '',
-      issue_uri:
-        'http://example.com/project3/issues/56',
+      issue_uri: 'http://example.com/project3/issues/56',
       date_worked: '2015-04-20',
       created_at: '2015-04-20',
       updated_at: null,
@@ -70,8 +68,7 @@ module.exports = function(expect, request, baseUrl) {
       project: ['project2'],
       activities: ['sys'],
       notes: '',
-      issue_uri:
-        'http://example.com/project3/issues/56',
+      issue_uri: 'http://example.com/project3/issues/56',
       date_worked: '2015-04-21',
       created_at: '2015-04-21',
       updated_at: null,
@@ -85,8 +82,7 @@ module.exports = function(expect, request, baseUrl) {
       project: ['project2'],
       activities: ['dev'],
       notes: '',
-      issue_uri:
-        'http://example.com/project3/issues/56',
+      issue_uri: 'http://example.com/project3/issues/56',
       date_worked: '2015-04-22',
       created_at: '2015-04-22',
       updated_at: null,
@@ -522,7 +518,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    describe('/times?user=:Proj_Manager&user=:user2', function() {
+    describe('/times?user=:user1&user=:user2', function() {
       it('returns all times for two users', function(done) {
         getAPIToken().then(function(token) {
           const u = 'Proj_Manager';
@@ -999,7 +995,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    describe('/times?user=:Proj_Manager&user=:user2&project=:project&' +
+    describe('/times?user=:user1&user=:user2&project=:project&' +
     'activity=:activity&start=:start&end=:end', function() {
       it('returns all times for two users, a project, and activity ' +
       'between two dates', function(done) {
@@ -3658,6 +3654,54 @@ module.exports = function(expect, request, baseUrl) {
               expect(JSON.parse(getBody0)).to.deep.have.same
                                                     .members(initialData);
               expect(getRes0.statusCode).to.equal(200);
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+
+  describe('Interconnectedness', function() {
+    it("doesn't break when projects are updated", function(done) {
+      getAPIToken().then(function(token) {
+        const postData = {
+          url: `${baseUrl}projects/project1`,
+          json: true,
+          body: {
+            auth: {
+              type: 'token',
+              token: token,
+            },
+            object: {
+              name: 'Project 1 Updated',
+            },
+          },
+        };
+
+        const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
+        const expectedResult = initialData.filter((t) => {
+          return t.uuid === uuid;
+        })[0];
+        const proj = expectedResult.project[0];
+        request.get(`${baseUrl}times/${uuid}?token=${token}`,
+        function(firstErr, firstRes, firstBody) {
+          expect(firstErr).to.equal(null);
+          expect(firstRes.statusCode).to.equal(200);
+          expect(JSON.parse(firstBody)).to.deep.equal(expectedResult);
+
+          request.post(postData, function(postErr, postRes, postBody) {
+            expect(postErr).to.equal(null);
+            expect(postRes.statusCode).to.equal(200);
+
+            expect(postBody).to.have.property('name', 'Project 1 Updated');
+
+            request.get(`${baseUrl}times?project=${proj}&token=${token}`,
+            function(secondErr, secondRes, secondBody) {
+              expect(secondErr).to.equal(null);
+              expect(secondRes.statusCode).to.equal(200);
+              expect(JSON.parse(secondBody)).to.deep.include(expectedResult);
+
               done();
             });
           });
