@@ -21,7 +21,11 @@ module.exports = function(app) {
       default_activity: inProject.default_activity,
       revision: inProject.revision,
     };
-    if (slugs) { outProject.slugs = slugs.sort(); }
+    if (slugs) {
+      outProject.slugs = slugs.sort().filter(function(slug, index, self) {
+        return index === self.indexOf(slug);
+      });
+    }
 
     const fields = ['updated_at', 'deleted_at', 'created_at'];
 
