@@ -244,6 +244,23 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it('returns projects with default activities by slug', function(done) {
+      getAPIToken().then(function(token) {
+        const slug = 'project-activity';
+        request.get(`${baseUrl}projects/${slug}?token=${token}`,
+        function(err, res, body) {
+          const expectedResult = initialData.filter(p => {
+            return p.slugs.indexOf(slug) >= 0;
+          })[0];
+
+          expect(err).to.equal(null);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(200);
+          done();
+        });
+      });
+    });
+
     it('should fail with Object Not Found error', function(done) {
       getAPIToken().then(function(token) {
         request.get(`${baseUrl}projects/404?token=${token}`,
