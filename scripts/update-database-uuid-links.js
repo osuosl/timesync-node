@@ -47,7 +47,7 @@ knex.transaction(function(trx) {
                   console.log('Success! Data has been migrated!');
                   process.exit(0);
                 }).catch(function(error) {
-                  console.error('Error removing times ID field: ' + error);
+                  console.error('Error moving projects UUID field: ' + error);
                   trx.rollback();
                 });
               }).catch(function(error) {
