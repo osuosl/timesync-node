@@ -2993,7 +2993,6 @@ module.exports = function(expect, request, baseUrl) {
             const jsonBody = JSON.parse(body0);
             expect(jsonBody.error).to.equal(undefined);
             expect(res0.statusCode).to.equal(200);
-            expectedResults.updated_at = jsonBody.updated_at;
             expect(jsonBody).to.deep.equal(expectedResults);
             done();
           });
@@ -3003,21 +3002,23 @@ module.exports = function(expect, request, baseUrl) {
 
     // Tests all valid fields
     it('succesfully patches time with valid duration, project,' +
-    ' activity notes, issue_uri, and date_worked by an admin', function(done) {
+    ' activity, notes, issue_uri, and date_worked by an admin', function(done) {
       const postObj = copyJsonObject(postPatchedTime);
       const expectedResults = copyJsonObject(getPatchedTime);
+      expectedResults.updated_at = new Date().toISOString().substring(0, 10);
       let error;
       const statusCode = 200;
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode);
+                 statusCode, [expectedResults]);
     });
 
     it('succesfully patches time with valid duration, project,' +
-    ' activity notes, issue_uri, and date_worked by the user', function(done) {
+    ' activity, notes, issue_uri, and date_worked by the user', function(done) {
       const postObj = copyJsonObject(postPatchedTime);
       const expectedResults = copyJsonObject(getPatchedTime);
       expectedResults.project = ['project2'];
+      expectedResults.updated_at = new Date().toISOString().substring(0, 10);
       let error;
       const statusCode = 200;
 
