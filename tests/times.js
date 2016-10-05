@@ -3708,5 +3708,51 @@ module.exports = function(expect, request, baseUrl) {
         });
       });
     });
+
+    it("doesn't break when activities are updated", function(done) {
+      getAPIToken().then(function(token) {
+        const postData = {
+          url: `${baseUrl}activities/docs`,
+          json: true,
+          body: {
+            auth: {
+              type: 'token',
+              token: token,
+            },
+            object: {
+              name: 'Documentation Updated',
+            },
+          },
+        };
+
+        const uuid = '32764929-1bea-4a17-8c8a-22d7fb144941';
+        const expectedResult = initialData.filter((t) => {
+          return t.uuid === uuid;
+        })[0];
+        const act = expectedResult.activities[0];
+        request.get(`${baseUrl}times/${uuid}?token=${token}`,
+        function(firstErr, firstRes, firstBody) {
+          expect(firstErr).to.equal(null);
+          expect(firstRes.statusCode).to.equal(200);
+          expect(JSON.parse(firstBody)).to.deep.equal(expectedResult);
+
+          request.post(postData, function(postErr, postRes, postBody) {
+            expect(postErr).to.equal(null);
+            expect(postRes.statusCode).to.equal(200);
+
+            expect(postBody).to.have.property('name', 'Documentation Updated');
+
+            request.get(`${baseUrl}times?activity=${act}&token=${token}`,
+            function(secondErr, secondRes, secondBody) {
+              expect(secondErr).to.equal(null);
+              expect(secondRes.statusCode).to.equal(200);
+              expect(JSON.parse(secondBody)).to.deep.include(expectedResult);
+
+              done();
+            });
+          });
+        });
+      });
+    });
   });
 };
