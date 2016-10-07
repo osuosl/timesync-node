@@ -78,8 +78,9 @@ knex.transaction(function(trx) {
        * into times.project_uuid. This is the actual query that migrates us from
        * ID references to UUID references.
        */
-      trx('times').update('times.project_uuid', 'projects.uuid')
-      .innerJoin('projects', 'projects.id', 'times.project').then(function() {
+      trx.raw('UPDATE times SET times.project_uuid=projects.uuid FROM times ' +
+              'JOIN projects ON projects.id=times.project')
+      .then(function() {
         /*
          * And now we do the exact same thing for projects. The SQL query, once
          * again, is as follows:
@@ -99,8 +100,9 @@ knex.transaction(function(trx) {
          * by ID, get that activity's UUID, and put that back into
          * projects.default_activity_uuid.
          */
-        trx('times').update('projects.default_activity_uuid', 'activities.uuid')
-        .innerJoin('activities', 'activities.id', 'projects.default_activity')
+        trx.raw('UPDATE projects SET projects.default_activity_uuid=' +
+                'activities.uuid FROM projects JOIN activities ON ' +
+                'activities.id=projects.default_activity')
         .then(function() {
           /*
            * Now delete the old ID fields.
