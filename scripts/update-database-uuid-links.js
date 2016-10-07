@@ -59,50 +59,32 @@ knex.transaction(function(trx) {
        */
 
       /*
-       * This is a bit of a weird SQL query, I admit. I didn't know you could
-       * join on an update query. The equivalent SQL is as follows:
+       * So this SQL query takes each time, looks up the project that
+       * times.project (the ID field) references, gets that project's UUID, and
+       * puts that back into times.project_uuid. This is the actual query that
+       * migrates us from ID references to UUID references.
        *
-       * UPDATE
-       *    times
-       * SET
-       *    times.project_uuid = projects.uuid
-       * FROM
-       *    times
-       *  JOIN
-       *      projects
-       *    ON
-       *        projects.id = times.project
-       *
-       * So we basically take each time, look up the project that times.project
-       * (the ID field) references, get that project's UUID, and put that back
-       * into times.project_uuid. This is the actual query that migrates us from
-       * ID references to UUID references.
+       * Unfortunately, this is a raw query, because knex doesn't support
+       * having a value on the right side of a SET statement (it just interprets
+       * it as a string literal), or using FROM in an UPDATE query.
        */
-      trx.raw('UPDATE times SET times.project_uuid=projects.uuid FROM times ' +
-              'JOIN projects ON projects.id=times.project')
+      trx.raw('UPDATE times SET project_uuid = projects.uuid FROM projects ' +
+              'WHERE project = projects.id')
       .then(function() {
         /*
-         * And now we do the exact same thing for projects. The SQL query, once
-         * again, is as follows:
+         * This SQL query takes each project, looks up the activity that
+         * projects.default_activity (the ID field) references, gets that
+         * activity's UUID, and puts that back into
+         * projects.default_activity_uuid. This is the actual query that
+         * migrates us from ID references to UUID references.
          *
-         * UPDATE
-         *    projects
-         * SET
-         *    projects.default_activity_uuid = activities.uuid
-         * FROM
-         *    projects
-         *  JOIN
-         *      activities
-         *    ON
-         *        activities.id = projects.default_activity
-         *
-         * So, once again, we take each project, look up its default activity
-         * by ID, get that activity's UUID, and put that back into
-         * projects.default_activity_uuid.
+         * Unfortunately, this is a raw query, because knex doesn't support
+         * having a value on the right side of a SET statement (it just
+         * interprets it as a string literal), or using FROM in an UPDATE query.
          */
-        trx.raw('UPDATE projects SET projects.default_activity_uuid=' +
-                'activities.uuid FROM projects JOIN activities ON ' +
-                'activities.id=projects.default_activity')
+        trx.raw('UPDATE projects SET default_activity_uuid = ' +
+                'activities.uuid FROM activities WHERE default_activity = ' +
+                'activities.id')
         .then(function() {
           /*
            * Now delete the old ID fields.
