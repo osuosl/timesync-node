@@ -115,6 +115,7 @@ knex.transaction(function(trx) {
                    * old ID columns are no more, and the UUID columns have the
                    * same name.
                    */
+                  trx.commit();
                   console.log('Success! Data has been migrated!');
                   process.exit(0);
                 }).catch(function(error) {
