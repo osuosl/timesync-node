@@ -244,6 +244,23 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
+    it('returns projects with default activities by slug', function(done) {
+      getAPIToken().then(function(token) {
+        const slug = 'project-activity';
+        request.get(`${baseUrl}projects/${slug}?token=${token}`,
+        function(err, res, body) {
+          const expectedResult = initialData.filter(p => {
+            return p.slugs.indexOf(slug) >= 0;
+          })[0];
+
+          expect(err).to.equal(null);
+          expect(JSON.parse(body)).to.deep.equal(expectedResult);
+          expect(res.statusCode).to.equal(200);
+          done();
+        });
+      });
+    });
+
     it('should fail with Object Not Found error', function(done) {
       getAPIToken().then(function(token) {
         request.get(`${baseUrl}projects/404?token=${token}`,
@@ -1798,6 +1815,54 @@ module.exports = function(expect, request, baseUrl) {
         function(err, res, body) {
           expect(JSON.parse(body)).to.deep.equal(noParentsData);
           done();
+        });
+      });
+    });
+  });
+
+  describe('Interconnectedness', function() {
+    it("doesn't break when activities are updated", function(done) {
+      getAPIToken().then(function(token) {
+        const postData = {
+          url: `${baseUrl}activities/dev`,
+          json: true,
+          body: {
+            auth: {
+              type: 'token',
+              token: token,
+            },
+            object: {
+              name: 'Development Updated',
+            },
+          },
+        };
+
+        const uuid = '1f8788bd-0909-4397-be2c-79047f90c575';
+        const expectedResult = initialData.filter((p) => {
+          return p.uuid === uuid;
+        })[0];
+        const slug = expectedResult.slugs[0];
+        request.get(`${baseUrl}projects/${slug}?token=${token}`,
+        function(firstErr, firstRes, firstBody) {
+          expect(firstErr).to.equal(null);
+          expect(firstRes.statusCode).to.equal(200);
+          expect(JSON.parse(firstBody)).to.deep.equal(expectedResult);
+
+          request.post(postData, function(postErr, postRes, postBody) {
+            expect(postErr).to.equal(null);
+            expect(postRes.statusCode).to.equal(200);
+
+            expect(postBody).to.have.property('name', 'Development Updated');
+
+            request.get(`${baseUrl}projects/${slug}?token=${token}`,
+            function(secondErr, secondRes, secondBody) {
+              expect(secondErr).to.equal(null);
+              expect(secondRes.statusCode).to.equal(200);
+              expect(JSON.parse(secondBody)).to.deep.equal(expectedResult);
+
+              done();
+            });
+          });
         });
       });
     });

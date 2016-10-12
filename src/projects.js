@@ -21,7 +21,11 @@ module.exports = function(app) {
       default_activity: inProject.default_activity,
       revision: inProject.revision,
     };
-    if (slugs) { outProject.slugs = slugs.sort(); }
+    if (slugs) {
+      outProject.slugs = slugs.sort().filter(function(slug, index, self) {
+        return index === self.indexOf(slug);
+      });
+    }
 
     const fields = ['updated_at', 'deleted_at', 'created_at'];
 
@@ -70,11 +74,12 @@ module.exports = function(app) {
         'projects.newest as newest',
         'projects.id as id') // id will be stripped in constructProject() anyway
       // Order them from most recently updated to last updated
-      .orderBy('projects.revision')
+      .orderBy('projects.revision', 'desc')
       // Do a left join so we keep projects without a slug field
       // https://en.wikipedia.org/wiki/Join_(SQL)#Left_outer_join for more info.
       .leftOuterJoin('projectslugs', 'projects.id', 'projectslugs.project')
-      .leftOuterJoin('activities', 'projects.default_activity', 'activities.id')
+      .leftOuterJoin('activities', 'projects.default_activity',
+                                                              'activities.uuid')
       ;
       // Yes this code is duplicated in both GET endpoints. If you have strong
       // feelings about this, change it. kthnkxby
@@ -289,7 +294,7 @@ module.exports = function(app) {
     // Do a left join so we keep projects without a slug field
     // https://en.wikipedia.org/wiki/Join_(SQL)#Left_outer_join for more info.
     .leftOuterJoin('projectslugs', 'projects.id', 'projectslugs.project')
-    .leftOuterJoin('activities', 'projects.default_activity', 'activities.id')
+    .leftOuterJoin('activities', 'projects.default_activity', 'activities.uuid')
     // Matching on the uuid subquery (comments above)
     .where({'projects.uuid': uuidSubquery});
 
@@ -474,121 +479,128 @@ module.exports = function(app) {
 
       const activity = obj.default_activity ? [obj.default_activity] : [];
       helpers.checkActivities(activity).then(function(activityId) {
-        knex('projects').where('name', obj.name).then(function(existing) {
-          if (existing.length) {
-            const err = errors.errorBadObjectInvalidField('project', 'name',
-              'unique name', 'name which already exists');
-            return res.status(err.status).send(err);
-          }
+        knex('activities').select('uuid').first().where('id', activityId[0])
+        .then(function(activityUuid) {
+          knex('projects').where('name', obj.name).then(function(existing) {
+            if (existing.length) {
+              const err = errors.errorBadObjectInvalidField('project', 'name',
+                'unique name', 'name which already exists');
+              return res.status(err.status).send(err);
+            }
 
-          obj.uuid = uuid.v4();
-          obj.created_at = Date.now();
-          obj.revision = 1;
+            obj.uuid = uuid.v4();
+            obj.created_at = Date.now();
+            obj.revision = 1;
 
-          // create object to insert into database
-          const insertion = {
-            uri: obj.uri,
-            name: obj.name,
-            uuid: obj.uuid,
-            default_activity: activityId[0] || null,
-            created_at: obj.created_at,
-            revision: 1,
-          };
+            // create object to insert into database
+            const insertion = {
+              uri: obj.uri,
+              name: obj.name,
+              uuid: obj.uuid,
+              default_activity: activityUuid ? activityUuid.uuid : null,
+              created_at: obj.created_at,
+              revision: 1,
+            };
 
-          knex.transaction(function(trx) {
-            /* 'You take the trx.rollback(), the story ends. You wake up in your
-                bed and none of the database calls ever happened. You take the
-                trx.commit(), you stay in wonderland, and everything is saved to
-                the database.' */
+            knex.transaction(function(trx) {
+              /* You take the trx.rollback(), the story ends. You wake up in
+                 your bed and none of the database calls ever happened. You
+                 take the trx.commit(), you stay in wonderland, and everything
+                 is saved to the database.' */
 
-            // trx can be used just like knex, but every call is temporary until
-            // commit() is called. Until then, they're stored separately, and,
-            // if something goes wrong, can be rolled back without side effects.
-            trx('projects').insert(insertion).returning('id')
-            .then(function(projects) {
-              // project is a list containing the ID of the
-              // newly created project
-              const project = projects[0];
-              const projectSlugs = obj.slugs.map(function(slug) {
-                return {name: slug, project: project};
-              });
-              trx('projectslugs').insert(projectSlugs).then(function() {
-                if (obj.users) {
-                  trx('users').select('username', 'id')
-                  .whereIn('username', Object.keys(obj.users))
-                  .then(function(userIds) {
-                    const roles = [];
-                    /* eslint-disable prefer-const */
-                    /* eslint-disable guard-for-in */
-                    for (let userObj of userIds) {
-                    /* eslint-enable prefer-const */
-                      const role = obj.users[userObj.username];
-                      const newRole = {
-                        user: userObj.id,
-                        project: project,
-                        member: role.member,
-                        spectator: role.spectator,
-                        manager: role.manager,
-                      };
-                      roles.push(newRole);
-                    }
-                    /* eslint-enable guard-for-in */
-
-                    trx('userroles').insert(roles).then(function() {
-                      obj.created_at = new Date(obj.created_at)
-                      .toISOString().substring(0, 10);
-
+              // trx can be used just like knex, but every call is temporary
+              // until commit() is called. Until then, they're stored
+              // separately, and,if something goes wrong, can be rolled back
+              // without side effects.
+              trx('projects').insert(insertion).returning('id')
+              .then(function(projects) {
+                // project is a list containing the ID of the
+                // newly created project
+                const project = projects[0];
+                const projectSlugs = obj.slugs.map(function(slug) {
+                  return {name: slug, project: project};
+                });
+                trx('projectslugs').insert(projectSlugs).then(function() {
+                  if (obj.users) {
+                    trx('users').select('username', 'id')
+                    .whereIn('username', Object.keys(obj.users))
+                    .then(function(userIds) {
+                      const roles = [];
                       /* eslint-disable prefer-const */
                       /* eslint-disable guard-for-in */
-                      for (let username in obj.users) {
-                        let flag = false;
-                        for (let userId of userIds) {
-                        /* eslint-enable prefer-const */
-                          if (userId.username === username) {
-                            flag = true;
-                            break;
-                          }
-                        }
-
-                        if (!flag) {
-                          delete obj.users[username];
-                        }
+                      for (let userObj of userIds) {
+                      /* eslint-enable prefer-const */
+                        const role = obj.users[userObj.username];
+                        const newRole = {
+                          user: userObj.id,
+                          project: project,
+                          member: role.member,
+                          spectator: role.spectator,
+                          manager: role.manager,
+                        };
+                        roles.push(newRole);
                       }
                       /* eslint-enable guard-for-in */
 
-                      trx.commit();
-                      return res.send(JSON.stringify(obj));
+                      trx('userroles').insert(roles).then(function() {
+                        obj.created_at = new Date(obj.created_at)
+                        .toISOString().substring(0, 10);
+
+                        /* eslint-disable prefer-const */
+                        /* eslint-disable guard-for-in */
+                        for (let username in obj.users) {
+                          let flag = false;
+                          for (let userId of userIds) {
+                          /* eslint-enable prefer-const */
+                            if (userId.username === username) {
+                              flag = true;
+                              break;
+                            }
+                          }
+
+                          if (!flag) {
+                            delete obj.users[username];
+                          }
+                        }
+                        /* eslint-enable guard-for-in */
+
+                        trx.commit();
+                        return res.send(JSON.stringify(obj));
+                      }).catch(function(error) {
+                        log.error(req, 'Error creating user roles for ' +
+                                                          'project: ' + error);
+                        trx.rollback();
+                      });
                     }).catch(function(error) {
-                      log.error(req, 'Error creating user roles for project: ' +
-                                                                        error);
+                      log.error(req, 'Error requesting users for project ' +
+                                                            'roles: ' + error);
                       trx.rollback();
                     });
-                  }).catch(function(error) {
-                    log.error(req, 'Error requesting users for project ' +
-                                                            'roles: ' + error);
-                    trx.rollback();
-                  });
-                } else {
-                  obj.created_at = new Date(obj.created_at)
-                  .toISOString().substring(0, 10);
+                  } else {
+                    obj.created_at = new Date(obj.created_at)
+                    .toISOString().substring(0, 10);
 
-                  trx.commit();
-                  return res.send(JSON.stringify(obj));
-                }
+                    trx.commit();
+                    return res.send(JSON.stringify(obj));
+                  }
+                }).catch(function(error) {
+                  log.error(req, 'Error inserting new project slugs: ' + error);
+                  trx.rollback();
+                });
               }).catch(function(error) {
-                log.error(req, 'Error inserting new project slugs: ' + error);
+                log.error(req, 'Error creating updated project: ' + error);
                 trx.rollback();
               });
             }).catch(function(error) {
-              log.error(req, 'Error creating updated project: ' + error);
-              trx.rollback();
+              log.error(req, 'Rolling back transaction.');
+              return errors.send(errors.errorServerError(error), res);
             });
           }).catch(function(error) {
-            log.error(req, 'Rolling back transaction.');
+            log.error(req, 'Error checking names\' existence: ' + error);
             return errors.send(errors.errorServerError(error), res);
           });
         }).catch(function(error) {
-          log.error(req, 'Error checking names\' existence: ' + error);
+          log.error(req, 'Error getting activity uuid: ' + error);
           return errors.send(errors.errorServerError(error), res);
         });
       }).catch(function() {
@@ -684,7 +696,7 @@ module.exports = function(app) {
     'activities.slug as default_activity_name',
     'projects.created_at as created_at')
     .where('projects.id', '=', projectIdQuery)
-    .leftJoin('activities', 'activities.id', 'projects.default_activity')
+    .leftJoin('activities', 'activities.uuid', 'projects.default_activity')
     .then(function(project) {
       // project contains all of the information about the project the
       // user is updating
@@ -705,7 +717,7 @@ module.exports = function(app) {
             'make changes to ' + project.name), res);
         }
 
-        const update = function(activityId) {
+        const update = function(activityUuid) {
           knex('projects').where('name', obj.name).then(function(names) {
             if (obj.name !== project.name && names.length) {
               const err = errors.errorBadObjectInvalidField('project', 'name',
@@ -743,9 +755,9 @@ module.exports = function(app) {
               project.uri = obj.uri || project.uri;
               project.name = obj.name || project.name;
               project.default_activity =
-                helpers.getType(activityId) === 'array' ?
-                activityId[0] :
-                activityId;
+                helpers.getType(activityUuid) === 'array' ?
+                activityUuid[0] :
+                activityUuid;
               project.revision += 1;
               project.created_at = parseInt(project.created_at, 10);
               project.updated_at = Date.now();
@@ -945,8 +957,15 @@ module.exports = function(app) {
         };
 
         if (obj.default_activity) {
-          helpers.checkActivities([obj.default_activity]).then(update)
-          .catch(function() {
+          helpers.checkActivities([obj.default_activity]).then(function(ids) {
+            knex('activities').select('uuid').first().whereIn('id', ids)
+            .then(function(actUuid) {
+              update(actUuid.uuid);
+            }).catch(function(error) {
+              log.error(req, 'Error getting activity UUID: ' + error);
+              return errors.send(errors.errorServerError(error), res);
+            });
+          }).catch(function() {
             return errors.send(errors.errorInvalidForeignKey('project',
               'activity'), res);
           });
@@ -984,7 +1003,9 @@ module.exports = function(app) {
       }
 
       // Get project id
-      knex('projectslugs').select('projects.id as id', 'projects.name as name')
+      knex('projectslugs')
+      .select('projects.id as id', 'projects.name as name',
+        'projects.uuid as uuid')
       .first().where('projectslugs.name', req.params.slug)
       .innerJoin('projects', 'projectslugs.project', 'projects.id')
       .then(function(project) {
@@ -994,7 +1015,7 @@ module.exports = function(app) {
         }
 
         // Get times associated with project
-        knex('times').where('project', '=', project.id)
+        knex('times').where('project', '=', project.uuid)
         .whereNull('deleted_at').where('newest', true).then(function(times) {
           // If there are times associated, return an error
           if (times.length > 0) {

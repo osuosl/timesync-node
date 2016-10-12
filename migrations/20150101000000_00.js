@@ -29,8 +29,7 @@ exports.up = function(knex) {
     table.increments('id').primary();
     table.string('name').notNullable();
     table.string('uri');
-    table.integer('default_activity').references('id').inTable('activities')
-      .onDelete('set null');
+    table.uuid('default_activity');
     table.bigInteger('created_at').notNullable();
     table.bigInteger('updated_at').defaultTo(null);
     table.bigInteger('deleted_at').defaultTo(null);
@@ -42,8 +41,7 @@ exports.up = function(knex) {
     table.integer('duration').notNullable();
     table.integer('user').references('id').inTable('users').notNullable()
       .onDelete('restrict');
-    table.integer('project').references('id').inTable('projects').notNullable()
-      .onDelete('restrict');
+    table.uuid('project').notNullable();
     table.string('notes');
     table.string('issue_uri');
     table.bigInteger('date_worked').notNullable();
