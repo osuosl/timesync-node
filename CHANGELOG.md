@@ -1,3 +1,9 @@
+v0.1.2
+------
+
+- Updating projects and activities no longer "hides" times and projects
+- Fixed Authentication Type Failure error message to match API
+
 v0.1.1
 ------
 

@@ -5,7 +5,7 @@ err_echo() {
   >&2 echo "$@";
 }
 
-nvm install 4.2 || err_echo "NVM is not installed. Install NVM, or install Node v4.2 manually."
+nvm install 4.4 || err_echo "NVM is not installed. Install NVM, or install Node v4.4 manually."
 
 if ! npm install; then
   err_echo "'npm install' failed! Make sure Node is installed and available on this machine!"
