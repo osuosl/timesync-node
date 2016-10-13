@@ -204,7 +204,7 @@
     {
       "uri":"http:://example.com/project-activity",
       "name":"Project With Activity",
-      "default_activity": "activities:1",
+      "default_activity": "b0b8c83b-f529-4130-93ef-e4e94e5bc57e",
       "id": 4,
       "uuid": "1f8788bd-0909-4397-be2c-79047f90c575",
       "revision": 1,
@@ -230,7 +230,7 @@
     {
       "duration":12,
       "user":"users:0",
-      "project":"projects:0",
+      "project":"c285963e-192b-4e99-9d92-a940519f1fbd",
       "notes":"",
       "issue_uri":"http:://example.com/project3/issues/56",
       "date_worked":1429401600000,
@@ -245,7 +245,7 @@
     {
       "duration":12,
       "user":"users:1",
-      "project":"projects:0",
+      "project":"c285963e-192b-4e99-9d92-a940519f1fbd",
       "notes":"",
       "issue_uri":"http:://example.com/project3/issues/56",
       "date_worked":1429488000000,
@@ -260,7 +260,7 @@
     {
       "duration":12,
       "user":"users:0",
-      "project":"projects:1",
+      "project":"e3e25e6a-5e45-4df2-8561-796b07e8f974",
       "notes":"",
       "issue_uri":"http:://example.com/project3/issues/56",
       "date_worked":1429574400000,
@@ -275,7 +275,7 @@
     {
       "duration":12,
       "user":"users:2",
-      "project":"projects:1",
+      "project":"e3e25e6a-5e45-4df2-8561-796b07e8f974",
       "notes":"",
       "issue_uri":"http:://example.com/project3/issues/56",
       "date_worked":1429660800000,
@@ -290,7 +290,7 @@
     {
       "duration":12,
       "user":"users:1",
-      "project":"projects:0",
+      "project":"c285963e-192b-4e99-9d92-a940519f1fbd",
       "notes":"",
       "issue_uri":"https:://github.com/osuosl/ganeti_webmgr/issues/48",
       "date_worked":1429488000000,
@@ -305,7 +305,7 @@
     {
       "duration":12,
       "user":"users:2",
-      "project":"projects:1",
+      "project":"e3e25e6a-5e45-4df2-8561-796b07e8f974",
       "notes":"",
       "issue_uri":"",
       "date_worked":1429660800000,
@@ -320,7 +320,7 @@
     {
       "duration":18,
       "user":"users:4",
-      "project":"projects:2",
+      "project":"9369f959-26f2-490d-8721-2948c49c3c09",
       "notes":"",
       "issue_uri":"",
       "date_worked":1456358400000,
