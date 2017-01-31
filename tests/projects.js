@@ -963,7 +963,7 @@ module.exports = function(expect, request, baseUrl) {
 
           if (postBodies !== undefined) {
             // Is the recieved body within the array of expected bodies
-            expect(postBodies).to.include(body);
+            expect(postBodies).to.deep.include(body);
           }
 
           // Always checks for valid get request

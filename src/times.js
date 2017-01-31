@@ -639,7 +639,8 @@ module.exports = function(app) {
 
                     trx('timesactivities').insert(taInsertion).then(function() {
                       trx.commit();
-                      time.created_at = new Date().toISOString().substring(0, 10);
+                      time.created_at = new Date().toISOString()
+                        .substring(0, 10);
                       time.updated_at = null;
                       time.deleted_at = null;
                       return res.send(JSON.stringify(time));
