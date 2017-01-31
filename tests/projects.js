@@ -320,6 +320,8 @@ module.exports = function(expect, request, baseUrl) {
       default_activity: 'meeting',
       revision: 1,
       created_at: new Date().toISOString().substring(0, 10),
+      updated_at: null,
+      deleted_at: null,
       users: {
         Site_Manager: {member: true, spectator: true, manager: true},
         user1: {member: true, spectator: true, manager: false},
