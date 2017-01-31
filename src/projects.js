@@ -545,6 +545,8 @@ module.exports = function(app) {
                       trx('userroles').insert(roles).then(function() {
                         obj.created_at = new Date(obj.created_at)
                         .toISOString().substring(0, 10);
+                        obj.updated_at = null;
+                        obj.deleted_at = null;
 
                         /* eslint-disable prefer-const */
                         /* eslint-disable guard-for-in */
@@ -579,6 +581,8 @@ module.exports = function(app) {
                   } else {
                     obj.created_at = new Date(obj.created_at)
                     .toISOString().substring(0, 10);
+                    obj.updated_at = null;
+                    obj.deleted_at = null;
 
                     trx.commit();
                     return res.send(JSON.stringify(obj));
@@ -830,6 +834,7 @@ module.exports = function(app) {
                                   Promise.all(newSlugs).then(function() {
                                     project.slugs = obj.slugs.sort();
                                     delete project.newest;
+                                    project.users = obj.users;
                                     trx.commit();
                                     res.send(JSON.stringify(project));
                                   }).catch(function(error) {
@@ -847,6 +852,7 @@ module.exports = function(app) {
                                 .where({project: oldId}).then(function() {
                                   project.slugs = existingSlugs.sort();
                                   delete project.newest;
+                                  project.users = obj.users;
                                   trx.commit();
                                   res.send(project);
                                 }).catch(function(error) {
