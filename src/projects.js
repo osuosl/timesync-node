@@ -891,7 +891,7 @@ module.exports = function(app) {
                             return slug.name;
                           });
 
-                          knex('userroles').select(
+                          trx('userroles').select(
                             'users.username as user',
                             'userroles.project as project',
                             'userroles.member as member',
