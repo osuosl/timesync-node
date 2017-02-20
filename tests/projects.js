@@ -212,7 +212,7 @@ module.exports = function(expect, request, baseUrl) {
         request.get(`${baseUrl}projects?user=${user}&token=${token}`,
         function(err, res, body) {
           const expectedResult = {
-            error: 'Bad Query Value',
+            error: 'Bad query value',
             text: 'Parameter user contained invalid value notauser',
             status: 400,
           };

@@ -171,7 +171,7 @@ module.exports = function(expect, request, baseUrl) {
       });
     });
 
-    // Refer to API Docs: Bad Query Value - The activityslug parameter is
+    // Refer to API Docs: Bad query value - The activityslug parameter is
     // ignored, but since 'include_deleted=true', return the list of activities
     it('ignores extra param if user specifies query with an activityslug',
     function(done) {

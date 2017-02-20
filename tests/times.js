@@ -236,7 +236,7 @@ module.exports = function(expect, request, baseUrl) {
           function(err, res, body) {
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter user contained invalid value ${u}`,
             };
 
@@ -283,7 +283,7 @@ module.exports = function(expect, request, baseUrl) {
           function(err, res, body) {
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter project contained invalid value ${p}`,
             };
 
@@ -331,7 +331,7 @@ module.exports = function(expect, request, baseUrl) {
             const jsonBody = JSON.parse(body);
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter activity contained invalid value ${a}`,
             };
 
@@ -380,7 +380,7 @@ module.exports = function(expect, request, baseUrl) {
             const jsonBody = JSON.parse(body);
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter start contained invalid value ${s}`,
             };
 
@@ -400,7 +400,7 @@ module.exports = function(expect, request, baseUrl) {
             const jsonBody = JSON.parse(body);
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter start contained invalid value ${s}`,
             };
 
@@ -449,7 +449,7 @@ module.exports = function(expect, request, baseUrl) {
             const jsonBody = JSON.parse(body);
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter end contained invalid value ${e}`,
             };
 
@@ -506,7 +506,7 @@ module.exports = function(expect, request, baseUrl) {
             expect(res.statusCode).to.equal(400);
 
             expect(jsonBody.status).to.equal(400);
-            expect(jsonBody.error).to.equal('Bad Query Value');
+            expect(jsonBody.error).to.equal('Bad query value');
 
             expect([
               `Parameter end contained invalid value ${e}`,
@@ -1151,7 +1151,7 @@ module.exports = function(expect, request, baseUrl) {
           `token=${token}`, function(err, res, body) {
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter user contained invalid value ${user}`,
             };
 
@@ -1169,7 +1169,7 @@ module.exports = function(expect, request, baseUrl) {
           'token=' + token, function(err, res, body) {
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter user contained invalid value ${user}`,
             };
 
@@ -1206,7 +1206,7 @@ module.exports = function(expect, request, baseUrl) {
           `true&token=${token}`, function(err, res, body) {
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter activity contained invalid value ${activity}`,
             };
 
@@ -1224,7 +1224,7 @@ module.exports = function(expect, request, baseUrl) {
           `true&token=${token}`, function(err, res, body) {
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter activity contained invalid value ${activity}`,
             };
 
@@ -1261,7 +1261,7 @@ module.exports = function(expect, request, baseUrl) {
           `include_deleted=true&token=${token}`, function(err, res, body) {
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter project contained invalid value ${project}`,
             };
 
@@ -1279,7 +1279,7 @@ module.exports = function(expect, request, baseUrl) {
           `include_deleted=true&token=${token}`, function(err, res, body) {
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter project contained invalid value ${project}`,
             };
 
@@ -1316,7 +1316,7 @@ module.exports = function(expect, request, baseUrl) {
           `token=${token}`, function(err, res, body) {
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter start contained invalid value ${start}`,
             };
 
@@ -1334,7 +1334,7 @@ module.exports = function(expect, request, baseUrl) {
           `token=${token}`, function(err, res, body) {
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter start contained invalid value ${start}`,
             };
 
@@ -1371,7 +1371,7 @@ module.exports = function(expect, request, baseUrl) {
           `token=${token}`, function(err, res, body) {
             const expectedResult = {
               status: 400,
-              error: 'Bad Query Value',
+              error: 'Bad query value',
               text: `Parameter end contained invalid value ${end}`,
             };
 
