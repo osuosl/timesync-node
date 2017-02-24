@@ -545,6 +545,8 @@ module.exports = function(app) {
                       trx('userroles').insert(roles).then(function() {
                         obj.created_at = new Date(obj.created_at)
                         .toISOString().substring(0, 10);
+                        obj.updated_at = null;
+                        obj.deleted_at = null;
 
                         /* eslint-disable prefer-const */
                         /* eslint-disable guard-for-in */
@@ -579,6 +581,8 @@ module.exports = function(app) {
                   } else {
                     obj.created_at = new Date(obj.created_at)
                     .toISOString().substring(0, 10);
+                    obj.updated_at = null;
+                    obj.deleted_at = null;
 
                     trx.commit();
                     return res.send(JSON.stringify(obj));
@@ -761,6 +765,7 @@ module.exports = function(app) {
               project.revision += 1;
               project.created_at = parseInt(project.created_at, 10);
               project.updated_at = Date.now();
+              project.deleted_at = null;
               project.newest = true;
 
               const oldId = project.id;
@@ -830,6 +835,7 @@ module.exports = function(app) {
                                   Promise.all(newSlugs).then(function() {
                                     project.slugs = obj.slugs.sort();
                                     delete project.newest;
+                                    project.users = obj.users;
                                     trx.commit();
                                     res.send(JSON.stringify(project));
                                   }).catch(function(error) {
@@ -847,6 +853,7 @@ module.exports = function(app) {
                                 .where({project: oldId}).then(function() {
                                   project.slugs = existingSlugs.sort();
                                   delete project.newest;
+                                  project.users = obj.users;
                                   trx.commit();
                                   res.send(project);
                                 }).catch(function(error) {
@@ -884,53 +891,83 @@ module.exports = function(app) {
                             return slug.name;
                           });
 
-                          if (helpers.getType(obj.slugs) === 'array') {
-                            const newSlugs = [];
-
-                            trx('projectslugs').del().where({project: oldId})
-                            .then(function() {
-                              /* eslint-disable */
-                              for (let slug of obj.slugs) {
-                              /* eslint-enable */
-                                newSlugs.push(trx('projectslugs')
-                                .insert({project: projID, name: slug}));
+                          trx('userroles').select(
+                            'users.username as user',
+                            'userroles.project as project',
+                            'userroles.member as member',
+                            'userroles.spectator as spectator',
+                            'userroles.manager as manager')
+                          .innerJoin('users', 'users.id', 'userroles.user')
+                          .where('userroles.project', projID)
+                          .then(function(projRoles) {
+                            if (projRoles && projRoles.length > 0) {
+                              project.users = {};
+                              /* eslint-disable prefer-const */
+                              for (let role of projRoles) {
+                                /* eslint-enable prefer-const */
+                                project.users[role.user] = {
+                                  // Use !! because they may be numbers
+                                  // !! operator forces to boolean type
+                                  member: !!role.member,
+                                  spectator: !!role.spectator,
+                                  manager: !!role.manager,
+                                };
                               }
+                            }
 
-                              Promise.all(newSlugs).then(function() {
-                                project.slugs = obj.slugs.sort();
-                                delete project.newest;
-                                trx.commit();
-                                res.send(JSON.stringify(project));
+                            if (helpers.getType(obj.slugs) === 'array') {
+                              const newSlugs = [];
+
+                              trx('projectslugs').del().where({project: oldId})
+                              .then(function() {
+                                /* eslint-disable */
+                                for (let slug of obj.slugs) {
+                                  /* eslint-enable */
+                                  newSlugs.push(trx('projectslugs')
+                                    .insert({project: projID, name: slug}));
+                                }
+
+                                Promise.all(newSlugs).then(function() {
+                                  project.slugs = obj.slugs.sort();
+                                  delete project.newest;
+                                  trx.commit();
+                                  res.send(JSON.stringify(project));
+                                }).catch(function(error) {
+                                  log.error(req, 'Error inserting slugs: ' +
+                                    error);
+                                  trx.rollback();
+                                });
                               }).catch(function(error) {
-                                log.error(req, 'Error inserting slugs: ' +
-                                          error);
+                                log.error(req, 'Error deleting old slugs: ' +
+                                  error);
                                 trx.rollback();
                               });
-                            }).catch(function(error) {
-                              log.error(req, 'Error deleting old slugs: ' +
-                                        error);
-                              trx.rollback();
-                            });
-                          } else {
-                            trx('projectslugs').update({project: projID})
-                            .where({project: oldId}).then(function() {
-                              project.slugs = existingSlugs.sort();
-                              delete project.newest;
-                              trx.commit();
-                              res.send(project);
-                            }).catch(function(error) {
-                              log.error(req, 'Error updating slugs: ' + error);
-                              trx.rollback();
-                            });
-                          }
+                            } else {
+                              trx('projectslugs').update({project: projID})
+                              .where({project: oldId}).then(function() {
+                                project.slugs = existingSlugs.sort();
+                                delete project.newest;
+                                trx.commit();
+                                res.send(project);
+                              }).catch(function(error) {
+                                log.error(req, 'Error updating slugs: ' +
+                                  error);
+                                trx.rollback();
+                              });
+                            }
+                          }).error(function(error) {
+                            log.error(req, 'Error retrieving old roles: ' +
+                              error);
+                            trx.rollback();
+                          });
                         }).catch(function(error) {
                           log.error(req, 'Error retrieving existing slugs: ' +
-                                                                        error);
+                            error);
                           trx.rollback();
                         });
                       }).catch(function(error) {
                         log.error(req, 'Error transferring user roles: ' +
-                                                                        error);
+                          error);
                         trx.rollback();
                       });
                     }

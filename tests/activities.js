@@ -448,6 +448,8 @@ module.exports = function(expect, request, baseUrl) {
       slug: 'chef',
       name: 'Chef',
       created_at: new Date().toISOString().substring(0, 10),
+      updated_at: null,
+      deleted_at: null,
       revision: 1,
     };
 

@@ -320,6 +320,8 @@ module.exports = function(expect, request, baseUrl) {
       default_activity: 'meeting',
       revision: 1,
       created_at: new Date().toISOString().substring(0, 10),
+      updated_at: null,
+      deleted_at: null,
       users: {
         Site_Manager: {member: true, spectator: true, manager: true},
         user1: {member: true, spectator: true, manager: false},
@@ -961,7 +963,7 @@ module.exports = function(expect, request, baseUrl) {
 
           if (postBodies !== undefined) {
             // Is the recieved body within the array of expected bodies
-            expect(postBodies).to.include(body);
+            expect(postBodies).to.deep.include(body);
           }
 
           // Always checks for valid get request
@@ -990,7 +992,7 @@ module.exports = function(expect, request, baseUrl) {
       const statusCode = 200;
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode);
+                 statusCode, [expectedResults]);
     });
 
     it("successfully patches a project's uri, slugs, name, and " +
@@ -1001,7 +1003,7 @@ module.exports = function(expect, request, baseUrl) {
       const statusCode = 200;
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, undefined, 'Site_Manager', 'drowssap');
+                 statusCode, [expectedResults], 'Site_Manager', 'drowssap');
     });
 
     it("successfully patches a project's uri, slugs, name, and " +
@@ -1013,7 +1015,7 @@ module.exports = function(expect, request, baseUrl) {
       const statusCode = 200;
 
       checkPostToEndpoint(done, null, postObj, expectedResults, error,
-                 statusCode, undefined, 'delProj_Manager', 'wording');
+                 statusCode, [expectedResults], 'delProj_Manager', 'wording');
     });
 
     it("successfully patches a project's uri", function(done) {

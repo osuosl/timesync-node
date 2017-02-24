@@ -445,6 +445,8 @@ module.exports = function(app) {
           // newly created activity
           obj.created_at = new Date(obj.created_at)
           .toISOString().substring(0, 10);
+          obj.updated_at = null;
+          obj.deleted_at = null;
 
           return res.send(JSON.stringify(obj));
         }).catch(function(error) {

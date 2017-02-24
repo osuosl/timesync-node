@@ -2196,6 +2196,9 @@ module.exports = function(expect, request, baseUrl) {
       notes: '',
       issue_uri: 'https://github.com/osuosl/project1/issues/1',
       date_worked: '2015-07-30',
+      created_at: new Date().toISOString().substring(0, 10),
+      updated_at: null,
+      deleted_at: null,
       revision: 1,
     };
 
