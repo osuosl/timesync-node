@@ -156,4 +156,6 @@ Every time a commit is pushed to GitHub, Travis CI will automatically run the
 test suite and marks the push as working or not. This is especially helpful
 during code review.
 
-Travis runs the test suite and the linter as described above.
+Travis runs the test suite and the linter as described above. Travis will also
+check that new PRs are accompanied by documentation. If the README or anything
+in the ``docs`` directory are not modified then the Travis run will fail.

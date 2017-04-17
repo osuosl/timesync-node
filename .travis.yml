@@ -9,6 +9,7 @@ addons:
     packages:
       - g++-4.8
 script:
+  - bash ./scripts/travis-check-docs.bash
   - npm test
   - npm run test_pg
   - npm run linter
