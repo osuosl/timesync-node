@@ -75,7 +75,7 @@ describe('Basic', function() {
 
   it('should have a response at base URL', function(done) {
     request.get(baseUrl, function(err, res, body) {
-      expect(body.toString()).to.equal('Cannot GET /v0/\n');
+      expect(body.toString()).to.include('Cannot GET /v0/');
       done();
     });
   });
