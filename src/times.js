@@ -626,34 +626,28 @@ module.exports = function(app) {
                 .then(function(timeIds) {
                   const timeId = timeIds[0];
 
-                  if (activityIds) {
-                    const taInsertion = [];
-                    /* eslint-disable prefer-const */
-                    for (let activityId of activityIds) {
-                      /* eslint-enable prefer-const */
-                      taInsertion.push({
-                        time: timeId,
-                        activity: activityId,
-                      });
-                    }
-
-                    trx('timesactivities').insert(taInsertion).then(function() {
-                      trx.commit();
-                      time.created_at = new Date().toISOString()
-                        .substring(0, 10);
-                      time.updated_at = null;
-                      time.deleted_at = null;
-                      return res.send(JSON.stringify(time));
-                    }).catch(function(error) {
-                      log.error(req, 'Error creating activity references for ' +
-                                                              'time: ' + error);
-                      trx.rollback();
+                  const taInsertion = [];
+                  /* eslint-disable prefer-const */
+                  for (let activityId of activityIds) {
+                    /* eslint-enable prefer-const */
+                    taInsertion.push({
+                      time: timeId,
+                      activity: activityId,
                     });
-                  } else {
-                    trx.commit();
-                    time.activities = time.activities.sort();
-                    return res.send(JSON.stringify(time));
                   }
+
+                  trx('timesactivities').insert(taInsertion).then(function() {
+                    trx.commit();
+                    time.created_at = new Date().toISOString()
+                      .substring(0, 10);
+                    time.updated_at = null;
+                    time.deleted_at = null;
+                    return res.send(JSON.stringify(time));
+                  }).catch(function(error) {
+                    log.error(req, 'Error creating activity references for ' +
+                                                            'time: ' + error);
+                    trx.rollback();
+                  });
                 }).catch(function(error) {
                   log.error(req, 'Error inserting updated time entry: ' +
                                                                         error);
