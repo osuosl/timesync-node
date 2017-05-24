@@ -3,13 +3,13 @@ const errors = require('./errors');
 const passport = require('passport');
 const crypto = require('crypto');
 
-const tokens = {};
-
-const MAX_AGE = 30 * 60 * 1000;
-
 module.exports = function(app) {
   const log = app.get('log');
+  const redis = app.get('redis');
   let authType;
+
+  const MAX_AGE = process.env.MAX_TOKEN_AGE || 1800; // Default 30 minutes
+  const MAX_AGE_MS = MAX_AGE * 1000;
 
   if (!process.env.INSTANCE_NAME || !process.env.SECRET_KEY) {
     log.error('login.js', 'INSTANCE_NAME or SECRET_KEY not set!');
@@ -60,7 +60,7 @@ module.exports = function(app) {
       const payload = {
         iss: process.env.INSTANCE_NAME,
         sub: req.body.auth.username,
-        exp: Date.now() + MAX_AGE, // Expires after 30 minutes
+        exp: Date.now() + MAX_AGE_MS, // Expires after 30 minutes
         iat: Date.now(),
       };
       let encoded = new Buffer(JSON.stringify(header)).toString('base64');
@@ -74,7 +74,7 @@ module.exports = function(app) {
 
         const token = encoded + '.' + signature;
 
-        tokens[token] = {created: Date.now()};
+        redis.set(token, Date.now(), 'nx', 'ex', MAX_AGE);
 
         res.set({
           'Cache-control': 'no-cache no-store must-validate max-age=0',
@@ -88,27 +88,12 @@ module.exports = function(app) {
     passport.authenticate(authType, caller)(req, res, next);
   });
 
-  const clearTokens = function() {
-    if (tokens.length > 0) {
-      /* eslint-disable prefer-const */
-      for (let key in tokens) {
-      /* eslint-enable prefer-const */
-        if (tokens[key].created + MAX_AGE < Date.now()) {
-          delete tokens[key];
-        }
-      }
-    }
-    setTimeout(clearTokens, 1000 * 60 * 60);
-  };
-
-  setTimeout(clearTokens, 1000 * 60 * 60);
-
   return {
     authToken: function(unescapedToken) {
       return new Promise(function(resolve, reject) {
         const token = unescapedToken.replace(/\s/g, '+');
 
-        if (!tokens[token] || tokens[token].created + MAX_AGE < Date.now()) {
+        if (!redis.exists(token)) {
           return reject({message: 'Bad API token'});
         }
 
@@ -132,7 +117,7 @@ module.exports = function(app) {
             );
 
             if (payload.iss !== process.env.INSTANCE_NAME ||
-            payload.exp < Date.now() || payload.iat + MAX_AGE < Date.now()) {
+            payload.exp < Date.now() || payload.iat + MAX_AGE_MS < Date.now()) {
               return reject({message: 'Bad API token'});
             }
 
