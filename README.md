@@ -163,6 +163,21 @@ Valid values of NODE_ENV are ``mocha`` (PostgreSQL), ``mocha_sqlite`` (SQLite),
 ``development`` (SQLite), ``development_pg`` (PostgreSQL), ``production_pg``
 (PostgreSQL), ``production_mysql`` (MySQL), and ``production_sqlite`` (SQLite).
 
+Authentication Token Caching
+----------------------------
+
+In order to ensure that authentication tokens remain in memory even if the
+TimeSync server restarts, TimeSync depends on a Redis server in which to cache
+the tokens. 
+
+The connection to this server is created on application startup, and can be
+configured with the REDIS_HOST (default `localhost`), REDIS_PORT (default `6379`),
+REDIS_PASSWORD (default NULL), and REDIS_DB (default NULL) environment variables.
+
+As well, the MAX_TOKEN_AGE environment variable can be set to the number of
+seconds for which a token should remain in memory and be accepted. The default
+value is 30 minutes.
+
 Documentation
 -------------
 

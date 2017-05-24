@@ -68,6 +68,14 @@ app.use(function(err, req, res, next) {
 // Set API version prefix
 app.set('version', '/v0');
 
+// Configure the Redis cache
+app.set('redis', require('redis').createClient({
+  host: process.env.REDIS_HOST || 'localhost',
+  port: process.env.REDIS_PORT || '6379',
+  password: process.env.REDIS_PASSWORD || null,
+  db: process.env.REDIS_DB || null,
+}));
+
 // Set up authentication
 const passport = require('passport');
 
