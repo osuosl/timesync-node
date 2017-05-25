@@ -36,26 +36,26 @@
   "bugs": "https://github.com/osuosl/timesync-node/issues",
   "dependencies": {
     "ain2": "^2.0.0",
-    "babel-eslint": "^4.1.5",
-    "bcrypt": "^0.8.5",
+    "babel-eslint": "^7.2.3",
+    "bcrypt": "^1.0.2",
     "body-parser": "^1.15.0",
     "cors": "^2.7.1",
-    "eslint": "^1.9.0",
-    "eslint-config-airbnb": "^1.0.0",
-    "eslint-plugin-react": "^3.8.0",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint-plugin-react": "^7.0.1",
     "express": "^4.13.4",
-    "helmet": "^2.1.0",
-    "knex": "^0.10.0",
+    "helmet": "^3.6.1",
+    "knex": "^0.13.0",
     "ldapjs": "^1.0.0",
     "log": "^1.4.0",
     "passport": "^0.3.2",
-    "passport-ldapauth": "^0.6.0",
+    "passport-ldapauth": "^1.0.0",
     "passport-local": "^1.0.0",
     "passport-localapikey": "^0.0.3",
-    "pg": "^4.5.1",
+    "pg": "^6.2.3",
     "prompt": "^1.0.0",
     "sqlite3": "^3.1.1",
-    "uuid": "^2.0.1",
+    "uuid": "^3.0.1",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
@@ -67,6 +67,6 @@
     "nodemon": "^1.9.1",
     "request": "^2.69.0",
     "sql-fixtures": "^1.0.0",
-    "yargs": "^6.0.0"
+    "yargs": "^8.0.1"
   }
 }

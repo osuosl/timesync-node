@@ -1,25 +1,100 @@
 {
-  /* many of these options taken from the Airbnb Javascript
-     style guide: https://github.com/airbnb/javascript */
+  /*
+   * JSHint config files don't allow extension like ESLint configs, so
+   * to use this in your own project, simply copy it into your .jshintrc.
+   *
+   * If you use or modify this file, crediting the OSU Open Source Lab is
+   * preferred, but not required.
+   */
 
-  // Allow ES6.
-  "esnext": true,
 
-  // Define globals exposed by Node.js.
+  /*
+   * ES VERSION AND ENVIRONMENTS
+   * --------------------------------
+   */
+
+  // Allow all environments in this: it should be usable by anyone
+  "browser": true,
+  "jquery": true,
   "node": true,
 
-  // Prohibit use of == and != in favor of === and !==.
+  // Use ECMAScript 6; if you want 5.1 or 7/2016 features,
+  // we provide those in their own directories
+  "esversion": 6,
+
+  /*
+   * ENFORCING OPTIONS (true adds more warnings)
+   * -------------------------------------------
+   */
+
+  // Bitwise operators are often simply mistyped logical operators
+  "bitwise": true,
+
+  // Always require curly braces to prevent confusing indentation
+  "curly": true,
+
+  // Double-equals causes confusion due to type coercion, require triple-equals
   "eqeqeq": true,
 
-  // Prohibit use of a variable before it is defined.
+  // Working with JSON requires iterating over a lot oflarge, manually-built
+  // hashes more often than iterating over actual objects
+  // This rule would just get in our way
+  "forin": false,
+
+  // Don't allow extending the prototypes of built-in objects
+  // It's considered bad practice and can cause performance issues
+  "freeze": true,
+
+  // Give a warning when the user declares a variable inside a block
+  // then uses it outside the block -- JS allows it, but it's bad practice
+  "funcscope": false, // Confusingly, `true` *suppresses* the warning
+
+  // Give a warning when using an identifier which is a reserved keyword in ES6
+  "futurehostile": true,
+
+  // __iterator__ isn't universally supported and can cause problems
+  "iterator": true,
+
+  // JS hoists variables, allowing them to be declared later than they're used
+  // But this can be very unreadable and confusing.
   "latedef": true,
 
-  // Warn when variables are defined but never used.
-  "unused": true,
+  // Disallow arguments.caller and arguments.callee, which are deprecated,
+  // confusing, and prevent optimization
+  "noarg": true,
 
-  // Prohibit use of explicitly undeclared variables.
+  // Disallow using the comma operator (which is extremely confusing)
+  // For more information on what the comma operator is, see:
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comma_Operator
+  "nocomma": true,
+
+  // Warn about non-breaking whitespace characters, which can cause subtle
+  // bugs and appear incorrectly on webpages
+  "nonbsp": true,
+
+  // Disallow throwing away the return value of a constructor
+  // This is done to cause the constructor's side effects, bad practice
+  "nonew": true,
+
+  // Disallow comparing the return of `typeof` to a value it can't return
+  "notypeof": false, // Once again, `true` suppresses the error. Poorly labelled
+
+  // Warn about parens around operators that don't need them (like delete)
+  "singleGroups": true,
+
+  // Require all code to be in ES 6 strict mode
+  "strict": "global",
+
+  // Warn about using variables which weren't declarred
   "undef": true,
 
-  // require curly braces for one-line statements
-  "curly": true
+  // Warn about declared but unused variables
+  "unused": true,
+
+  /*
+   * RELAXING OPTIONS (true removes warnings)
+   */
+
+  // Allow comparisons to null and undefined
+  "eqnull": true
 }
