@@ -8,3 +8,4 @@ docs/build/
 jsreport/
 coverage/
 log/
+*.env

@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 
 // Library requirements
+require('dotenv-expand')(require('dotenv').config());
 const express = require('express');
 const bodyParser = require('body-parser');
 const knexfile = require('../knexfile');
